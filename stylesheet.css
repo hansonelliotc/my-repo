@@ -1,5 +1,6 @@
 :root {
 	--background: rgb(240, 240, 240);
+	--navbar: rgb(210, 210, 210);
 }
 
 * {box-sizing: border-box;}
@@ -13,7 +14,7 @@ body, div {
 
 #header {
 	background-image: url("files/cosmic cliffs.png");
-	background-color: gray;
+	background-color: var(--navbar);
 	background-position: bottom;
 	background-repeat: no-repeat;
 	background-size: cover;
@@ -38,16 +39,16 @@ body, div {
 }
 
 #nav li {
-	padding: 0;
+	padding: 0 2px 0 0;
 	margin: 0;
 }
 
 #nav li a {
 	padding: 3vh 3vw;
 	margin: 0;
-	background-color: gray;
+	background-color: var(--navbar);
 	text-decoration: none;
-	color: white;
+	color: black;
 	font-size: 130%;
 	white-space: nowrap;
 	display: block;
@@ -55,7 +56,7 @@ body, div {
 }
 
 #nav li:last-child {
-	background-color: gray;
+	background-color: var(--navbar);
 	display: block;
 	width: 100%;
 }
@@ -63,6 +64,7 @@ body, div {
 #nav li a:hover {
 	background: none;
 	text-shadow: 0 0 10px black;
+	color: white;
 }
 
 #img-src {
