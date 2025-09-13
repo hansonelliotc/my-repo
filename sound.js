@@ -35,6 +35,8 @@
 //     initiated = true;
 // }
 
+let blob = new Blob([], { type: 'audio/wav' });
+
 function addFrequency() {
     const div = document.getElementById("frequencies");
     const newInput = document.createElement("input");
@@ -77,7 +79,7 @@ function createFile() {
         for (let j = 0; j < bitsPerSample/8; j++) buffer[j+i*bitsPerSample/8+44] = (value / 256 ** j) % 256;
     }
 
-    const blob = new Blob([buffer], { type: 'audio/wav' });
+    blob = new Blob([buffer], { type: 'audio/wav' });
 
     // generate url for download
     const url = URL.createObjectURL(blob);
@@ -99,4 +101,5 @@ function createFile() {
 }
 
 const download = document.getElementById("download-button");
+
 download.onclick = createFile;
