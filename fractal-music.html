@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Elliot Hanson</title>
+	<link rel="icon" type="image/x-icon" href="files/favicon.png">
+	<link rel="stylesheet" href="stylesheet.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre Baskerville">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<h1 id="header">Musical Fractals</h1>
+	<p>Here's a slider.</p>
+	<input type="range" min="220" max="880" value="440" id="pitch-slider">
+	<p>Here's a button.</p>
+	<input type="button" value="Download" id="download-button">
+	<input type="button" value="Add Frequency" onclick="addFrequency()">
+	<div id="frequencies">
+		<p>Here's a text field.</p>
+		<input type="text" id="frequency-1">
+	</div>
+	<script src="sound.js"></script>
+</body>
+</html>
