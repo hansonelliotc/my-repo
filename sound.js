@@ -97,9 +97,10 @@ function createFile() {
     a.href = url;
     a.download = 'test.wav';
     a.click();
-    window.URL.revokeObjectURL(url);
+    // window.URL.revokeObjectURL(url);
 }
 
 const download = document.getElementById("download-button");
 
 download.onclick = createFile;
+
