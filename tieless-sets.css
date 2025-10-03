@@ -1,0 +1,22 @@
+* {box-sizing: border-box;}
+
+
+input {
+    margin: 5px;
+    min-width: 50pt;
+    font-size: 12pt;
+}
+
+p {
+    font-size: 14pt;
+    min-height: 50px;
+}
+
+span {
+    font-size: inherit;
+    display: inline-block;
+}
+
+#legal-values {
+    max-width: 1200px;
+}
