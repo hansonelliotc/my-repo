@@ -2,7 +2,7 @@ const illegal = new Set();
 const valuesSet = new Set(); // only used if allowDuplicates is true
 const values = new Array();
 const numValues = 150;
-const maxValue = 5000000;
+const maxValue = 1000000;
 let allowDuplicates = false;
 update();
 
@@ -87,4 +87,5 @@ function clearAll() {
     valuesSet.clear();
     values.length = 0;
     update();
+
 }
