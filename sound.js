@@ -4,10 +4,6 @@ let numNotes = 0;
 let duration = 60;
 
 let blob = new Blob([], { type: 'audio/wav' });
-const url = URL.createObjectURL(blob);
-document.getElementById("download").href = url;
-document.getElementById("download").download = "test.wav";
-document.getElementById("audio").src = url;
 
 function addLayer() {
     numLayers++;
@@ -261,4 +257,9 @@ function createFile() {
     }
 
     blob = new Blob([buffer], { type: 'audio/wav' });
+    const url = URL.createObjectURL(blob);
+    document.getElementById("download").href = url;
+    document.getElementById("download").download = "test.wav";
+    document.getElementById("audio").src = url;
 }
+
