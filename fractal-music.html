@@ -3,21 +3,39 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Elliot Hanson</title>
-	<link rel="icon" type="image/x-icon" href="files/favicon.png">
+	<!--<link rel="icon" type="image/x-icon" href="files/favicon.png">
 	<link rel="stylesheet" href="stylesheet.css">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre Baskerville">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre Baskerville">-->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 	<h1 id="header">Musical Fractals</h1>
-	<p>Here's a slider.</p>
-	<input type="range" min="220" max="880" value="440" id="pitch-slider">
-	<p>Here's a button.</p>
-	<input type="button" value="Download" id="download-button">
-	<input type="button" value="Add Frequency" onclick="addFrequency()">
-	<div id="frequencies">
-		<p>Here's a text field.</p>
-		<input type="text" id="frequency-1">
+	<input type="button" value="Render" onclick="createFile()"><br>
+	<audio id="audio" controls></audio><br>
+	<a id="download">Download this audio</a><br>
+
+	<span>Layer: <input type="text" id="layer" value="1"></span>
+	<span>Start: <input type="text" id="start"></span>
+	<span>Duration: <input type="text" id="duration"></span>
+	<span>Frequency: <input type="text" id="frequency"></span>
+	<span>Volume: <input type="text" id="volume" value="100"></span>
+	<span>Options: <input type="text" id="options"></span>
+	<input type="button" value="Add Note" onclick="addNote()"><br>
+
+	<span>&beta;-layer: <input type="text" id="beta-layer" value="1"></span>
+	<span>&beta;-start: <input type="text" id="beta-start"></span>
+	<span>&beta;-duration: <input type="text" id="beta-duration"></span>
+	<span>&alpha;-layers: <input type="text" id="alpha-layers" value="all"></span>
+	<span>&alpha;-start: <input type="text" id="alpha-start"></span>
+	<span>&alpha;-duration: <input type="text" id="alpha-duration"></span>
+	<span>Relative Volume: <input type="text" id="relative-volume" value="100"></span>
+	<span>Recurring volume: <input type="text" id="recurring-volume" value="60"></span>
+	<span>Options: <input type="text" id="fractal-options"></span>
+	<input type="button" value="Add Fractal" onclick="addFractal()"><br>
+
+	<input type="button" value="Add Layer" onclick="addLayer()"><br>
+	<div id="layer-1">
+		<h2>Layer 1</h2>
 	</div>
 	<script src="sound.js"></script>
 </body>
