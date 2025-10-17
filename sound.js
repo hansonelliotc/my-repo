@@ -1,7 +1,13 @@
 let song = []
 let numLayers = 1;
 let numNotes = 0;
-let duration = 60;
+const sampleRate = 44100;
+const bitsPerSample = 16;
+const numChannels = 1;
+const bytePerBloc = numChannels * bitsPerSample / 8;
+const bytePerSec = sampleRate * bytePerBloc;
+const shortestNote = 0.1;
+const impactSamples = 8;
 
 let blob = new Blob([], { type: 'audio/wav' });
 let url = "";
@@ -17,17 +23,23 @@ function addLayer() {
 }
 
 function addNote() {
-    const layerStr = document.getElementById("layer").value;
+    const layerObject = document.getElementById("layer");
+    const layerStr = layerObject.value;
     const layer = Number(layerStr);
-    const frequencyStr = document.getElementById("frequency").value;
+    const frequencyObject = document.getElementById("frequency");
+    const frequencyStr = frequencyObject.value;
     const frequency = Number(frequencyStr);
-    const startStr = document.getElementById("start").value;
+    const startObject = document.getElementById("start");
+    const startStr = startObject.value;
     const start = Number(startStr);
-    const durationStr = document.getElementById("duration").value;
+    const durationObject = document.getElementById("duration");
+    const durationStr = durationObject.value;
     const end = Number(durationStr) + start;
-    const volumeStr = document.getElementById("volume").value;
+    const volumeObject = document.getElementById("volume");
+    const volumeStr = volumeObject.value;
     const volume = Number(volumeStr);
-    const options = document.getElementById("fractal-options");
+    const optionsObject = document.getElementById("fractal-options");
+    const optionsStr = optionsObject.value;
 
     if (!Number.isInteger(layer) || layerStr == "") {
         alert("Layer must be an integer.");
@@ -53,8 +65,8 @@ function addNote() {
         alert("Duration must be a number.");
         return;
     }
-    if (end <= start) {
-        alert("Duration must be positive.");
+    if (end - start < shortestNote) {
+        alert("Duration must be greater than " + shortestNote.toString() + ".");
         return;
     }
     if (layer > numLayers || layer < 1) {
@@ -71,7 +83,7 @@ function addNote() {
     song.push({ type: "note", number: number, layer: layer, frequency: frequency, start: start, end: end, volume: volume });
     const div = document.getElementById("layer-" + layerStr);
     const newNote = document.createElement("div");
-    newNote.id = "note-" + number.toString();
+    newNote.class = "note";
     const text = document.createElement("span");
     text.innerHTML = frequencyStr + " hz for " + durationStr + "s at time " + startStr + ", volume " + volume;
     const deletionButton = document.createElement("input");
@@ -79,6 +91,12 @@ function addNote() {
     deletionButton.value = "Delete";
     function deleteNote() {
         newNote.remove();
+        layerObject.value = layerStr;
+        frequencyObject.value = frequencyStr;
+        startObject.value = startStr;
+        durationObject.value = durationStr;
+        volumeObject.value = volumeStr;
+        optionsObject.value = optionsStr;
         for (let i = 0; i < song.length; i++) {
             if (song[i].number == number) {
                 song.splice(i, 1);
@@ -97,16 +115,20 @@ function addNote() {
 }
 
 function addFractal() {
-    const betaLayerStr = document.getElementById("beta-layer").value;
+    const betaLayerObject = document.getElementById("beta-layer");
+    const betaLayerStr = betaLayerObject.value;
     const betaLayer = Number(betaLayerStr);
-    const betaStartStr = document.getElementById("beta-start").value;
+    const betaStartObject = document.getElementById("beta-start");
+    const betaStartStr = betaLayerObject.value;
     const betaStart = Number(betaStartStr);
-    const betaDurationStr = document.getElementById("beta-duration").value;
+    const betaDurationObject = document.getElementById("beta-duration");
+    const betaDurationStr = betaDurationObject.value;
     const betaEnd = Number(betaDurationStr) + betaStart;
-    const alphaLayersStr = document.getElementById("alpha-layers").value;
+    const alphaLayersObject = document.getElementById("alpha-layers");
+    const alphaLayersStr = alphaLayersObject.value;
     const alphaLayers = new Set();
     if (alphaLayersStr == "all" || alphaLayersStr == "All" || alphaLayersStr == "ALL") {
-        for (let i = 1; i <=numLayers; i++)
+        for (let i = 1; i <= numLayers; i++)
             alphaLayers.add(i);
     } else {
         for (let nbrStr of alphaLayersStr.split(",")) {
@@ -122,15 +144,20 @@ function addFractal() {
             alphaLayers.add(nbr);
         }
     }
-    const alphaStartStr = document.getElementById("alpha-start").value;
+    const alphaStartObject = document.getElementById("alpha-start");
+    const alphaStartStr = alphaStartObject.value;
     const alphaStart = Number(alphaStartStr);
-    const alphaDurationStr = document.getElementById("alpha-duration").value;
+    const alphaDurationObject = document.getElementById("alpha-duration");
+    const alphaDurationStr = alphaDurationObject.value;
     const alphaEnd = Number(alphaDurationStr) + alphaStart;
-    const volumeStr = document.getElementById("relative-volume").value;
+    const volumeObject = document.getElementById("relative-volume");
+    const volumeStr = volumeObject.value;
     const volume = Number(volumeStr);
-    const recurVolumeStr = document.getElementById("recurring-volume").value;
+    const recurVolumeObject = document.getElementById("recurring-volume");
+    const recurVolumeStr = recurVolumeObject.value;
     const recurVol = Number(recurVolumeStr);
-    const options = document.getElementById("fractal-options").value;
+    const optionsObject = document.getElementById("fractal-options");
+    const optionsStr = optionsObject.value;
 
     if (!Number.isInteger(betaLayer) || betaLayerStr == "") {
         alert("\u03B2-layer must be an integer.");
@@ -152,8 +179,8 @@ function addFractal() {
         alert("\u03B2-duration must be a number.");
         return;
     }
-    if (betaEnd <= betaStart) {
-        alert("\u03B2-duration must be positive.");
+    if (betaEnd - betaStart < shortestNote) {
+        alert("\u03B2-duration must be greater than " + shortestNote.toString() + ".");
         return;
     }
     if (Number.isNaN(alphaStart) || alphaStartStr == "") {
@@ -190,7 +217,7 @@ function addFractal() {
     song.push({ type: "fractal", number: number, layer: betaLayer, start: betaStart, end: betaEnd, alphaLayers: alphaLayers, alphaStart: alphaStart, alphaEnd: alphaEnd, volume: volume, recurVol: recurVol });
     const div = document.getElementById("layer-" + betaLayerStr);
     const newNote = document.createElement("div");
-    newNote.id = "note-" + number.toString();
+    newNote.class = "note";
     const text = document.createElement("span");
     text.innerHTML = "time " + alphaStart + "-" + alphaEnd + " of layers \"" + alphaLayersStr + "\" onto " + betaStart + "-" + betaEnd + " of layer " + betaLayer + ", relative volume " + volume + ", recurring volume " + recurVol;
     const deletionButton = document.createElement("input");
@@ -198,6 +225,15 @@ function addFractal() {
     deletionButton.value = "Delete";
     function deleteNote() {
         newNote.remove();
+        betaLayerObject.value = betaLayerStr;
+        betaStartObject.value = betaStartStr;
+        betaDurationObject.value = betaDurationStr;
+        alphaLayersObject.value = alphaLayersStr;
+        alphaStartObject.value = alphaStartStr;
+        alphaDurationObject.value = alphaDurationStr;
+        volumeObject.value = volumeStr;
+        recurVolumeObject.value = recurVolumeStr;
+        optionsObject.value = optionsStr;
         for (let i = 0; i < song.length; i++) {
             if (song[i].number == number) {
                 song.splice(i, 1);
@@ -215,16 +251,72 @@ function addFractal() {
     document.getElementById("duration").value = "";
 }
 
-function createFile() {
-    const sampleRate = 44100;
-    const bitsPerSample = 16;
-    const numChannels = 1;
-    const bytePerBloc = numChannels * bitsPerSample / 8;
-    const bytePerSec = sampleRate * bytePerBloc;
+function writeNote(buffer, start, end, frequency, volume, maxVolume) {
+    const firstSample = Math.round(start*sampleRate);
+    const lastSample = Math.round(end*sampleRate);
+    const offset = Math.random();
 
+    for (let i = firstSample; i < lastSample; i++) {
+        let scale = 1;
+        if (i - firstSample < impactSamples) {
+            scale *= (i - firstSample) / impactSamples;
+        } else if (lastSample - i < impactSamples) {
+            scale *= (lastSample - i) / impactSamples
+        }
+        let value = 0;
+        for (let j = 0; j < bitsPerSample/8; j++)
+            value += buffer[j+i*bitsPerSample/8+44] * 256 ** j;
+        value += volume/maxVolume * Math.sin(2 * Math.PI * frequency * i / sampleRate + offset*Math.PI) * (2 ** (bitsPerSample-1) - 1);
+        value *= scale;
+        for (let j = 0; j < bitsPerSample/8; j++)
+            buffer[j+i*bitsPerSample/8+44] = (value / 256 ** j) % 256;
+    }
+}
+
+function writeFractal(buffer, alphaStart, alphaEnd, alphaLayers, betaStart, betaEnd, volume, recurVol, maxVolume, iter) {
+    if (iter == 0) return;
+    const alphaDuration = alphaEnd - alphaStart;
+    const betaDuration = betaEnd - betaStart;
+    for (let note of song) {
+        if (alphaLayers.has(note.layer) && (note.start >= alphaStart && note.start <= alphaEnd || note.end >= alphaStart && note.end <= alphaEnd)) {
+            if (note.type == "note") {
+                writeNote(buffer, (Math.max(note.start, alphaStart)-alphaStart) * betaDuration/alphaDuration + betaStart,
+                                (Math.min(note.end, alphaEnd)-alphaStart) * betaDuration/alphaDuration + betaStart, 
+                                note.frequency, note.volume * volume/maxVolume, maxVolume);
+            } else if (note.type == "fractal") {
+                let newAlphaStart = 0;
+                let newAlphaEnd = 0;
+                if (note.start >= alphaStart) {
+                    newAlphaStart = note.alphaStart;
+                } else {
+                    newAlphaStart = note.alphaStart + (alphaStart - note.start) * (note.alphaEnd - note.alphaStart) / (note.end - note.start);
+                }
+                if (note.end <= alphaEnd) {
+                    newAlphaEnd = note.alphaEnd;
+                } else {
+                    newAlphaEnd = note.alphaEnd - (note.end - alphaEnd) * (note.alphaEnd - note.alphaStart) / (note.end - note.start);
+                }
+                writeFractal(buffer, newAlphaStart, newAlphaEnd, note.alphaLayers,
+                                (Math.max(note.start, alphaStart)-alphaStart) * betaDuration/alphaDuration + betaStart,
+                                (Math.min(note.end, alphaEnd)-alphaStart) * betaDuration/alphaDuration + betaStart,
+                                note.volume * volume/maxVolume * recurVol / 100, recurVol, maxVolume, iter - 1);
+            }
+        }
+    }
+}
+
+function createFile() {
+    // find the duration
+    let duration = 0;
+    for (let note of song) {
+        if (note.end > duration)
+            duration = note.end;
+    }
     const numSamples = sampleRate * duration;
     const samplesSize = numSamples * bytePerBloc;
     const fileSize = 44 + samplesSize - 8;
+
+
     const buffer = new Int8Array(fileSize);
 
     // fill out header data
@@ -242,19 +334,21 @@ function createFile() {
     buffer[36] = 0x64; buffer[37] = 0x61; buffer[38] = 0x74; buffer[39] = 0x61;
     for (let i = 0; i < 4; i++) buffer[i+40] = (samplesSize / 256 ** i) % 256;
 
-    let totalVolume = 0;
-    for (let note of song) {
-        totalVolume += note.volume;
+    let maxVolume = 100;
+    for (let time = 0; time < duration; time += shortestNote) {
+        let volume = 0;
+        for (let note of song) {
+            if (time >= note.start && time <= note.end)
+                volume += note.volume;
+        }
+        if (volume > maxVolume) maxVolume = volume;
     }
 
-    for (let i = 0; i < numSamples; i++) {
-        const time = i / sampleRate;
-        let value = 0;
-        for (let note of song) {
-            value += note.volume * Math.sin(2 * Math.PI * note.frequency * i / sampleRate) * (2 ** (bitsPerSample-1)-1)
-        }
-        value /= totalVolume;
-        for (let j = 0; j < bitsPerSample/8; j++) buffer[j+i*bitsPerSample/8+44] = (value / 256 ** j) % 256;
+    for (let note of song) {
+        if (note.type == "note")
+            writeNote(buffer, note.start, note.end, note.frequency, note.volume, maxVolume);
+        else if (note.type == "fractal")
+            writeFractal(buffer, note.alphaStart, note.alphaEnd, note.alphaLayers, note.start, note.end, note.volume, note.recurVol, maxVolume, 5);
     }
 
     URL.revokeObjectURL(url);
@@ -265,4 +359,24 @@ function createFile() {
     document.getElementById("audio").src = url;
 }
 
+function noteField() {
+    const noteButton = document.getElementById("note-button");
+    const fractalButton = document.getElementById("fractal-button");
+    noteButton.classList.remove("unselected");
+    fractalButton.classList.add("unselected");
+    const noteField = document.getElementById("note-field");
+    const fractalField = document.getElementById("fractal-field");
+    noteField.style = "";
+    fractalField.style = "display: none;";
+}
 
+function fractalField() {
+    const noteButton = document.getElementById("note-button");
+    const fractalButton = document.getElementById("fractal-button");
+    noteButton.classList.add("unselected");
+    fractalButton.classList.remove("unselected");
+    const noteField = document.getElementById("note-field");
+    const fractalField = document.getElementById("fractal-field");
+    noteField.style = "display:none;";
+    fractalField.style = "";
+}
