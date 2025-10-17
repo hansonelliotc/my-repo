@@ -119,7 +119,7 @@ function addFractal() {
     const betaLayerStr = betaLayerObject.value;
     const betaLayer = Number(betaLayerStr);
     const betaStartObject = document.getElementById("beta-start");
-    const betaStartStr = betaLayerObject.value;
+    const betaStartStr = betaStartObject.value;
     const betaStart = Number(betaStartStr);
     const betaDurationObject = document.getElementById("beta-duration");
     const betaDurationStr = betaDurationObject.value;
@@ -380,3 +380,4 @@ function fractalField() {
     noteField.style = "display:none;";
     fractalField.style = "";
 }
+
