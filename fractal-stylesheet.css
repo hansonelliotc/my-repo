@@ -1,0 +1,28 @@
+p {
+    padding: 0;
+    margin: 1vh 0;
+}
+
+.field {
+    position: absolute;
+    left: 150px;
+}
+
+.entry-type {
+    padding: 15px;
+    background-color: rgb(98, 98, 255);
+    display: inline-block;
+}
+
+.entry-type:hover {
+    background-color: rgb(98, 98, 255);
+    cursor: pointer;
+}
+
+.unselected {
+    background-color: rgb(152, 152, 255);
+}
+
+#fields {
+    min-height: 50vh;
+}
