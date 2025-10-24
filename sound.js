@@ -7,7 +7,8 @@ const numChannels = 1;
 const bytePerBloc = numChannels * bitsPerSample / 8;
 const bytePerSec = sampleRate * bytePerBloc;
 const shortestNote = 0.1;
-const impactSamples = 8;
+const impactSamples = 30;
+const defaultIter = 6;
 
 let blob = new Blob([], { type: 'audio/wav' });
 let url = "";
@@ -97,6 +98,7 @@ function addNote() {
         durationObject.value = durationStr;
         volumeObject.value = volumeStr;
         optionsObject.value = optionsStr;
+        noteField();
         for (let i = 0; i < song.length; i++) {
             if (song[i].number == number) {
                 song.splice(i, 1);
@@ -234,6 +236,7 @@ function addFractal() {
         volumeObject.value = volumeStr;
         recurVolumeObject.value = recurVolumeStr;
         optionsObject.value = optionsStr;
+        fractalField();
         for (let i = 0; i < song.length; i++) {
             if (song[i].number == number) {
                 song.splice(i, 1);
@@ -251,7 +254,11 @@ function addFractal() {
     document.getElementById("duration").value = "";
 }
 
-function writeNote(buffer, start, end, frequency, volume, maxVolume) {
+function noteVolume(t, a=20, b=1, c=1.8) {
+    return 2*Math.sqrt(b)*t*a/((a*t)^c+b);
+}
+
+function writeNote(buffer, start, end, frequency, volume, maxVolume, pure) {
     const firstSample = Math.round(start*sampleRate);
     const lastSample = Math.round(end*sampleRate);
     const offset = Math.random();
@@ -266,8 +273,19 @@ function writeNote(buffer, start, end, frequency, volume, maxVolume) {
         let value = 0;
         for (let j = 0; j < bitsPerSample/8; j++)
             value += buffer[j+i*bitsPerSample/8+44] * 256 ** j;
-        value += volume/maxVolume * Math.sin(2 * Math.PI * frequency * i / sampleRate + offset*Math.PI) * (2 ** (bitsPerSample-1) - 1);
-        value *= scale;
+        let overtones = [1,0,0,0,0,0,0,0];
+        if (!pure) {
+            overtones = [0.621118, 0.0621118, 0.204969, 0.0434783, 0.0310559, 0.0310559, 0.,0.00621118];
+        }
+        for (let k = 1; k < overtones.length; k++) {
+            let value0 = volume/maxVolume * Math.sin(k * 2 * Math.PI * frequency * i / sampleRate + offset*Math.PI) * (2 ** (bitsPerSample-1) - 1);
+            value0 *= scale * overtones[k-1];
+            value += value0;
+        }
+        if (!pure) {
+            value *= noteVolume(i/sampleRate);
+            if (noteVolume(i/sampleRate,20,1,2) > 1) console.log(noteVolume(i/sampleRate));
+        }
         for (let j = 0; j < bitsPerSample/8; j++)
             buffer[j+i*bitsPerSample/8+44] = (value / 256 ** j) % 256;
     }
@@ -282,7 +300,7 @@ function writeFractal(buffer, alphaStart, alphaEnd, alphaLayers, betaStart, beta
             if (note.type == "note") {
                 writeNote(buffer, (Math.max(note.start, alphaStart)-alphaStart) * betaDuration/alphaDuration + betaStart,
                                 (Math.min(note.end, alphaEnd)-alphaStart) * betaDuration/alphaDuration + betaStart, 
-                                note.frequency, note.volume * volume/maxVolume, maxVolume);
+                                note.frequency, note.volume * volume/100, maxVolume, true);
             } else if (note.type == "fractal") {
                 let newAlphaStart = 0;
                 let newAlphaEnd = 0;
@@ -299,7 +317,7 @@ function writeFractal(buffer, alphaStart, alphaEnd, alphaLayers, betaStart, beta
                 writeFractal(buffer, newAlphaStart, newAlphaEnd, note.alphaLayers,
                                 (Math.max(note.start, alphaStart)-alphaStart) * betaDuration/alphaDuration + betaStart,
                                 (Math.min(note.end, alphaEnd)-alphaStart) * betaDuration/alphaDuration + betaStart,
-                                note.volume * volume/maxVolume * recurVol / 100, recurVol, maxVolume, iter - 1);
+                                note.volume * volume/100 * recurVol / 100, recurVol, maxVolume, iter - 1);
             }
         }
     }
@@ -346,9 +364,9 @@ function createFile() {
 
     for (let note of song) {
         if (note.type == "note")
-            writeNote(buffer, note.start, note.end, note.frequency, note.volume, maxVolume);
+            writeNote(buffer, note.start, note.end, note.frequency, note.volume, maxVolume, true);
         else if (note.type == "fractal")
-            writeFractal(buffer, note.alphaStart, note.alphaEnd, note.alphaLayers, note.start, note.end, note.volume, note.recurVol, maxVolume, 5);
+            writeFractal(buffer, note.alphaStart, note.alphaEnd, note.alphaLayers, note.start, note.end, note.volume, note.recurVol, maxVolume, defaultIter);
     }
 
     URL.revokeObjectURL(url);
@@ -380,4 +398,3 @@ function fractalField() {
     noteField.style = "display:none;";
     fractalField.style = "";
 }
-
