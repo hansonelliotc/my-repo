@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Elliot Hanson</title>
+	<link rel="stylesheet" href="game-theory-stylesheet.css">
+	<!--<link rel="icon" type="image/x-icon" href="files/favicon.png">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre Baskerville">-->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<div style="display: flex;">
+		<svg id="container" width="80vh" height="80vh">
+			<defs>
+				<linearGradient id="gradient1" x1="0" x2="0.2" y1="0" y2="0.2" spreadMethod="repeat">
+					<stop id="stop1" offset="0%" />
+					<stop id="stop2" offset="50%" />
+					<stop id="stop3" offset="100%" />
+				</linearGradient>
+				<linearGradient id="gradient2" x1="0" x2="0.2" y1="0" y2="0.2" spreadMethod="repeat">
+					<stop id="stop4" offset="0%" />
+					<stop id="stop5" offset="50%" />
+					<stop id="stop6" offset="100%" />
+				</linearGradient>
+			</defs>
+
+			<rect id="region1" />
+			<rect id="region2" />
+			<rect id="region3" />
+			<rect id="region4" />
+
+			<line class="green-line" id="green1" />
+			<line class="green-line" id="green2" />
+			<line class="green-line" id="green3" />
+			<line class="green-line" id="green4" />
+			<line class="green-line" id="green5" />
+			<line class="green-line" id="green6" />
+			<line class="red-line" id="red1" />
+			<line class="red-line" id="red2" />
+			<line class="red-line" id="red3" />
+			<line class="red-line" id="red4" />
+			<line class="red-line" id="red5" />
+			<line class="red-line" id="red6" />
+			<line class="red-line" id="red7" />
+			<line class="red-line" id="red8" />
+			<circle id="red-corner1" r="0.5%" fill="red" />
+			<circle id="red-corner2" r="0.5%" fill="red" />
+			<circle id="red-corner3" r="0.5%" fill="red" />
+			<circle id="red-corner4" r="0.5%" fill="red" />
+
+			<svg id="diagram" width="11.43vh" height="11.43vh" x="0%" y="0%">
+				<rect width="100%" height="100%" fill="gray" opacity="50%"/>
+				<line id="line2"/>
+				<line id="line4"/>
+				<line id="line1"/>
+				<line id="line3"/>
+				<circle id="corner1"/>
+				<circle id="corner2"/>
+				<circle id="corner3"/>
+				<circle id="corner4"/>
+				<circle id="point1"/>
+				<circle id="point2"/>
+				<circle id="point3"/>
+				<circle id="point4"/>
+				<circle id="point5"/>
+			</svg>
+		</svg>
+
+		<div style="display:flex;flex-direction:column;position:relative;">
+			<input id="x2coord" type="range" min="0" max="6" step="0.1" value="0" style="writing-mode:vertical-lr;direction:rtl;">
+			<div id="x2-label">x2</div>
+		</div>
+		<div style="display:flex;flex-direction:column;position:relative;">
+			<input id="b2coord" type="range" min="0" max="6" step="0.1" value="0" style="writing-mode:vertical-lr;direction:rtl;">
+			<div id="b2-label">b2</div>
+		</div>
+	</div>
+	<div style="display:flex"><div id="x1-label">x1</div><input id="x1coord" type="range" min="0" max="6" step="0.1" value="0"></div>
+	<div style="display:flex"><div id="b1-label">b1</div><input id="b1coord" type="range" min="0" max="6" step="0.1" value="0"></div>
+
+	<br>
+	<table style="border:2px solid;">
+		<tr><td id="a1"></td><td id="b1"></td></tr>
+		<tr><td id="c1"></td><td id="d1"></td></tr>
+	</table>
+	<table style="border:2px solid;">
+		<tr><td id="a2"></td><td id="b2"></td></tr>
+		<tr><td id="c2"></td><td id="d2"></td></tr>
+	</table>
+	<script src="game-theory.js"></script>
+</body>
+</html>
