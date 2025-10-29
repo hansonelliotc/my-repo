@@ -110,21 +110,24 @@ function update() {
     const b1coord = document.getElementById("b1coord");
     const b2coord = document.getElementById("b2coord");
 
-    if (wasPositive1 && changeQuad1 && +b1coord.value == 0) {
+    if (changeQuad1 && +b1coord.value != 0 && coords[3] == 0) {
         hitZero1 = true;
-    } else if (wasPositive2 && changeQuad2 && +b2coord.value == 0) {
+    }
+    if (changeQuad2 && +b2coord.value != 0 && coords[2] == 0) {
         hitZero2 = true;
-    } else if (changeQuad1 && +b1coord.value != 0) {
+    }
+    if (changeQuad1 && +b1coord.value == 0 && coords[3] != 0) {
         wasPositive1 = true;
-    } else if (changeQuad2 && +b2coord.value != 0) {
+    }
+    if (changeQuad2 && +b2coord.value == 0 && coords[2] != 0) {
         wasPositive2 = true;
     }
-    if (hitZero1 && changeQuad1 && +b1coord.value != 0) {
+    if (wasPositive1 && hitZero1 && changeQuad1) {
         switchQuadrants(true);
-        hitZero1 = false;
-    } else if (hitZero2 && changeQuad2 && +b2coord.value != 0) {
+        wasPositive1 = false;
+    } else if (wasPositive2 && hitZero2 && changeQuad2) {
         switchQuadrants(false);
-        hitZero2 = false;
+        wasPositive2 = false;
     }
 
     coords = [+(x2coord.value), +(x1coord.value), +(b2coord.value), +(b1coord.value)];
@@ -619,4 +622,5 @@ function coordsToMatrices(x1,x2,b1,b2) {
         return [XBtoMatrix([-x1,b1]), flip(XBtoMatrix([-x2,b2]))];
     }
     else return [6, 6, 6, 6];
+
 }
