@@ -9,6 +9,22 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+	<div style="position:absolute; top:10vh; left:85vw">
+		<div style="display:flex;align-items:center">
+			<div style="display:inline-block">M<sub>R</sub> =</div>
+			<table style="border:2px solid;margin:10px;display:inline-block">
+				<tr><td id="a1"></td><td id="b1"></td></tr>
+				<tr><td id="c1"></td><td id="d1"></td></tr>
+			</table>
+		</div>
+		<div style="display:flex;align-items:center">
+			<div style="display:inline-block">M<sub>C</sub> =</div>
+			<table style="border:2px solid;margin:10px;">
+				<tr><td id="a2"></td><td id="b2"></td></tr>
+				<tr><td id="c2"></td><td id="d2"></td></tr>
+			</table>
+		</div>
+	</div>
 	<div style="display: flex;">
 		<svg id="container" width="80vh" height="80vh">
 			<defs>
@@ -68,25 +84,16 @@
 
 		<div style="display:flex;flex-direction:column;position:relative;">
 			<input id="x2coord" type="range" min="0" max="6" step="0.1" value="0" style="writing-mode:vertical-lr;direction:rtl;">
-			<div id="x2-label">x2</div>
+			<div id="x2-label">x<sub>1</sub></div>
 		</div>
 		<div style="display:flex;flex-direction:column;position:relative;">
 			<input id="b2coord" type="range" min="0" max="6" step="0.1" value="0" style="writing-mode:vertical-lr;direction:rtl;">
-			<div id="b2-label">b2</div>
+			<div id="b2-label">b<sub>1</sub></div>
 		</div>
 	</div>
-	<div style="display:flex"><div id="x1-label">x1</div><input id="x1coord" type="range" min="0" max="6" step="0.1" value="0"></div>
-	<div style="display:flex"><div id="b1-label">b1</div><input id="b1coord" type="range" min="0" max="6" step="0.1" value="0"></div>
+	<div style="display:flex"><div id="x1-label">x<sub>2</sub></div><input id="x1coord" type="range" min="0" max="6" step="0.1" value="0"></div>
+	<div style="display:flex"><div id="b1-label">b<sub>2</sub></div><input id="b1coord" type="range" min="0" max="6" step="0.1" value="0"></div>
 
-	<br>
-	<table style="border:2px solid;">
-		<tr><td id="a1"></td><td id="b1"></td></tr>
-		<tr><td id="c1"></td><td id="d1"></td></tr>
-	</table>
-	<table style="border:2px solid;">
-		<tr><td id="a2"></td><td id="b2"></td></tr>
-		<tr><td id="c2"></td><td id="d2"></td></tr>
-	</table>
 	<script src="game-theory.js"></script>
 </body>
 </html>
