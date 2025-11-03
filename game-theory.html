@@ -38,31 +38,75 @@
 					<stop id="stop5" offset="50%" />
 					<stop id="stop6" offset="100%" />
 				</linearGradient>
+				<linearGradient id="gradient3" x1="0" y1="0" spreadMethod="repeat">
+					<stop id="stop7" offset="0%" />
+					<stop id="stop8" offset="50%" />
+					<stop id="stop9" offset="100%" />
+				</linearGradient>
+				<linearGradient id="gradient4" x1="0" y1="0" spreadMethod="repeat">
+					<stop id="stop10" offset="0%" />
+					<stop id="stop11" offset="50%" />
+					<stop id="stop12" offset="100%" />
+				</linearGradient>
+				<marker id="arrow" markerWidth="4" markerHeight="2" refX="1" refY="1" orient="auto-start-reverse">
+					<path d="M 0 0 L 2 1 L 0 2 z" fill="black" />
+				</marker>
 			</defs>
 
-			<rect id="region1" />
-			<rect id="region2" />
-			<rect id="region3" />
-			<rect id="region4" />
+			<svg id="arrows1">
+				<line class="arrow" id="arrow1" />
+				<line class="arrow" id="arrow2" />
+				<line class="arrow" id="arrow3" />
+				<line class="arrow" id="arrow4" />
+				<line class="arrow" id="arrow5" />
+				<line class="arrow" id="arrow6" />
+			</svg>
+			<svg id="arrows2">
+				<line class="arrow" id="arrow7" />
+				<line class="arrow" id="arrow8" />
+				<line class="arrow" id="arrow9" />
+				<line class="arrow" id="arrow10" />
+				<line class="arrow" id="arrow11" />
+				<line class="arrow" id="arrow12" />
+			</svg>
 
-			<line class="green-line" id="green1" />
-			<line class="green-line" id="green2" />
-			<line class="green-line" id="green3" />
-			<line class="green-line" id="green4" />
-			<line class="green-line" id="green5" />
-			<line class="green-line" id="green6" />
-			<line class="red-line" id="red1" />
-			<line class="red-line" id="red2" />
-			<line class="red-line" id="red3" />
-			<line class="red-line" id="red4" />
-			<line class="red-line" id="red5" />
-			<line class="red-line" id="red6" />
-			<line class="red-line" id="red7" />
-			<line class="red-line" id="red8" />
-			<circle id="red-corner1" r="0.5%" fill="red" />
-			<circle id="red-corner2" r="0.5%" fill="red" />
-			<circle id="red-corner3" r="0.5%" fill="red" />
-			<circle id="red-corner4" r="0.5%" fill="red" />
+			<svg id="whole-figure">
+				<rect id="region1" />
+				<rect id="region2" />
+				<rect id="region3" />
+				<rect id="region4" />
+
+				<line class="green-line" id="green1" />
+				<line class="green-line" id="green2" />
+				<line class="green-line" id="green3" />
+				<line class="green-line" id="green4" />
+				<line class="green-line" id="green5" />
+				<line class="green-line" id="green6" />
+				<line class="red-line" id="red1" />
+				<line class="red-line" id="red2" />
+				<line class="red-line" id="red3" />
+				<line class="red-line" id="red4" />
+				<line class="red-line" id="red5" />
+				<line class="red-line" id="red6" />
+				<line class="red-line" id="red7" />
+				<line class="red-line" id="red8" />
+				<circle id="red-corner1" r="0.5%" fill="red" />
+				<circle id="red-corner2" r="0.5%" fill="red" />
+				<circle id="red-corner3" r="0.5%" fill="red" />
+				<circle id="red-corner4" r="0.5%" fill="red" />
+			</svg>
+
+			<svg id="edge-figure">
+				<rect id="bar1" />
+				<rect id="bar2" />
+				<circle id="red-point1" fill="red" r="1%" />
+				<circle id="red-point2" fill="red" r="1%" />
+				<circle id="red-point3" fill="red" r="1%" />
+				<circle id="red-point4" fill="red" r="1%" />
+				<circle id="green-point1" fill="green" r="1%" />
+				<circle id="green-point2" fill="green" r="1%" />
+				<circle id="green-point3" fill="green" r="1%" />
+			</svg>
 
 			<svg id="diagram" width="11.43vh" height="11.43vh" x="0%" y="0%">
 				<rect width="100%" height="100%" fill="gray" opacity="50%"/>
@@ -84,15 +128,17 @@
 
 		<div style="display:flex;flex-direction:column;position:relative;">
 			<input id="x2coord" type="range" min="0" max="6" step="0.1" value="0" style="writing-mode:vertical-lr;direction:rtl;">
-			<div id="x2-label">x<sub>1</sub></div>
+			<div id="x2-label">x<sub>2</sub></div>
 		</div>
 		<div style="display:flex;flex-direction:column;position:relative;">
 			<input id="b2coord" type="range" min="0" max="6" step="0.1" value="0" style="writing-mode:vertical-lr;direction:rtl;">
-			<div id="b2-label">b<sub>1</sub></div>
+			<div id="b2-label">b<sub>2</sub></div>
 		</div>
 	</div>
-	<div style="display:flex"><div id="x1-label">x<sub>2</sub></div><input id="x1coord" type="range" min="0" max="6" step="0.1" value="0"></div>
-	<div style="display:flex"><div id="b1-label">b<sub>2</sub></div><input id="b1coord" type="range" min="0" max="6" step="0.1" value="0"></div>
+	<div style="display:flex"><div id="x1-label">x<sub>1</sub></div>
+	<input id="x1coord" type="range" min="0" max="6" step="0.1" value="0"></div>
+	<div style="display:flex"><div id="b1-label">b<sub>1</sub></div>
+	<input id="b1coord" type="range" min="0" max="6" step="0.1" value="0"></div>
 
 	<script src="game-theory.js"></script>
 </body>
