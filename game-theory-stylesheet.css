@@ -13,6 +13,11 @@ body {
     stroke: green;
 }
 
+.arrow {
+    stroke: black;
+    stroke-width: 0.8%;
+}
+
 #container {
     padding:0;
     margin:0;
@@ -29,7 +34,6 @@ body {
 
 #x1-label, #b1-label {
     flex-shrink: 0;
-    width: 100px;
     margin:0;
     padding:0;
     text-align: center;
