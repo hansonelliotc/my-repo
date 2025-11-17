@@ -38,18 +38,10 @@
 					<stop id="stop5" offset="50%" />
 					<stop id="stop6" offset="100%" />
 				</linearGradient>
-				<linearGradient id="gradient3" x1="0" y1="0" spreadMethod="repeat">
-					<stop id="stop7" offset="0%" />
-					<stop id="stop8" offset="50%" />
-					<stop id="stop9" offset="100%" />
-				</linearGradient>
-				<linearGradient id="gradient4" x1="0" y1="0" spreadMethod="repeat">
-					<stop id="stop10" offset="0%" />
-					<stop id="stop11" offset="50%" />
-					<stop id="stop12" offset="100%" />
-				</linearGradient>
 				<marker id="arrow" markerWidth="4" markerHeight="2" refX="1" refY="1" orient="auto-start-reverse">
 					<path d="M 0 0 L 2 1 L 0 2 z" fill="black" />
+				</marker><marker id="blue-arrow" markerWidth="4" markerHeight="2" refX="1" refY="1" orient="auto-start-reverse">
+					<path d="M 0 0 L 2 1 L 0 2 z" fill="blue" />
 				</marker>
 			</defs>
 
@@ -97,8 +89,11 @@
 			</svg>
 
 			<svg id="edge-figure">
-				<rect id="bar1" />
-				<rect id="bar2" />
+				<line id="bar" class="edge-line" />
+				<line id="bar1" class="edge-line" />
+				<line id="bar2" class="edge-line" />
+				<line id="bar3" class="edge-line" />
+				<line id="bar4" class="edge-line" />
 				<circle id="red-point1" fill="red" r="1%" />
 				<circle id="red-point2" fill="red" r="1%" />
 				<circle id="red-point3" fill="red" r="1%" />
