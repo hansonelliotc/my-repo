@@ -105,7 +105,7 @@ function init() {
 
     document.addEventListener('mousedown', (e) => { isMouseDown = true; changeCoords(e); });
     document.addEventListener('mouseup', () => { isMouseDown = false; });
-    document.addEventListener('mousemove', (e) => {
+    container.addEventListener('mousemove', (e) => {
         if (isMouseDown) {
             changeCoords(e);
         }
@@ -824,7 +824,7 @@ function switchQuadrants(x1) {
     else {
         x = (10 - +document.getElementById("x2coord").value) % 6;
     }
-    if (1 <= x && x <= 3) {
+    if (1 <= x && x < 3) {
         switch (quad) {
             case 1:
                 quad = 3;
@@ -839,7 +839,7 @@ function switchQuadrants(x1) {
                 quad = 2;
                 break;
         }
-    } else if (3 <= x && x <= 5) {
+    } else if (3 <= x && x < 5) {
         switch (quad) {
             case 1:
                 quad = 4;
@@ -1048,5 +1048,6 @@ function changeCoords(e) {
         const x2coord = document.getElementById("x2coord");
         x1coord.value = newX1;
         x2coord.value = newX2;
+        console.log(relativeY);
     }
 }
