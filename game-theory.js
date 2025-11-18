@@ -155,18 +155,18 @@ function update() {
     const b1 = document.getElementById("b1");
     const c1 = document.getElementById("c1");
     const d1 = document.getElementById("d1");
-    a1.innerHTML = Math.round(matrixA[0]*100)/100;
-    b1.innerHTML = Math.round(matrixA[1]*100)/100;
-    c1.innerHTML = Math.round(matrixA[2]*100)/100;
-    d1.innerHTML = Math.round(matrixA[3]*100)/100;
+    a1.innerHTML = (Math.round(matrixA[0]*100)/100).toFixed(2);
+    b1.innerHTML = (Math.round(matrixA[1]*100)/100).toFixed(2);
+    c1.innerHTML = (Math.round(matrixA[2]*100)/100).toFixed(2);
+    d1.innerHTML = (Math.round(matrixA[3]*100)/100).toFixed(2);
     const a2 = document.getElementById("a2");
     const b2 = document.getElementById("b2");
     const c2 = document.getElementById("c2");
     const d2 = document.getElementById("d2");
-    a2.innerHTML = Math.round(matrixB[0]*100)/100;
-    b2.innerHTML = Math.round(matrixB[1]*100)/100;
-    c2.innerHTML = Math.round(matrixB[2]*100)/100;
-    d2.innerHTML = Math.round(matrixB[3]*100)/100;
+    a2.innerHTML = (Math.round(matrixB[0]*100)/100).toFixed(2);
+    b2.innerHTML = (Math.round(matrixB[1]*100)/100).toFixed(2);
+    c2.innerHTML = (Math.round(matrixB[2]*100)/100).toFixed(2);
+    d2.innerHTML = (Math.round(matrixB[3]*100)/100).toFixed(2);
 
     const container = document.getElementById("container");
     const diagram = document.getElementById("diagram");
