@@ -11,6 +11,15 @@ let wasPositive1 = false;
 let wasPositive2 = false;
 let isMouseDown = false;
 
+let x1up = false;
+let x1down = false;
+let x2up = false;
+let x2down = false;
+let b1up = false;
+let b1down = false;
+let b2up = false;
+let b2down = false;
+
 const lineWidth = 0.08;
 const eqRadii = 0.08;
 const cerulean = "#007BA7";
@@ -25,7 +34,6 @@ const ceruleanBackground = "#c4e0eb";
 const goldBackground = "#fff3d0";
 const grayBackground = "#ddd";
 
-normalize(matrixA);
 init();
 setInterval('update()', 50);
 
@@ -111,6 +119,64 @@ function init() {
         }
     });
 
+    document.addEventListener('keydown', (e) => {
+        e.preventDefault();
+        switch (e.key) {
+            case "ArrowRight":
+                x1up = true;
+                break;
+            case "ArrowLeft":
+                x1down = true;
+                break;
+            case "ArrowUp":
+                x2up = true;
+                break;
+            case "ArrowDown":
+                x2down = true;
+                break;
+            case "d":
+                b1up = true;
+                break;
+            case "a":
+                b1down = true;
+                break;
+            case "w":
+                b2up = true;
+                break;
+            case "s":
+                b2down = true;
+                break;
+        }
+    });
+    document.addEventListener('keyup', (e) => {
+        switch (e.key) {
+            case "ArrowRight":
+                x1up = false;
+                break;
+            case "ArrowLeft":
+                x1down = false;
+                break;
+            case "ArrowUp":
+                x2up = false;
+                break;
+            case "ArrowDown":
+                x2down = false;
+                break;
+            case "d":
+                b1up = false;
+                break;
+            case "a":
+                b1down = false;
+                break;
+            case "w":
+                b2up = false;
+                break;
+            case "s":
+                b2down = false;
+                break;
+        }
+    });
+
     update();
 }
 
@@ -119,6 +185,33 @@ function update() {
     const x2coord = document.getElementById("x2coord");
     const b1coord = document.getElementById("b1coord");
     const b2coord = document.getElementById("b2coord");
+
+    if (x1up) {
+        x1coord.value = (+x1coord.value + +x1coord.step) % 6;
+    }
+    if (x1down) {
+        x1coord.value = (+x1coord.value - +x1coord.step + 6) % 6;
+    }
+    if (x2up) {
+        x2coord.value = (+x2coord.value + +x2coord.step) % 6;
+    }
+    if (x2down) {
+        x2coord.value = (+x2coord.value - +x2coord.step + 6) % 6;
+    }
+    if (b1up) {
+        b1coord.value = +b1coord.value + +b1coord.step;
+    }
+    if (b1down) {
+        if (+b1coord.value == +b1coord.step) switchQuadrants(true);
+        b1coord.value = +b1coord.value - +b1coord.step;
+    }
+    if (b2up) {
+        b2coord.value = +b2coord.value + +b2coord.step;
+    }
+    if (b2down) {
+        if (+b2coord.value == +b2coord.step) switchQuadrants(false);
+        b2coord.value = +b2coord.value - +b2coord.step;
+    }
 
     if (changeQuad1 && +b1coord.value != 0 && coords[2] == 0) {
         hitZero1 = true;
@@ -1048,6 +1141,5 @@ function changeCoords(e) {
         const x2coord = document.getElementById("x2coord");
         x1coord.value = newX1;
         x2coord.value = newX2;
-        console.log(relativeY);
     }
 }
