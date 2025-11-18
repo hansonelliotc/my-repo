@@ -9,6 +9,7 @@ let hitZero1 = false;
 let hitZero2 = false;
 let wasPositive1 = false;
 let wasPositive2 = false;
+let isMouseDown = false;
 
 const lineWidth = 0.08;
 const eqRadii = 0.08;
@@ -22,7 +23,7 @@ const red = "#FF0000";
 const greenBackground = "#d9ffd9";
 const ceruleanBackground = "#c4e0eb";
 const goldBackground = "#fff3d0";
-const grayBackground = "#e6e6e6";
+const grayBackground = "#ddd";
 
 normalize(matrixA);
 init();
@@ -101,6 +102,14 @@ function init() {
     region2.style.fill = greenBackground;
     region3.style.fill = "url('#gradient1')";
     region4.style.fill = greenBackground;
+
+    document.addEventListener('mousedown', (e) => { isMouseDown = true; changeCoords(e); });
+    document.addEventListener('mouseup', () => { isMouseDown = false; });
+    document.addEventListener('mousemove', (e) => {
+        if (isMouseDown) {
+            changeCoords(e);
+        }
+    });
 
     update();
 }
@@ -387,60 +396,95 @@ function update() {
     arrow12.y1.baseVal.value = picPadding2 + picHeight*3/12;
     arrow12.y2.baseVal.value = picPadding2 + picHeight*3/12;
 
+    let arrowA = "url(#arrow)";
+    let arrowB = "url(#arrow)";
+
+    if (changeQuad1 && (wasPositive1 || (hitZero1 && b1coord.value != 0))) {
+        arrow1.style.stroke = "blue";
+        arrow2.style.stroke = "blue";
+        arrow3.style.stroke = "blue";
+        arrow4.style.stroke = "blue";
+        arrow5.style.stroke = "blue";
+        arrow6.style.stroke = "blue";
+        arrowA = "url(#blue-arrow)";
+    } else {
+        arrow1.style.stroke = "black";
+        arrow2.style.stroke = "black";
+        arrow3.style.stroke = "black";
+        arrow4.style.stroke = "black";
+        arrow5.style.stroke = "black";
+        arrow6.style.stroke = "black";
+    } if (changeQuad2 && (wasPositive2 || (hitZero2 && b2coord.value != 0))) {
+        arrow7.style.stroke = "blue";
+        arrow8.style.stroke = "blue";
+        arrow9.style.stroke = "blue";
+        arrow10.style.stroke = "blue";
+        arrow11.style.stroke = "blue";
+        arrow12.style.stroke = "blue";
+        arrowB = "url(#blue-arrow)";
+    } else {
+        arrow7.style.stroke = "black";
+        arrow8.style.stroke = "black";
+        arrow9.style.stroke = "black";
+        arrow10.style.stroke = "black";
+        arrow11.style.stroke = "black";
+        arrow12.style.stroke = "black";
+    }
+
     if (quad == 2 || quad == 3) {
-        arrow1.style.markerEnd = "url(#arrow)";
-        arrow6.style.markerEnd = "url(#arrow)";
+        arrow1.style.markerEnd = arrowA;
+        arrow6.style.markerEnd = arrowA;
         arrow1.style.markerStart = "";
         arrow6.style.markerStart = "";
-        arrow7.style.markerEnd = "url(#arrow)";
-        arrow12.style.markerEnd = "url(#arrow)";
+        arrow7.style.markerEnd = arrowB;
+        arrow12.style.markerEnd = arrowB;
         arrow7.style.markerStart = "";
         arrow12.style.markerStart = "";
     } else {
-        arrow1.style.markerStart = "url(#arrow)";
-        arrow6.style.markerStart = "url(#arrow)";
+        arrow1.style.markerStart = arrowA;
+        arrow6.style.markerStart = arrowA;
         arrow1.style.markerEnd = "";
         arrow6.style.markerEnd = "";
-        arrow7.style.markerStart = "url(#arrow)";
-        arrow12.style.markerStart = "url(#arrow)";
+        arrow7.style.markerStart = arrowB;
+        arrow12.style.markerStart = arrowB;
         arrow7.style.markerEnd = "";
         arrow12.style.markerEnd = "";
     }
     if (quad == 1 || quad == 2) {
-        arrow2.style.markerEnd = "url(#arrow)";
-        arrow3.style.markerEnd = "url(#arrow)";
+        arrow2.style.markerEnd = arrowA;
+        arrow3.style.markerEnd = arrowA;
         arrow2.style.markerStart = "";
         arrow3.style.markerStart = "";
-        arrow8.style.markerEnd = "url(#arrow)";
-        arrow9.style.markerEnd = "url(#arrow)";
+        arrow8.style.markerEnd = arrowB;
+        arrow9.style.markerEnd = arrowB;
         arrow8.style.markerStart = "";
         arrow9.style.markerStart = "";
     } else {
-        arrow2.style.markerStart = "url(#arrow)";
-        arrow3.style.markerStart = "url(#arrow)";
+        arrow2.style.markerStart = arrowA;
+        arrow3.style.markerStart = arrowA;
         arrow2.style.markerEnd = "";
         arrow3.style.markerEnd = "";
-        arrow8.style.markerStart = "url(#arrow)";
-        arrow9.style.markerStart = "url(#arrow)";
+        arrow8.style.markerStart = arrowB;
+        arrow9.style.markerStart = arrowB;
         arrow8.style.markerEnd = "";
         arrow9.style.markerEnd = "";
     }
     if (quad == 1 || quad == 2) {
-        arrow4.style.markerEnd = "url(#arrow)";
-        arrow5.style.markerEnd = "url(#arrow)";
+        arrow4.style.markerEnd = arrowA;
+        arrow5.style.markerEnd = arrowA;
         arrow4.style.markerStart = "";
         arrow5.style.markerStart = "";
-        arrow10.style.markerEnd = "url(#arrow)";
-        arrow11.style.markerEnd = "url(#arrow)";
+        arrow10.style.markerEnd = arrowB;
+        arrow11.style.markerEnd = arrowB;
         arrow10.style.markerStart = "";
         arrow11.style.markerStart = "";
     } else {
-        arrow4.style.markerStart = "url(#arrow)";
-        arrow5.style.markerStart = "url(#arrow)";
+        arrow4.style.markerStart = arrowA;
+        arrow5.style.markerStart = arrowA;
         arrow4.style.markerEnd = "";
         arrow5.style.markerEnd = "";
-        arrow10.style.markerStart = "url(#arrow)";
-        arrow11.style.markerStart = "url(#arrow)";
+        arrow10.style.markerStart = arrowB;
+        arrow11.style.markerStart = arrowB;
         arrow10.style.markerEnd = "";
         arrow11.style.markerEnd = "";
     }
@@ -469,8 +513,11 @@ function update() {
         arrows2.style.display = "none";
         edgeFigure.style.display = "";
 
+        const bar = document.getElementById("bar");
         const bar1 = document.getElementById("bar1");
         const bar2 = document.getElementById("bar2");
+        const bar3 = document.getElementById("bar3");
+        const bar4 = document.getElementById("bar4");
         const red1 = document.getElementById("red-point1");
         const red2 = document.getElementById("red-point2");
         const red3 = document.getElementById("red-point3");
@@ -478,68 +525,69 @@ function update() {
         const green1 = document.getElementById("green-point1");
         const green2 = document.getElementById("green-point2");
         const green3 = document.getElementById("green-point3");
-        const stop7 = document.getElementById("stop7");
-        const stop8 = document.getElementById("stop8");
-        const stop9 = document.getElementById("stop9");
-        const stop10 = document.getElementById("stop10");
-        const stop11 = document.getElementById("stop11");
-        const stop12 = document.getElementById("stop12");
-        const gradient3 = document.getElementById("gradient3");
-        const gradient4 = document.getElementById("gradient4");
-
-        const barWidth = picWidth/2;
-        const barHeight = 0.01*container.width.baseVal.value;
-        
-        gradient3.x2.baseVal.value = 0.25*maxPicWidth;
-        gradient3.y2.baseVal.value = 0;
-        gradient4.x2.baseVal.value = 0.25*maxPicWidth;
-        gradient4.y2.baseVal.value = 0;
-
-        bar1.width.baseVal.value = barWidth;
-        bar2.width.baseVal.value = barWidth;
-        bar1.height.baseVal.value = barHeight;
-        bar2.height.baseVal.value = barHeight;
-        bar1.x.baseVal.value = picPadding1;
-        bar2.x.baseVal.value = picPadding1 + picWidth/2;
-        bar1.y.baseVal.value = picPadding2 - barHeight/2;
-        bar2.y.baseVal.value = picPadding2 - barHeight/2;
-        bar1.style.fill = "url(#gradient3)";
-        bar2.style.fill = "url(#gradient4)";
-        
+         
         switch (quad) {
             case 1:
-                stop7.style.stopColor = lightGreen;
-                stop8.style.stopColor = lighterBad;
-                stop9.style.stopColor = lightGreen;
-                stop10.style.stopColor = lightGreen;
-                stop11.style.stopColor = lightGreen;
-                stop12.style.stopColor = lightGreen;
+                bar1.style.display = "";
+                bar2.style.display = "";
+                bar3.style.display = "";
+                bar4.style.display = "none";
+                bar1.style.stroke = lightGreen;
+                bar2.style.stroke = lighterBad;
+                bar3.style.stroke = lightGreen;
                 break;
             case 2:
-                stop7.style.stopColor = gold;
-                stop8.style.stopColor = gold;
-                stop9.style.stopColor = gold;
-                stop10.style.stopColor = gold;
-                stop11.style.stopColor = lighterBad;
-                stop12.style.stopColor = gold;
+                bar1.style.display = "";
+                bar2.style.display = "none";
+                bar3.style.display = "";
+                bar4.style.display = "";
+                bar1.style.stroke = gold;
+                bar3.style.stroke = gold;
+                bar4.style.stroke = lighterBad;
                 break;
             case 3:
-                stop7.style.stopColor = cerulean;
-                stop8.style.stopColor = gold;
-                stop9.style.stopColor = cerulean;
-                stop10.style.stopColor = gold;
-                stop11.style.stopColor = lighterBad;
-                stop12.style.stopColor = gold;
+                bar1.style.display = "";
+                bar2.style.display = "";
+                bar3.style.display = "";
+                bar4.style.display = "";
+                bar1.style.stroke = cerulean;
+                bar2.style.stroke = gold;
+                bar3.style.stroke = lighterBad;
+                bar4.style.stroke = gold;
                 break;
             case 4:
-                stop7.style.stopColor = lighterBad;
-                stop8.style.stopColor = lighterBad;
-                stop9.style.stopColor = lighterBad;
-                stop10.style.stopColor = cerulean;
-                stop11.style.stopColor = cerulean;
-                stop12.style.stopColor = cerulean;
+                bar1.style.display = "";
+                bar2.style.display = "none";
+                bar3.style.display = "";
+                bar4.style.display = "none";
+                bar1.style.stroke = lighterBad;
+                bar3.style.stroke = cerulean;
                 break;
         }
+
+        const barOffset = 0.1*container.width.baseVal.value;
+        const barSeparation = 0.03*container.width.baseVal.value;
+        bar.x1.baseVal.value = picPadding1;
+        bar.x2.baseVal.value = picPadding1 + picWidth;
+        bar.y1.baseVal.value = picPadding2;
+        bar.y2.baseVal.value = picPadding2;
+        bar.style.stroke = "#d3d3d3";
+        bar1.x1.baseVal.value = picPadding1;
+        bar1.x2.baseVal.value = picPadding1 + picWidth/2 + 1;
+        bar1.y1.baseVal.value = picPadding2 + barOffset;
+        bar1.y2.baseVal.value = picPadding2 + barOffset;
+        bar2.x1.baseVal.value = picPadding1;
+        bar2.x2.baseVal.value = picPadding1 + picWidth/2;
+        bar2.y1.baseVal.value = picPadding2 + barOffset + barSeparation;
+        bar2.y2.baseVal.value = picPadding2 + barOffset + barSeparation;
+        bar3.x1.baseVal.value = picPadding1 + picWidth;
+        bar3.x2.baseVal.value = picPadding1 + picWidth/2;
+        bar3.y1.baseVal.value = picPadding2 + barOffset;
+        bar3.y2.baseVal.value = picPadding2 + barOffset;
+        bar4.x1.baseVal.value = picPadding1 + picWidth;
+        bar4.x2.baseVal.value = picPadding1 + picWidth/2;
+        bar4.y1.baseVal.value = picPadding2 + barOffset + barSeparation;
+        bar4.y2.baseVal.value = picPadding2 + barOffset + barSeparation;
 
         red1.cx.baseVal.value = picPadding1;
         green1.cx.baseVal.value = picPadding1 + picWidth/6;
@@ -563,8 +611,11 @@ function update() {
         arrows2.style.display = "";
         edgeFigure.style.display = "";
 
+        const bar = document.getElementById("bar");
         const bar1 = document.getElementById("bar1");
         const bar2 = document.getElementById("bar2");
+        const bar3 = document.getElementById("bar3");
+        const bar4 = document.getElementById("bar4");
         const red1 = document.getElementById("red-point1");
         const red2 = document.getElementById("red-point2");
         const red3 = document.getElementById("red-point3");
@@ -572,76 +623,70 @@ function update() {
         const green1 = document.getElementById("green-point1");
         const green2 = document.getElementById("green-point2");
         const green3 = document.getElementById("green-point3");
-        const stop7 = document.getElementById("stop7");
-        const stop8 = document.getElementById("stop8");
-        const stop9 = document.getElementById("stop9");
-        const stop10 = document.getElementById("stop10");
-        const stop11 = document.getElementById("stop11");
-        const stop12 = document.getElementById("stop12");
-        const gradient3 = document.getElementById("gradient3");
-        const gradient4 = document.getElementById("gradient4");
-
-        const barHeight = picHeight/2;
-        const barWidth = 0.01*container.width.baseVal.value;
-        
-        gradient3.x2.baseVal.value = 0;
-        gradient3.y2.baseVal.value = 0.25*maxPicHeight;
-        gradient4.x2.baseVal.value = 0;
-        gradient4.y2.baseVal.value = 0.25*maxPicHeight;
-
-        bar1.width.baseVal.value = barWidth;
-        bar2.width.baseVal.value = barWidth;
-        bar1.height.baseVal.value = barHeight;
-        bar2.height.baseVal.value = barHeight;
-        bar1.x.baseVal.value = picPadding1 - barWidth/2;
-        bar2.x.baseVal.value = picPadding1 - barWidth/2;
-        bar1.y.baseVal.value = picPadding2;
-        bar2.y.baseVal.value = picPadding2 + picHeight/2;
-        bar1.style.fill = "url(#gradient3)";
-        bar2.style.fill = "url(#gradient4)";
-        
+         
         switch (quad) {
             case 1:
-                stop7.style.stopColor = lightGreen;
-                stop8.style.stopColor = lightGreen;
-                stop9.style.stopColor = lightGreen;
-                stop10.style.stopColor = lightGreen;
-                stop11.style.stopColor = lighterBad;
-                stop12.style.stopColor = lightGreen;
+                bar1.style.display = "none";
+                bar2.style.display = "";
+                bar3.style.display = "";
+                bar4.style.display = "";
+                bar2.style.stroke = lightGreen;
+                bar3.style.stroke = lighterBad;
+                bar4.style.stroke = lightGreen;
                 break;
             case 2:
-                stop7.style.stopColor = gold;
-                stop8.style.stopColor = gold;
-                stop9.style.stopColor = gold;
-                stop10.style.stopColor = lighterBad;
-                stop11.style.stopColor = lighterBad;
-                stop12.style.stopColor = lighterBad;
+                bar1.style.display = "";
+                bar2.style.display = "none";
+                bar3.style.display = "";
+                bar4.style.display = "none";
+                bar1.style.stroke = gold;
+                bar3.style.stroke = lighterBad;
                 break;
             case 3:
-                stop7.style.stopColor = cerulean;
-                stop8.style.stopColor = lighterBad;
-                stop9.style.stopColor = cerulean;
-                stop10.style.stopColor = cerulean;
-                stop11.style.stopColor = gold;
-                stop12.style.stopColor = cerulean;
+                bar1.style.display = "";
+                bar2.style.display = "";
+                bar3.style.display = "";
+                bar4.style.display = "";
+                bar1.style.stroke = cerulean;
+                bar2.style.stroke = lighterBad;
+                bar3.style.stroke = cerulean;
+                bar4.style.stroke = gold;
                 break;
             case 4:
-                stop7.style.stopColor = cerulean;
-                stop8.style.stopColor = lighterBad;
-                stop9.style.stopColor = cerulean;
-                stop10.style.stopColor = cerulean;
-                stop11.style.stopColor = cerulean;
-                stop12.style.stopColor = cerulean;
+                bar1.style.display = "";
+                bar2.style.display = "";
+                bar3.style.display = "none";
+                bar4.style.display = "";
+                bar1.style.stroke = lighterBad;
+                bar2.style.stroke = cerulean;
+                bar4.style.stroke = cerulean;
                 break;
         }
 
-        red1.cx.baseVal.value = picPadding1;
-        green1.cx.baseVal.value = picPadding1;
-        red2.cx.baseVal.value = picPadding1;
-        green2.cx.baseVal.value = picPadding1;
-        red3.cx.baseVal.value = picPadding1;
-        green3.cx.baseVal.value = picPadding1;
-        red4.cx.baseVal.value = picPadding1;
+        const barOffset = 0.1*container.width.baseVal.value;
+        const barSeparation = 0.03*container.width.baseVal.value;
+        bar.y1.baseVal.value = picPadding2;
+        bar.y2.baseVal.value = picPadding2 + picHeight;
+        bar.x1.baseVal.value = picPadding1;
+        bar.x2.baseVal.value = picPadding1;
+        bar.style.stroke = "#d3d3d3";
+        bar1.y1.baseVal.value = picPadding2;
+        bar1.y2.baseVal.value = picPadding2 + picHeight/2 + 1;
+        bar1.x1.baseVal.value = picPadding1 + barOffset;
+        bar1.x2.baseVal.value = picPadding1 + barOffset;
+        bar2.y1.baseVal.value = picPadding2;
+        bar2.y2.baseVal.value = picPadding2 + picHeight/2;
+        bar2.x1.baseVal.value = picPadding1 + barOffset + barSeparation;
+        bar2.x2.baseVal.value = picPadding1 + barOffset + barSeparation;
+        bar3.y1.baseVal.value = picPadding2 + picHeight;
+        bar3.y2.baseVal.value = picPadding2 + picHeight/2;
+        bar3.x1.baseVal.value = picPadding1 + barOffset;
+        bar3.x2.baseVal.value = picPadding1 + barOffset;
+        bar4.y1.baseVal.value = picPadding2 + picHeight;
+        bar4.y2.baseVal.value = picPadding2 + picHeight/2;
+        bar4.x1.baseVal.value = picPadding1 + barOffset + barSeparation;
+        bar4.x2.baseVal.value = picPadding1 + barOffset + barSeparation;
+
         red1.cy.baseVal.value = picPadding2;
         green1.cy.baseVal.value = picPadding2 + picHeight/6;
         red2.cy.baseVal.value = picPadding2 + picHeight/3;
@@ -649,6 +694,13 @@ function update() {
         red3.cy.baseVal.value = picPadding2 + picHeight*2/3;
         green3.cy.baseVal.value = picPadding2 + picHeight*5/6;
         red4.cy.baseVal.value = picPadding2 + picHeight;
+        red1.cx.baseVal.value = picPadding1;
+        green1.cx.baseVal.value = picPadding1;
+        red2.cx.baseVal.value = picPadding1;
+        green2.cx.baseVal.value = picPadding1;
+        red3.cx.baseVal.value = picPadding1;
+        green3.cx.baseVal.value = picPadding1;
+        red4.cx.baseVal.value = picPadding1;
 
         return;
     } else {
@@ -979,4 +1031,22 @@ function coordsToMatrices(x1,x2,b1,b2) {
         return [XBtoMatrix([-x1,b1]), flip(XBtoMatrix([-x2,b2]))];
     }
     else return [6, 6, 6, 6];
+}
+
+function changeCoords(e) {
+    const wholeFigure = document.getElementById("whole-figure");
+    const rect = wholeFigure.getBoundingClientRect();
+    if (rect.width == 0) {
+        return;
+    }
+    const relativeX = e.offsetX - rect.left;
+    const relativeY = e.offsetY - rect.top;
+    const newX1 = relativeX / rect.width * 6;
+    const newX2 = (1 - relativeY / rect.height) * 6;
+    if (0 <= newX1 && newX1 <=6 && 0 <= newX2 && newX2 <=6) {
+        const x1coord = document.getElementById("x1coord");
+        const x2coord = document.getElementById("x2coord");
+        x1coord.value = newX1;
+        x2coord.value = newX2;
+    }
 }
