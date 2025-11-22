@@ -1,7 +1,7 @@
 let matrixA = [1,2,3,4];
 let matrixB = [1,2,3,4];
 let coords = [1.5,1.5,1.1,1.1];
-let quad = 1;
+let quad = 3;
 
 let changeQuad1 = false;
 let changeQuad2 = false;
@@ -106,11 +106,11 @@ function init() {
     const region2 = document.getElementById("region2");
     const region3 = document.getElementById("region3");
     const region4 = document.getElementById("region4");
-    region1.style.fill = greenBackground;
-    region2.style.fill = greenBackground;
-    region3.style.fill = "url('#gradient1')";
-    region4.style.fill = greenBackground;
-
+    region1.style.fill = ceruleanBackground;
+    region2.style.fill = grayBackground;
+    region3.style.fill = "url('#gradient2')";
+    region4.style.fill = goldBackground;
+            
     document.addEventListener('mousedown', (e) => { isMouseDown = true; changeCoords(e); });
     document.addEventListener('mouseup', () => { isMouseDown = false; });
     container.addEventListener('mousemove', (e) => {
@@ -626,7 +626,7 @@ function update() {
                 bar3.style.display = "";
                 bar4.style.display = "none";
                 bar1.style.stroke = lightGreen;
-                bar2.style.stroke = lighterBad;
+                bar2.style.stroke = bad;
                 bar3.style.stroke = lightGreen;
                 break;
             case 2:
@@ -636,7 +636,7 @@ function update() {
                 bar4.style.display = "";
                 bar1.style.stroke = gold;
                 bar3.style.stroke = gold;
-                bar4.style.stroke = lighterBad;
+                bar4.style.stroke = bad;
                 break;
             case 3:
                 bar1.style.display = "";
@@ -645,7 +645,7 @@ function update() {
                 bar4.style.display = "";
                 bar1.style.stroke = cerulean;
                 bar2.style.stroke = gold;
-                bar3.style.stroke = lighterBad;
+                bar3.style.stroke = bad;
                 bar4.style.stroke = gold;
                 break;
             case 4:
@@ -653,7 +653,7 @@ function update() {
                 bar2.style.display = "none";
                 bar3.style.display = "";
                 bar4.style.display = "none";
-                bar1.style.stroke = lighterBad;
+                bar1.style.stroke = bad;
                 bar3.style.stroke = cerulean;
                 break;
         }
@@ -724,7 +724,7 @@ function update() {
                 bar3.style.display = "";
                 bar4.style.display = "";
                 bar2.style.stroke = lightGreen;
-                bar3.style.stroke = lighterBad;
+                bar3.style.stroke = bad;
                 bar4.style.stroke = lightGreen;
                 break;
             case 2:
@@ -733,7 +733,7 @@ function update() {
                 bar3.style.display = "";
                 bar4.style.display = "none";
                 bar1.style.stroke = gold;
-                bar3.style.stroke = lighterBad;
+                bar3.style.stroke = bad;
                 break;
             case 3:
                 bar1.style.display = "";
@@ -741,7 +741,7 @@ function update() {
                 bar3.style.display = "";
                 bar4.style.display = "";
                 bar1.style.stroke = cerulean;
-                bar2.style.stroke = lighterBad;
+                bar2.style.stroke = bad;
                 bar3.style.stroke = cerulean;
                 bar4.style.stroke = gold;
                 break;
@@ -750,7 +750,7 @@ function update() {
                 bar2.style.display = "";
                 bar3.style.display = "none";
                 bar4.style.display = "";
-                bar1.style.stroke = lighterBad;
+                bar1.style.stroke = bad;
                 bar2.style.stroke = cerulean;
                 bar4.style.stroke = cerulean;
                 break;
