@@ -11,14 +11,18 @@ let wasPositive1 = false;
 let wasPositive2 = false;
 let isMouseDown = false;
 
-let x1up = false;
-let x1down = false;
-let x2up = false;
-let x2down = false;
-let b1up = false;
-let b1down = false;
-let b2up = false;
-let b2down = false;
+let x1up    = false;
+let x1down  = false;
+let x2up    = false;
+let x2down  = false;
+let b1up    = false;
+let b1down  = false;
+let b2up    = false;
+let b2down  = false;
+let x1V   = 0;
+let x2V   = 0;
+let b1V   = 0;
+let b2V   = 0;
 
 const lineWidth = 0.08;
 const eqRadii = 0.08;
@@ -119,33 +123,69 @@ function init() {
         }
     });
 
+    const acc = 0.005;
     document.addEventListener('keydown', (e) => {
         e.preventDefault();
-        switch (e.key) {
-            case "ArrowRight":
-                x1up = true;
-                break;
-            case "ArrowLeft":
-                x1down = true;
-                break;
-            case "ArrowUp":
-                x2up = true;
-                break;
-            case "ArrowDown":
-                x2down = true;
-                break;
-            case "d":
-                b1up = true;
-                break;
-            case "a":
-                b1down = true;
-                break;
-            case "w":
-                b2up = true;
-                break;
-            case "s":
-                b2down = true;
-                break;
+        if (!e.shiftKey) {
+            switch (e.key) {
+                case "ArrowRight":
+                    x1up = true;
+                    break;
+                case "ArrowLeft":
+                    x1down = true;
+                    break;
+                case "ArrowUp":
+                    x2up = true;
+                    break;
+                case "ArrowDown":
+                    x2down = true;
+                    break;
+                case "d":
+                    b1up = true;
+                    break;
+                case "a":
+                    b1down = true;
+                    break;
+                case "w":
+                    b2up = true;
+                    break;
+                case "s":
+                    b2down = true;
+                    break;
+                case " ":
+                    x1V = 0;
+                    x2V = 0;
+                    b1V = 0;
+                    b2V = 0;
+                    break;
+            }
+        } else {
+            switch (e.key) {
+                case "ArrowRight":
+                    if (x1V < 0.3) x1V += acc;
+                    break;
+                case "ArrowLeft":
+                    if (-x1V < 0.3) x1V -= acc;
+                    break;
+                case "ArrowUp":
+                    if (x2V < 0.3) x2V += acc;
+                    break;
+                case "ArrowDown":
+                    if (-x2V < 0.3) x2V -= acc;
+                    break;
+                case "D":
+                    if (b1V < 0.3) b1V += acc;
+                    break;
+                case "A":
+                    if (-b1V < 0.3) b1V -= acc;
+                    break;
+                case "W":
+                    if (b2V < 0.3) b2V += acc;
+                    break;
+                case "S":
+                    if (-b2V < 0.3) b2V -= acc;
+                    break;
+            }
         }
     });
     document.addEventListener('keyup', (e) => {
@@ -187,30 +227,49 @@ function update() {
     const b2coord = document.getElementById("b2coord");
 
     if (x1up) {
-        x1coord.value = (+x1coord.value + +x1coord.step) % 6;
+        x1coord.value = (+x1coord.value + 5*+x1coord.step) % 6;
     }
     if (x1down) {
-        x1coord.value = (+x1coord.value - +x1coord.step + 6) % 6;
+        x1coord.value = (+x1coord.value - 5*+x1coord.step + 6) % 6;
     }
     if (x2up) {
-        x2coord.value = (+x2coord.value + +x2coord.step) % 6;
+        x2coord.value = (+x2coord.value + 5*+x2coord.step) % 6;
     }
     if (x2down) {
-        x2coord.value = (+x2coord.value - +x2coord.step + 6) % 6;
+        x2coord.value = (+x2coord.value - 5*+x2coord.step + 6) % 6;
     }
     if (b1up) {
-        b1coord.value = +b1coord.value + +b1coord.step;
+        b1coord.value = +b1coord.value + 10*+b1coord.step;
     }
     if (b1down) {
-        if (+b1coord.value == +b1coord.step) switchQuadrants(true);
-        b1coord.value = +b1coord.value - +b1coord.step;
+        if (+b1coord.value == 10*+b1coord.step) switchQuadrants(true);
+        b1coord.value = +b1coord.value - 10*+b1coord.step;
     }
     if (b2up) {
-        b2coord.value = +b2coord.value + +b2coord.step;
+        b2coord.value = +b2coord.value + 10*+b2coord.step;
     }
     if (b2down) {
-        if (+b2coord.value == +b2coord.step) switchQuadrants(false);
-        b2coord.value = +b2coord.value - +b2coord.step;
+        if (+b2coord.value == 10*+b2coord.step) switchQuadrants(false);
+        b2coord.value = +b2coord.value - 10*+b2coord.step;
+    }
+
+    if (x1V != 0) x1coord.value = (+x1coord.value + x1V + 6) % 6;
+    if (x2V != 0) x2coord.value = (+x2coord.value + x2V + 6) % 6;
+    b1coord.value = +b1coord.value + b1V;
+    if (+b1coord.value == 0 && b1V != 0) {
+        switchQuadrants(true);
+        b1V = -b1V;
+    } else if (+b1coord.value == 6 && b1V != 0) {
+        b1V = -b1V;
+        b1coord.value = +b1coord.value + b1V;
+    }
+    b2coord.value = +b2coord.value + b2V;
+    if (+b2coord.value == 0 && b2V != 0) {
+        switchQuadrants(false);
+        b2V = -b2V;
+    } else if (+b2coord.value == 6 && b2V != 0) {
+        b2V = -b2V;
+        b2coord.value = +b2coord.value + b2V;
     }
 
     if (changeQuad1 && +b1coord.value != 0 && coords[2] == 0) {
@@ -260,6 +319,19 @@ function update() {
     b2.innerHTML = matrixB[1].toFixed(2);
     c2.innerHTML = matrixB[2].toFixed(2);
     d2.innerHTML = matrixB[3].toFixed(2);
+
+    const crossButton1 = document.getElementById("cross-button-1");
+    const crossButton2 = document.getElementById("cross-button-2");
+    if (+b1coord.value == 0 && b1V == 0) {
+        crossButton1.style.display = "";
+    } else {
+        crossButton1.style.display = "none";
+    }
+    if (+b2coord.value == 0 && b2V == 0) {
+        crossButton2.style.display = "";
+    } else {
+        crossButton2.style.display = "none";
+    }
 
     const container = document.getElementById("container");
     const diagram = document.getElementById("diagram");
@@ -1139,7 +1211,7 @@ function changeCoords(e) {
     if (0 <= newX1 && newX1 <=6 && 0 <= newX2 && newX2 <=6) {
         const x1coord = document.getElementById("x1coord");
         const x2coord = document.getElementById("x2coord");
-        x1coord.value = newX1;
-        x2coord.value = newX2;
+        x1coord.value = newX1.toFixed(1);
+        x2coord.value = newX2.toFixed(1);
     }
 }
