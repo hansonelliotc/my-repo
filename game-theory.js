@@ -33,10 +33,10 @@ const bad = "#000000";
 const lighterBad = "#a0a0a0";
 const mixedColor = "#898989";
 const red = "#FF0000";
-const greenBackground = "#d9ffd9";
+const greenBackground = "#d9efb9"; //"#d9ffd9";
 const ceruleanBackground = "#c4e0eb";
-const goldBackground = "#fff3d0";
-const grayBackground = "#ddd";
+const goldBackground = "#e6d3b0"; //"#fff3d0";
+const grayBackground = "#bbb"; //"#ddd";
 
 init();
 setInterval('update()', 50);
@@ -115,7 +115,7 @@ function init() {
     region3.style.fill = "url('#gradient2')";
     region4.style.fill = goldBackground;
             
-    document.addEventListener('mousedown', (e) => { isMouseDown = true; changeCoords(e); });
+    document.addEventListener('mousedown', (e) => { changeCoords(e); isMouseDown = true; });
     document.addEventListener('mouseup', () => { isMouseDown = false; });
     container.addEventListener('mousemove', (e) => {
         if (isMouseDown) {
@@ -356,12 +356,17 @@ function update() {
     const corner2 = document.getElementById("corner2");
     const corner3 = document.getElementById("corner3");
     const corner4 = document.getElementById("corner4");
+    const diagramBox = document.getElementById("diagram-box");
 
     diagram.x.baseVal.value = (+(x1coord.value))/6*picWidth+picPadding1-diagramWidth/2;
     diagram.y.baseVal.value = (6 - +(x2coord.value))/6*picHeight+picPadding2-diagramWidth/2;
 
     const padding = 0.1*diagramWidth;
     const width = diagramWidth - 2*padding;
+    diagramBox.width.baseVal.value = width;
+    diagramBox.height.baseVal.value = width;
+    diagramBox.x.baseVal.value = padding;
+    diagramBox.y.baseVal.value = padding;
     line1.x1.baseVal.value = matrixA[0]*width/6+padding;
     line1.x2.baseVal.value = matrixA[1]*width/6+padding;
     line2.x1.baseVal.value = matrixA[1]*width/6+padding;
@@ -1211,7 +1216,12 @@ function changeCoords(e) {
     if (0 <= newX1 && newX1 <=6 && 0 <= newX2 && newX2 <=6) {
         const x1coord = document.getElementById("x1coord");
         const x2coord = document.getElementById("x2coord");
-        x1coord.value = newX1.toFixed(1);
-        x2coord.value = newX2.toFixed(1);
+        if (isMouseDown) {
+            x1coord.value = newX1;
+            x2coord.value = newX2;
+        } else {
+            x1coord.value = newX1.toFixed(1);
+            x2coord.value = newX2.toFixed(1);
+        }
     }
 }
