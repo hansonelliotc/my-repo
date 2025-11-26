@@ -1220,8 +1220,8 @@ function changeCoords(e) {
             x1coord.value = newX1;
             x2coord.value = newX2;
         } else {
-            x1coord.value = newX1.toFixed(1);
-            x2coord.value = newX2.toFixed(1);
+            x1coord.value = Math.round(newX1*6)/6;
+            x2coord.value = Math.round(newX2*6)/6;
         }
     }
 }
