@@ -33,10 +33,10 @@ const bad = "#000000";
 const lighterBad = "#a0a0a0";
 const mixedColor = "#898989";
 const red = "#FF0000";
-const greenBackground = "#d9efb9"; //"#d9ffd9";
+const greenBackground = "#d9ffd9"; // "#d9efb9"
 const ceruleanBackground = "#c4e0eb";
-const goldBackground = "#e6d3b0"; //"#fff3d0";
-const grayBackground = "#bbb"; //"#ddd";
+const goldBackground = "#fff3d0"; // "#e6d3b0"
+const grayBackground = "#ddd" // "#bbb"
 
 init();
 setInterval('update()', 50);
@@ -84,9 +84,9 @@ function init() {
     const b2coord = document.getElementById("b2coord");
     x1label.style.width = (minPicPadding1-12.5).toString()+"px";
     b1label.style.width = (minPicPadding1-12.5).toString()+"px";
-    b1coord.style.width = (maxPicWidth/2+25).toString() + "px";
+    b1coord.style.width = (maxPicWidth/2+26).toString() + "px";
     b2coord.parentElement.style.top = (container.height.baseVal.value/2-12.5).toString()+"px";
-    b2coord.style.height = (maxPicHeight/2+25).toString() + "px";
+    b2coord.style.height = (maxPicHeight/2+26).toString() + "px";
 
     b1coord.addEventListener("mousedown", ()=>{changeQuad1 = true;});
     b1coord.addEventListener("mouseup", ()=>{changeQuad1 = false; hitZero1 = false; wasPositive1=false;});
@@ -659,9 +659,9 @@ function update() {
         arrow11.style.markerEnd = "";
     }
 
-    x1coord.style.width = (picWidth+25).toString()+"px";
+    x1coord.style.width = (picWidth+26).toString()+"px";
     x1coord.style.left = (picPadding1-diagram.width.baseVal.value/2).toString()+"px";
-    x2coord.style.height = (picHeight+25).toString()+"px";
+    x2coord.style.height = (picHeight+26).toString()+"px";
     x2coord.parentElement.style.top = (picPadding2-12.5).toString()+"px";
     const x2label = document.getElementById("x2-label");
     x2label.style.top = (picPadding2 - diagramWidth/2).toString() + "px";
