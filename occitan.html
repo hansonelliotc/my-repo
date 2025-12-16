@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Old Occitan Poetry</title>
+	<link rel="icon" type="image/x-icon" href="files/favicon.png">
+	<link rel="stylesheet" href="stylesheet.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre Baskerville">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<div id="header">
+		<h1>Analyses of Old Occitan Poetry</h1>
+		<ul id="nav">
+			<li><a href="https://www.elliothanson.com">Home</a></li>
+			<li><a href="https://www.elliothanson.com/projects">Projects</a></li>
+			<li><a href="https://www.elliothanson.com/games">Games</a></li>
+			<li><a href="https://www.elliothanson.com/curriculum-vitae.pdf">My CV</a></li>
+			<li></li>
+		</ul>
+	</div>
+	<p id="img-src">Image Source: NASA</p>
+	<div class="text">
+		<h2>What I Did</h2>
+        <p>
+            I scraped all the poems available at <a href="https://trobadors.iec.cat/">https://trobadors.iec.cat/</a> and compiled them into a <a href="combined-poems.txt">single document</a>.
+            This document would later be built upon by comparing it with document Ultroub, which proved to be much more complete.
+            The only a few poems were in the original file and were not in Ultroub. Their codes are listed below.
+        </p>
+
+        <p>
+            I wrote code that tokenizes the file of poems. Each "token" is a symbol which represents a particular sound.
+            When the file is tokenized, each word is decomposed into a sequence of symbols, essentially sounding out the word one consonant/vowel at a time.
+            Spaces are also given a token, and new line characters are treated like two spaces.
+            There is also a '&' token, which indicates that a section of the poem is missing.
+            The list of tokens is given below. Each token is represented with a number.
+            The list of tokens has undergone a number of changes; on multiple occasions two tokens were combined.
+            Thus, certain tokens in the list below embrace the ambiguity which stems from our poor understanding of how words were really pronounced,
+            such as the token for 'e', which does not always correspond to the same pronunciation of the letter 'e'.
+        </p>
+        <table>
+            <tr>
+                <th>Token</th>
+                <td>0</td>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td>4</td>
+                <td>5</td>
+                <td>6</td>
+                <td>7</td>
+                <td>8</td>
+                <td>9</td>
+                <td>10</td>
+                <td>11</td>
+                <td>12</td>
+                <td>13</td>
+                <td>14</td>
+                <td>15</td>
+                <td>16</td>
+                <td>17</td>
+                <td>18</td>
+                <td>19</td>
+                <td>20</td>
+                <td>21</td>
+                <td>22</td>
+                <td>23</td>
+                <td>24</td>
+                <td>25</td>
+                <td>26</td>
+                <td>27</td>
+                <td>28</td>
+            </tr>
+            <tr>
+                <th>Sound</th>
+                <td>space</td>
+                <td>ah</td>
+                <td>e</td>
+                <td>au</td>
+                <td>ee</td>
+                <td>oh</td>
+                <td>oo</td>
+                <td>ai</td>
+                <td>y</td>
+                <td>w</td>
+                <td>b</td>
+                <td>k</td>
+                <td>s</td>
+                <td>ch</td>
+                <td>d</td>
+                <td>f</td>
+                <td>g</td>
+                <td>j</td>
+                <td>l</td>
+                <td>m</td>
+                <td>n</td>
+                <td>p</td>
+                <td>r</td>
+                <td>trill</td>
+                <td>t</td>
+                <td>v</td>
+                <td>z</td>
+                <td>x</td>
+                <td>&</td>
+            </tr>
+        </table>
+        <p>
+            We can use this tokenized file to learn about how the troubadours used sound.
+            To do this, we will do what is called n-gram analysis.
+            An n-gram is a sequence of n characters, and n-gram analysis involves counting the number of times a particular n-gram occurs.
+            We can do these analyses on the set of all poems, poems by a specific author or a group of authors, or on a particular poem.
+        </p>
+		<h2>What This App Does and What I Have Yet To Do</h2>
+        <p>
+            Due to technical issues, this webpage does not directly interface with the tokenized file.
+            When it is complete, users will be able to input an n-gram, and learn how often it is used, or how often it is used by specified poets.
+            Additionally, users will be able to produce table such as the one below.
+            This table describes how often different types of sounds are used in combination. (These are 2-grams.)
+            For example, by consulting the table, we learn that a vowel follows a nasal sounds 794,515 times throughout in all of the poems in our document.
+            (Note: The accuracy of the numbers in the table bellow has recently been called into question.)
+            This table is derived from the entire file, but use will be able to create a table built from the works of a specific poet, a selection of poets, or a single poem.
+            User will also be able to create tables which provide prerequisites.
+            For example, if someone want to know about the starts of lines,
+            they could create at a similar table with the prerequisite that the sounds described follow two consecutive spaces.
+            Nearly all of this functionality has been implemented in C++. The next step is to integrate that code with this webpage.
+        </p>
+        <table>
+            <tr>
+                <th>2nd \ 1st</th>
+                <th>vowel</th>
+                <th>voiced plosive</th>
+                <th>voiceless plosive</th>
+                <th>voiced fricative</th>
+                <th>voiceless fricative</th>
+                <th>voiced affricate</th>
+                <th>voiceless affricate</th>
+                <th>nasal</th>
+                <th>liquids</th>
+                <th>bilabial</th>
+                <th>labio-dental</th>
+                <th>alveolar</th>
+                <th>palato-alveolar</th>
+                <th>palatal</th>
+                <th>velar</th>
+                <th>labio-velar</th>
+                <th>space</th>
+            </tr>
+            <tr>
+                <th>vowel</th>
+                <td>54154</td><td>37351</td><td>221722</td><td>95082</td><td>1293394</td><td>82029</td><td>12558</td><td>794515</td><td>797049</td><td>794444</td><td>124220</td><td>1145410</td><td>82029</td><td>396</td><td>46114</td><td>30692</td><td>125828</td>
+            </tr>
+            <tr>
+                <th>voiced plosive</th>
+                <td>221520</td><td>314</td><td>2316</td><td>565</td><td>2118</td><td>2556</td><td>10</td><td>3386</td><td>1839</td><td>3381</td><td>595</td><td>6242</td><td>2556</td><td>418</td><td>315</td><td>19</td><td>51324</td>
+            </tr>
+            <tr>
+                <th>voiceless plosive</th>
+                <td>162463</td><td>35695</td><td>12</td><td>14</td><td>30</td><td>100</td><td>658709</td><td>1535</td><td>4339</td><td>26</td><td>14</td><td>41572</td><td>100</td><td>1185</td><td>8</td><td>2</td><td>40782</td>
+            </tr>
+            <tr>
+                <th>voiced fricative</th>
+                <td>51532</td><td>12</td><td>17285</td><td>25</td><td>286</td><td>12433</td><td>1066</td><td>2721</td><td>11155</td><td>19541</td><td>10</td><td>11838</td><td>12433</td><td>1943</td><td>45</td><td>78</td><td>64532</td>
+            </tr>
+            <tr>
+                <th>voiceless fricative</th>
+                <td>696044</td><td>2</td><td>14763</td><td>7195</td><td>2947</td><td>5554</td><td>239</td><td>1111</td><td>5233</td><td>15630</td><td>7205</td><td>5733</td><td>5554</td><td>872</td><td>79</td><td>48</td><td>148932</td>
+            </tr>
+            <tr>
+                <th>voiced affricate</th>
+                <td>795646</td><td>177</td><td>18188</td><td>6439</td><td>658885</td><td>446</td><td>476</td><td>12315</td><td>17438</td><td>28977</td><td>6435</td><td>677787</td><td>446</td><td>8780</td><td>229</td><td>1453</td><td>60312</td>
+            </tr>
+            <tr>
+                <th>voiceless affricate</th>
+                <td>9717</td><td>0</td><td>2954</td><td>123</td><td>11</td><td>458</td><td>6</td><td>864</td><td>1101</td><td>3810</td><td>123</td><td>1119</td><td>458</td><td>478</td><td>1</td><td>0</td><td>11150</td>
+            </tr>
+            <tr>
+                <th>nasal</th>
+                <td>125360</td><td>1035</td><td>3327</td><td>97</td><td>1899</td><td>1507</td><td>1126</td><td>650</td><td>11090</td><td>724</td><td>94</td><td>12974</td><td>1507</td><td>1576</td><td>4275</td><td>4</td><td>88431</td>
+            </tr>
+            <tr>
+                <th>liquids</th>
+                <td>142855</td><td>3577</td><td>7650</td><td>18760</td><td>6590</td><td>3041</td><td>7492</td><td>4968</td><td>11880</td><td>4424</td><td>22212</td><td>18968</td><td>3041</td><td>3050</td><td>7813</td><td>8</td><td>71804</td>
+            </tr>
+            <tr>
+                <th>bilabial</th>
+                <td>236151</td><td>1347</td><td>3781</td><td>598</td><td>3960</td><td>1877</td><td>659836</td><td>2031</td><td>14522</td><td>1019</td><td>625</td><td>19990</td><td>1877</td><td>2552</td><td>4592</td><td>19</td><td>77683</td>
+            </tr>
+            <tr>
+                <th>labio-dental</th>
+                <td>707941</td><td>12</td><td>22214</td><td>5</td><td>2868</td><td>12552</td><td>1228</td><td>2062</td><td>13355</td><td>23600</td><td>7</td><td>14167</td><td>12552</td><td>2113</td><td>120</td><td>118</td><td>91368</td>
+            </tr>
+            <tr>
+                <th>alveolar</th>
+                <td>238187</td><td>3581</td><td>16948</td><td>19054</td><td>7015</td><td>10196</td><td>7506</td><td>10086</td><td>17222</td><td>16537</td><td>22488</td><td>26994</td><td>10196</td><td>3879</td><td>7822</td><td>16</td><td>267221</td>
+            </tr>
+            <tr>
+                <th>palato-alveolar</th>
+                <td>795646</td><td>177</td><td>18188</td><td>6439</td><td>658885</td><td>446</td><td>476</td><td>12315</td><td>17438</td><td>28977</td><td>6435</td><td>677787</td><td>446</td><td>8780</td><td>229</td><td>1453</td><td>60312</td>
+            </tr>
+            <tr>
+                <th>palatal</th>
+                <td>182</td><td>5341</td><td>1847</td><td>1628</td><td>1920</td><td>2251</td><td>722</td><td>7488</td><td>4906</td><td>4407</td><td>1295</td><td>11751</td><td>2251</td><td>0</td><td>5542</td><td>175</td><td>4842</td>
+            </tr>
+            <tr>
+                <th>velar</th>
+                <td>202369</td><td>35694</td><td>599</td><td>23</td><td>3</td><td>439</td><td>0</td><td>106</td><td>176</td><td>679</td><td>23</td><td>35897</td><td>439</td><td>5</td><td>1</td><td>3</td><td>29218</td>
+            </tr>
+            <tr>
+                <th>labio-velar</th>
+                <td>2013</td><td>204</td><td>7827</td><td>1020</td><td>4827</td><td>1611</td><td>2</td><td>9642</td><td>4720</td><td>14316</td><td>2090</td><td>11590</td><td>1611</td><td>0</td><td>222</td><td>19</td><td>11406</td>
+            </tr>
+            <tr>
+                <th>space</th>
+                <td>236151</td><td>4506</td><td>86573</td><td>32288</td><td>21564</td><td>156595</td><td>645</td><td>53311</td><td>726001</td><td>114866</td><td>33159</td><td>762216</td><td>156595</td><td>12594</td><td>5630</td><td>5735</td><td>128124</td>
+            </tr>
+        </table>
+        <p>
+            There is one final thing that I would like to do but have not yet done, and more such things will likely come about before the project is complete.
+            I would like to establish a metric which gives a numeric value to the proximity between two sounds, words, or lines,
+            and I would like to use this metric to describe "paths" a poet takes while writing.
+            The hope is that this sort of analysis will provide quantitative descriptions of different poets' writing styles.
+        </p>
+	</div>
+	
+</body>
+</html>
