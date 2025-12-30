@@ -415,6 +415,7 @@ function createFile() {
     URL.revokeObjectURL(url);
     blob = new Blob([buffer], { type: 'audio/wav' });
     url = URL.createObjectURL(blob);
+    document.getElementById("download").innerHTML = "Download this audio";
     document.getElementById("download").href = url;
     document.getElementById("download").download = path;
     document.getElementById("audio").src = url;
