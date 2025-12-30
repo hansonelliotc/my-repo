@@ -43,7 +43,6 @@ body, div {
 	margin: 0;
 }
 
-
 #nav li a {
 	padding: 3vh 3vw;
 	margin: 0;
@@ -81,11 +80,11 @@ body, div {
 }
 
 .text, .project {
-	padding: 1vh 3vw;
+	margin: 2vh 3vw;
 	height: auto;
 }
 
-.text ul, .project ul { 
+.text ul, .project ul {
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
@@ -133,6 +132,6 @@ td {
 }
 
 table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
+	border: 1px solid black;
+	border-collapse: collapse;
 }

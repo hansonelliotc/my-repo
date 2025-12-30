@@ -9,43 +9,47 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-	<h1 id="header">Musical Fractals</h1>
-	<input type="button" value="Render" onclick="createFile()"><br>
+	<h1 id="header">Musical Fractals (<a href="https://www.elliothanson.com/fractal-music-documentation">documentation</a>)</h1>
+	<input type="button" value="Render" onclick="createFile()">
+	<span style="margin-left: 20px;">Round Notes: <input type="checkbox" id="round-notes"></span>
+	<span style="margin-left: 20px;">Iteration Depth: <input type="text" id="iter-depth" value="20" style="width:25px"></span><br><br>
 	<audio id="audio" controls></audio><br>
-	<a id="download">Download this audio</a><br>
+	<a id="download">Download this audio</a><br><br>
+	<div style="display:flex;">
+		<div id="fields">
+			<div id="note-button" class="entry-type" onclick="noteField()">Note</div>
+			<div id="fractal-button" class="entry-type unselected" onclick="fractalField()">Fractal</div>
 
-	<div id="fields">
-		<div id="note-button" class="entry-type" onclick="noteField()">Note</div>
-		<div id="fractal-button" class="entry-type unselected" onclick="fractalField()">Fractal</div>
+			<div id="note-field">
+				<p class="parameter"><span>Layer: </span><input class="field" type="text" id="layer" value="1"></p>
+				<p class="parameter"><span>Start: </span><input class="field" type="text" id="start"></p>
+				<p class="parameter"><span>Duration: </span><input class="field" type="text" id="duration"></p>
+				<p class="parameter"><span>Frequency: </span><input class="field" type="text" id="frequency"></p>
+				<p class="parameter"><span>Volume: </span><input class="field" type="text" id="volume" value="100"></p>
+				<!-- <p class="parameter"><span>Options: </span><input class="field" type="text" id="options"></p> -->
+				<input type="button" value="Add Note" onclick="addNote()">
+			</div>
 
-		<div id="note-field">
-			<p class="parameter"><span>Layer: </span><input class="field" type="text" id="layer" value="1"></p>
-			<p class="parameter"><span>Start: </span><input class="field" type="text" id="start"></p>
-			<p class="parameter"><span>Duration: </span><input class="field" type="text" id="duration"></p>
-			<p class="parameter"><span>Frequency: </span><input class="field" type="text" id="frequency"></p>
-			<p class="parameter"><span>Volume: </span><input class="field" type="text" id="volume" value="100"></p>
-			<p class="parameter"><span>Options: </span><input class="field" type="text" id="options"></p>
-			<input type="button" value="Add Note" onclick="addNote()">
+			<div id="fractal-field" style="display:none">
+				<p class="parameter"><span>&beta;-layer: </span><input class="field" type="text" id="beta-layer" value="1"></p>
+				<p class="parameter"><span>&beta;-start: </span><input class="field" type="text" id="beta-start"></p>
+				<p class="parameter"><span>&beta;-duration: </span><input class="field" type="text" id="beta-duration"></p>
+				<p class="parameter"><span>&alpha;-layers: </span><input class="field" type="text" id="alpha-layers" value="all"></p>
+				<p class="parameter"><span>&alpha;-start: </span><input class="field" type="text" id="alpha-start"></p>
+				<p class="parameter"><span>&alpha;-duration: </span><input class="field" type="text" id="alpha-duration"></p>
+				<p class="parameter"><span>Relative Volume: </span><input class="field" type="text" id="relative-volume" value="100"></p>
+				<p class="parameter"><span>Recurring volume: </span><input class="field" type="text" id="recurring-volume" value="80"></p>
+				<!-- <p class="parameter"><span>Options: </span><input class="field" type="text" id="fractal-options"></p> -->
+				<p class="parameter"><span>Reversed: </span><input class="field" type="checkbox" id="fractal-reversed"></p>
+				<input type="button" value="Add Fractal" onclick="addFractal()"><br>
+			</div>
 		</div>
 
-		<div id="fractal-field" style="display:none">
-			<p class="parameter"><span>&beta;-layer: </span><input class="field" type="text" id="beta-layer" value="1"></p>
-			<p class="parameter"><span>&beta;-start: </span><input class="field" type="text" id="beta-start"></p>
-			<p class="parameter"><span>&beta;-duration: </span><input class="field" type="text" id="beta-duration"></p>
-			<p class="parameter"><span>&alpha;-layers: </span><input class="field" type="text" id="alpha-layers" value="all"></p>
-			<p class="parameter"><span>&alpha;-start: </span><input class="field" type="text" id="alpha-start"></p>
-			<p class="parameter"><span>&alpha;-duration: </span><input class="field" type="text" id="alpha-duration"></p>
-			<p class="parameter"><span>Relative Volume: </span><input class="field" type="text" id="relative-volume" value="100"></p>
-			<p class="parameter"><span>Recurring volume: </span><input class="field" type="text" id="recurring-volume" value="60"></p>
-			<p class="parameter"><span>Options: </span><input class="field" type="text" id="fractal-options"></p>
-			<input type="button" value="Add Fractal" onclick="addFractal()"><br>
-		</div>
-	</div>
-
-	<div id="layer-info">
-		<input type="button" value="Add Layer" onclick="addLayer()"><br>
-		<div id="layer-1">
-			<h2>Layer 1</h2>
+		<div id="layer-info">
+			<input type="button" value="Add Layer" onclick="addLayer()"><br>
+			<div id="layer-1">
+				<h2>Layer 1</h2>
+			</div>
 		</div>
 	</div>
 	<script src="sound.js"></script>

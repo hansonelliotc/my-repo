@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Fractal Music</title>
+	<link rel="icon" type="image/x-icon" href="files/favicon.png">
+	<link rel="stylesheet" href="stylesheet.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre Baskerville">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<div id="header">
+		<h1>Fractal Music Documentation</h1>
+		<ul id="nav">
+			<li><a href="https://www.elliothanson.com">Home</a></li>
+			<li><a href="https://www.elliothanson.com/projects">Projects</a></li>
+			<li><a href="https://www.elliothanson.com/games">Games</a></li>
+			<li><a href="https://www.elliothanson.com/curriculum-vitae.pdf">My CV</a></li>
+			<li></li>
+		</ul>
+	</div>
+	<p id="img-src">Image Source: NASA</p>
+
+    <a class="text" href="https://www.elliothanson.com/fractal-music">Fractal music app</a>
+	<p class="text">
+        The fractal music application was motivated by the self-similarity inherent to music:
+        rhythm and pitch are fundamentally the same thing, only at different scales.
+        <strong>This app allows you to create fractals in music by copying the contents of one interval in another (probably smaller) interval.
+		If the second interval is inside the first, a fractal is created.</strong>
+    </p>
+	<p class="text">
+        Two types of objects can be created in this app: notes and fractals.
+		By default, a note is a pure frequency which plays at a fixed volume for the specified duration.
+		They have five attributes: layer, start, duration, frequency, and volume.
+		<strong>All numerical values should be in integer or decimal form. Fractions are not accepted.</strong>
+		<em>Layers</em> will become relevant when we discuss fractals.
+		By default there is only one layer; they can be added via the "Add Layer" button.
+		The <em>start</em> is the number of seconds after the beginning of the file at which the note will start.
+		The <em>duration</em> is the number of seconds the note will last.
+		The file ends after the last note (or fractal).
+		The <em>frequency</em> is the note's frequency in hertz.
+		The <em>volume</em> is note's volume, and should range between 0 and 100.
+		Volume is automatically normalized by the program.
+		A value of 100 indicates that a note should be the maximum permitted value, which may differ between projects.
+		Many overlapping notes/fractals can result in the maximum volume of a note being low.
+		If the "Round Notes" setting is selected, notes will not have constant volume,
+		but will instead have a sinusoidal shape where the maximum volume is being specified.
+    </p>
+	<p class="text">
+		Fractals have significantly more attributes.
+		The contents of a fractal object lie with a <em>&beta;-interval</em>, which has layer, start, and duration attributes.
+		The contents of the &beta;-interval are identical to the contents of the <em>&alpha;-interval</em>,
+		but they are scaled to fix within the &beta;-interval's duration.
+		If the duration of the &beta;-interval is half that of the &alpha;-interval, any note in the &alpha;-interval will appear in the &beta;-interval;
+		its duration will be halved, but its frequency will not change.
+		The &alpha;-interval has start and duration attributes as usual, but the <em>&alpha;-layers</em> attributes differs in that multiple layers can be entered.
+		To specify which layers should be accepted, either write "all" to accept all layers or enter them as a list, separated by commas (i.e. "1,2,3").
+		The layers exist so that fractals can copy only specific notes/fractals in the &alpha;-interval.
+		Fractals have two attributes involving volume.
+		The <em>relative volume</em> is comparable to the volume attribute of a note.
+		A relative volume of 100 indicates that a note being copied into the &beta;-interval preserves its volume.
+		If the relative volume is 50, copied notes will have their volume halved.
+		The <em>recurring volume</em> is only relevant if &alpha;- and &beta;-intervals overlap.
+		When this happens, the contents of the &beta;-interval will be copied into itself (as it is part of the &alpha;-interval).
+		<strong>This process continues, creating progressively smaller copies of the &alpha;-interval.</strong>
+		To change how many times this process recurs, alter the "Iteration Depth" setting; the default is 20.
+		Each iteration, the volume of each note is reduced according to the relative volume.
+		(If it's 100, there is no reduction.)
+		Hypothetically, if the relative volume is less than 100, the final theoretical volume will be finite.
+		The program does not account for this theoretical limiting volume:
+		if a note lies in the overlap between the &alpha;- and &beta;-intervals, it may be copied onto itself or other notes repeatedly, causing the volume to exceed the maximum.
+		This will have undesirable consequences on the final product.
+		Lastly, if the <em>reversed</em> attribute is selected, the contents in the &beta;-interval will be reversed each iteration.
+	</p>
+	<p class="text">
+		Notes and fractals can be removed at any time under their layer's heading.
+		When a note or fractal is removed, the fields in the associated section ("Note" or "Fractal") are updated to match the deleted entry.
+		This allows you to quickly remove a note/fractal, alter it, and re-enter it.
+		When you want to listen to your music, click the "Render" button.
+		It may take a moment to render your work if you are using a large iteration depth.
+		This will allow you to listen to the audio, or download it using the "Download this audio button".
+	</p>
+	<p class="text">
+		This project is far from being a polished application.
+		There are likely bugs, and I have envisioned a number of additional features and options which may be implemented in the future.
+		Enjoy!
+	</p>
+</body>
+</html>

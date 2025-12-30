@@ -5,7 +5,8 @@ p {
 
 .field {
     position: absolute;
-    left: 150px;
+    left: 10%;
+    width: 10%;
 }
 
 .entry-type {
@@ -25,4 +26,12 @@ p {
 
 #fields {
     min-height: 50vh;
+    display: block;
+    width: 40%;
+    margin: 1vw;
+}
+
+#layer-info {
+    display: block;
+    margin: 1vw;
 }
