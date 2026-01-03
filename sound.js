@@ -8,7 +8,7 @@ const bytePerBloc = numChannels * bitsPerSample / 8;
 const bytePerSec = sampleRate * bytePerBloc;
 const shortestNote = 0.01;
 const impactSamples = sampleRate/50;
-let defaultIter = 20;
+let defaultIter = 10;
 let pure = true;
 let round = false;
 
@@ -269,7 +269,7 @@ function addFractal() {
     document.getElementById("alpha-start").value = "";
     document.getElementById("alpha-duration").value = "";
     document.getElementById("relative-volume").value = "100";
-    document.getElementById("recurring-volume").value = "80";
+    document.getElementById("recurring-volume").value = "60";
     document.getElementById("fractal-reversed").checked = false;
 }
 
