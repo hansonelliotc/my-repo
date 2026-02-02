@@ -110,9 +110,10 @@ function addNote() {
             newNote.remove();
             layerObject.value = layerStr;
             frequencyObject.value = frequencyStr;
-            startObject.value = startStr;
+            startObject.value = String(start+j);
             durationObject.value = durationStr;
             volumeObject.value = volumeStr;
+            numNotesObject.value = "1";
             // optionsObject.value = optionsStr;
             noteField();
             for (let i = 0; i < song.length; i++) {
