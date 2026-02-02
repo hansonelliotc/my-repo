@@ -98,7 +98,10 @@ function addNote() {
         const newNote = document.createElement("div");
         newNote.class = "note";
         const text = document.createElement("span");
-        text.innerHTML = frequencyStr + " hz for " + durationStr + "s at time " + String(start+j) + ", volume " + volume;
+        if (end - start == 1)
+            text.innerHTML = frequencyStr + " hz for " + durationStr + " beat at time " + String(start+j) + ", volume " + volume;
+        else
+            text.innerHTML = frequencyStr + " hz for " + durationStr + " beats at time " + String(start+j) + ", volume " + volume;
         const deletionButton = document.createElement("input");
         deletionButton.type = "button";
         deletionButton.value = "Delete";
