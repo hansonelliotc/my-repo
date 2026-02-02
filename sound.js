@@ -90,7 +90,7 @@ function addNote() {
         return;
     }
 
-    for (let j = 0; j < numberOfNotes*(end-start); j++) {
+    for (let j = 0; j < numberOfNotes*(end-start); j += end-start) {
         numNotes++;
         const number = numNotes;
         song.push({ type: "note", number: number, layer: layer, frequency: frequency, start: start+j, end: end+j, volume: volume });
