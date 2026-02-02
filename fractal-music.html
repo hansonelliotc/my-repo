@@ -11,8 +11,14 @@
 <body>
 	<h1 id="header">Musical Fractals (<a href="https://www.elliothanson.com/fractal-music-documentation">documentation</a>)</h1>
 	<input type="button" value="Render" onclick="createFile()">
-	<span style="margin-left: 20px;">Round Notes: <input type="checkbox" id="round-notes"></span>
-	<span style="margin-left: 20px;">Iteration Depth: <input type="text" id="iter-depth" value="20" style="width:25px"></span><br><br>
+	<span style="float:right">
+		<span style="margin-left: 20px;">BPM: <input type="text" id="bpm" value="100" style="width:25px"></span>
+		<span style="margin-left: 20px;">Iteration Depth: <input type="text" id="iter-depth" value="10" style="width:25px"></span>
+		<span style="margin-left: 20px;">Round Notes: <input type="checkbox" id="round-notes"></span>
+		<span style="margin-left: 20px;">Preserve Frequencies: <input type="checkbox" id="preserve-freqs" checked></span>
+		<span style="margin-left: 20px;">Sampling Rate: <input type="text" id="sampling-rate" value="44100" style="width:50px"></span>
+	</span>
+	<br><br>
 	<audio id="audio" controls></audio><br>
 	<a id="download"></a><br><br>
 	<div style="display:flex;">
@@ -26,6 +32,7 @@
 				<p class="parameter"><span>Duration: </span><input class="field" type="text" id="duration"></p>
 				<p class="parameter"><span>Frequency: </span><input class="field" type="text" id="frequency"></p>
 				<p class="parameter"><span>Volume: </span><input class="field" type="text" id="volume" value="100"></p>
+				<p class="parameter"><span># of Notes: </span><input class="field" type="text" id="num-notes" value="1"></p>
 				<!-- <p class="parameter"><span>Options: </span><input class="field" type="text" id="options"></p> -->
 				<input type="button" value="Add Note" onclick="addNote()">
 			</div>
@@ -38,7 +45,7 @@
 				<p class="parameter"><span>&alpha;-start: </span><input class="field" type="text" id="alpha-start"></p>
 				<p class="parameter"><span>&alpha;-duration: </span><input class="field" type="text" id="alpha-duration"></p>
 				<p class="parameter"><span>Relative Volume: </span><input class="field" type="text" id="relative-volume" value="100"></p>
-				<p class="parameter"><span>Recurring volume: </span><input class="field" type="text" id="recurring-volume" value="80"></p>
+				<p class="parameter"><span>Recurring volume: </span><input class="field" type="text" id="recurring-volume" value="60"></p>
 				<!-- <p class="parameter"><span>Options: </span><input class="field" type="text" id="fractal-options"></p> -->
 				<p class="parameter"><span>Reversed: </span><input class="field" type="checkbox" id="fractal-reversed"></p>
 				<input type="button" value="Add Fractal" onclick="addFractal()"><br>

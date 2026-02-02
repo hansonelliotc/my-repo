@@ -32,8 +32,10 @@
         Two types of objects can be created in this app: notes and fractals.
 		By default, a note is a pure frequency which plays at a fixed volume for the specified duration.
 		They have five attributes: layer, start, duration, frequency, and volume.
+		You can also choose to create multiple notes at once;
+		they follow immediately after each other and share the same attributes otherwise.
 		<strong>All numerical values should be in integer or decimal form. Fractions are not accepted.</strong>
-		<em>Layers</em> will become relevant when we discuss fractals.
+		<em>Layers</em> are relevant when fractals are introduced.
 		By default there is only one layer; they can be added via the "Add Layer" button.
 		The <em>start</em> is the number of seconds after the beginning of the file at which the note will start.
 		The <em>duration</em> is the number of seconds the note will last.
@@ -70,12 +72,14 @@
 		The program does not account for this theoretical limiting volume:
 		if a note lies in the overlap between the &alpha;- and &beta;-intervals, it may be copied onto itself or other notes repeatedly, causing the volume to exceed the maximum.
 		This will have undesirable consequences on the final product.
+		If the "Preserve Frequencies" setting is not selected, the waveform of copied notes scales with the relative size of the &beta;-interval, and the frequency changes.
 		Lastly, if the <em>reversed</em> attribute is selected, the contents in the &beta;-interval will be reversed each iteration.
 	</p>
 	<p class="text">
 		Notes and fractals can be removed at any time under their layer's heading.
 		When a note or fractal is removed, the fields in the associated section ("Note" or "Fractal") are updated to match the deleted entry.
 		This allows you to quickly remove a note/fractal, alter it, and re-enter it.
+		You can alter the tempo (in BPM) or sampling rate using the corresponding settings.
 		When you want to listen to your music, click the "Render" button.
 		It may take a moment to render your work if you are using a large iteration depth.
 		This will allow you to listen to the audio, or download it using the "Download this audio button".

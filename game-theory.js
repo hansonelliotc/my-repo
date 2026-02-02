@@ -25,7 +25,9 @@ let b1V   = 0;
 let b2V   = 0;
 
 const lineWidth = 0.08;
+const lineWidthBig = 0.05;
 const eqRadii = 0.08;
+const eqRadiiBig = 0.05;
 const cerulean = "#007BA7";
 const gold = "#FFCC33";
 const lightGreen = "#00ff00";
@@ -37,6 +39,8 @@ const greenBackground = "#d9ffd9"; // "#d9efb9"
 const ceruleanBackground = "#c4e0eb";
 const goldBackground = "#fff3d0"; // "#e6d3b0"
 const grayBackground = "#ddd" // "#bbb"
+const noLine = "#ddd";
+const dashedStroke = "10,10";
 
 init();
 setInterval('update()', 50);
@@ -72,6 +76,157 @@ function init() {
     corner3.r.baseVal.value = lineWidth*width/2;
     corner4.style = "fill:" + cerulean;
     corner4.r.baseVal.value = lineWidth*width/2;
+
+    // Initialize big-diagram
+    const bigDiagram = document.getElementById("big-diagram");
+    const line1Big = document.getElementById("line1-big");
+    const line2Big = document.getElementById("line2-big");
+    const line3Big = document.getElementById("line3-big");
+    const line4Big = document.getElementById("line4-big");
+    const corner1Big = document.getElementById("corner1-big");
+    const corner2Big = document.getElementById("corner2-big");
+    const corner3Big = document.getElementById("corner3-big");
+    const corner4Big = document.getElementById("corner4-big");
+    const top1 = document.getElementById("top-1-big");
+    const top2 = document.getElementById("top-2-big");
+    const top3 = document.getElementById("top-3-big");
+    const left1 = document.getElementById("left-1-big");
+    const left2 = document.getElementById("left-2-big");
+    const left3 = document.getElementById("left-3-big");
+    const right1 = document.getElementById("right-1-big");
+    const right2 = document.getElementById("right-2-big");
+    const right3 = document.getElementById("right-3-big");
+    const bottom1 = document.getElementById("bottom-1-big");
+    const bottom2 = document.getElementById("bottom-2-big");
+    const bottom3 = document.getElementById("bottom-3-big");
+    const goldBar1 = document.getElementById("gold-bar-1");
+    const goldBar2 = document.getElementById("gold-bar-2");
+    const goldBar3 = document.getElementById("gold-bar-3");
+    const goldBar4 = document.getElementById("gold-bar-4");
+    const smallLine1 = document.getElementById("small-line-1");
+    const smallLine2 = document.getElementById("small-line-2");
+    const smallLine3 = document.getElementById("small-line-3");
+    const smallLine4 = document.getElementById("small-line-4");
+    const smallLine5 = document.getElementById("small-line-5");
+    const smallLine6 = document.getElementById("small-line-6");
+    const smallLine7 = document.getElementById("small-line-7");
+    const smallLine8 = document.getElementById("small-line-8");
+
+    const bigDiagramWidth = bigDiagram.getBoundingClientRect().width;
+    const paddingBig = 0.1*bigDiagramWidth;
+    const widthBig = bigDiagramWidth - 2*paddingBig;
+    const smallLineWidth = lineWidthBig*widthBig*0.1;
+
+    line1Big.style.stroke = cerulean;
+    line1Big.style.strokeWidth = lineWidthBig*widthBig;
+    line1Big.style.strokeDasharray = dashedStroke;
+    line2Big.style.stroke = gold;
+    line2Big.style.strokeWidth = lineWidthBig*widthBig;
+    line3Big.style.stroke = cerulean;
+    line3Big.style.strokeWidth = lineWidthBig*widthBig;
+    line3Big.style.strokeDasharray = dashedStroke;
+    line4Big.style.stroke = gold;
+    line4Big.style.strokeWidth = lineWidthBig*widthBig;
+    corner1Big.style = "fill:" + cerulean;
+    corner1Big.r.baseVal.value = lineWidthBig*widthBig/2;
+    corner2Big.style = "fill:" + cerulean;
+    corner2Big.r.baseVal.value = lineWidthBig*widthBig/2;
+    corner3Big.style = "fill:" + cerulean;
+    corner3Big.r.baseVal.value = lineWidthBig*widthBig/2;
+    corner4Big.style = "fill:" + cerulean;
+    corner4Big.r.baseVal.value = lineWidthBig*widthBig/2;
+    goldBar1.style.stroke = gold;
+    goldBar2.style.stroke = gold;
+    goldBar3.style.stroke = gold;
+    goldBar4.style.stroke = gold;
+    top1.x1.baseVal.value = paddingBig;
+    top1.y1.baseVal.value = lineWidthBig*widthBig/2;
+    top1.y2.baseVal.value = lineWidthBig*widthBig/2;
+    top2.y1.baseVal.value = lineWidthBig*widthBig/2;
+    top2.y2.baseVal.value = lineWidthBig*widthBig/2;
+    top3.x2.baseVal.value = bigDiagramWidth - paddingBig;
+    top3.y1.baseVal.value = lineWidthBig*widthBig/2;
+    top3.y2.baseVal.value = lineWidthBig*widthBig/2;
+    left3.y1.baseVal.value = paddingBig;
+    left3.x1.baseVal.value = lineWidthBig*widthBig/2;
+    left3.x2.baseVal.value = lineWidthBig*widthBig/2;
+    left2.x1.baseVal.value = lineWidthBig*widthBig/2;
+    left2.x2.baseVal.value = lineWidthBig*widthBig/2;
+    left1.y2.baseVal.value = bigDiagramWidth - paddingBig;
+    left1.x1.baseVal.value = lineWidthBig*widthBig/2;
+    left1.x2.baseVal.value = lineWidthBig*widthBig/2;
+    right3.y1.baseVal.value = paddingBig;
+    right3.x1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    right3.x2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    right2.x1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    right2.x2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    right1.y2.baseVal.value = bigDiagramWidth - paddingBig;
+    right1.x1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    right1.x2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    bottom1.x1.baseVal.value = paddingBig;
+    bottom1.y1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    bottom1.y2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    bottom2.y1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    bottom2.y2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    bottom3.x2.baseVal.value = bigDiagramWidth - paddingBig;
+    bottom3.y1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    bottom3.y2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    goldBar1.x1.baseVal.value = paddingBig;
+    goldBar1.x2.baseVal.value = bigDiagramWidth - paddingBig;
+    goldBar1.y1.baseVal.value = lineWidthBig*widthBig/2;
+    goldBar1.y2.baseVal.value = lineWidthBig*widthBig/2;
+    goldBar2.x1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    goldBar2.x2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    goldBar2.y1.baseVal.value = paddingBig;
+    goldBar2.y2.baseVal.value = bigDiagramWidth - paddingBig;
+    goldBar3.x1.baseVal.value = paddingBig;
+    goldBar3.x2.baseVal.value = bigDiagramWidth - paddingBig;
+    goldBar3.y1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    goldBar3.y2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    goldBar4.x1.baseVal.value = lineWidthBig*widthBig/2;
+    goldBar4.x2.baseVal.value = lineWidthBig*widthBig/2;
+    goldBar4.y1.baseVal.value = paddingBig;
+    goldBar4.y2.baseVal.value = bigDiagramWidth - paddingBig;
+    smallLine1.style.stroke = "#000";
+    smallLine1.style.strokeWidth = smallLineWidth;
+    smallLine2.style.stroke = "#000";
+    smallLine2.style.strokeWidth = smallLineWidth;
+    smallLine3.style.stroke = "#000";
+    smallLine3.style.strokeWidth = smallLineWidth;
+    smallLine4.style.stroke = "#000";
+    smallLine4.style.strokeWidth = smallLineWidth;
+    smallLine5.style.stroke = "#000";
+    smallLine5.style.strokeWidth = smallLineWidth;
+    smallLine6.style.stroke = "#000";
+    smallLine6.style.strokeWidth = smallLineWidth;
+    smallLine7.style.stroke = "#000";
+    smallLine7.style.strokeWidth = smallLineWidth;
+    smallLine8.style.stroke = "#000";
+    smallLine8.style.strokeWidth = smallLineWidth;
+    smallLine1.x1.baseVal.value = paddingBig;
+    smallLine1.x2.baseVal.value = bigDiagramWidth - paddingBig;
+    smallLine1.y1.baseVal.value = paddingBig;
+    smallLine1.y2.baseVal.value = paddingBig;
+    smallLine2.x1.baseVal.value = bigDiagramWidth - paddingBig;
+    smallLine2.x2.baseVal.value = bigDiagramWidth - paddingBig;
+    smallLine2.y1.baseVal.value = paddingBig;
+    smallLine2.y2.baseVal.value = bigDiagramWidth - paddingBig;
+    smallLine3.x1.baseVal.value = paddingBig;
+    smallLine3.x2.baseVal.value = bigDiagramWidth - paddingBig;
+    smallLine3.y1.baseVal.value = bigDiagramWidth - paddingBig;
+    smallLine3.y2.baseVal.value = bigDiagramWidth - paddingBig;
+    smallLine4.x1.baseVal.value = paddingBig;
+    smallLine4.x2.baseVal.value = paddingBig;
+    smallLine4.y1.baseVal.value = paddingBig;
+    smallLine4.y2.baseVal.value = bigDiagramWidth - paddingBig;
+    smallLine5.x1.baseVal.value = paddingBig;
+    smallLine5.x2.baseVal.value = bigDiagramWidth - paddingBig;
+    smallLine6.x1.baseVal.value = paddingBig;
+    smallLine6.x2.baseVal.value = bigDiagramWidth - paddingBig;
+    smallLine7.y1.baseVal.value = paddingBig;
+    smallLine7.y2.baseVal.value = bigDiagramWidth - paddingBig;
+    smallLine8.y1.baseVal.value = paddingBig;
+    smallLine8.y2.baseVal.value = bigDiagramWidth - paddingBig;
 
     const container = document.getElementById("container");
     const x1label = document.getElementById("x1-label");
@@ -476,6 +631,686 @@ function update() {
         point5.cy.baseVal.value = (1-mixedCol/6)*width+padding;
     } else {
         point5.style.opacity = 0;
+    }
+
+    // Update big-diagram elements
+    const bigDiagram = document.getElementById("big-diagram");
+    const line1Big = document.getElementById("line1-big");
+    const line2Big = document.getElementById("line2-big");
+    const line3Big = document.getElementById("line3-big");
+    const line4Big = document.getElementById("line4-big");
+    const point1Big = document.getElementById("point1-big");
+    const point2Big = document.getElementById("point2-big");
+    const point3Big = document.getElementById("point3-big");
+    const point4Big = document.getElementById("point4-big");
+    const point5Big = document.getElementById("point5-big");
+    const corner1Big = document.getElementById("corner1-big");
+    const corner2Big = document.getElementById("corner2-big");
+    const corner3Big = document.getElementById("corner3-big");
+    const corner4Big = document.getElementById("corner4-big");
+    const top1 = document.getElementById("top-1-big");
+    const top2 = document.getElementById("top-2-big");
+    const top3 = document.getElementById("top-3-big");
+    const left1 = document.getElementById("left-1-big");
+    const left2 = document.getElementById("left-2-big");
+    const left3 = document.getElementById("left-3-big");
+    const right1 = document.getElementById("right-1-big");
+    const right2 = document.getElementById("right-2-big");
+    const right3 = document.getElementById("right-3-big");
+    const bottom1 = document.getElementById("bottom-1-big");
+    const bottom2 = document.getElementById("bottom-2-big");
+    const bottom3 = document.getElementById("bottom-3-big");
+    const goldBar1 = document.getElementById("gold-bar-1");
+    const goldBar2 = document.getElementById("gold-bar-2");
+    const goldBar3 = document.getElementById("gold-bar-3");
+    const goldBar4 = document.getElementById("gold-bar-4");
+    const smallLine5 = document.getElementById("small-line-5");
+    const smallLine6 = document.getElementById("small-line-6");
+    const smallLine7 = document.getElementById("small-line-7");
+    const smallLine8 = document.getElementById("small-line-8");
+
+    const bigDiagramWidth = bigDiagram.getBoundingClientRect().width;
+    const paddingBig = 0.1*bigDiagramWidth;
+    const widthBig = bigDiagramWidth - 2*paddingBig;
+    line1Big.x1.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
+    line1Big.x2.baseVal.value = matrixA[1]*widthBig/6+paddingBig;
+    line2Big.x1.baseVal.value = matrixA[1]*widthBig/6+paddingBig;
+    line2Big.x2.baseVal.value = matrixA[3]*widthBig/6+paddingBig;
+    line3Big.x1.baseVal.value = matrixA[3]*widthBig/6+paddingBig;
+    line3Big.x2.baseVal.value = matrixA[2]*widthBig/6+paddingBig;
+    line4Big.x1.baseVal.value = matrixA[2]*widthBig/6+paddingBig;
+    line4Big.x2.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
+
+    line1Big.y1.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
+    line1Big.y2.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig;
+    line2Big.y1.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig;
+    line2Big.y2.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig;
+    line3Big.y1.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig;
+    line3Big.y2.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig;
+    line4Big.y1.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig;
+    line4Big.y2.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
+
+    point1Big.cx.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
+    point1Big.cy.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
+    point2Big.cx.baseVal.value = matrixA[1]*widthBig/6+paddingBig;
+    point2Big.cy.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig;
+    point3Big.cx.baseVal.value = matrixA[2]*widthBig/6+paddingBig;
+    point3Big.cy.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig;
+    point4Big.cx.baseVal.value = matrixA[3]*widthBig/6+paddingBig;
+    point4Big.cy.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig;
+
+    corner1Big.cx.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
+    corner1Big.cy.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
+    corner2Big.cx.baseVal.value = matrixA[1]*widthBig/6+paddingBig;
+    corner2Big.cy.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig;
+    corner3Big.cx.baseVal.value = matrixA[2]*widthBig/6+paddingBig;
+    corner3Big.cy.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig;
+    corner4Big.cx.baseVal.value = matrixA[3]*widthBig/6+paddingBig;
+    corner4Big.cy.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig;
+
+    top1.x2.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
+    top2.x1.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
+    top2.x2.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
+    top3.x1.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
+    left3.y2.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
+    left2.y1.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
+    left2.y2.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
+    left1.y1.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
+    right3.y2.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
+    right2.y1.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
+    right2.y2.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
+    right1.y1.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
+    bottom1.x2.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
+    bottom2.x1.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
+    bottom2.x2.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
+    bottom3.x1.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
+
+    smallLine5.y1.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
+    smallLine5.y2.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
+    smallLine6.y1.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
+    smallLine6.y2.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
+    smallLine7.x1.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
+    smallLine7.x2.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
+    smallLine8.x1.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
+    smallLine8.x2.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
+
+    top1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
+    top2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
+    top3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
+    left1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(4);
+    left2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(4);
+    left3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(4);
+    right1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(2);
+    right2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(2);
+    right3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(2);
+    bottom1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(3);
+    bottom2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(3);
+    bottom3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(3);
+    goldBar1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
+    goldBar2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(2);
+    goldBar3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(3);
+    goldBar4.style.strokeWidth = lineWidthBig*widthBig*sideWidth(4);
+
+    let coord = 0;
+    switch (quad) {
+        case 1:
+            bottom3.style.stroke = noLine;
+            bottom3.style.strokeDasharray = "";
+            left3.style.stroke = noLine;
+            left3.style.strokeDasharray = "";
+            coord = +(x1coord.value);
+            if (coord >= 1 && coord < 3) {
+                bottom2.style.stroke = cerulean;
+                bottom2.style.strokeDasharray = dashedStroke;
+                top2.style.stroke = cerulean;
+                top2.style.strokeDasharray = dashedStroke;
+            } else if (coord >= 3 && coord < 5) {
+                bottom2.style.stroke = gold;
+                bottom2.style.strokeDasharray = "";
+                top2.style.stroke = gold;
+                top2.style.strokeDasharray = "";
+            } else {
+                bottom2.style.stroke = cerulean;
+                bottom2.style.strokeDasharray = "";
+                top2.style.stroke = cerulean;
+                top2.style.strokeDasharray = "";
+            }
+            if (coord >= 0 && coord < 2) {
+                right3.style.stroke = gold;
+                right3.style.strokeDasharray = "";
+                bottom1.style.stroke = gold;
+                bottom1.style.strokeDasharray = "";
+            } else if (coord >= 2 && coord < 4) {
+                right3.style.stroke = cerulean;
+                right3.style.strokeDasharray = "";
+                bottom1.style.stroke = cerulean;
+                bottom1.style.strokeDasharray = "";
+            } else {
+                right3.style.stroke = cerulean;
+                right3.style.strokeDasharray = dashedStroke;
+                bottom1.style.stroke = cerulean;
+                bottom1.style.strokeDasharray = dashedStroke;
+            }
+            coord = +(x2coord.value);
+            if (coord >= 1 && coord < 3) {
+                right2.style.stroke = cerulean;
+                right2.style.strokeDasharray = dashedStroke;
+                left2.style.stroke = cerulean;
+                left2.style.strokeDasharray = dashedStroke;
+            } else if (coord >= 3 && coord < 5) {
+                right2.style.stroke = cerulean;
+                right2.style.strokeDasharray = "";
+                left2.style.stroke = cerulean;
+                left2.style.strokeDasharray = "";
+            } else {
+                right2.style.stroke = gold;
+                right2.style.strokeDasharray = "";
+                left2.style.stroke = gold;
+                left2.style.strokeDasharray = "";
+            }
+            if (coord >= 0 && coord < 2) {
+                top3.style.stroke = cerulean;
+                top3.style.strokeDasharray = "";
+                left1.style.stroke = cerulean;
+                left1.style.strokeDasharray = "";
+                coord = +(x1coord.value);
+                if (coord >= 0 && coord < 2) {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = dashedStroke;
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = dashedStroke;
+                } else if (coord >= 2 && coord < 4) {
+                    top1.style.stroke = noLine;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = noLine;
+                    right1.style.strokeDasharray = "";
+                } else {
+                    top1.style.stroke = gold;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = gold;
+                    right1.style.strokeDasharray = "";
+                }
+            } else if (coord >= 2 && coord < 4) {
+                top3.style.stroke = gold;
+                top3.style.strokeDasharray = "";
+                left1.style.stroke = gold;
+                left1.style.strokeDasharray = "";
+                coord = +(x1coord.value);
+                if (coord >= 0 && coord < 2) {
+                    top1.style.stroke = noLine;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = noLine;
+                    right1.style.strokeDasharray = "";
+                } else if (coord >= 2 && coord < 4) {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = dashedStroke;
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = dashedStroke;
+                } else {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = "";
+                }
+            } else {
+                top3.style.stroke = cerulean;
+                top3.style.strokeDasharray = dashedStroke;
+                left1.style.stroke = cerulean;
+                left1.style.strokeDasharray = dashedStroke;
+                coord = +(x1coord.value);
+                if (coord >= 0 && coord < 2) {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = "";
+                } else if (coord >= 2 && coord < 4) {
+                    top1.style.stroke = gold;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = gold;
+                    right1.style.strokeDasharray = "";
+                } else {
+                    top1.style.stroke = noLine;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = noLine;
+                    right1.style.strokeDasharray = "";
+                }
+            }
+            break;
+        case 2:
+            bottom3.style.stroke = cerulean;
+            bottom3.style.strokeDasharray = "";
+            left3.style.stroke = cerulean;
+            left3.style.strokeDasharray = "";
+            coord = +(x1coord.value);
+            if (coord >= 1 && coord < 3) {
+                bottom2.style.stroke = cerulean;
+                bottom2.style.strokeDasharray = dashedStroke;
+                top2.style.stroke = cerulean;
+                top2.style.strokeDasharray = dashedStroke;
+            } else if (coord >= 3 && coord < 5) {
+                bottom2.style.stroke = gold;
+                bottom2.style.strokeDasharray = "";
+                top2.style.stroke = gold;
+                top2.style.strokeDasharray = "";
+            } else {
+                bottom2.style.stroke = cerulean;
+                bottom2.style.strokeDasharray = "";
+                top2.style.stroke = cerulean;
+                top2.style.strokeDasharray = "";
+            }
+            if (coord >= 0 && coord < 2) {
+                right3.style.stroke = cerulean;
+                right3.style.strokeDasharray = dashedStroke;
+                bottom1.style.stroke = cerulean;
+                bottom1.style.strokeDasharray = dashedStroke;
+            } else if (coord >= 2 && coord < 4) {
+                right3.style.stroke = noLine;
+                right3.style.strokeDasharray = "";
+                bottom1.style.stroke = noLine;
+                bottom1.style.strokeDasharray = "";
+            } else {
+                right3.style.stroke = gold;
+                right3.style.strokeDasharray = "";
+                bottom1.style.stroke = gold;
+                bottom1.style.strokeDasharray = "";
+            }
+            coord = +(x2coord.value);
+            if (coord >= 1 && coord < 3) {
+                right2.style.stroke = cerulean;
+                right2.style.strokeDasharray = dashedStroke;
+                left2.style.stroke = cerulean;
+                left2.style.strokeDasharray = dashedStroke;
+            } else if (coord >= 3 && coord < 5) {
+                right2.style.stroke = cerulean;
+                right2.style.strokeDasharray = "";
+                left2.style.stroke = cerulean;
+                left2.style.strokeDasharray = "";
+            } else {
+                right2.style.stroke = gold;
+                right2.style.strokeDasharray = "";
+                left2.style.stroke = gold;
+                left2.style.strokeDasharray = "";
+            }
+            if (coord >= 0 && coord < 2) {
+                top3.style.stroke = noLine;
+                top3.style.strokeDasharray = "";
+                left1.style.stroke = noLine;
+                left1.style.strokeDasharray = "";
+                coord = +(x1coord.value);
+                if (coord >= 0 && coord < 2) {
+                    top1.style.stroke = gold;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = gold;
+                    right1.style.strokeDasharray = "";
+                } else if (coord >= 2 && coord < 4) {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = "";
+                } else {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = dashedStroke;
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = dashedStroke;
+                }
+            } else if (coord >= 2 && coord < 4) {
+                top3.style.stroke = cerulean;
+                top3.style.strokeDasharray = dashedStroke;
+                left1.style.stroke = cerulean;
+                left1.style.strokeDasharray = dashedStroke;
+                coord = +(x1coord.value);
+                if (coord >= 0 && coord < 2) {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = "";
+                } else if (coord >= 2 && coord < 4) {
+                    top1.style.stroke = gold;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = gold;
+                    right1.style.strokeDasharray = "";
+                } else {
+                    top1.style.stroke = noLine;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = noLine;
+                    right1.style.strokeDasharray = "";
+                }
+            } else {
+                top3.style.stroke = gold;
+                top3.style.strokeDasharray = "";
+                left1.style.stroke = gold;
+                left1.style.strokeDasharray = "";
+                coord = +(x1coord.value);
+                if (coord >= 0 && coord < 2) {
+                    top1.style.stroke = noLine;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = noLine;
+                    right1.style.strokeDasharray = "";
+                } else if (coord >= 2 && coord < 4) {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = dashedStroke;
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = dashedStroke;
+                } else {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = "";
+                }
+            }
+            break;
+        case 3:
+            bottom3.style.stroke = cerulean;
+            bottom3.style.strokeDasharray = dashedStroke;
+            left3.style.stroke = cerulean;
+            left3.style.strokeDasharray = dashedStroke;
+            coord = +(x1coord.value);
+            if (coord >= 1 && coord < 3) {
+                bottom2.style.stroke = cerulean;
+                bottom2.style.strokeDasharray = dashedStroke;
+                top2.style.stroke = cerulean;
+                top2.style.strokeDasharray = dashedStroke;
+            } else if (coord >= 3 && coord < 5) {
+                bottom2.style.stroke = gold;
+                bottom2.style.strokeDasharray = "";
+                top2.style.stroke = gold;
+                top2.style.strokeDasharray = "";
+            } else {
+                bottom2.style.stroke = cerulean;
+                bottom2.style.strokeDasharray = "";
+                top2.style.stroke = cerulean;
+                top2.style.strokeDasharray = "";
+            }
+            if (coord >= 0 && coord < 2) {
+                right3.style.stroke = cerulean;
+                right3.style.strokeDasharray = "";
+                bottom1.style.stroke = cerulean;
+                bottom1.style.strokeDasharray = "";
+            } else if (coord >= 2 && coord < 4) {
+                right3.style.stroke = gold;
+                right3.style.strokeDasharray = "";
+                bottom1.style.stroke = gold;
+                bottom1.style.strokeDasharray = "";
+            } else {
+                right3.style.stroke = noLine;
+                right3.style.strokeDasharray = "";
+                bottom1.style.stroke = noLine;
+                bottom1.style.strokeDasharray = "";
+            }
+            coord = +(x2coord.value);
+            if (coord >= 1 && coord < 3) {
+                right2.style.stroke = cerulean;
+                right2.style.strokeDasharray = dashedStroke;
+                left2.style.stroke = cerulean;
+                left2.style.strokeDasharray = dashedStroke;
+            } else if (coord >= 3 && coord < 5) {
+                right2.style.stroke = cerulean;
+                right2.style.strokeDasharray = "";
+                left2.style.stroke = cerulean;
+                left2.style.strokeDasharray = "";
+            } else {
+                right2.style.stroke = gold;
+                right2.style.strokeDasharray = "";
+                left2.style.stroke = gold;
+                left2.style.strokeDasharray = "";
+            }
+            if (coord >= 0 && coord < 2) {
+                top3.style.stroke = gold;
+                top3.style.strokeDasharray = "";
+                left1.style.stroke = gold;
+                left1.style.strokeDasharray = "";
+                coord = +(x1coord.value);
+                if (coord >= 0 && coord < 2) {
+                    top1.style.stroke = noLine;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = noLine;
+                    right1.style.strokeDasharray = "";
+                } else if (coord >= 2 && coord < 4) {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = dashedStroke;
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = dashedStroke;
+                } else {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = "";
+                }
+            } else if (coord >= 2 && coord < 4) {
+                top3.style.stroke = cerulean;
+                top3.style.strokeDasharray = "";
+                left1.style.stroke = cerulean;
+                left1.style.strokeDasharray = "";
+                coord = +(x1coord.value);
+                if (coord >= 0 && coord < 2) {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = dashedStroke;
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = dashedStroke;
+                } else if (coord >= 2 && coord < 4) {
+                    top1.style.stroke = noLine;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = noLine;
+                    right1.style.strokeDasharray = "";
+                } else {
+                    top1.style.stroke = gold;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = gold;
+                    right1.style.strokeDasharray = "";
+                }
+            } else {
+                top3.style.stroke = noLine;
+                top3.style.strokeDasharray = "";
+                left1.style.stroke = noLine;
+                left1.style.strokeDasharray = "";
+                coord = +(x1coord.value);
+                if (coord >= 0 && coord < 2) {
+                    top1.style.stroke = gold;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = gold;
+                    right1.style.strokeDasharray = "";
+                } else if (coord >= 2 && coord < 4) {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = "";
+                } else {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = dashedStroke;
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = dashedStroke;
+                }
+            }
+            break;
+        case 4:
+            bottom3.style.stroke = gold;
+            bottom3.style.strokeDasharray = "";
+            left3.style.stroke = gold;
+            left3.style.strokeDasharray = "";
+            coord = +(x1coord.value);
+            if (coord >= 1 && coord < 3) {
+                bottom2.style.stroke = cerulean;
+                bottom2.style.strokeDasharray = dashedStroke;
+                top2.style.stroke = cerulean;
+                top2.style.strokeDasharray = dashedStroke;
+            } else if (coord >= 3 && coord < 5) {
+                bottom2.style.stroke = gold;
+                bottom2.style.strokeDasharray = "";
+                top2.style.stroke = gold;
+                top2.style.strokeDasharray = "";
+            } else {
+                bottom2.style.stroke = cerulean;
+                bottom2.style.strokeDasharray = "";
+                top2.style.stroke = cerulean;
+                top2.style.strokeDasharray = "";
+            }
+            if (coord >= 0 && coord < 2) {
+                right3.style.stroke = noLine;
+                right3.style.strokeDasharray = "";
+                bottom1.style.stroke = noLine;
+                bottom1.style.strokeDasharray = "";
+            } else if (coord >= 2 && coord < 4) {
+                right3.style.stroke = cerulean;
+                right3.style.strokeDasharray = dashedStroke;
+                bottom1.style.stroke = cerulean;
+                bottom1.style.strokeDasharray = dashedStroke;
+            } else {
+                right3.style.stroke = cerulean;
+                right3.style.strokeDasharray = "";
+                bottom1.style.stroke = cerulean;
+                bottom1.style.strokeDasharray = "";
+            }
+            coord = +(x2coord.value);
+            if (coord >= 1 && coord < 3) {
+                right2.style.stroke = cerulean;
+                right2.style.strokeDasharray = dashedStroke;
+                left2.style.stroke = cerulean;
+                left2.style.strokeDasharray = dashedStroke;
+            } else if (coord >= 3 && coord < 5) {
+                right2.style.stroke = cerulean;
+                right2.style.strokeDasharray = "";
+                left2.style.stroke = cerulean;
+                left2.style.strokeDasharray = "";
+            } else {
+                right2.style.stroke = gold;
+                right2.style.strokeDasharray = "";
+                left2.style.stroke = gold;
+                left2.style.strokeDasharray = "";
+            }
+            if (coord >= 0 && coord < 2) {
+                top3.style.stroke = cerulean;
+                top3.style.strokeDasharray = dashedStroke;
+                left1.style.stroke = cerulean;
+                left1.style.strokeDasharray = dashedStroke;
+                coord = +(x1coord.value);
+                if (coord >= 0 && coord < 2) {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = "";
+                } else if (coord >= 2 && coord < 4) {
+                    top1.style.stroke = gold;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = gold;
+                    right1.style.strokeDasharray = "";
+                } else {
+                    top1.style.stroke = noLine;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = noLine;
+                    right1.style.strokeDasharray = "";
+                }
+            } else if (coord >= 2 && coord < 4) {
+                top3.style.stroke = noLine;
+                top3.style.strokeDasharray = "";
+                left1.style.stroke = noLine;
+                left1.style.strokeDasharray = "";
+                coord = +(x1coord.value);
+                if (coord >= 0 && coord < 2) {
+                    top1.style.stroke = gold;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = gold;
+                    right1.style.strokeDasharray = "";
+                } else if (coord >= 2 && coord < 4) {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = "";
+                } else {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = dashedStroke;
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = dashedStroke;
+                }
+            } else {
+                top3.style.stroke = cerulean;
+                top3.style.strokeDasharray = "";
+                left1.style.stroke = cerulean;
+                left1.style.strokeDasharray = "";
+                coord = +(x1coord.value);
+                if (coord >= 0 && coord < 2) {
+                    top1.style.stroke = cerulean;
+                    top1.style.strokeDasharray = dashedStroke;
+                    right1.style.stroke = cerulean;
+                    right1.style.strokeDasharray = dashedStroke;
+                } else if (coord >= 2 && coord < 4) {
+                    top1.style.stroke = noLine;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = noLine;
+                    right1.style.strokeDasharray = "";
+                } else {
+                    top1.style.stroke = gold;
+                    top1.style.strokeDasharray = "";
+                    right1.style.stroke = gold;
+                    right1.style.strokeDasharray = "";
+                }
+            }
+            break;
+    }
+
+    if (matrixA[0]- matrixA[2] >= -error && matrixB[0] - matrixB[1] >= -error) {
+        if (matrixA[0] >= rowMax && matrixB[0] >= colMax)
+            point1Big.style = "fill:" + lightGreen;
+        else if (matrixA[0] >= rowMax)
+            point1Big.style = "fill:" + gold;
+        else if (matrixB[0] >= colMax)
+            point1Big.style = "fill:" + cerulean;
+        else
+            point1Big.style = "fill:" + bad;
+        point1Big.style.r = eqRadiiBig*widthBig;
+    } else {
+        point1Big.style.opacity = 0;
+    }
+    
+    if (matrixA[1] - matrixA[3] >= -error && matrixB[1] - matrixB[0] >= -error) {
+        if (matrixA[1] >= rowMax && matrixB[1] >= colMax)
+            point2Big.style = "fill:" + lightGreen;
+        else if (matrixA[1] >= rowMax)
+            point2Big.style = "fill:" + gold;
+        else if (matrixB[1] >= colMax)
+            point2Big.style = "fill:" + cerulean;
+        else
+            point2Big.style = "fill:" + bad;
+        point2Big.style.r = eqRadiiBig*widthBig;
+    } else {
+        point2Big.style.opacity = 0;
+    }
+
+    if (matrixA[2] - matrixA[0] >= -error && matrixB[2] - matrixB[3] >= -error) {
+        if (matrixA[2] >= rowMax && matrixB[2] >= colMax)
+            point3Big.style = "fill:" + lightGreen;
+        else if (matrixA[2] >= rowMax)
+            point3Big.style = "fill:" + gold;
+        else if (matrixB[2] >= colMax)
+            point3Big.style = "fill:" + cerulean;
+        else
+            point3Big.style = "fill:" + bad;
+        point3Big.style.r = eqRadiiBig*widthBig;
+    } else {
+        point3Big.style.opacity = 0;
+    }
+
+    if (matrixA[3] - matrixA[1] >= -error && matrixB[3] - matrixB[2] >= -error) {
+        if (matrixA[3] >= rowMax && matrixB[3] >= colMax)
+            point4Big.style = "fill:" + lightGreen;
+        else if (matrixA[3] >= rowMax)
+            point4Big.style = "fill:" + gold;
+        else if (matrixB[3] >= colMax)
+            point4Big.style = "fill:" + cerulean;
+        else
+            point4Big.style = "fill:" + bad;
+        point4Big.style.r = eqRadiiBig*widthBig;
+    } else {
+        point4Big.style.opacity = 0;
+    }
+    if (0 < x1coord.value && x1coord.value < 3 && 0 < x2coord.value && x2coord.value < 3 && 0 < b1coord.value && b1coord.value < 6 && 0 < b2coord.value && b2coord.value < 6) {
+        const mixedRow = mixedPayoff(matrixA);
+        const mixedCol = mixedPayoff(matrixB);
+        point5Big.style = "fill:" + mixedColor;
+        point5Big.style.r = eqRadiiBig*widthBig;
+        point5Big.cx.baseVal.value = mixedRow*widthBig/6+paddingBig;
+        point5Big.cy.baseVal.value = (1-mixedCol/6)*widthBig+paddingBig;
+    } else {
+        point5Big.style.opacity = 0;
     }
 
     const arrowSize = 0.016*container.width.baseVal.value;
@@ -1223,5 +2058,25 @@ function changeCoords(e) {
             x1coord.value = Math.round(newX1*6)/6;
             x2coord.value = Math.round(newX2*6)/6;
         }
+    }
+}
+
+function take(array, rank) {
+    const sortedArray = [...array].sort((a, b) => a - b);
+    return sortedArray[rank];
+}
+
+function sideWidth(side) {
+    const totalA = matrixA.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    const totalB = matrixB.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    switch (side) {
+        case 1:
+            return (totalB - 6)/12;
+        case 2:
+            return (totalA - 6)/12;
+        case 3:
+            return (18 - totalB)/12;
+        case 4:
+            return (18 - totalA)/12;
     }
 }

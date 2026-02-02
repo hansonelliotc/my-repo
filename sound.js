@@ -1,16 +1,17 @@
 let song = []
 let numLayers = 1;
 let numNotes = 0;
-const sampleRate = 44100;
+let sampleRate = 44100;
+let bpm = 100;
 const bitsPerSample = 16;
-const numChannels = 1;
-const bytePerBloc = numChannels * bitsPerSample / 8;
-const bytePerSec = sampleRate * bytePerBloc;
 const shortestNote = 0.01;
 const impactSamples = sampleRate/50;
+const maxFreq = 20000;
 let defaultIter = 10;
 let pure = true;
 let round = false;
+let preserveFreqs = true;
+let parity = false;
 
 let blob = new Blob([], { type: 'audio/wav' });
 let url = "";
@@ -42,6 +43,9 @@ function addNote() {
     const volumeObject = document.getElementById("volume");
     const volumeStr = volumeObject.value;
     const volume = Number(volumeStr);
+    const numNotesObject = document.getElementById("num-notes");
+    const numNotesStr = numNotesObject.value;
+    const numberOfNotes = Number(numNotesStr);
     // const optionsObject = document.getElementById("fractal-options");
     // const optionsStr = optionsObject.value;
 
@@ -81,45 +85,52 @@ function addNote() {
         alert("Volume must be a positive number.");
         return;
     }
+    if (!Number.isInteger(numberOfNotes) || numberOfNotes == "" || numberOfNotes <= 0) {
+        alert("# of notes must be a positive integer.");
+        return;
+    }
 
-    numNotes++;
-    const number = numNotes;
-    song.push({ type: "note", number: number, layer: layer, frequency: frequency, start: start, end: end, volume: volume });
-    const div = document.getElementById("layer-" + layerStr);
-    const newNote = document.createElement("div");
-    newNote.class = "note";
-    const text = document.createElement("span");
-    text.innerHTML = frequencyStr + " hz for " + durationStr + "s at time " + startStr + ", volume " + volume;
-    const deletionButton = document.createElement("input");
-    deletionButton.type = "button";
-    deletionButton.value = "Delete";
-    deletionButton.style = "margin: 0 0 10px 10px;";
-    function deleteNote() {
-        newNote.remove();
-        layerObject.value = layerStr;
-        frequencyObject.value = frequencyStr;
-        startObject.value = startStr;
-        durationObject.value = durationStr;
-        volumeObject.value = volumeStr;
-        // optionsObject.value = optionsStr;
-        noteField();
-        for (let i = 0; i < song.length; i++) {
-            if (song[i].number == number) {
-                song.splice(i, 1);
-                return;
+    for (let j = 0; j < numberOfNotes*(end-start); j++) {
+        numNotes++;
+        const number = numNotes;
+        song.push({ type: "note", number: number, layer: layer, frequency: frequency, start: start+j, end: end+j, volume: volume });
+        const div = document.getElementById("layer-" + layerStr);
+        const newNote = document.createElement("div");
+        newNote.class = "note";
+        const text = document.createElement("span");
+        text.innerHTML = frequencyStr + " hz for " + durationStr + "s at time " + String(start+j) + ", volume " + volume;
+        const deletionButton = document.createElement("input");
+        deletionButton.type = "button";
+        deletionButton.value = "Delete";
+        deletionButton.style = "margin: 0 0 10px 10px;";
+        function deleteNote() {
+            newNote.remove();
+            layerObject.value = layerStr;
+            frequencyObject.value = frequencyStr;
+            startObject.value = startStr;
+            durationObject.value = durationStr;
+            volumeObject.value = volumeStr;
+            // optionsObject.value = optionsStr;
+            noteField();
+            for (let i = 0; i < song.length; i++) {
+                if (song[i].number == number) {
+                    song.splice(i, 1);
+                    return;
+                }
             }
         }
+        deletionButton.addEventListener("click", deleteNote);
+        div.appendChild(newNote);
+        newNote.appendChild(text);
+        newNote.appendChild(deletionButton);
     }
-    deletionButton.addEventListener("click", deleteNote);
-    div.appendChild(newNote);
-    newNote.appendChild(text);
-    newNote.appendChild(deletionButton);
 
     document.getElementById("frequency").value = "";
     document.getElementById("start").value = "";
     document.getElementById("duration").value = "";
     document.getElementById("volume").value = "100";
     document.getElementById("layer").value = "1";
+    document.getElementById("num-notes").value = "1";
 }
 
 function addFractal() {
@@ -279,8 +290,8 @@ function noteVolume(t, a=20, b=1, c=1.8) {
 }
 
 function writeNote(buffer, start, end, frequency, volume, maxVolume) {
-    const firstSample = Math.round(start*sampleRate);
-    const lastSample = Math.round(end*sampleRate);
+    const firstSample = Math.round(start*sampleRate*60/bpm);
+    const lastSample = Math.round(end*sampleRate*60/bpm);
     const offset = Math.random();
 
     for (let i = firstSample; i < lastSample; i++) {
@@ -293,23 +304,30 @@ function writeNote(buffer, start, end, frequency, volume, maxVolume) {
             }
         }
         let value = 0;
-        for (let j = 0; j < bitsPerSample/8; j++)
-            value += buffer[j+i*bitsPerSample/8+44] * 256 ** j;
         let overtones = [1,0,0,0,0,0,0,0];
         if (!pure) {
             overtones = [0.621118, 0.0621118, 0.204969, 0.0434783, 0.0310559, 0.0310559, 0.,0.00621118];
         }
+        // if (frequency > maxFreq) {
+        //     value = 2 ** (bitsPerSample-1) - 1;
+        // } else {
         for (let k = 1; k < overtones.length; k++) {
             value += scale * overtones[k-1] *(volume/maxVolume * Math.sin(k * 2 * Math.PI * frequency * (i / sampleRate + offset)) * (2 ** (bitsPerSample-1) - 1));
         }
+        // }
         if (!pure) {
             value *= noteVolume(i/sampleRate);
         } else if (round) {
-            value *= Math.sin(Math.PI * (i/sampleRate-start) / (end - start));
+            value *= Math.sin(Math.PI * (i-firstSample) / (lastSample - firstSample));
+            if (parity) value *= -1;
         }
+        for (let j = 0; j < bitsPerSample/8; j++)
+            value += buffer[j+i*bitsPerSample/8+44] * 256 ** j;
         for (let j = 0; j < bitsPerSample/8; j++)
             buffer[j+i*bitsPerSample/8+44] = (value / 256 ** j) % 256;
     }
+
+    parity = !parity;
 }
 
 function writeFractal(buffer, alphaStart, alphaEnd, alphaLayers, betaStart, betaEnd, volume, recurVol, maxVolume, reversed, iter) {
@@ -319,14 +337,15 @@ function writeFractal(buffer, alphaStart, alphaEnd, alphaLayers, betaStart, beta
     for (let note of song) {
         if (alphaLayers.has(note.layer) && (note.start >= alphaStart && note.start <= alphaEnd || note.end >= alphaStart && note.end <= alphaEnd)) {
             if (note.type == "note") {
+                let freq = preserveFreqs ? note.frequency : note.frequency * alphaDuration / betaDuration;
                 if (!reversed) {
                     writeNote(buffer, (Math.max(note.start, alphaStart)-alphaStart) * betaDuration/alphaDuration + betaStart,
                                     (Math.min(note.end, alphaEnd)-alphaStart) * betaDuration/alphaDuration + betaStart, 
-                                    note.frequency, note.volume * volume/100, maxVolume);
+                                    freq, note.volume * volume/100, maxVolume);
                 } else {
                     writeNote(buffer, betaEnd - (Math.min(note.end, alphaEnd)-alphaStart) * betaDuration/alphaDuration,
                                     betaEnd - (Math.max(note.start, alphaStart)-alphaStart) * betaDuration/alphaDuration, 
-                                    note.frequency, note.volume * volume/100, maxVolume);
+                                    freq, note.volume * volume/100, maxVolume);
                 }
             } else if (note.type == "fractal") {
                 let newAlphaStart = 0;
@@ -359,10 +378,28 @@ function writeFractal(buffer, alphaStart, alphaEnd, alphaLayers, betaStart, beta
 
 function createFile() {
     // get the global settings
-    const roundBox = document.getElementById("round-notes");
-    round = roundBox.checked;
-    const iterDepth = document.getElementById("iter-depth");
-    defaultIter = Number(iterDepth.value);
+    const roundInput = document.getElementById("round-notes");
+    round = roundInput.checked;
+    const iterDepthInput = document.getElementById("iter-depth");
+    defaultIter = Number(iterDepthInput.value);
+    if (!Number.isInteger(defaultIter) || defaultIter <= 0) {
+        alert("Iteration depth must be a positive integer.");
+        return;
+    }
+    const preserveInput = document.getElementById("preserve-freqs");
+    preserveFreqs = preserveInput.checked;
+    const samplingRateInput = document.getElementById("sampling-rate");
+    sampleRate = Number(samplingRateInput.value);
+    if (Number.isNaN(sampleRate) || sampleRate <= 0) {
+        alert("Sampling rate must be a positive number.");
+        return;
+    }
+    const bpmInput = document.getElementById("bpm");
+    bpm = Number(bpmInput.value);
+    if (Number.isNaN(bpm) || bpm <= 0) {
+        alert("BPM must be a positive number.");
+        return;
+    }
 
     // find the duration
     let duration = 0;
@@ -370,10 +407,13 @@ function createFile() {
         if (note.end > duration)
             duration = note.end;
     }
+
+    const numChannels = 1;
+    const bytePerBloc = numChannels * bitsPerSample / 8;
+    const bytePerSec = sampleRate * bytePerBloc;
     const numSamples = sampleRate * duration;
     const samplesSize = numSamples * bytePerBloc;
     const fileSize = 44 + samplesSize - 8;
-
 
     const buffer = new Int8Array(fileSize);
 
