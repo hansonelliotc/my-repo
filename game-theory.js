@@ -23,6 +23,10 @@ let x1V   = 0;
 let x2V   = 0;
 let b1V   = 0;
 let b2V   = 0;
+let startPoint = [0,0,0,0,0,0]; // r1,r2,b1,b2,x1,x2
+let destination = [0,0,0,0]; // r1,r2,b1,b2
+let time = 0;
+let enRoute = false;
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.05;
@@ -41,6 +45,7 @@ const goldBackground = "#fff3d0"; // "#e6d3b0"
 const grayBackground = "#ddd" // "#bbb"
 const noLine = "#ddd";
 const dashedStroke = "10,10";
+const animationFrames = 70;
 
 init();
 setInterval('update()', 50);
@@ -270,13 +275,14 @@ function init() {
     region3.style.fill = "url('#gradient2')";
     region4.style.fill = goldBackground;
             
-    document.addEventListener('mousedown', (e) => { changeCoords(e); isMouseDown = true; });
+    container.addEventListener('mousedown', (e) => { enRoute = false; changeCoords(e); isMouseDown = true; });
     document.addEventListener('mouseup', () => { isMouseDown = false; });
     container.addEventListener('mousemove', (e) => {
         if (isMouseDown) {
             changeCoords(e);
         }
     });
+    bigDiagram.addEventListener('mousedown', (e) => { growBox(e); });
 
     const acc = 0.005;
     document.addEventListener('keydown', (e) => {
@@ -342,6 +348,7 @@ function init() {
                     break;
             }
         }
+        enRoute = false;
     });
     document.addEventListener('keyup', (e) => {
         switch (e.key) {
@@ -445,6 +452,16 @@ function update() {
     } else if (wasPositive2 && hitZero2 && changeQuad2) {
         switchQuadrants(false);
         wasPositive2 = false;
+    }
+
+    if (enRoute) {
+        time++;
+        b1coord.value = time/animationFrames*destination[2] + (1 - time/animationFrames)*startPoint[2];
+        b2coord.value = time/animationFrames*destination[3] + (1 - time/animationFrames)*startPoint[3];
+        x1coord.value = fromNearestRed(startPoint[4], (time/animationFrames*destination[0] + (1 - time/animationFrames)*startPoint[0])/(6 - +b1coord.value));
+        x2coord.value = fromNearestRed(startPoint[5], (time/animationFrames*destination[1] + (1 - time/animationFrames)*startPoint[1])/(6 - +b2coord.value));
+        if (time == animationFrames)
+            enRoute = false;
     }
 
     coords = [+(x1coord.value), +(x2coord.value), +(b1coord.value), +(b2coord.value)];
@@ -2039,13 +2056,21 @@ function coordsToMatrices(x1,x2,b1,b2) {
 }
 
 function changeCoords(e) {
+    const container = document.getElementById("container");
+    const diagram = document.getElementById("diagram");
+    const diagramWidth = diagram.width.baseVal.value;
+    const picWidth = (container.width.baseVal.value - diagramWidth)*(6 - +b1coord.value)/6;
+    const picHeight = (container.height.baseVal.value - diagramWidth)*(6 - +b2coord.value)/6;
+    const picPadding1 = (container.width.baseVal.value-picWidth)/2;
+    const picPadding2 = (container.height.baseVal.value-picHeight)/2;
+
     const wholeFigure = document.getElementById("whole-figure");
     const rect = wholeFigure.getBoundingClientRect();
     if (rect.width == 0) {
         return;
     }
-    const relativeX = e.offsetX - rect.left;
-    const relativeY = e.offsetY - rect.top;
+    const relativeX = e.offsetX - picPadding1;
+    const relativeY = e.offsetY - picPadding2;
     const newX1 = relativeX / rect.width * 6;
     const newX2 = (1 - relativeY / rect.height) * 6;
     if (0 <= newX1 && newX1 <=6 && 0 <= newX2 && newX2 <=6) {
@@ -2079,4 +2104,59 @@ function sideWidth(side) {
         case 4:
             return (18 - totalA)/12;
     }
+}
+
+function growBox(e) {
+    const x1coord = document.getElementById("x1coord");
+    const x2coord = document.getElementById("x2coord");
+    const b1coord = document.getElementById("b1coord");
+    const b2coord = document.getElementById("b2coord");
+
+    const bigDiagram = document.getElementById("big-diagram");
+    const rect = bigDiagram.getBoundingClientRect();
+    if (rect.width == 0) {
+        return;
+    }
+    const fullWidth = bigDiagram.getBoundingClientRect().width;
+    const padding = 0.1*fullWidth;
+    const width = fullWidth - 2*padding;
+    const relativeX = e.offsetX - padding;
+    const relativeY = e.offsetY - padding;
+    const x = relativeX / width * 6;
+    const y = (1 - relativeY / width) * 6;
+
+    if (x <= 6 && x >= 0 && y <= 6 && y >= 0) {
+        x1V = 0;
+        x2V = 0;
+        b1V = 0;
+        b2V = 0;
+
+        enRoute = true;
+        const ver1 = take(matrixA, 1);
+        const ver2 = take(matrixA, 2);
+        const hor1 = take(matrixB, 1);
+        const hor2 = take(matrixB, 2);
+        if (x > ver2) destination[2] = 6;
+        else destination[2] = 0;
+        if (x > ver1) destination[0] = 0;
+        else destination[0] = 6;
+        if (y > hor2) destination[3] = 6;
+        else destination[3] = 0;
+        if (y > hor1) destination[1] = 0;
+        else destination[1] = 6;
+
+        startPoint[0] = take(matrixA,1);
+        startPoint[1] = take(matrixB,1);
+        startPoint[2] = +b1coord.value;
+        startPoint[3] = +b2coord.value;
+        startPoint[4] = +x1coord.value;
+        startPoint[5] = +x2coord.value;
+        time = 0;
+    }
+}
+
+function fromNearestRed(x, distance) {
+    const nearestRed = Math.round(x / 2) * 2;
+    if (x < nearestRed) return nearestRed - distance;
+    else return nearestRed + distance;
 }
