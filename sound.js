@@ -98,10 +98,10 @@ function addNote() {
         const newNote = document.createElement("div");
         newNote.class = "note";
         const text = document.createElement("span");
-        if (end - start == 1)
-            text.innerHTML = frequencyStr + " hz for " + durationStr + " beat at time " + String(start+j) + ", volume " + volume;
+        if (Math.abs(end - start - 1) < 0.01)
+            text.innerHTML = String(frequency.toFixed(0)) + " hz for 1 beat at time " + String((start+j).toFixed(2)) + ", volume " + String(volume.toFixed(0));
         else
-            text.innerHTML = frequencyStr + " hz for " + durationStr + " beats at time " + String(start+j) + ", volume " + volume;
+            text.innerHTML = String(frequency.toFixed(0)) + " hz for " + String((end - start).toFixed(2)) + " beats at time " + String((start+j).toFixed(2)) + ", volume " + String(volume.toFixed(0));
         const deletionButton = document.createElement("input");
         deletionButton.type = "button";
         deletionButton.value = "Delete";
@@ -110,7 +110,7 @@ function addNote() {
             newNote.remove();
             layerObject.value = layerStr;
             frequencyObject.value = frequencyStr;
-            startObject.value = String(start+j);
+            startObject.value = String(Math.round((start+j)*1000000)/1000000);
             durationObject.value = durationStr;
             volumeObject.value = volumeStr;
             numNotesObject.value = "1";
@@ -411,6 +411,7 @@ function createFile() {
         if (note.end > duration)
             duration = note.end;
     }
+    duration *= 60/bpm; // find the duration in seconds
 
     const numChannels = 1;
     const bytePerBloc = numChannels * bitsPerSample / 8;
