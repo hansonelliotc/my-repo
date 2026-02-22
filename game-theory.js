@@ -379,6 +379,31 @@ function init() {
         }
     });
 
+    const bigPicQuad1 = document.getElementById("quad1");
+    const bigPicQuad2 = document.getElementById("quad2");
+    const bigPicQuad3 = document.getElementById("quad3");
+    const bigPicQuad4 = document.getElementById("quad4");
+    const bigPicQuad1a = document.getElementById("q1a");
+    const bigPicQuad2a = document.getElementById("q2a");
+    const bigPicQuad2b = document.getElementById("q2b");
+    const bigPicQuad3a = document.getElementById("q3a");
+    const bigPicQuad3b = document.getElementById("q3b");
+    const bigPicQuad3c = document.getElementById("q3c");
+    const bigPicQuad4a = document.getElementById("q4a");
+    const bigPicQuad4b = document.getElementById("q4b");
+    bigPicQuad1.style.fill = greenBackground;
+    bigPicQuad2.style.fill = goldBackground;
+    bigPicQuad3.style.fill = grayBackground;
+    bigPicQuad4.style.fill = ceruleanBackground;
+    bigPicQuad1a.style.fill = "url('#gradient1')";
+    bigPicQuad2a.style.fill = "white";
+    bigPicQuad2b.style.fill = grayBackground;
+    bigPicQuad3a.style.fill = ceruleanBackground;
+    bigPicQuad3b.style.fill = "url('#gradient2')";
+    bigPicQuad3c.style.fill = goldBackground;
+    bigPicQuad4a.style.fill = grayBackground;
+    bigPicQuad4b.style.fill = "white";
+
     update();
 }
 
@@ -387,6 +412,19 @@ function update() {
     const x2coord = document.getElementById("x2coord");
     const b1coord = document.getElementById("b1coord");
     const b2coord = document.getElementById("b2coord");
+
+    if (Math.abs(+x1coord.value - Math.round(+x1coord.value*2)/2) < 0.05 && !isMouseDown && !x1up && !x1down && x1V == 0) {
+        x1coord.value = Math.round(+x1coord.value*2)/2;
+    }
+    if (Math.abs(+x2coord.value - Math.round(+x2coord.value*2)/2) < 0.05 && !isMouseDown && !x2up && !x2down && x2V == 0) {
+        x2coord.value = Math.round(+x2coord.value*2)/2;
+    }
+    if (Math.abs(+b1coord.value - Math.round(+b1coord.value)) < 0.05 && !b1up && !b1down && b1V == 0) {
+        b1coord.value = Math.round(+b1coord.value);
+    }
+    if (Math.abs(+b2coord.value - Math.round(+b2coord.value)) < 0.05 && !b2up && !b2down && b2V == 0) {
+        b2coord.value = Math.round(+b2coord.value);
+    }
 
     if (x1up) {
         x1coord.value = (+x1coord.value + 5*+x1coord.step) % 6;
@@ -465,6 +503,8 @@ function update() {
     }
 
     coords = [+(x1coord.value), +(x2coord.value), +(b1coord.value), +(b2coord.value)];
+    if (x1coord.value == 0) coords[0] += 6;
+    if (x2coord.value == 0) coords[1] += 6;
     if (quad == 2 || quad == 3) {
         coords[0] = coords[0] - 6;
         if (coords[0] == 0) coords[0] = -6;
@@ -578,67 +618,123 @@ function update() {
     const error = 0.00001;
     const rowMax = Math.max(...matrixA) - error;
     const colMax = Math.max(...matrixB) - error;
-    let numEquilibria = 0;
 
-    if (matrixA[0]- matrixA[2] >= -error && matrixB[0] - matrixB[1] >= -error) {
-        numEquilibria++;
-        if (matrixA[0] >= rowMax && matrixB[0] >= colMax)
+    if (matrixA[0] - matrixA[2] >= -error && matrixB[0] - matrixB[1] >= -error) {
+        if (matrixA[0] >= rowMax && matrixB[0] >= colMax) {
             point1.style = "fill:" + lightGreen;
-        else if (matrixA[0] >= rowMax)
+            a1.style.color = lightGreen;
+            a2.style.color = lightGreen;
+        } else if (matrixA[0] >= rowMax) {
             point1.style = "fill:" + gold;
-        else if (matrixB[0] >= colMax)
+            a1.style.color = gold;
+            a2.style.color = gold;
+        } else if (matrixB[0] >= colMax) {
             point1.style = "fill:" + cerulean;
-        else
+            a1.style.color = cerulean;
+            a2.style.color = cerulean;
+        } else {
             point1.style = "fill:" + bad;
+            a1.style.color = bad;
+            a2.style.color = bad;
+        }
+        a1.style.fontWeight = "bold";
+        a2.style.fontWeight = "bold";
         point1.style.r = eqRadii*width;
     } else {
         point1.style.opacity = 0;
+        a1.style.color = "black";
+        a1.style.fontWeight = "";
+        a2.style.color = "black";
+        a2.style.fontWeight = "";
     }
     
     if (matrixA[1] - matrixA[3] >= -error && matrixB[1] - matrixB[0] >= -error) {
-        numEquilibria++;
-        if (matrixA[1] >= rowMax && matrixB[1] >= colMax)
+        if (matrixA[1] >= rowMax && matrixB[1] >= colMax) {
             point2.style = "fill:" + lightGreen;
-        else if (matrixA[1] >= rowMax)
+            b1.style.color = lightGreen;
+            b2.style.color = lightGreen;
+        } else if (matrixA[1] >= rowMax) {
             point2.style = "fill:" + gold;
-        else if (matrixB[1] >= colMax)
+            b1.style.color = gold;
+            b2.style.color = gold;
+        } else if (matrixB[1] >= colMax) {
             point2.style = "fill:" + cerulean;
-        else
+            b1.style.color = cerulean;
+            b2.style.color = cerulean;
+        } else {
             point2.style = "fill:" + bad;
+            b1.style.color = bad;
+            b2.style.color = bad;
+        }
+        b1.style.fontWeight = "bold";
+        b2.style.fontWeight = "bold";
         point2.style.r = eqRadii*width;
     } else {
         point2.style.opacity = 0;
+        b1.style.color = "black";
+        b1.style.fontWeight = "";
+        b2.style.color = "black";
+        b2.style.fontWeight = "";
     }
 
     if (matrixA[2] - matrixA[0] >= -error && matrixB[2] - matrixB[3] >= -error) {
-        numEquilibria++;
-        if (matrixA[2] >= rowMax && matrixB[2] >= colMax)
+        if (matrixA[2] >= rowMax && matrixB[2] >= colMax) {
             point3.style = "fill:" + lightGreen;
-        else if (matrixA[2] >= rowMax)
+            c1.style.color = lightGreen;
+            c2.style.color = lightGreen;
+        } else if (matrixA[2] >= rowMax) {
             point3.style = "fill:" + gold;
-        else if (matrixB[2] >= colMax)
+            c1.style.color = gold;
+            c2.style.color = gold;
+        } else if (matrixB[2] >= colMax) {
             point3.style = "fill:" + cerulean;
-        else
+            c1.style.color = cerulean;
+            c2.style.color = cerulean;
+        } else {
             point3.style = "fill:" + bad;
+            c1.style.color = bad;
+            c2.style.color = bad;
+        }
+        c1.style.fontWeight = "bold";
+        c2.style.fontWeight = "bold";
         point3.style.r = eqRadii*width;
     } else {
         point3.style.opacity = 0;
+        c1.style.color = "black";
+        c1.style.fontWeight = "";
+        c2.style.color = "black";
+        c2.style.fontWeight = "";
     }
 
     if (matrixA[3] - matrixA[1] >= -error && matrixB[3] - matrixB[2] >= -error) {
-        numEquilibria++;
-        if (matrixA[3] >= rowMax && matrixB[3] >= colMax)
+        if (matrixA[3] >= rowMax && matrixB[3] >= colMax) {
             point4.style = "fill:" + lightGreen;
-        else if (matrixA[3] >= rowMax)
+            d1.style.color = lightGreen;
+            d2.style.color = lightGreen;
+        } else if (matrixA[3] >= rowMax) {
             point4.style = "fill:" + gold;
-        else if (matrixB[3] >= colMax)
+            d1.style.color = gold;
+            d2.style.color = gold;
+        } else if (matrixB[3] >= colMax) {
             point4.style = "fill:" + cerulean;
-        else
+            d1.style.color = cerulean;
+            d2.style.color = cerulean;
+        } else {
             point4.style = "fill:" + bad;
+            d1.style.color = bad;
+            d2.style.color = bad;
+        }
+        d1.style.fontWeight = "bold";
+        d2.style.fontWeight = "bold";
         point4.style.r = eqRadii*width;
     } else {
         point4.style.opacity = 0;
+        d1.style.color = "black";
+        d1.style.fontWeight = "";
+        d2.style.color = "black";
+        d2.style.fontWeight = "";
     }
+
     if (0 < x1coord.value && x1coord.value < 3 && 0 < x2coord.value && x2coord.value < 3 && 0 < b1coord.value && b1coord.value < 6 && 0 < b2coord.value && b2coord.value < 6) {
         const mixedRow = mixedPayoff(matrixA);
         const mixedCol = mixedPayoff(matrixB);
@@ -1346,77 +1442,77 @@ function update() {
     const arrow11 = document.getElementById("arrow11");
     const arrow12 = document.getElementById("arrow12");
     
-    arrow1.x1.baseVal.value = picPadding1 + picWidth/12 - arrowSize;
-    arrow1.x2.baseVal.value = picPadding1 + picWidth/12 + arrowSize;
-    arrow1.y1.baseVal.value = picPadding2 - arrowOffset;
-    arrow1.y2.baseVal.value = picPadding2 - arrowOffset;
     if (quad == 2 || quad == 4) {
+        arrow1.x1.baseVal.value = picPadding1 + picWidth/12 - arrowSizeD;
+        arrow1.x2.baseVal.value = picPadding1 + picWidth/12 + arrowSizeD;
+        arrow1.y1.baseVal.value = picPadding2 - arrowOffset - arrowSizeD;
+        arrow1.y2.baseVal.value = picPadding2 - arrowOffset + arrowSizeD;
         arrow2.x1.baseVal.value = picPadding1 + picWidth*3/12 - arrowSizeD;
         arrow2.x2.baseVal.value = picPadding1 + picWidth*3/12 + arrowSizeD;
         arrow2.y1.baseVal.value = picPadding2 - arrowOffset - arrowSizeD;
         arrow2.y2.baseVal.value = picPadding2 - arrowOffset + arrowSizeD;
-        arrow3.x1.baseVal.value = picPadding1 + picWidth*5/12 - arrowSizeD;
-        arrow3.x2.baseVal.value = picPadding1 + picWidth*5/12 + arrowSizeD;
-        arrow3.y1.baseVal.value = picPadding2 - arrowOffset - arrowSizeD;
-        arrow3.y2.baseVal.value = picPadding2 - arrowOffset + arrowSizeD;
     } else {
+        arrow1.x1.baseVal.value = picPadding1 + picWidth/12 + arrowSizeD;
+        arrow1.x2.baseVal.value = picPadding1 + picWidth/12 - arrowSizeD;
+        arrow1.y1.baseVal.value = picPadding2 - arrowOffset - arrowSizeD;
+        arrow1.y2.baseVal.value = picPadding2 - arrowOffset + arrowSizeD;
         arrow2.x1.baseVal.value = picPadding1 + picWidth*3/12 + arrowSizeD;
         arrow2.x2.baseVal.value = picPadding1 + picWidth*3/12 - arrowSizeD;
         arrow2.y1.baseVal.value = picPadding2 - arrowOffset - arrowSizeD;
         arrow2.y2.baseVal.value = picPadding2 - arrowOffset + arrowSizeD;
-        arrow3.x1.baseVal.value = picPadding1 + picWidth*5/12 + arrowSizeD;
-        arrow3.x2.baseVal.value = picPadding1 + picWidth*5/12 - arrowSizeD;
-        arrow3.y1.baseVal.value = picPadding2 - arrowOffset - arrowSizeD;
-        arrow3.y2.baseVal.value = picPadding2 - arrowOffset + arrowSizeD;
     }
-    arrow4.x1.baseVal.value = picPadding1 + picWidth*7/12;
-    arrow4.x2.baseVal.value = picPadding1 + picWidth*7/12;
-    arrow4.y1.baseVal.value = picPadding2 - arrowOffset - arrowSize;
-    arrow4.y2.baseVal.value = picPadding2 - arrowOffset + arrowSize;
+    arrow3.x1.baseVal.value = picPadding1 + picWidth*5/12 - arrowSize;
+    arrow3.x2.baseVal.value = picPadding1 + picWidth*5/12 + arrowSize;
+    arrow3.y1.baseVal.value = picPadding2 - arrowOffset;
+    arrow3.y2.baseVal.value = picPadding2 - arrowOffset;
+    arrow4.x1.baseVal.value = picPadding1 + picWidth*7/12 - arrowSize;
+    arrow4.x2.baseVal.value = picPadding1 + picWidth*7/12 + arrowSize;
+    arrow4.y1.baseVal.value = picPadding2 - arrowOffset;
+    arrow4.y2.baseVal.value = picPadding2 - arrowOffset;
     arrow5.x1.baseVal.value = picPadding1 + picWidth*9/12;
     arrow5.x2.baseVal.value = picPadding1 + picWidth*9/12;
     arrow5.y1.baseVal.value = picPadding2 - arrowOffset - arrowSize;
     arrow5.y2.baseVal.value = picPadding2 - arrowOffset + arrowSize;
-    arrow6.x1.baseVal.value = picPadding1 + picWidth*11/12 - arrowSize;
-    arrow6.x2.baseVal.value = picPadding1 + picWidth*11/12 + arrowSize;
-    arrow6.y1.baseVal.value = picPadding2 - arrowOffset;
-    arrow6.y2.baseVal.value = picPadding2 - arrowOffset;
+    arrow6.x1.baseVal.value = picPadding1 + picWidth*11/12;
+    arrow6.x2.baseVal.value = picPadding1 + picWidth*11/12;
+    arrow6.y1.baseVal.value = picPadding2 - arrowOffset - arrowSize;
+    arrow6.y2.baseVal.value = picPadding2 - arrowOffset + arrowSize;
 
-    arrow7.x1.baseVal.value = picPadding1 - arrowSize - arrowOffset;
-    arrow7.x2.baseVal.value = picPadding1 + arrowSize - arrowOffset;
-    arrow7.y1.baseVal.value = picPadding2 + picHeight*5/12;
-    arrow7.y2.baseVal.value = picPadding2 + picHeight*5/12;
     if (quad == 2 || quad == 4) {
+        arrow7.x1.baseVal.value = picPadding1 - arrowSizeD - arrowOffset;
+        arrow7.x2.baseVal.value = picPadding1 + arrowSizeD - arrowOffset;
+        arrow7.y1.baseVal.value = picPadding2 + picHeight*11/12 - arrowSizeD;
+        arrow7.y2.baseVal.value = picPadding2 + picHeight*11/12 + arrowSizeD;
         arrow8.x1.baseVal.value = picPadding1 - arrowSizeD - arrowOffset;
         arrow8.x2.baseVal.value = picPadding1 + arrowSizeD - arrowOffset;
-        arrow8.y1.baseVal.value = picPadding2 + picHeight*7/12 - arrowSizeD;
-        arrow8.y2.baseVal.value = picPadding2 + picHeight*7/12 + arrowSizeD;
-        arrow9.x1.baseVal.value = picPadding1 - arrowSizeD - arrowOffset;
-        arrow9.x2.baseVal.value = picPadding1 + arrowSizeD - arrowOffset;
-        arrow9.y1.baseVal.value = picPadding2 + picHeight*9/12 - arrowSizeD;
-        arrow9.y2.baseVal.value = picPadding2 + picHeight*9/12 + arrowSizeD;
+        arrow8.y1.baseVal.value = picPadding2 + picHeight*9/12 - arrowSizeD;
+        arrow8.y2.baseVal.value = picPadding2 + picHeight*9/12 + arrowSizeD;
     } else {
+        arrow7.x1.baseVal.value = picPadding1 + arrowSizeD - arrowOffset;
+        arrow7.x2.baseVal.value = picPadding1 - arrowSizeD - arrowOffset;
+        arrow7.y1.baseVal.value = picPadding2 + picHeight*11/12 - arrowSizeD;
+        arrow7.y2.baseVal.value = picPadding2 + picHeight*11/12 + arrowSizeD;
         arrow8.x1.baseVal.value = picPadding1 + arrowSizeD - arrowOffset;
         arrow8.x2.baseVal.value = picPadding1 - arrowSizeD - arrowOffset;
-        arrow8.y1.baseVal.value = picPadding2 + picHeight*7/12 - arrowSizeD;
-        arrow8.y2.baseVal.value = picPadding2 + picHeight*7/12 + arrowSizeD;
-        arrow9.x1.baseVal.value = picPadding1 + arrowSizeD - arrowOffset;
-        arrow9.x2.baseVal.value = picPadding1 - arrowSizeD - arrowOffset;
-        arrow9.y1.baseVal.value = picPadding2 + picHeight*9/12 - arrowSizeD;
-        arrow9.y2.baseVal.value = picPadding2 + picHeight*9/12 + arrowSizeD;
+        arrow8.y1.baseVal.value = picPadding2 + picHeight*9/12 - arrowSizeD;
+        arrow8.y2.baseVal.value = picPadding2 + picHeight*9/12 + arrowSizeD;
     }
+    arrow9.x1.baseVal.value = picPadding1 - arrowOffset;
+    arrow9.x2.baseVal.value = picPadding1 - arrowOffset;
+    arrow9.y1.baseVal.value = picPadding2 + picHeight*7/12 - arrowSize;
+    arrow9.y2.baseVal.value = picPadding2 + picHeight*7/12 + arrowSize;
     arrow10.x1.baseVal.value = picPadding1 - arrowOffset;
     arrow10.x2.baseVal.value = picPadding1 - arrowOffset;
-    arrow10.y1.baseVal.value = picPadding2 + picHeight/12 - arrowSize;
-    arrow10.y2.baseVal.value = picPadding2 + picHeight/12 + arrowSize;
-    arrow11.x1.baseVal.value = picPadding1 - arrowOffset;
-    arrow11.x2.baseVal.value = picPadding1 - arrowOffset;
-    arrow11.y1.baseVal.value = picPadding2 + picHeight*11/12 - arrowSize;
-    arrow11.y2.baseVal.value = picPadding2 + picHeight*11/12 + arrowSize;
+    arrow10.y1.baseVal.value = picPadding2 + picHeight*5/12 - arrowSize;
+    arrow10.y2.baseVal.value = picPadding2 + picHeight*5/12 + arrowSize;
+    arrow11.x1.baseVal.value = picPadding1 - arrowSize - arrowOffset;
+    arrow11.x2.baseVal.value = picPadding1 + arrowSize - arrowOffset;
+    arrow11.y1.baseVal.value = picPadding2 + picHeight*3/12;
+    arrow11.y2.baseVal.value = picPadding2 + picHeight*3/12;
     arrow12.x1.baseVal.value = picPadding1 - arrowSize - arrowOffset;
     arrow12.x2.baseVal.value = picPadding1 + arrowSize - arrowOffset;
-    arrow12.y1.baseVal.value = picPadding2 + picHeight*3/12;
-    arrow12.y2.baseVal.value = picPadding2 + picHeight*3/12;
+    arrow12.y1.baseVal.value = picPadding2 + picHeight/12;
+    arrow12.y2.baseVal.value = picPadding2 + picHeight/12;
 
     let arrowA = "url(#arrow)";
     let arrowB = "url(#arrow)";
@@ -1454,61 +1550,61 @@ function update() {
     }
 
     if (quad == 2 || quad == 3) {
-        arrow1.style.markerEnd = arrowA;
-        arrow6.style.markerEnd = arrowA;
-        arrow1.style.markerStart = "";
-        arrow6.style.markerStart = "";
-        arrow7.style.markerEnd = arrowB;
+        arrow3.style.markerEnd = arrowA;
+        arrow4.style.markerEnd = arrowA;
+        arrow3.style.markerStart = "";
+        arrow4.style.markerStart = "";
+        arrow11.style.markerEnd = arrowB;
         arrow12.style.markerEnd = arrowB;
-        arrow7.style.markerStart = "";
+        arrow11.style.markerStart = "";
         arrow12.style.markerStart = "";
     } else {
-        arrow1.style.markerStart = arrowA;
-        arrow6.style.markerStart = arrowA;
-        arrow1.style.markerEnd = "";
-        arrow6.style.markerEnd = "";
-        arrow7.style.markerStart = arrowB;
+        arrow3.style.markerStart = arrowA;
+        arrow4.style.markerStart = arrowA;
+        arrow3.style.markerEnd = "";
+        arrow4.style.markerEnd = "";
+        arrow11.style.markerStart = arrowB;
         arrow12.style.markerStart = arrowB;
-        arrow7.style.markerEnd = "";
+        arrow11.style.markerEnd = "";
         arrow12.style.markerEnd = "";
     }
     if (quad == 1 || quad == 2) {
-        arrow2.style.markerEnd = arrowA;
-        arrow3.style.markerEnd = arrowA;
-        arrow2.style.markerStart = "";
-        arrow3.style.markerStart = "";
-        arrow8.style.markerEnd = arrowB;
+        arrow5.style.markerEnd = arrowA;
+        arrow6.style.markerEnd = arrowA;
+        arrow5.style.markerStart = "";
+        arrow6.style.markerStart = "";
         arrow9.style.markerEnd = arrowB;
-        arrow8.style.markerStart = "";
+        arrow10.style.markerEnd = arrowB;
         arrow9.style.markerStart = "";
+        arrow10.style.markerStart = "";
     } else {
-        arrow2.style.markerStart = arrowA;
-        arrow3.style.markerStart = arrowA;
-        arrow2.style.markerEnd = "";
-        arrow3.style.markerEnd = "";
-        arrow8.style.markerStart = arrowB;
+        arrow5.style.markerStart = arrowA;
+        arrow6.style.markerStart = arrowA;
+        arrow5.style.markerEnd = "";
+        arrow6.style.markerEnd = "";
         arrow9.style.markerStart = arrowB;
-        arrow8.style.markerEnd = "";
+        arrow10.style.markerStart = arrowB;
         arrow9.style.markerEnd = "";
+        arrow10.style.markerEnd = "";
     }
     if (quad == 1 || quad == 2) {
-        arrow4.style.markerEnd = arrowA;
-        arrow5.style.markerEnd = arrowA;
-        arrow4.style.markerStart = "";
-        arrow5.style.markerStart = "";
-        arrow10.style.markerEnd = arrowB;
-        arrow11.style.markerEnd = arrowB;
-        arrow10.style.markerStart = "";
-        arrow11.style.markerStart = "";
+        arrow1.style.markerEnd = arrowA;
+        arrow2.style.markerEnd = arrowA;
+        arrow1.style.markerStart = "";
+        arrow2.style.markerStart = "";
+        arrow7.style.markerEnd = arrowB;
+        arrow8.style.markerEnd = arrowB;
+        arrow7.style.markerStart = "";
+        arrow8.style.markerStart = "";
     } else {
-        arrow4.style.markerStart = arrowA;
-        arrow5.style.markerStart = arrowA;
-        arrow4.style.markerEnd = "";
-        arrow5.style.markerEnd = "";
-        arrow10.style.markerStart = arrowB;
-        arrow11.style.markerStart = arrowB;
-        arrow10.style.markerEnd = "";
-        arrow11.style.markerEnd = "";
+        arrow1.style.markerStart = arrowA;
+        arrow2.style.markerStart = arrowA;
+        arrow1.style.markerEnd = "";
+        arrow2.style.markerEnd = "";
+        arrow7.style.markerStart = arrowB;
+        arrow8.style.markerStart = arrowB;
+        arrow7.style.markerEnd = "";
+        arrow8.style.markerEnd = "";
     }
 
     x1coord.style.width = (picWidth+26).toString()+"px";
@@ -1543,10 +1639,10 @@ function update() {
         const red1 = document.getElementById("red-point1");
         const red2 = document.getElementById("red-point2");
         const red3 = document.getElementById("red-point3");
-        const red4 = document.getElementById("red-point4");
         const green1 = document.getElementById("green-point1");
         const green2 = document.getElementById("green-point2");
         const green3 = document.getElementById("green-point3");
+        const green4 = document.getElementById("green-point4");
          
         switch (quad) {
             case 1:
@@ -1611,20 +1707,20 @@ function update() {
         bar4.y1.baseVal.value = picPadding2 + barOffset + barSeparation;
         bar4.y2.baseVal.value = picPadding2 + barOffset + barSeparation;
 
-        red1.cx.baseVal.value = picPadding1;
-        green1.cx.baseVal.value = picPadding1 + picWidth/6;
-        red2.cx.baseVal.value = picPadding1 + picWidth/3;
-        green2.cx.baseVal.value = picPadding1 + picWidth/2;
-        red3.cx.baseVal.value = picPadding1 + picWidth*2/3;
-        green3.cx.baseVal.value = picPadding1 + picWidth*5/6;
-        red4.cx.baseVal.value = picPadding1 + picWidth;
-        red1.cy.baseVal.value = picPadding2;
+        green1.cx.baseVal.value = picPadding1;
+        red1.cx.baseVal.value = picPadding1 + picWidth/6;
+        green2.cx.baseVal.value = picPadding1 + picWidth/3;
+        red2.cx.baseVal.value = picPadding1 + picWidth/2;
+        green3.cx.baseVal.value = picPadding1 + picWidth*2/3;
+        red3.cx.baseVal.value = picPadding1 + picWidth*5/6;
+        green4.cx.baseVal.value = picPadding1 + picWidth;
         green1.cy.baseVal.value = picPadding2;
-        red2.cy.baseVal.value = picPadding2;
+        red1.cy.baseVal.value = picPadding2;
         green2.cy.baseVal.value = picPadding2;
-        red3.cy.baseVal.value = picPadding2;
+        red2.cy.baseVal.value = picPadding2;
         green3.cy.baseVal.value = picPadding2;
-        red4.cy.baseVal.value = picPadding2;
+        red3.cy.baseVal.value = picPadding2;
+        green4.cy.baseVal.value = picPadding2;
 
         return;
     } else if (coords[2] == 6) {
@@ -1641,10 +1737,10 @@ function update() {
         const red1 = document.getElementById("red-point1");
         const red2 = document.getElementById("red-point2");
         const red3 = document.getElementById("red-point3");
-        const red4 = document.getElementById("red-point4");
         const green1 = document.getElementById("green-point1");
         const green2 = document.getElementById("green-point2");
         const green3 = document.getElementById("green-point3");
+        const green4 = document.getElementById("green-point4");
          
         switch (quad) {
             case 1:
@@ -1709,20 +1805,20 @@ function update() {
         bar4.x1.baseVal.value = picPadding1 + barOffset + barSeparation;
         bar4.x2.baseVal.value = picPadding1 + barOffset + barSeparation;
 
-        red1.cy.baseVal.value = picPadding2;
-        green1.cy.baseVal.value = picPadding2 + picHeight/6;
-        red2.cy.baseVal.value = picPadding2 + picHeight/3;
-        green2.cy.baseVal.value = picPadding2 + picHeight/2;
-        red3.cy.baseVal.value = picPadding2 + picHeight*2/3;
-        green3.cy.baseVal.value = picPadding2 + picHeight*5/6;
-        red4.cy.baseVal.value = picPadding2 + picHeight;
-        red1.cx.baseVal.value = picPadding1;
+        green1.cy.baseVal.value = picPadding2;
+        red1.cy.baseVal.value = picPadding2 + picHeight/6;
+        green2.cy.baseVal.value = picPadding2 + picHeight/3;
+        red2.cy.baseVal.value = picPadding2 + picHeight/2;
+        green3.cy.baseVal.value = picPadding2 + picHeight*2/3;
+        red3.cy.baseVal.value = picPadding2 + picHeight*5/6;
+        green4.cy.baseVal.value = picPadding2 + picHeight;
         green1.cx.baseVal.value = picPadding1;
-        red2.cx.baseVal.value = picPadding1;
+        red1.cx.baseVal.value = picPadding1;
         green2.cx.baseVal.value = picPadding1;
-        red3.cx.baseVal.value = picPadding1;
+        red2.cx.baseVal.value = picPadding1;
         green3.cx.baseVal.value = picPadding1;
-        red4.cx.baseVal.value = picPadding1;
+        red3.cx.baseVal.value = picPadding1;
+        green4.cx.baseVal.value = picPadding1;
 
         return;
     } else {
@@ -1759,75 +1855,75 @@ function update() {
     const red4 = document.getElementById("red4");
     const red5 = document.getElementById("red5");
     const red6 = document.getElementById("red6");
-    const red7 = document.getElementById("red7");
-    const red8 = document.getElementById("red8");
     const green1 = document.getElementById("green1");
     const green2 = document.getElementById("green2");
     const green3 = document.getElementById("green3");
     const green4 = document.getElementById("green4");
     const green5 = document.getElementById("green5");
     const green6 = document.getElementById("green6");
-    const picCorner1 = document.getElementById("red-corner1");
-    const picCorner2 = document.getElementById("red-corner2");
-    const picCorner3 = document.getElementById("red-corner3");
-    const picCorner4 = document.getElementById("red-corner4");
+    const green7 = document.getElementById("green7");
+    const green8 = document.getElementById("green8");
+    const picCorner1 = document.getElementById("green-corner1");
+    const picCorner2 = document.getElementById("green-corner2");
+    const picCorner3 = document.getElementById("green-corner3");
+    const picCorner4 = document.getElementById("green-corner4");
 
-    red1.x1.baseVal.value = picPadding1;
-    red1.x2.baseVal.value = picWidth+picPadding1;
-    red1.y1.baseVal.value = picPadding2;
-    red1.y2.baseVal.value = picPadding2;
-    red2.x1.baseVal.value = picPadding1;
-    red2.x2.baseVal.value = picWidth+picPadding1;
-    red2.y1.baseVal.value = picHeight/3+picPadding2;
-    red2.y2.baseVal.value = picHeight/3+picPadding2;
-    red3.x1.baseVal.value = picPadding1;
-    red3.x2.baseVal.value = picWidth+picPadding1;
-    red3.y1.baseVal.value = picHeight*2/3+picPadding2;
-    red3.y2.baseVal.value = picHeight*2/3+picPadding2;
-    red4.x1.baseVal.value = picPadding1;
-    red4.x2.baseVal.value = picWidth+picPadding1;
-    red4.y1.baseVal.value = picHeight+picPadding2;
-    red4.y2.baseVal.value = picHeight+picPadding2;
-    red5.x1.baseVal.value = picPadding1;
-    red5.x2.baseVal.value = picPadding1;
-    red5.y1.baseVal.value = picPadding2;
-    red5.y2.baseVal.value = picHeight+picPadding2;
-    red6.x1.baseVal.value = picWidth/3+picPadding1;
-    red6.x2.baseVal.value = picWidth/3+picPadding1;
-    red6.y1.baseVal.value = picPadding2;
-    red6.y2.baseVal.value = picHeight+picPadding2;
-    red7.x1.baseVal.value = picWidth*2/3+picPadding1;
-    red7.x2.baseVal.value = picWidth*2/3+picPadding1;
-    red7.y1.baseVal.value = picPadding2;
-    red7.y2.baseVal.value = picHeight+picPadding2;
-    red8.x1.baseVal.value = picWidth+picPadding1;
-    red8.x2.baseVal.value = picWidth+picPadding1;
-    red8.y1.baseVal.value = picPadding2;
-    red8.y2.baseVal.value = picHeight+picPadding2;
     green1.x1.baseVal.value = picPadding1;
     green1.x2.baseVal.value = picWidth+picPadding1;
-    green1.y1.baseVal.value = picHeight/6+picPadding2;
-    green1.y2.baseVal.value = picHeight/6+picPadding2;
+    green1.y1.baseVal.value = picPadding2;
+    green1.y2.baseVal.value = picPadding2;
     green2.x1.baseVal.value = picPadding1;
     green2.x2.baseVal.value = picWidth+picPadding1;
-    green2.y1.baseVal.value = picHeight/2+picPadding2;
-    green2.y2.baseVal.value = picHeight/2+picPadding2;
+    green2.y1.baseVal.value = picHeight/3+picPadding2;
+    green2.y2.baseVal.value = picHeight/3+picPadding2;
     green3.x1.baseVal.value = picPadding1;
     green3.x2.baseVal.value = picWidth+picPadding1;
-    green3.y1.baseVal.value = picHeight*5/6+picPadding2;
-    green3.y2.baseVal.value = picHeight*5/6+picPadding2;
-    green4.x1.baseVal.value = picWidth/6+picPadding1;
-    green4.x2.baseVal.value = picWidth/6+picPadding1;
-    green4.y1.baseVal.value = picPadding2;
+    green3.y1.baseVal.value = picHeight*2/3+picPadding2;
+    green3.y2.baseVal.value = picHeight*2/3+picPadding2;
+    green4.x1.baseVal.value = picPadding1;
+    green4.x2.baseVal.value = picWidth+picPadding1;
+    green4.y1.baseVal.value = picHeight+picPadding2;
     green4.y2.baseVal.value = picHeight+picPadding2;
-    green5.x1.baseVal.value = picWidth/2+picPadding1;
-    green5.x2.baseVal.value = picWidth/2+picPadding1;
+    green5.x1.baseVal.value = picPadding1;
+    green5.x2.baseVal.value = picPadding1;
     green5.y1.baseVal.value = picPadding2;
     green5.y2.baseVal.value = picHeight+picPadding2;
-    green6.x1.baseVal.value = picWidth*5/6+picPadding1;
-    green6.x2.baseVal.value = picWidth*5/6+picPadding1;
+    green6.x1.baseVal.value = picWidth/3+picPadding1;
+    green6.x2.baseVal.value = picWidth/3+picPadding1;
     green6.y1.baseVal.value = picPadding2;
     green6.y2.baseVal.value = picHeight+picPadding2;
+    green7.x1.baseVal.value = picWidth*2/3+picPadding1;
+    green7.x2.baseVal.value = picWidth*2/3+picPadding1;
+    green7.y1.baseVal.value = picPadding2;
+    green7.y2.baseVal.value = picHeight+picPadding2;
+    green8.x1.baseVal.value = picWidth+picPadding1;
+    green8.x2.baseVal.value = picWidth+picPadding1;
+    green8.y1.baseVal.value = picPadding2;
+    green8.y2.baseVal.value = picHeight+picPadding2;
+    red1.x1.baseVal.value = picPadding1;
+    red1.x2.baseVal.value = picWidth+picPadding1;
+    red1.y1.baseVal.value = picHeight/6+picPadding2;
+    red1.y2.baseVal.value = picHeight/6+picPadding2;
+    red2.x1.baseVal.value = picPadding1;
+    red2.x2.baseVal.value = picWidth+picPadding1;
+    red2.y1.baseVal.value = picHeight/2+picPadding2;
+    red2.y2.baseVal.value = picHeight/2+picPadding2;
+    red3.x1.baseVal.value = picPadding1;
+    red3.x2.baseVal.value = picWidth+picPadding1;
+    red3.y1.baseVal.value = picHeight*5/6+picPadding2;
+    red3.y2.baseVal.value = picHeight*5/6+picPadding2;
+    red4.x1.baseVal.value = picWidth/6+picPadding1;
+    red4.x2.baseVal.value = picWidth/6+picPadding1;
+    red4.y1.baseVal.value = picPadding2;
+    red4.y2.baseVal.value = picHeight+picPadding2;
+    red5.x1.baseVal.value = picWidth/2+picPadding1;
+    red5.x2.baseVal.value = picWidth/2+picPadding1;
+    red5.y1.baseVal.value = picPadding2;
+    red5.y2.baseVal.value = picHeight+picPadding2;
+    red6.x1.baseVal.value = picWidth*5/6+picPadding1;
+    red6.x2.baseVal.value = picWidth*5/6+picPadding1;
+    red6.y1.baseVal.value = picPadding2;
+    red6.y2.baseVal.value = picHeight+picPadding2;
     picCorner1.cx.baseVal.value = picPadding1;
     picCorner1.cy.baseVal.value = picPadding2;
     picCorner2.cx.baseVal.value = picWidth+picPadding1;
@@ -1836,6 +1932,28 @@ function update() {
     picCorner3.cy.baseVal.value = picHeight+picPadding2;
     picCorner4.cx.baseVal.value = picWidth+picPadding1;
     picCorner4.cy.baseVal.value = picHeight+picPadding2;
+
+    const bigPicture = document.getElementById("big-picture");
+    const bigPicPoint1 = document.getElementById("big-pic-point1");
+    const bigPictureWidth = bigPicture.width.baseVal.value;
+    switch (quad) {
+        case 1:
+            bigPicPoint1.cx.baseVal.value = (0.54 + x1coord.value/6*0.42)*bigPictureWidth;
+            bigPicPoint1.cy.baseVal.value = (0.46 - x2coord.value/6*0.42)*bigPictureWidth;
+            break;
+        case 2:
+            bigPicPoint1.cx.baseVal.value = (0.04 + x1coord.value/6*0.42)*bigPictureWidth;
+            bigPicPoint1.cy.baseVal.value = (0.46 - x2coord.value/6*0.42)*bigPictureWidth;
+            break;
+        case 3:
+            bigPicPoint1.cx.baseVal.value = (0.04 + x1coord.value/6*0.42)*bigPictureWidth;
+            bigPicPoint1.cy.baseVal.value = (0.96 - x2coord.value/6*0.42)*bigPictureWidth;
+            break;
+        case 4:
+            bigPicPoint1.cx.baseVal.value = (0.54 + x1coord.value/6*0.42)*bigPictureWidth;
+            bigPicPoint1.cy.baseVal.value = (0.96 - x2coord.value/6*0.42)*bigPictureWidth;
+            break;
+    }
 }
 
 function switchQuadrants(x1) {
@@ -1844,9 +1962,9 @@ function switchQuadrants(x1) {
         x = +document.getElementById("x1coord").value;
     }
     else {
-        x = (10 - +document.getElementById("x2coord").value) % 6;
+        x = (8 - +document.getElementById("x2coord").value) % 6;
     }
-    if (1 < x && x < 3 || x == 1 && x1 || x == 3 && !x1) {
+    if (0 < x && x < 2 || x == 0 && x1 || x == 2 && !x1) {
         switch (quad) {
             case 1:
                 quad = 3;
@@ -1861,34 +1979,34 @@ function switchQuadrants(x1) {
                 quad = 2;
                 break;
         }
-    } else if (3 < x && x < 5 || x == 3 && x1 || x == 5 && !x1) {
+    } else if (2 < x && x < 4 || x == 2 && x1 || x == 4 && !x1) {
         switch (quad) {
             case 1:
-                quad = 4;
-                break;
-            case 2:
-                quad = 3;
-                break;
-            case 3:
                 quad = 2;
                 break;
-            case 4:
+            case 2:
                 quad = 1;
+                break;
+            case 3:
+                quad = 4;
+                break;
+            case 4:
+                quad = 3;
                 break;
         }
     } else {
         switch (quad) {
             case 1:
-                quad = 2;
-                break;
-            case 2:
-                quad = 1;
-                break;
-            case 3:
                 quad = 4;
                 break;
-            case 4:
+            case 2:
                 quad = 3;
+                break;
+            case 3:
+                quad = 2;
+                break;
+            case 4:
+                quad = 1;
                 break;
         }
     }
@@ -1896,40 +2014,45 @@ function switchQuadrants(x1) {
     const region2 = document.getElementById("region2");
     const region3 = document.getElementById("region3");
     const region4 = document.getElementById("region4");
+    const header = document.getElementById("quad-header");
     switch (quad) {
         case 1:
             region1.style.fill = greenBackground;
             region2.style.fill = greenBackground;
             region3.style.fill = "url('#gradient1')";
             region4.style.fill = greenBackground;
+            header.innerHTML = "Good Quadrant";
             break;
         case 2:
             region1.style.fill = goldBackground;
             region2.style.fill = goldBackground;
             region3.style.fill = "white";
             region4.style.fill = grayBackground;
+            header.innerHTML = "Row Quadrant";
             break;
         case 3:
             region1.style.fill = ceruleanBackground;
             region2.style.fill = grayBackground;
             region3.style.fill = "url('#gradient2')";
             region4.style.fill = goldBackground;
+            header.innerHTML = "Bad Quadrant";
             break;
         case 4:
             region1.style.fill = grayBackground;
             region2.style.fill = ceruleanBackground;
             region3.style.fill = "white";
             region4.style.fill = ceruleanBackground;
+            header.innerHTML = "Column Quadrant";
             break;
     }
     if (x1) {
         const x1coord = document.getElementById("x1coord");
-        let redLine = Math.round(x1coord.value/2)*2;
-        x1coord.value = (redLine - (x1coord.value - redLine) + 6) % 6;
+        let redLine = Math.round((+x1coord.value+1)/2)*2-1;
+        x1coord.value = (redLine - (+x1coord.value - redLine) + 6) % 6;
     } else {
         const x2coord = document.getElementById("x2coord");
-        let redLine = Math.round(x2coord.value/2)*2;
-        x2coord.value = (redLine - (x2coord.value - redLine)+6) % 6;
+        let redLine = Math.round((+x2coord.value+1)/2)*2-1;
+        x2coord.value = (redLine - (+x2coord.value - redLine)+6) % 6;
     }
 }
 
@@ -2044,7 +2167,11 @@ function XBtoUV([x,b]) {
 }
 
 function XBtoMatrix([x,b]) {
-    return UVtoMatrix(XBtoUV([x,b]));
+    let x0 = x;
+    if (x < 0) x0 += 6;
+    x0 = 6 - ((x0 + 3) % 6); // modifies for a change in convention
+    if (x < 0) x0 -= 6;
+    return UVtoMatrix(XBtoUV([x0,b]));
 }
 
 function coordsToMatrices(x1,x2,b1,b2) {
@@ -2156,7 +2283,7 @@ function growBox(e) {
 }
 
 function fromNearestRed(x, distance) {
-    const nearestRed = Math.round(x / 2) * 2;
+    const nearestRed = Math.round((x+1) / 2) * 2 - 1;
     if (x < nearestRed) return nearestRed - distance;
     else return nearestRed + distance;
 }

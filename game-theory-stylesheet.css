@@ -15,6 +15,10 @@ html, body {
     stroke: green;
 }
 
+.pic-corner {
+    fill: green;
+}
+
 .arrow {
     stroke: black;
     stroke-width: 0.8%;
@@ -74,4 +78,9 @@ html, body {
 
 #b1coord::-webkit-slider-thumb, #b2coord::-webkit-slider-thumb {
     background: blue;
+}
+
+p, h1 {
+    font-family: Helvetica, sans-serif;
+    padding: none;
 }

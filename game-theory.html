@@ -9,24 +9,88 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-	<div style="position:absolute; top:10vh; left:85vw">
+	<div style="position:absolute; top:10vh; left:100vh; width:20vw">
+		<h1 id="quad-header">Bad Quadrant</h1>
 		<div style="display:flex;align-items:center">
 			<div style="display:inline-block">R =</div>
 			<table style="border:2px solid;margin:10px;display:inline-block">
 				<tr><td id="a1"></td><td id="b1"></td></tr>
 				<tr><td id="c1"></td><td id="d1"></td></tr>
 			</table>
-		</div>
-		<div style="display:flex;align-items:center">
-			<div style="display:inline-block">C =</div>
+			<div style="display:inline-block; margin-left:2vw">C =</div>
 			<table style="border:2px solid;margin:10px;">
 				<tr><td id="a2"></td><td id="b2"></td></tr>
 				<tr><td id="c2"></td><td id="d2"></td></tr>
 			</table>
 		</div>
 	</div>
-	<img src="files/fourFigureTables.png" width="20%" style="position:absolute; right:5%; top:40%">
-	<svg id="big-diagram" width="20vw" height="20vw" style="position:absolute; right:30%; top:40%">
+	<svg id="big-picture" width="18vw" height="18vw" style="position:absolute; right:5%; top:5%">
+		<rect x="0" y="0" width="100%" height="100%" fill="white" />
+		<rect id="quad1" x="54%" y="4%" width="42%" height="42%" />
+		<rect id="quad2" x="4%" y="4%" width="42%" height="42%" />
+		<rect id="quad3" x="4%" y="54%" width="42%" height="42%" />
+		<rect id="quad4" x="54%" y="54%" width="42%" height="42%" />
+		<rect id="q1a" x="54%" y="25%" width="21%" height="21%" />
+		<rect id="q2a" x="4%" y="25%" width="21%" height="21%" />
+		<rect id="q2b" x="25%" y="25%" width="21%" height="21%" />
+		<rect id="q3a" x="4%" y="54%" width="21%" height="21%" />
+		<rect id="q3b" x="4%" y="75%" width="21%" height="21%" />
+		<rect id="q3c" x="25%" y="75%" width="21%" height="21%" />
+		<rect id="q4a" x="54%" y="54%" width="21%" height="21%" />
+		<rect id="q4b" x="54%" y="75%" width="21%" height="21%" />
+
+		<!-- quad1: thirds -->
+		<line x1="68%" x2="68%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
+		<line x1="82%" x2="82%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
+		<line x1="54%" x2="96%" y1="18%" y2="18%" stroke="green" stroke-width="1%" />
+		<line x1="54%" x2="96%" y1="32%" y2="32%" stroke="green" stroke-width="1%" />
+
+		<!-- quad2: thirds -->
+		<line x1="18%" x2="18%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
+		<line x1="32%" x2="32%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
+		<line x1="4%" x2="46%" y1="18%" y2="18%" stroke="green" stroke-width="1%" />
+		<line x1="4%" x2="46%" y1="32%" y2="32%" stroke="green" stroke-width="1%" />
+
+		<!-- quad3: thirds -->
+		<line x1="18%" x2="18%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
+		<line x1="32%" x2="32%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
+		<line x1="4%" x2="46%" y1="68%" y2="68%" stroke="green" stroke-width="1%" />
+		<line x1="4%" x2="46%" y1="82%" y2="82%" stroke="green" stroke-width="1%" />
+
+		<!-- quad4: thirds -->
+		<line x1="68%" x2="68%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
+		<line x1="82%" x2="82%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
+		<line x1="54%" x2="96%" y1="68%" y2="68%" stroke="green" stroke-width="1%" />
+		<line x1="54%" x2="96%" y1="82%" y2="82%" stroke="green" stroke-width="1%" />
+
+		<!-- quad1 frame -->
+		<line x1="53.5%" x2="96.5%" y1="4%" y2="4%" stroke="green" stroke-width="1%" />
+		<line x1="53.5%" x2="96.5%" y1="46%" y2="46%" stroke="green" stroke-width="1%" />
+		<line x1="54%" x2="54%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
+		<line x1="96%" x2="96%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
+
+		<!-- quad2 frame -->
+		<line x1="3.5%" x2="46.5%" y1="4%" y2="4%" stroke="green" stroke-width="1%" />
+		<line x1="3.5%" x2="46.5%" y1="46%" y2="46%" stroke="green" stroke-width="1%" />
+		<line x1="4%" x2="4%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
+		<line x1="46%" x2="46%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
+
+		<!-- quad3 frame -->
+		<line x1="3.5%" x2="46.5%" y1="54%" y2="54%" stroke="green" stroke-width="1%" />
+		<line x1="3.5%" x2="46.5%" y1="96%" y2="96%" stroke="green" stroke-width="1%" />
+		<line x1="4%" x2="4%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
+		<line x1="46%" x2="46%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
+
+		<!-- quad4 frame -->
+		<line x1="53.5%" x2="96.5%" y1="54%" y2="54%" stroke="green" stroke-width="1%" />
+		<line x1="53.5%" x2="96.5%" y1="96%" y2="96%" stroke="green" stroke-width="1%" />
+		<line x1="54%" x2="54%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
+		<line x1="96%" x2="96%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
+
+		<circle id="big-pic-point1" r="2%" cx="25%" cy="25%" fill="black" />
+	</svg>
+	<!-- <img src="files/fourFigureTables.png" width="20%" style="position:absolute; right:5%; top:40%"> -->
+	<svg id="big-diagram" width="20vw" height="20vw" style="position:absolute; right:5%; top:50%">
 		<line id="small-line-1"/>
 		<line id="small-line-2"/>
 		<line id="small-line-3"/>
@@ -109,24 +173,24 @@
 				<rect id="region3" />
 				<rect id="region4" />
 
-				<line class="green-line" id="green1" />
-				<line class="green-line" id="green2" />
-				<line class="green-line" id="green3" />
-				<line class="green-line" id="green4" />
-				<line class="green-line" id="green5" />
-				<line class="green-line" id="green6" />
 				<line class="red-line" id="red1" />
 				<line class="red-line" id="red2" />
 				<line class="red-line" id="red3" />
 				<line class="red-line" id="red4" />
 				<line class="red-line" id="red5" />
 				<line class="red-line" id="red6" />
-				<line class="red-line" id="red7" />
-				<line class="red-line" id="red8" />
-				<circle id="red-corner1" r="0.5%" fill="red" />
-				<circle id="red-corner2" r="0.5%" fill="red" />
-				<circle id="red-corner3" r="0.5%" fill="red" />
-				<circle id="red-corner4" r="0.5%" fill="red" />
+				<line class="green-line" id="green1" />
+				<line class="green-line" id="green2" />
+				<line class="green-line" id="green3" />
+				<line class="green-line" id="green4" />
+				<line class="green-line" id="green5" />
+				<line class="green-line" id="green6" />
+				<line class="green-line" id="green7" />
+				<line class="green-line" id="green8" />
+				<circle class="pic-corner" id="green-corner1" r="0.5%" />
+				<circle class="pic-corner" id="green-corner2" r="0.5%" />
+				<circle class="pic-corner" id="green-corner3" r="0.5%" />
+				<circle class="pic-corner" id="green-corner4" r="0.5%" />
 			</svg>
 
 			<svg id="edge-figure">
@@ -135,13 +199,13 @@
 				<line id="bar2" class="edge-line" />
 				<line id="bar3" class="edge-line" />
 				<line id="bar4" class="edge-line" />
-				<circle id="red-point1" fill="red" r="1%" />
-				<circle id="red-point2" fill="red" r="1%" />
-				<circle id="red-point3" fill="red" r="1%" />
-				<circle id="red-point4" fill="red" r="1%" />
 				<circle id="green-point1" fill="green" r="1%" />
 				<circle id="green-point2" fill="green" r="1%" />
 				<circle id="green-point3" fill="green" r="1%" />
+				<circle id="green-point4" fill="green" r="1%" />
+				<circle id="red-point1" fill="red" r="1%" />
+				<circle id="red-point2" fill="red" r="1%" />
+				<circle id="red-point3" fill="red" r="1%" />
 			</svg>
 
 			<svg id="diagram" width="11.43vh" height="11.43vh" x="0%" y="0%">
@@ -163,7 +227,7 @@
 		</svg>
 
 		<div style="display:flex;flex-direction:column;position:relative;">
-			<input id="x2coord" type="range" min="0" max="6" step="0.01" value="5.5" style="writing-mode:vertical-lr;direction:rtl;">
+			<input id="x2coord" type="range" min="0" max="6" step="0.01" value="3.5" style="writing-mode:vertical-lr;direction:rtl;">
 			<div id="x2-label">x<sub>2</sub></div>
 		</div>
 		<div style="display:flex;flex-direction:column;position:relative;">
@@ -172,7 +236,7 @@
 		</div>
 	</div>
 	<div style="display:flex"><div id="x1-label">x<sub>1</sub></div>
-	<input id="x1coord" type="range" min="0" max="6" step="0.01" value="5.5"></div>
+	<input id="x1coord" type="range" min="0" max="6" step="0.01" value="3.5"></div>
 	<div style="display:flex"><div id="b1-label">b<sub>1</sub></div>
 	<input id="b1coord" type="range" min="0" max="6" step="0.01" value="2"></div>
 	<br>
