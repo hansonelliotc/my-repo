@@ -84,3 +84,15 @@ p, h1 {
     font-family: Helvetica, sans-serif;
     padding: none;
 }
+
+button {
+    background-color: #eee;
+    border: none;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 10pt;
+    cursor: pointer;
+    width: 12vw;
+}

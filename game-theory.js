@@ -27,6 +27,7 @@ let startPoint = [0,0,0,0,0,0]; // r1,r2,b1,b2,x1,x2
 let destination = [0,0,0,0]; // r1,r2,b1,b2
 let time = 0;
 let enRoute = false;
+let draggingInBigPic = false;
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.05;
@@ -46,6 +47,7 @@ const grayBackground = "#ddd" // "#bbb"
 const noLine = "#ddd";
 const dashedStroke = "10,10";
 const animationFrames = 70;
+const points = [];
 
 init();
 setInterval('update()', 50);
@@ -275,9 +277,9 @@ function init() {
     region3.style.fill = "url('#gradient2')";
     region4.style.fill = goldBackground;
             
-    container.addEventListener('mousedown', (e) => { enRoute = false; changeCoords(e); isMouseDown = true; });
+    document.addEventListener('mousedown', (e) => { changeCoords(e); isMouseDown = true; });
     document.addEventListener('mouseup', () => { isMouseDown = false; });
-    container.addEventListener('mousemove', (e) => {
+    document.addEventListener('mousemove', (e) => {
         if (isMouseDown) {
             changeCoords(e);
         }
@@ -413,16 +415,16 @@ function update() {
     const b1coord = document.getElementById("b1coord");
     const b2coord = document.getElementById("b2coord");
 
-    if (Math.abs(+x1coord.value - Math.round(+x1coord.value*2)/2) < 0.05 && !isMouseDown && !x1up && !x1down && x1V == 0) {
+    if (Math.abs(+x1coord.value - Math.round(+x1coord.value*2)/2) < 0.05 && !isMouseDown && !x1up && !x1down && x1V == 0 && !enRoute) {
         x1coord.value = Math.round(+x1coord.value*2)/2;
     }
-    if (Math.abs(+x2coord.value - Math.round(+x2coord.value*2)/2) < 0.05 && !isMouseDown && !x2up && !x2down && x2V == 0) {
+    if (Math.abs(+x2coord.value - Math.round(+x2coord.value*2)/2) < 0.05 && !isMouseDown && !x2up && !x2down && x2V == 0 && !enRoute) {
         x2coord.value = Math.round(+x2coord.value*2)/2;
     }
-    if (Math.abs(+b1coord.value - Math.round(+b1coord.value)) < 0.05 && !b1up && !b1down && b1V == 0) {
+    if (Math.abs(+b1coord.value - Math.round(+b1coord.value)) < 0.05 && !b1up && !b1down && b1V == 0 && !enRoute) {
         b1coord.value = Math.round(+b1coord.value);
     }
-    if (Math.abs(+b2coord.value - Math.round(+b2coord.value)) < 0.05 && !b2up && !b2down && b2V == 0) {
+    if (Math.abs(+b2coord.value - Math.round(+b2coord.value)) < 0.05 && !b2up && !b2down && b2V == 0 && !enRoute) {
         b2coord.value = Math.round(+b2coord.value);
     }
 
@@ -442,14 +444,14 @@ function update() {
         b1coord.value = +b1coord.value + 10*+b1coord.step;
     }
     if (b1down) {
-        if (+b1coord.value == 10*+b1coord.step) switchQuadrants(true);
+        if (+b1coord.value == 10*+b1coord.step) crossBlue(true);
         b1coord.value = +b1coord.value - 10*+b1coord.step;
     }
     if (b2up) {
         b2coord.value = +b2coord.value + 10*+b2coord.step;
     }
     if (b2down) {
-        if (+b2coord.value == 10*+b2coord.step) switchQuadrants(false);
+        if (+b2coord.value == 10*+b2coord.step) crossBlue(false);
         b2coord.value = +b2coord.value - 10*+b2coord.step;
     }
 
@@ -457,7 +459,7 @@ function update() {
     if (x2V != 0) x2coord.value = (+x2coord.value + x2V + 6) % 6;
     b1coord.value = +b1coord.value + b1V;
     if (+b1coord.value == 0 && b1V != 0) {
-        switchQuadrants(true);
+        crossBlue(true);
         b1V = -b1V;
     } else if (+b1coord.value == 6 && b1V != 0) {
         b1V = -b1V;
@@ -465,7 +467,7 @@ function update() {
     }
     b2coord.value = +b2coord.value + b2V;
     if (+b2coord.value == 0 && b2V != 0) {
-        switchQuadrants(false);
+        crossBlue(false);
         b2V = -b2V;
     } else if (+b2coord.value == 6 && b2V != 0) {
         b2V = -b2V;
@@ -485,10 +487,10 @@ function update() {
         wasPositive2 = true;
     }
     if (wasPositive1 && hitZero1 && changeQuad1) {
-        switchQuadrants(true);
+        crossBlue(true);
         wasPositive1 = false;
     } else if (wasPositive2 && hitZero2 && changeQuad2) {
-        switchQuadrants(false);
+        crossBlue(false);
         wasPositive2 = false;
     }
 
@@ -532,17 +534,41 @@ function update() {
     c2.innerHTML = matrixB[2].toFixed(2);
     d2.innerHTML = matrixB[3].toFixed(2);
 
-    const crossButton1 = document.getElementById("cross-button-1");
-    const crossButton2 = document.getElementById("cross-button-2");
-    if (+b1coord.value == 0 && b1V == 0) {
-        crossButton1.style.display = "";
+    const crossBlue1 = document.getElementById("cross-blue-1");
+    const crossBlue2 = document.getElementById("cross-blue-2");
+    const crossGreen1 = document.getElementById("cross-green-1");
+    const crossGreen2 = document.getElementById("cross-green-2");
+    const crossRed1 = document.getElementById("cross-red-1");
+    const crossRed2 = document.getElementById("cross-red-2");
+    if (take(matrixA,3) - take(matrixA,2) < 0.0001) {
+        crossBlue1.style.color = "blue";
     } else {
-        crossButton1.style.display = "none";
+        crossBlue1.style.color = "black";
     }
-    if (+b2coord.value == 0 && b2V == 0) {
-        crossButton2.style.display = "";
+    if (take(matrixB,3) - take(matrixB,2) < 0.0001) {
+        crossBlue2.style.color = "blue";
     } else {
-        crossButton2.style.display = "none";
+        crossBlue2.style.color = "black";
+    }
+    if (take(matrixA,2) - take(matrixA,1) < 0.0001) {
+        crossGreen1.style.color = "green";
+    } else {
+        crossGreen1.style.color = "black";
+    }
+    if (take(matrixB,2) - take(matrixB,1) < 0.0001) {
+        crossGreen2.style.color = "green";
+    } else {
+        crossGreen2.style.color = "black";
+    }
+    if (take(matrixA,1) - take(matrixA,0) < 0.0001) {
+        crossRed1.style.color = "red";
+    } else {
+        crossRed1.style.color = "black";
+    }
+    if (take(matrixB,1) - take(matrixB,0) < 0.0001) {
+        crossRed2.style.color = "red";
+    } else {
+        crossRed2.style.color = "black";
     }
 
     const container = document.getElementById("container");
@@ -1624,7 +1650,6 @@ function update() {
         arrows1.style.display = "none";
         arrows2.style.display = "none";
         edgeFigure.style.display = "none";
-        return;
     } else if (coords[3] == 6) {
         wholeFigure.style.display = "none";
         arrows1.style.display = "";
@@ -1721,8 +1746,6 @@ function update() {
         green3.cy.baseVal.value = picPadding2;
         red3.cy.baseVal.value = picPadding2;
         green4.cy.baseVal.value = picPadding2;
-
-        return;
     } else if (coords[2] == 6) {
         wholeFigure.style.display = "none";
         arrows1.style.display = "none";
@@ -1819,8 +1842,6 @@ function update() {
         green3.cx.baseVal.value = picPadding1;
         red3.cx.baseVal.value = picPadding1;
         green4.cx.baseVal.value = picPadding1;
-
-        return;
     } else {
         wholeFigure.style.display = "";
         arrows1.style.display = "";
@@ -1933,53 +1954,139 @@ function update() {
     picCorner4.cx.baseVal.value = picWidth+picPadding1;
     picCorner4.cy.baseVal.value = picHeight+picPadding2;
 
-    const bigPicture = document.getElementById("big-picture");
     const bigPicPoint1 = document.getElementById("big-pic-point1");
-    const bigPictureWidth = bigPicture.width.baseVal.value;
-    switch (quad) {
-        case 1:
-            bigPicPoint1.cx.baseVal.value = (0.54 + x1coord.value/6*0.42)*bigPictureWidth;
-            bigPicPoint1.cy.baseVal.value = (0.46 - x2coord.value/6*0.42)*bigPictureWidth;
-            break;
-        case 2:
-            bigPicPoint1.cx.baseVal.value = (0.04 + x1coord.value/6*0.42)*bigPictureWidth;
-            bigPicPoint1.cy.baseVal.value = (0.46 - x2coord.value/6*0.42)*bigPictureWidth;
-            break;
-        case 3:
-            bigPicPoint1.cx.baseVal.value = (0.04 + x1coord.value/6*0.42)*bigPictureWidth;
-            bigPicPoint1.cy.baseVal.value = (0.96 - x2coord.value/6*0.42)*bigPictureWidth;
-            break;
-        case 4:
-            bigPicPoint1.cx.baseVal.value = (0.54 + x1coord.value/6*0.42)*bigPictureWidth;
-            bigPicPoint1.cy.baseVal.value = (0.96 - x2coord.value/6*0.42)*bigPictureWidth;
-            break;
+    const bigPicPoint2 = document.getElementById("big-pic-point2");
+    const bigPicPoint3 = document.getElementById("big-pic-point3");
+    const bigPicPoint4 = document.getElementById("big-pic-point4");
+    const bigPicPoint5 = document.getElementById("big-pic-point5");
+    const bigPicPoint6 = document.getElementById("big-pic-point6");
+    const bigPicPoint7 = document.getElementById("big-pic-point7");
+    const bigPicPoint8 = document.getElementById("big-pic-point8");
+    const bigPicPoint9 = document.getElementById("big-pic-point9");
+    const pointObjects = [ bigPicPoint1, bigPicPoint2, bigPicPoint3, bigPicPoint4, bigPicPoint5, bigPicPoint6, bigPicPoint7, bigPicPoint8, bigPicPoint9 ];
+    points.length = 0;
+    points.push([ quad, +x1coord.value % 6, +x2coord.value % 6 ]);
+    if (+b1coord.value == 0) {
+        let redLine = Math.round((points[0][1]+1)/2)*2-1;
+        points.push([ qOverBlue(true, quad, points[0][1], points[0][2]), (redLine - (points[0][1] - redLine) + 6) % 6, points[0][2] ]);
+        if (Number.isInteger(+x1coord.value/2)) {
+            let redLine = Math.round((points[1][1]+1)/2)*2-1;
+            points.push([ qOverBlue(true, points[1][0], points[1][1], points[1][2]), (redLine - (points[1][1] - redLine) + 6) % 6, points[1][2] ]);
+        }
+    }
+    if (+b2coord.value == 0) {
+        const length = points.length;
+        for (let i = 0; i < length; i++) {
+            let redLine = Math.round((points[i][2]+1)/2)*2-1;
+            points.push([ qOverBlue(false, points[i][0], points[i][1], points[i][2]), points[i][1], (redLine - (points[i][2] - redLine) + 6) % 6 ]);
+        }
+        if (Number.isInteger(+x2coord.value/2)) {
+            for (let i = length; i < 2*length; i++) {
+                let redLine = Math.round((points[i][2]+1)/2)*2-1;
+                points.push([ qOverBlue(false, points[i][0], points[i][1], points[i][2]), points[i][1], (redLine - (points[i][2] - redLine) + 6) % 6 ]);
+            }
+        }
+    }
+    if (draggingInBigPic && isMouseDown) {
+        placePoint(bigPicPoint1, quad, +x1coord.value, +x2coord.value);
+    } else {
+        placePoint(pointObjects[0], points[0][0], points[0][1], points[0][2]);
+        draggingInBigPic = false;
+    }
+    for (let i = 1; i < 9; i++) {
+        if (i < points.length) {
+            pointObjects[i].style.display = "";
+            placePoint(pointObjects[i], points[i][0], points[i][1], points[i][2]);
+        } else {
+            pointObjects[i].style.display = "none";
+        }
     }
 }
 
-function switchQuadrants(x1) {
+function qOverBlue(p1, q0, x1, x2) {
     let x = 0;
-    if (x1) {
-        x = +document.getElementById("x1coord").value;
+    if (p1) {
+        x = x1;
     }
     else {
-        x = (8 - +document.getElementById("x2coord").value) % 6;
+        x = (8 - x2) % 6;
     }
-    if (0 < x && x < 2 || x == 0 && x1 || x == 2 && !x1) {
-        switch (quad) {
+    if (0 < x && x < 2 || x == 0 && p1 || x == 6 && p1 || x == 2 && !p1) {
+        switch (q0) {
             case 1:
-                quad = 3;
-                break;
+                return 3;
             case 2:
-                quad = 4;
-                break;
+                return 4;
             case 3:
-                quad = 1;
-                break;
+                return 1;
             case 4:
-                quad = 2;
-                break;
+                return 2;
         }
-    } else if (2 < x && x < 4 || x == 2 && x1 || x == 4 && !x1) {
+    } else if (2 < x && x < 4 || x == 2 && p1 || x == 4 && !p1) {
+        switch (q0) {
+            case 1:
+                return 2;
+            case 2:
+                return 1;
+            case 3:
+                return 4;
+            case 4:
+                return 3;
+        }
+    } else {
+        switch (q0) {
+            case 1:
+                return 4;
+            case 2:
+                return 3;
+            case 3:
+                return 2;
+            case 4:
+                return 1;
+        }
+    }
+}
+
+function crossBlue(p1) {
+    quad = qOverBlue(p1, quad, +x1coord.value, +x2coord.value);
+    updateBackground();
+    if (p1) {
+        const x1coord = document.getElementById("x1coord");
+        let redLine = Math.round((+x1coord.value+1)/2)*2-1;
+        x1coord.value = (redLine - (+x1coord.value - redLine) + 6) % 6;
+    } else {
+        const x2coord = document.getElementById("x2coord");
+        let redLine = Math.round((+x2coord.value+1)/2)*2-1;
+        x2coord.value = (redLine - (+x2coord.value - redLine) + 6) % 6;
+    }
+}
+
+function crossRed(p1) {
+    if (p1) {
+        const x1coord = document.getElementById("x1coord");
+        let redLine = Math.round((+x1coord.value+1)/2)*2-1;
+        x1coord.value = (redLine - (+x1coord.value - redLine) + 6) % 6;
+    } else {
+        const x2coord = document.getElementById("x2coord");
+        let redLine = Math.round((+x2coord.value+1)/2)*2-1;
+        x2coord.value = (redLine - (+x2coord.value - redLine) + 6) % 6;
+    }
+}
+
+function crossGreen(p1) {
+    if (p1) {
+        const x1coord = document.getElementById("x1coord");
+        let greenLine = Math.round(+x1coord.value/2)*2;
+        x1coord.value = (greenLine - (+x1coord.value - greenLine) + 6) % 6;
+    } else {
+        const x2coord = document.getElementById("x2coord");
+        let greenLine = Math.round(+x2coord.value/2)*2;
+        x2coord.value = (greenLine - (+x2coord.value - greenLine) + 6) % 6;
+    }
+}
+
+function wiggle(p1) {
+    if (p1) {
         switch (quad) {
             case 1:
                 quad = 2;
@@ -2010,6 +2117,10 @@ function switchQuadrants(x1) {
                 break;
         }
     }
+    updateBackground();
+}
+
+function updateBackground() {
     const region1 = document.getElementById("region1");
     const region2 = document.getElementById("region2");
     const region3 = document.getElementById("region3");
@@ -2044,15 +2155,6 @@ function switchQuadrants(x1) {
             region4.style.fill = ceruleanBackground;
             header.innerHTML = "Column Quadrant";
             break;
-    }
-    if (x1) {
-        const x1coord = document.getElementById("x1coord");
-        let redLine = Math.round((+x1coord.value+1)/2)*2-1;
-        x1coord.value = (redLine - (+x1coord.value - redLine) + 6) % 6;
-    } else {
-        const x2coord = document.getElementById("x2coord");
-        let redLine = Math.round((+x2coord.value+1)/2)*2-1;
-        x2coord.value = (redLine - (+x2coord.value - redLine)+6) % 6;
     }
 }
 
@@ -2183,32 +2285,120 @@ function coordsToMatrices(x1,x2,b1,b2) {
 }
 
 function changeCoords(e) {
-    const container = document.getElementById("container");
-    const diagram = document.getElementById("diagram");
-    const diagramWidth = diagram.width.baseVal.value;
-    const picWidth = (container.width.baseVal.value - diagramWidth)*(6 - +b1coord.value)/6;
-    const picHeight = (container.height.baseVal.value - diagramWidth)*(6 - +b2coord.value)/6;
-    const picPadding1 = (container.width.baseVal.value-picWidth)/2;
-    const picPadding2 = (container.height.baseVal.value-picHeight)/2;
-
-    const wholeFigure = document.getElementById("whole-figure");
-    const rect = wholeFigure.getBoundingClientRect();
-    if (rect.width == 0) {
-        return;
+    if (+b1coord.value == 6 || +b2coord.value == 6) {
+        const container = document.getElementById("container");
+        const edgeFig = document.getElementById("edge-figure");
+        const rect1 = container.getBoundingClientRect();
+        const rect2 = edgeFig.getBoundingClientRect();
+        const x = e.pageX;
+        const y = e.pageY;
+        const margins = 20;
+        if (+b2coord.value == 6 && rect2.left-margins <= x && rect2.right+margins >= x && rect1.top+rect1.width/2-margins <= y && rect1.top+rect1.width/2+margins >= y) {
+            x1coord.value = (x - rect2.left) / rect2.width * 6;
+            enRoute = false;
+        }
+        if (+b1coord.value == 6 && rect2.top-margins <= y && rect2.bottom+margins >= y && rect1.left+rect1.height/2-margins <= y && rect1.left+rect1.height/2+margins >= y) {
+            x2coord.value = 6 - (y - rect2.top) / rect2.height * 6;
+            enRoute = false;
+        }
     }
-    const relativeX = e.offsetX - picPadding1;
-    const relativeY = e.offsetY - picPadding2;
-    const newX1 = relativeX / rect.width * 6;
-    const newX2 = (1 - relativeY / rect.height) * 6;
-    if (0 <= newX1 && newX1 <=6 && 0 <= newX2 && newX2 <=6) {
-        const x1coord = document.getElementById("x1coord");
-        const x2coord = document.getElementById("x2coord");
-        if (isMouseDown) {
+    else {
+        const wholeFigure = document.getElementById("whole-figure");
+        const rect1 = wholeFigure.getBoundingClientRect();
+        const relativeX1 = e.pageX - rect1.left;
+        const relativeY1 = e.pageY - rect1.top;
+        const newX1 = relativeX1 / rect1.width * 6;
+        const newX2 = (1 - relativeY1 / rect1.height) * 6;
+        if (-0.1 <= newX1 && newX1 <= 6.1 && -0.1 <= newX2 && newX2 <= 6.1) {
+            const x1coord = document.getElementById("x1coord");
+            const x2coord = document.getElementById("x2coord");
+            if (isMouseDown) {
+                x1coord.value = newX1;
+                x2coord.value = newX2;
+            } else {
+                x1coord.value = Math.round(newX1*6)/6;
+                x2coord.value = Math.round(newX2*6)/6;
+            }
+            enRoute = false;
+        }
+    }
+
+    const bigPicture = document.getElementById("big-picture");
+    const bigPicWidth = bigPicture.width.baseVal.value;
+    const rect = bigPicture.getBoundingClientRect();
+    let relativeX = (e.pageX - rect.left) / bigPicWidth;
+    let relativeY = (e.pageY - rect.top) / bigPicWidth;
+
+    if (0 <= relativeX && relativeX <= 1 && 0 <= relativeY && relativeY <= 1) {
+        if (!isMouseDown) {
+            const bigPicPoint1 = document.getElementById("big-pic-point1");
+            const bigPicPoint2 = document.getElementById("big-pic-point2");
+            const bigPicPoint3 = document.getElementById("big-pic-point3");
+            const bigPicPoint4 = document.getElementById("big-pic-point4");
+            const bigPicPoint5 = document.getElementById("big-pic-point5");
+            const bigPicPoint6 = document.getElementById("big-pic-point6");
+            const bigPicPoint7 = document.getElementById("big-pic-point7");
+            const bigPicPoint8 = document.getElementById("big-pic-point8");
+            const bigPicPoint9 = document.getElementById("big-pic-point9");
+            const pointObjects = [ bigPicPoint1, bigPicPoint2, bigPicPoint3, bigPicPoint4, bigPicPoint5, bigPicPoint6, bigPicPoint7, bigPicPoint8, bigPicPoint9 ];
+            for (let i = 0; i < points.length; i++) {
+                const x = pointObjects[i].cx.baseVal.value / bigPicWidth;
+                const y = pointObjects[i].cy.baseVal.value / bigPicWidth;
+                const r = pointObjects[i].r.baseVal.value / bigPicWidth;
+                if (Math.sqrt((x - relativeX)**2 + (y - relativeY)**2) <= r) {
+                    relativeX = x;
+                    relativeY = y;
+                    break;
+                }
+            }
+        } else {
+            const bigPicPoint1 = document.getElementById("big-pic-point1");
+            const x = bigPicPoint1.cx.baseVal.value / bigPicWidth;
+            const y = bigPicPoint1.cy.baseVal.value / bigPicWidth;
+            const r = bigPicPoint1.r.baseVal.value / bigPicWidth;
+            if (Math.sqrt((x - relativeX)**2 + (y - relativeY)**2) <= r) draggingInBigPic = true;
+        }
+
+        if (0.02 <= relativeX && relativeX <= 0.48 && 0.02 <= relativeY && relativeY <= 0.48) {
+            quad = 2;
+            const newX1 = 6 * (relativeX - 0.04) / 0.42;
+            const newX2 = 6 - 6 * (relativeY - 0.04) / 0.42;
+            const x1coord = document.getElementById("x1coord");
+            const x2coord = document.getElementById("x2coord");
             x1coord.value = newX1;
             x2coord.value = newX2;
-        } else {
-            x1coord.value = Math.round(newX1*6)/6;
-            x2coord.value = Math.round(newX2*6)/6;
+            enRoute = false;
+            updateBackground();
+        } else if (0.52 <= relativeX && relativeX <= 0.98 && 0.02 <= relativeY && relativeY <= 0.48) {
+            quad = 1;
+            const newX1 = 6 * (relativeX - 0.54) / 0.42;
+            const newX2 = 6 - 6 * (relativeY - 0.04) / 0.42;
+            const x1coord = document.getElementById("x1coord");
+            const x2coord = document.getElementById("x2coord");
+            x1coord.value = newX1;
+            x2coord.value = newX2;
+            enRoute = false;
+            updateBackground();
+        } else if (0.02 <= relativeX && relativeX <= 0.48 && 0.52 <= relativeY && relativeY <= 0.98) {
+            quad = 3;
+            const newX1 = 6 * (relativeX - 0.04) / 0.42;
+            const newX2 = 6 - 6 * (relativeY - 0.54) / 0.42;
+            const x1coord = document.getElementById("x1coord");
+            const x2coord = document.getElementById("x2coord");
+            x1coord.value = newX1;
+            x2coord.value = newX2;
+            enRoute = false;
+            updateBackground();
+        } else if (0.52 <= relativeX && relativeX <= 0.98 && 0.52 <= relativeY && relativeY <= 0.98) {
+            quad = 4;
+            const newX1 = 6 * (relativeX - 0.54) / 0.42;
+            const newX2 = 6 - 6 * (relativeY - 0.54) / 0.42;
+            const x1coord = document.getElementById("x1coord");
+            const x2coord = document.getElementById("x2coord");
+            x1coord.value = newX1;
+            x2coord.value = newX2;
+            enRoute = false;
+            updateBackground();
         }
     }
 }
@@ -2286,4 +2476,27 @@ function fromNearestRed(x, distance) {
     const nearestRed = Math.round((x+1) / 2) * 2 - 1;
     if (x < nearestRed) return nearestRed - distance;
     else return nearestRed + distance;
+}
+
+function placePoint(point, q, x1, x2) {
+    const bigPicture = document.getElementById("big-picture");
+    const bigPictureWidth = bigPicture.width.baseVal.value;
+    switch (q) {
+        case 1:
+            point.cx.baseVal.value = (0.54 + x1/6*0.42)*bigPictureWidth;
+            point.cy.baseVal.value = (0.46 - x2/6*0.42)*bigPictureWidth;
+            break;
+        case 2:
+            point.cx.baseVal.value = (0.04 + x1/6*0.42)*bigPictureWidth;
+            point.cy.baseVal.value = (0.46 - x2/6*0.42)*bigPictureWidth;
+            break;
+        case 3:
+            point.cx.baseVal.value = (0.04 + x1/6*0.42)*bigPictureWidth;
+            point.cy.baseVal.value = (0.96 - x2/6*0.42)*bigPictureWidth;
+            break;
+        case 4:
+            point.cx.baseVal.value = (0.54 + x1/6*0.42)*bigPictureWidth;
+            point.cy.baseVal.value = (0.96 - x2/6*0.42)*bigPictureWidth;
+            break;
+    }
 }

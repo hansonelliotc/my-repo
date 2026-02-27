@@ -9,20 +9,43 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-	<div style="position:absolute; top:10vh; left:100vh; width:20vw">
+	<div style="position:absolute; top:10vh; left:100vh; width:22vw">
 		<h1 id="quad-header">Bad Quadrant</h1>
-		<div style="display:flex;align-items:center">
-			<div style="display:inline-block">R =</div>
-			<table style="border:2px solid;margin:10px;display:inline-block">
-				<tr><td id="a1"></td><td id="b1"></td></tr>
-				<tr><td id="c1"></td><td id="d1"></td></tr>
-			</table>
-			<div style="display:inline-block; margin-left:2vw">C =</div>
-			<table style="border:2px solid;margin:10px;">
-				<tr><td id="a2"></td><td id="b2"></td></tr>
-				<tr><td id="c2"></td><td id="d2"></td></tr>
-			</table>
-		</div>
+		<table>
+			<tr>
+				<td><div style="display:flex;align-items:center">
+					<div style="display:inline-block; margin-left:2vw">R =</div>
+					<table style="border:2px solid;margin:10px;display:inline-block">
+						<tr><td id="a1"></td><td id="b1"></td></tr>
+						<tr><td id="c1"></td><td id="d1"></td></tr>
+					</table>
+				</div></td>
+				<td><div style="display:flex;align-items:center">
+					<div style="display:inline-block; margin-left:2vw">C =</div>
+					<table style="border:2px solid;margin:10px;">
+						<tr><td id="a2"></td><td id="b2"></td></tr>
+						<tr><td id="c2"></td><td id="d2"></td></tr>
+					</table>
+				</div></td>
+			</td>
+			</tr>
+			<tr>
+				<td><button id="cross-blue-1" onclick="crossBlue(true)" title="Flip the row player's biggest entries">Cross player one's blue</button></td>
+				<td><button id="cross-blue-2" onclick="crossBlue(false)" title="Flip the column player's biggest entries">Cross player two's blue</button></td>
+			</tr>
+			<tr>
+				<td><button id="cross-green-1" onclick="crossGreen(true)" title="Flip the row player's middle entries">Cross player one's green</button></td>
+				<td><button id="cross-green-2" onclick="crossGreen(false)" title="Flip the column player's middle entries">Cross player two's green</button></td>
+			</tr>
+			<tr>
+				<td><button id="cross-red-1" onclick="crossRed(true)" title="Flip the row player's smallest entries">Cross player one's red</button></td>
+				<td><button id="cross-red-2" onclick="crossRed(false)" title="Flip the column player's smallest entries">Cross player two's red</button></td>
+			</tr>
+			<tr>
+				<td><button id="cross-blue-1" onclick="wiggle(true)" title="Flip both the row player's smallest and their biggest entries">Wiggle player one</button></td>
+				<td><button id="cross-blue-2" onclick="wiggle(false)" title="Flip both the column player's smallest and their biggest entries">Wiggle player two</button></td>
+			</tr>
+		</table>
 	</div>
 	<svg id="big-picture" width="18vw" height="18vw" style="position:absolute; right:5%; top:5%">
 		<rect x="0" y="0" width="100%" height="100%" fill="white" />
@@ -88,6 +111,14 @@
 		<line x1="96%" x2="96%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
 
 		<circle id="big-pic-point1" r="2%" cx="25%" cy="25%" fill="black" />
+		<circle id="big-pic-point2" r="2%" cx="25%" cy="25%" fill="#666" />
+		<circle id="big-pic-point3" r="2%" cx="25%" cy="25%" fill="#666" />
+		<circle id="big-pic-point4" r="2%" cx="25%" cy="25%" fill="#666" />
+		<circle id="big-pic-point5" r="2%" cx="25%" cy="25%" fill="#666" />
+		<circle id="big-pic-point6" r="2%" cx="25%" cy="25%" fill="#666" />
+		<circle id="big-pic-point7" r="2%" cx="25%" cy="25%" fill="#666" />
+		<circle id="big-pic-point8" r="2%" cx="25%" cy="25%" fill="#666" />
+		<circle id="big-pic-point9" r="2%" cx="25%" cy="25%" fill="#666" />
 	</svg>
 	<!-- <img src="files/fourFigureTables.png" width="20%" style="position:absolute; right:5%; top:40%"> -->
 	<svg id="big-diagram" width="20vw" height="20vw" style="position:absolute; right:5%; top:50%">
@@ -240,8 +271,6 @@
 	<div style="display:flex"><div id="b1-label">b<sub>1</sub></div>
 	<input id="b1coord" type="range" min="0" max="6" step="0.01" value="2"></div>
 	<br>
-	<button id="cross-button-1" onclick="switchQuadrants(true)">Cross via b<sub>1</sub></button>
-	<button id="cross-button-2" onclick="switchQuadrants(false)">Cross via b<sub>2</sub></button>
 
 	<script src="game-theory.js"></script>
 </body>
