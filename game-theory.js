@@ -25,21 +25,29 @@ let b1V   = 0;
 let b2V   = 0;
 let startPoint = [0,0,0,0,0,0]; // r1,r2,b1,b2,x1,x2
 let destination = [0,0,0,0]; // r1,r2,b1,b2
-let time = 0;
+let animTime = 0;
 let enRoute = false;
 let draggingInBigPic = false;
+let viewMode = 0;
+let time = 0;
+let values = [];
+let valuesX = 0;
+let valuesY = 0;
+let backgroundOutOfDate = true;
+let switchMode = false;
+let fixImageSize = false;
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.05;
 const eqRadii = 0.08;
 const eqRadiiBig = 0.05;
 const cerulean = "#007BA7";
-const gold = "#FFCC33";
+const gold = "#ffcc33";
 const lightGreen = "#00ff00";
 const bad = "#000000";
 const lighterBad = "#a0a0a0";
 const mixedColor = "#898989";
-const red = "#FF0000";
+const red = "#ff0000";
 const greenBackground = "#d9ffd9"; // "#d9efb9"
 const ceruleanBackground = "#c4e0eb";
 const goldBackground = "#fff3d0"; // "#e6d3b0"
@@ -94,22 +102,22 @@ function init() {
     const corner2Big = document.getElementById("corner2-big");
     const corner3Big = document.getElementById("corner3-big");
     const corner4Big = document.getElementById("corner4-big");
-    const top1 = document.getElementById("top-1-big");
-    const top2 = document.getElementById("top-2-big");
-    const top3 = document.getElementById("top-3-big");
-    const left1 = document.getElementById("left-1-big");
-    const left2 = document.getElementById("left-2-big");
-    const left3 = document.getElementById("left-3-big");
-    const right1 = document.getElementById("right-1-big");
-    const right2 = document.getElementById("right-2-big");
-    const right3 = document.getElementById("right-3-big");
-    const bottom1 = document.getElementById("bottom-1-big");
-    const bottom2 = document.getElementById("bottom-2-big");
-    const bottom3 = document.getElementById("bottom-3-big");
-    const goldBar1 = document.getElementById("gold-bar-1");
-    const goldBar2 = document.getElementById("gold-bar-2");
-    const goldBar3 = document.getElementById("gold-bar-3");
-    const goldBar4 = document.getElementById("gold-bar-4");
+    // const top1 = document.getElementById("top-1-big");
+    // const top2 = document.getElementById("top-2-big");
+    // const top3 = document.getElementById("top-3-big");
+    // const left1 = document.getElementById("left-1-big");
+    // const left2 = document.getElementById("left-2-big");
+    // const left3 = document.getElementById("left-3-big");
+    // const right1 = document.getElementById("right-1-big");
+    // const right2 = document.getElementById("right-2-big");
+    // const right3 = document.getElementById("right-3-big");
+    // const bottom1 = document.getElementById("bottom-1-big");
+    // const bottom2 = document.getElementById("bottom-2-big");
+    // const bottom3 = document.getElementById("bottom-3-big");
+    // const goldBar1 = document.getElementById("gold-bar-1");
+    // const goldBar2 = document.getElementById("gold-bar-2");
+    // const goldBar3 = document.getElementById("gold-bar-3");
+    // const goldBar4 = document.getElementById("gold-bar-4");
     const smallLine1 = document.getElementById("small-line-1");
     const smallLine2 = document.getElementById("small-line-2");
     const smallLine3 = document.getElementById("small-line-3");
@@ -142,58 +150,58 @@ function init() {
     corner3Big.r.baseVal.value = lineWidthBig*widthBig/2;
     corner4Big.style = "fill:" + cerulean;
     corner4Big.r.baseVal.value = lineWidthBig*widthBig/2;
-    goldBar1.style.stroke = gold;
-    goldBar2.style.stroke = gold;
-    goldBar3.style.stroke = gold;
-    goldBar4.style.stroke = gold;
-    top1.x1.baseVal.value = paddingBig;
-    top1.y1.baseVal.value = lineWidthBig*widthBig/2;
-    top1.y2.baseVal.value = lineWidthBig*widthBig/2;
-    top2.y1.baseVal.value = lineWidthBig*widthBig/2;
-    top2.y2.baseVal.value = lineWidthBig*widthBig/2;
-    top3.x2.baseVal.value = bigDiagramWidth - paddingBig;
-    top3.y1.baseVal.value = lineWidthBig*widthBig/2;
-    top3.y2.baseVal.value = lineWidthBig*widthBig/2;
-    left3.y1.baseVal.value = paddingBig;
-    left3.x1.baseVal.value = lineWidthBig*widthBig/2;
-    left3.x2.baseVal.value = lineWidthBig*widthBig/2;
-    left2.x1.baseVal.value = lineWidthBig*widthBig/2;
-    left2.x2.baseVal.value = lineWidthBig*widthBig/2;
-    left1.y2.baseVal.value = bigDiagramWidth - paddingBig;
-    left1.x1.baseVal.value = lineWidthBig*widthBig/2;
-    left1.x2.baseVal.value = lineWidthBig*widthBig/2;
-    right3.y1.baseVal.value = paddingBig;
-    right3.x1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    right3.x2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    right2.x1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    right2.x2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    right1.y2.baseVal.value = bigDiagramWidth - paddingBig;
-    right1.x1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    right1.x2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    bottom1.x1.baseVal.value = paddingBig;
-    bottom1.y1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    bottom1.y2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    bottom2.y1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    bottom2.y2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    bottom3.x2.baseVal.value = bigDiagramWidth - paddingBig;
-    bottom3.y1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    bottom3.y2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    goldBar1.x1.baseVal.value = paddingBig;
-    goldBar1.x2.baseVal.value = bigDiagramWidth - paddingBig;
-    goldBar1.y1.baseVal.value = lineWidthBig*widthBig/2;
-    goldBar1.y2.baseVal.value = lineWidthBig*widthBig/2;
-    goldBar2.x1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    goldBar2.x2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    goldBar2.y1.baseVal.value = paddingBig;
-    goldBar2.y2.baseVal.value = bigDiagramWidth - paddingBig;
-    goldBar3.x1.baseVal.value = paddingBig;
-    goldBar3.x2.baseVal.value = bigDiagramWidth - paddingBig;
-    goldBar3.y1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    goldBar3.y2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
-    goldBar4.x1.baseVal.value = lineWidthBig*widthBig/2;
-    goldBar4.x2.baseVal.value = lineWidthBig*widthBig/2;
-    goldBar4.y1.baseVal.value = paddingBig;
-    goldBar4.y2.baseVal.value = bigDiagramWidth - paddingBig;
+    // goldBar1.style.stroke = gold;
+    // goldBar2.style.stroke = gold;
+    // goldBar3.style.stroke = gold;
+    // goldBar4.style.stroke = gold;
+    // top1.x1.baseVal.value = paddingBig;
+    // top1.y1.baseVal.value = lineWidthBig*widthBig/2;
+    // top1.y2.baseVal.value = lineWidthBig*widthBig/2;
+    // top2.y1.baseVal.value = lineWidthBig*widthBig/2;
+    // top2.y2.baseVal.value = lineWidthBig*widthBig/2;
+    // top3.x2.baseVal.value = bigDiagramWidth - paddingBig;
+    // top3.y1.baseVal.value = lineWidthBig*widthBig/2;
+    // top3.y2.baseVal.value = lineWidthBig*widthBig/2;
+    // left3.y1.baseVal.value = paddingBig;
+    // left3.x1.baseVal.value = lineWidthBig*widthBig/2;
+    // left3.x2.baseVal.value = lineWidthBig*widthBig/2;
+    // left2.x1.baseVal.value = lineWidthBig*widthBig/2;
+    // left2.x2.baseVal.value = lineWidthBig*widthBig/2;
+    // left1.y2.baseVal.value = bigDiagramWidth - paddingBig;
+    // left1.x1.baseVal.value = lineWidthBig*widthBig/2;
+    // left1.x2.baseVal.value = lineWidthBig*widthBig/2;
+    // right3.y1.baseVal.value = paddingBig;
+    // right3.x1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // right3.x2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // right2.x1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // right2.x2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // right1.y2.baseVal.value = bigDiagramWidth - paddingBig;
+    // right1.x1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // right1.x2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // bottom1.x1.baseVal.value = paddingBig;
+    // bottom1.y1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // bottom1.y2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // bottom2.y1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // bottom2.y2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // bottom3.x2.baseVal.value = bigDiagramWidth - paddingBig;
+    // bottom3.y1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // bottom3.y2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // goldBar1.x1.baseVal.value = paddingBig;
+    // goldBar1.x2.baseVal.value = bigDiagramWidth - paddingBig;
+    // goldBar1.y1.baseVal.value = lineWidthBig*widthBig/2;
+    // goldBar1.y2.baseVal.value = lineWidthBig*widthBig/2;
+    // goldBar2.x1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // goldBar2.x2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // goldBar2.y1.baseVal.value = paddingBig;
+    // goldBar2.y2.baseVal.value = bigDiagramWidth - paddingBig;
+    // goldBar3.x1.baseVal.value = paddingBig;
+    // goldBar3.x2.baseVal.value = bigDiagramWidth - paddingBig;
+    // goldBar3.y1.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // goldBar3.y2.baseVal.value = bigDiagramWidth - lineWidthBig*widthBig/2;
+    // goldBar4.x1.baseVal.value = lineWidthBig*widthBig/2;
+    // goldBar4.x2.baseVal.value = lineWidthBig*widthBig/2;
+    // goldBar4.y1.baseVal.value = paddingBig;
+    // goldBar4.y2.baseVal.value = bigDiagramWidth - paddingBig;
     smallLine1.style.stroke = "#000";
     smallLine1.style.strokeWidth = smallLineWidth;
     smallLine2.style.stroke = "#000";
@@ -406,6 +414,9 @@ function init() {
     bigPicQuad4a.style.fill = grayBackground;
     bigPicQuad4b.style.fill = "white";
 
+    const canvas = document.getElementById("canvas");
+    canvas.getContext("2d", { willReadFrequently: true});
+
     update();
 }
 
@@ -444,14 +455,14 @@ function update() {
         b1coord.value = +b1coord.value + 10*+b1coord.step;
     }
     if (b1down) {
-        if (+b1coord.value == 10*+b1coord.step) crossBlue(true);
+        // if (+b1coord.value == 10*+b1coord.step) crossBlue(true);
         b1coord.value = +b1coord.value - 10*+b1coord.step;
     }
     if (b2up) {
         b2coord.value = +b2coord.value + 10*+b2coord.step;
     }
     if (b2down) {
-        if (+b2coord.value == 10*+b2coord.step) crossBlue(false);
+        // if (+b2coord.value == 10*+b2coord.step) crossBlue(false);
         b2coord.value = +b2coord.value - 10*+b2coord.step;
     }
 
@@ -495,26 +506,28 @@ function update() {
     }
 
     if (enRoute) {
-        time++;
-        b1coord.value = time/animationFrames*destination[2] + (1 - time/animationFrames)*startPoint[2];
-        b2coord.value = time/animationFrames*destination[3] + (1 - time/animationFrames)*startPoint[3];
-        x1coord.value = fromNearestRed(startPoint[4], (time/animationFrames*destination[0] + (1 - time/animationFrames)*startPoint[0])/(6 - +b1coord.value));
-        x2coord.value = fromNearestRed(startPoint[5], (time/animationFrames*destination[1] + (1 - time/animationFrames)*startPoint[1])/(6 - +b2coord.value));
-        if (time == animationFrames)
+        animTime++;
+        b1coord.value = animTime/animationFrames*destination[2] + (1 - animTime/animationFrames)*startPoint[2];
+        b2coord.value = animTime/animationFrames*destination[3] + (1 - animTime/animationFrames)*startPoint[3];
+        x1coord.value = fromNearestRed(startPoint[4], (animTime/animationFrames*destination[0] + (1 - animTime/animationFrames)*startPoint[0])/(6 - +b1coord.value));
+        x2coord.value = fromNearestRed(startPoint[5], (animTime/animationFrames*destination[1] + (1 - animTime/animationFrames)*startPoint[1])/(6 - +b2coord.value));
+        if (animTime == animationFrames)
             enRoute = false;
     }
 
-    coords = [+(x1coord.value), +(x2coord.value), +(b1coord.value), +(b2coord.value)];
-    if (x1coord.value == 0) coords[0] += 6;
-    if (x2coord.value == 0) coords[1] += 6;
+    let tempCoords = [+(x1coord.value), +(x2coord.value), +(b1coord.value), +(b2coord.value)];
+    if (x1coord.value == 0) tempCoords[0] += 6;
+    if (x2coord.value == 0) tempCoords[1] += 6;
     if (quad == 2 || quad == 3) {
-        coords[0] = coords[0] - 6;
-        if (coords[0] == 0) coords[0] = -6;
+        tempCoords[0] = tempCoords[0] - 6;
+        if (tempCoords[0] == 0) tempCoords[0] = -6;
     }
     if (quad == 3 || quad == 4) {
-        coords[1] = coords[1] - 6;
-        if (coords[1] == 0) coords[1] = -6;
+        tempCoords[1] = tempCoords[1] - 6;
+        if (tempCoords[1] == 0) tempCoords[1] = -6;
     }
+    if (tempCoords[2] != coords[2] || tempCoords[3] != coords[3]) backgroundOutOfDate = true;
+    coords = tempCoords;
 
     [matrixA,matrixB] = coordsToMatrices(...coords);
     const a1 = document.getElementById("a1");
@@ -533,6 +546,12 @@ function update() {
     b2.innerHTML = matrixB[1].toFixed(2);
     c2.innerHTML = matrixB[2].toFixed(2);
     d2.innerHTML = matrixB[3].toFixed(2);
+
+    // update returns data
+    const rowReturns = document.getElementById("row-return");
+    const rowReturnsTrans = document.getElementById("row-return-transferable");
+    rowReturns.innerHTML = payoff(matrixA, matrixB).toFixed(1);
+    rowReturnsTrans.innerHTML = payoffTransferable(matrixA, matrixB).toFixed(1);
 
     const crossBlue1 = document.getElementById("cross-blue-1");
     const crossBlue2 = document.getElementById("cross-blue-2");
@@ -574,8 +593,8 @@ function update() {
     const container = document.getElementById("container");
     const diagram = document.getElementById("diagram");
     const diagramWidth = diagram.width.baseVal.value;
-    const picWidth = (container.width.baseVal.value - diagramWidth)*(6 - +b1coord.value)/6;
-    const picHeight = (container.height.baseVal.value - diagramWidth)*(6 - +b2coord.value)/6;
+    const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*(6 - +b1coord.value)/6;
+    const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*(6 - +b2coord.value)/6;
     const picPadding1 = (container.width.baseVal.value-picWidth)/2;
     const picPadding2 = (container.height.baseVal.value-picHeight)/2;
     const maxPicWidth = (container.width.baseVal.value - diagram.width.baseVal.value);
@@ -761,13 +780,14 @@ function update() {
         d2.style.fontWeight = "";
     }
 
-    if (0 < x1coord.value && x1coord.value < 3 && 0 < x2coord.value && x2coord.value < 3 && 0 < b1coord.value && b1coord.value < 6 && 0 < b2coord.value && b2coord.value < 6) {
+    if (0 < x1coord.value && x1coord.value < 3 && 0 < x2coord.value && x2coord.value < 3 && b1coord.value < 6 && b2coord.value < 6) {
         const mixedRow = mixedPayoff(matrixA);
         const mixedCol = mixedPayoff(matrixB);
         point5.style = "fill:" + mixedColor;
         point5.style.r = eqRadii*width;
         point5.cx.baseVal.value = mixedRow*width/6+padding;
         point5.cy.baseVal.value = (1-mixedCol/6)*width+padding;
+        if (6 - mixedRow < error && 6 - mixedCol < error) point5.style.opacity = 0;
     } else {
         point5.style.opacity = 0;
     }
@@ -787,22 +807,22 @@ function update() {
     const corner2Big = document.getElementById("corner2-big");
     const corner3Big = document.getElementById("corner3-big");
     const corner4Big = document.getElementById("corner4-big");
-    const top1 = document.getElementById("top-1-big");
-    const top2 = document.getElementById("top-2-big");
-    const top3 = document.getElementById("top-3-big");
-    const left1 = document.getElementById("left-1-big");
-    const left2 = document.getElementById("left-2-big");
-    const left3 = document.getElementById("left-3-big");
-    const right1 = document.getElementById("right-1-big");
-    const right2 = document.getElementById("right-2-big");
-    const right3 = document.getElementById("right-3-big");
-    const bottom1 = document.getElementById("bottom-1-big");
-    const bottom2 = document.getElementById("bottom-2-big");
-    const bottom3 = document.getElementById("bottom-3-big");
-    const goldBar1 = document.getElementById("gold-bar-1");
-    const goldBar2 = document.getElementById("gold-bar-2");
-    const goldBar3 = document.getElementById("gold-bar-3");
-    const goldBar4 = document.getElementById("gold-bar-4");
+    // const top1 = document.getElementById("top-1-big");
+    // const top2 = document.getElementById("top-2-big");
+    // const top3 = document.getElementById("top-3-big");
+    // const left1 = document.getElementById("left-1-big");
+    // const left2 = document.getElementById("left-2-big");
+    // const left3 = document.getElementById("left-3-big");
+    // const right1 = document.getElementById("right-1-big");
+    // const right2 = document.getElementById("right-2-big");
+    // const right3 = document.getElementById("right-3-big");
+    // const bottom1 = document.getElementById("bottom-1-big");
+    // const bottom2 = document.getElementById("bottom-2-big");
+    // const bottom3 = document.getElementById("bottom-3-big");
+    // const goldBar1 = document.getElementById("gold-bar-1");
+    // const goldBar2 = document.getElementById("gold-bar-2");
+    // const goldBar3 = document.getElementById("gold-bar-3");
+    // const goldBar4 = document.getElementById("gold-bar-4");
     const smallLine5 = document.getElementById("small-line-5");
     const smallLine6 = document.getElementById("small-line-6");
     const smallLine7 = document.getElementById("small-line-7");
@@ -847,22 +867,22 @@ function update() {
     corner4Big.cx.baseVal.value = matrixA[3]*widthBig/6+paddingBig;
     corner4Big.cy.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig;
 
-    top1.x2.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
-    top2.x1.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
-    top2.x2.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
-    top3.x1.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
-    left3.y2.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
-    left2.y1.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
-    left2.y2.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
-    left1.y1.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
-    right3.y2.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
-    right2.y1.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
-    right2.y2.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
-    right1.y1.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
-    bottom1.x2.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
-    bottom2.x1.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
-    bottom2.x2.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
-    bottom3.x1.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
+    // top1.x2.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
+    // top2.x1.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
+    // top2.x2.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
+    // top3.x1.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
+    // left3.y2.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
+    // left2.y1.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
+    // left2.y2.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
+    // left1.y1.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
+    // right3.y2.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
+    // right2.y1.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
+    // right2.y2.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
+    // right1.y1.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
+    // bottom1.x2.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
+    // bottom2.x1.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
+    // bottom2.x2.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
+    // bottom3.x1.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
 
     smallLine5.y1.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
     smallLine5.y2.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
@@ -873,518 +893,518 @@ function update() {
     smallLine8.x1.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
     smallLine8.x2.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
 
-    top1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
-    top2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
-    top3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
-    left1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(4);
-    left2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(4);
-    left3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(4);
-    right1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(2);
-    right2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(2);
-    right3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(2);
-    bottom1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(3);
-    bottom2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(3);
-    bottom3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(3);
-    goldBar1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
-    goldBar2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(2);
-    goldBar3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(3);
-    goldBar4.style.strokeWidth = lineWidthBig*widthBig*sideWidth(4);
+    // top1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
+    // top2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
+    // top3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
+    // left1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(4);
+    // left2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(4);
+    // left3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(4);
+    // right1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(2);
+    // right2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(2);
+    // right3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(2);
+    // bottom1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(3);
+    // bottom2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(3);
+    // bottom3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(3);
+    // goldBar1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
+    // goldBar2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(2);
+    // goldBar3.style.strokeWidth = lineWidthBig*widthBig*sideWidth(3);
+    // goldBar4.style.strokeWidth = lineWidthBig*widthBig*sideWidth(4);
 
-    let coord = 0;
-    switch (quad) {
-        case 1:
-            bottom3.style.stroke = noLine;
-            bottom3.style.strokeDasharray = "";
-            left3.style.stroke = noLine;
-            left3.style.strokeDasharray = "";
-            coord = +(x1coord.value);
-            if (coord >= 1 && coord < 3) {
-                bottom2.style.stroke = cerulean;
-                bottom2.style.strokeDasharray = dashedStroke;
-                top2.style.stroke = cerulean;
-                top2.style.strokeDasharray = dashedStroke;
-            } else if (coord >= 3 && coord < 5) {
-                bottom2.style.stroke = gold;
-                bottom2.style.strokeDasharray = "";
-                top2.style.stroke = gold;
-                top2.style.strokeDasharray = "";
-            } else {
-                bottom2.style.stroke = cerulean;
-                bottom2.style.strokeDasharray = "";
-                top2.style.stroke = cerulean;
-                top2.style.strokeDasharray = "";
-            }
-            if (coord >= 0 && coord < 2) {
-                right3.style.stroke = gold;
-                right3.style.strokeDasharray = "";
-                bottom1.style.stroke = gold;
-                bottom1.style.strokeDasharray = "";
-            } else if (coord >= 2 && coord < 4) {
-                right3.style.stroke = cerulean;
-                right3.style.strokeDasharray = "";
-                bottom1.style.stroke = cerulean;
-                bottom1.style.strokeDasharray = "";
-            } else {
-                right3.style.stroke = cerulean;
-                right3.style.strokeDasharray = dashedStroke;
-                bottom1.style.stroke = cerulean;
-                bottom1.style.strokeDasharray = dashedStroke;
-            }
-            coord = +(x2coord.value);
-            if (coord >= 1 && coord < 3) {
-                right2.style.stroke = cerulean;
-                right2.style.strokeDasharray = dashedStroke;
-                left2.style.stroke = cerulean;
-                left2.style.strokeDasharray = dashedStroke;
-            } else if (coord >= 3 && coord < 5) {
-                right2.style.stroke = cerulean;
-                right2.style.strokeDasharray = "";
-                left2.style.stroke = cerulean;
-                left2.style.strokeDasharray = "";
-            } else {
-                right2.style.stroke = gold;
-                right2.style.strokeDasharray = "";
-                left2.style.stroke = gold;
-                left2.style.strokeDasharray = "";
-            }
-            if (coord >= 0 && coord < 2) {
-                top3.style.stroke = cerulean;
-                top3.style.strokeDasharray = "";
-                left1.style.stroke = cerulean;
-                left1.style.strokeDasharray = "";
-                coord = +(x1coord.value);
-                if (coord >= 0 && coord < 2) {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = dashedStroke;
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = dashedStroke;
-                } else if (coord >= 2 && coord < 4) {
-                    top1.style.stroke = noLine;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = noLine;
-                    right1.style.strokeDasharray = "";
-                } else {
-                    top1.style.stroke = gold;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = gold;
-                    right1.style.strokeDasharray = "";
-                }
-            } else if (coord >= 2 && coord < 4) {
-                top3.style.stroke = gold;
-                top3.style.strokeDasharray = "";
-                left1.style.stroke = gold;
-                left1.style.strokeDasharray = "";
-                coord = +(x1coord.value);
-                if (coord >= 0 && coord < 2) {
-                    top1.style.stroke = noLine;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = noLine;
-                    right1.style.strokeDasharray = "";
-                } else if (coord >= 2 && coord < 4) {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = dashedStroke;
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = dashedStroke;
-                } else {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = "";
-                }
-            } else {
-                top3.style.stroke = cerulean;
-                top3.style.strokeDasharray = dashedStroke;
-                left1.style.stroke = cerulean;
-                left1.style.strokeDasharray = dashedStroke;
-                coord = +(x1coord.value);
-                if (coord >= 0 && coord < 2) {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = "";
-                } else if (coord >= 2 && coord < 4) {
-                    top1.style.stroke = gold;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = gold;
-                    right1.style.strokeDasharray = "";
-                } else {
-                    top1.style.stroke = noLine;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = noLine;
-                    right1.style.strokeDasharray = "";
-                }
-            }
-            break;
-        case 2:
-            bottom3.style.stroke = cerulean;
-            bottom3.style.strokeDasharray = "";
-            left3.style.stroke = cerulean;
-            left3.style.strokeDasharray = "";
-            coord = +(x1coord.value);
-            if (coord >= 1 && coord < 3) {
-                bottom2.style.stroke = cerulean;
-                bottom2.style.strokeDasharray = dashedStroke;
-                top2.style.stroke = cerulean;
-                top2.style.strokeDasharray = dashedStroke;
-            } else if (coord >= 3 && coord < 5) {
-                bottom2.style.stroke = gold;
-                bottom2.style.strokeDasharray = "";
-                top2.style.stroke = gold;
-                top2.style.strokeDasharray = "";
-            } else {
-                bottom2.style.stroke = cerulean;
-                bottom2.style.strokeDasharray = "";
-                top2.style.stroke = cerulean;
-                top2.style.strokeDasharray = "";
-            }
-            if (coord >= 0 && coord < 2) {
-                right3.style.stroke = cerulean;
-                right3.style.strokeDasharray = dashedStroke;
-                bottom1.style.stroke = cerulean;
-                bottom1.style.strokeDasharray = dashedStroke;
-            } else if (coord >= 2 && coord < 4) {
-                right3.style.stroke = noLine;
-                right3.style.strokeDasharray = "";
-                bottom1.style.stroke = noLine;
-                bottom1.style.strokeDasharray = "";
-            } else {
-                right3.style.stroke = gold;
-                right3.style.strokeDasharray = "";
-                bottom1.style.stroke = gold;
-                bottom1.style.strokeDasharray = "";
-            }
-            coord = +(x2coord.value);
-            if (coord >= 1 && coord < 3) {
-                right2.style.stroke = cerulean;
-                right2.style.strokeDasharray = dashedStroke;
-                left2.style.stroke = cerulean;
-                left2.style.strokeDasharray = dashedStroke;
-            } else if (coord >= 3 && coord < 5) {
-                right2.style.stroke = cerulean;
-                right2.style.strokeDasharray = "";
-                left2.style.stroke = cerulean;
-                left2.style.strokeDasharray = "";
-            } else {
-                right2.style.stroke = gold;
-                right2.style.strokeDasharray = "";
-                left2.style.stroke = gold;
-                left2.style.strokeDasharray = "";
-            }
-            if (coord >= 0 && coord < 2) {
-                top3.style.stroke = noLine;
-                top3.style.strokeDasharray = "";
-                left1.style.stroke = noLine;
-                left1.style.strokeDasharray = "";
-                coord = +(x1coord.value);
-                if (coord >= 0 && coord < 2) {
-                    top1.style.stroke = gold;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = gold;
-                    right1.style.strokeDasharray = "";
-                } else if (coord >= 2 && coord < 4) {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = "";
-                } else {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = dashedStroke;
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = dashedStroke;
-                }
-            } else if (coord >= 2 && coord < 4) {
-                top3.style.stroke = cerulean;
-                top3.style.strokeDasharray = dashedStroke;
-                left1.style.stroke = cerulean;
-                left1.style.strokeDasharray = dashedStroke;
-                coord = +(x1coord.value);
-                if (coord >= 0 && coord < 2) {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = "";
-                } else if (coord >= 2 && coord < 4) {
-                    top1.style.stroke = gold;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = gold;
-                    right1.style.strokeDasharray = "";
-                } else {
-                    top1.style.stroke = noLine;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = noLine;
-                    right1.style.strokeDasharray = "";
-                }
-            } else {
-                top3.style.stroke = gold;
-                top3.style.strokeDasharray = "";
-                left1.style.stroke = gold;
-                left1.style.strokeDasharray = "";
-                coord = +(x1coord.value);
-                if (coord >= 0 && coord < 2) {
-                    top1.style.stroke = noLine;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = noLine;
-                    right1.style.strokeDasharray = "";
-                } else if (coord >= 2 && coord < 4) {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = dashedStroke;
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = dashedStroke;
-                } else {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = "";
-                }
-            }
-            break;
-        case 3:
-            bottom3.style.stroke = cerulean;
-            bottom3.style.strokeDasharray = dashedStroke;
-            left3.style.stroke = cerulean;
-            left3.style.strokeDasharray = dashedStroke;
-            coord = +(x1coord.value);
-            if (coord >= 1 && coord < 3) {
-                bottom2.style.stroke = cerulean;
-                bottom2.style.strokeDasharray = dashedStroke;
-                top2.style.stroke = cerulean;
-                top2.style.strokeDasharray = dashedStroke;
-            } else if (coord >= 3 && coord < 5) {
-                bottom2.style.stroke = gold;
-                bottom2.style.strokeDasharray = "";
-                top2.style.stroke = gold;
-                top2.style.strokeDasharray = "";
-            } else {
-                bottom2.style.stroke = cerulean;
-                bottom2.style.strokeDasharray = "";
-                top2.style.stroke = cerulean;
-                top2.style.strokeDasharray = "";
-            }
-            if (coord >= 0 && coord < 2) {
-                right3.style.stroke = cerulean;
-                right3.style.strokeDasharray = "";
-                bottom1.style.stroke = cerulean;
-                bottom1.style.strokeDasharray = "";
-            } else if (coord >= 2 && coord < 4) {
-                right3.style.stroke = gold;
-                right3.style.strokeDasharray = "";
-                bottom1.style.stroke = gold;
-                bottom1.style.strokeDasharray = "";
-            } else {
-                right3.style.stroke = noLine;
-                right3.style.strokeDasharray = "";
-                bottom1.style.stroke = noLine;
-                bottom1.style.strokeDasharray = "";
-            }
-            coord = +(x2coord.value);
-            if (coord >= 1 && coord < 3) {
-                right2.style.stroke = cerulean;
-                right2.style.strokeDasharray = dashedStroke;
-                left2.style.stroke = cerulean;
-                left2.style.strokeDasharray = dashedStroke;
-            } else if (coord >= 3 && coord < 5) {
-                right2.style.stroke = cerulean;
-                right2.style.strokeDasharray = "";
-                left2.style.stroke = cerulean;
-                left2.style.strokeDasharray = "";
-            } else {
-                right2.style.stroke = gold;
-                right2.style.strokeDasharray = "";
-                left2.style.stroke = gold;
-                left2.style.strokeDasharray = "";
-            }
-            if (coord >= 0 && coord < 2) {
-                top3.style.stroke = gold;
-                top3.style.strokeDasharray = "";
-                left1.style.stroke = gold;
-                left1.style.strokeDasharray = "";
-                coord = +(x1coord.value);
-                if (coord >= 0 && coord < 2) {
-                    top1.style.stroke = noLine;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = noLine;
-                    right1.style.strokeDasharray = "";
-                } else if (coord >= 2 && coord < 4) {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = dashedStroke;
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = dashedStroke;
-                } else {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = "";
-                }
-            } else if (coord >= 2 && coord < 4) {
-                top3.style.stroke = cerulean;
-                top3.style.strokeDasharray = "";
-                left1.style.stroke = cerulean;
-                left1.style.strokeDasharray = "";
-                coord = +(x1coord.value);
-                if (coord >= 0 && coord < 2) {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = dashedStroke;
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = dashedStroke;
-                } else if (coord >= 2 && coord < 4) {
-                    top1.style.stroke = noLine;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = noLine;
-                    right1.style.strokeDasharray = "";
-                } else {
-                    top1.style.stroke = gold;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = gold;
-                    right1.style.strokeDasharray = "";
-                }
-            } else {
-                top3.style.stroke = noLine;
-                top3.style.strokeDasharray = "";
-                left1.style.stroke = noLine;
-                left1.style.strokeDasharray = "";
-                coord = +(x1coord.value);
-                if (coord >= 0 && coord < 2) {
-                    top1.style.stroke = gold;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = gold;
-                    right1.style.strokeDasharray = "";
-                } else if (coord >= 2 && coord < 4) {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = "";
-                } else {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = dashedStroke;
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = dashedStroke;
-                }
-            }
-            break;
-        case 4:
-            bottom3.style.stroke = gold;
-            bottom3.style.strokeDasharray = "";
-            left3.style.stroke = gold;
-            left3.style.strokeDasharray = "";
-            coord = +(x1coord.value);
-            if (coord >= 1 && coord < 3) {
-                bottom2.style.stroke = cerulean;
-                bottom2.style.strokeDasharray = dashedStroke;
-                top2.style.stroke = cerulean;
-                top2.style.strokeDasharray = dashedStroke;
-            } else if (coord >= 3 && coord < 5) {
-                bottom2.style.stroke = gold;
-                bottom2.style.strokeDasharray = "";
-                top2.style.stroke = gold;
-                top2.style.strokeDasharray = "";
-            } else {
-                bottom2.style.stroke = cerulean;
-                bottom2.style.strokeDasharray = "";
-                top2.style.stroke = cerulean;
-                top2.style.strokeDasharray = "";
-            }
-            if (coord >= 0 && coord < 2) {
-                right3.style.stroke = noLine;
-                right3.style.strokeDasharray = "";
-                bottom1.style.stroke = noLine;
-                bottom1.style.strokeDasharray = "";
-            } else if (coord >= 2 && coord < 4) {
-                right3.style.stroke = cerulean;
-                right3.style.strokeDasharray = dashedStroke;
-                bottom1.style.stroke = cerulean;
-                bottom1.style.strokeDasharray = dashedStroke;
-            } else {
-                right3.style.stroke = cerulean;
-                right3.style.strokeDasharray = "";
-                bottom1.style.stroke = cerulean;
-                bottom1.style.strokeDasharray = "";
-            }
-            coord = +(x2coord.value);
-            if (coord >= 1 && coord < 3) {
-                right2.style.stroke = cerulean;
-                right2.style.strokeDasharray = dashedStroke;
-                left2.style.stroke = cerulean;
-                left2.style.strokeDasharray = dashedStroke;
-            } else if (coord >= 3 && coord < 5) {
-                right2.style.stroke = cerulean;
-                right2.style.strokeDasharray = "";
-                left2.style.stroke = cerulean;
-                left2.style.strokeDasharray = "";
-            } else {
-                right2.style.stroke = gold;
-                right2.style.strokeDasharray = "";
-                left2.style.stroke = gold;
-                left2.style.strokeDasharray = "";
-            }
-            if (coord >= 0 && coord < 2) {
-                top3.style.stroke = cerulean;
-                top3.style.strokeDasharray = dashedStroke;
-                left1.style.stroke = cerulean;
-                left1.style.strokeDasharray = dashedStroke;
-                coord = +(x1coord.value);
-                if (coord >= 0 && coord < 2) {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = "";
-                } else if (coord >= 2 && coord < 4) {
-                    top1.style.stroke = gold;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = gold;
-                    right1.style.strokeDasharray = "";
-                } else {
-                    top1.style.stroke = noLine;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = noLine;
-                    right1.style.strokeDasharray = "";
-                }
-            } else if (coord >= 2 && coord < 4) {
-                top3.style.stroke = noLine;
-                top3.style.strokeDasharray = "";
-                left1.style.stroke = noLine;
-                left1.style.strokeDasharray = "";
-                coord = +(x1coord.value);
-                if (coord >= 0 && coord < 2) {
-                    top1.style.stroke = gold;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = gold;
-                    right1.style.strokeDasharray = "";
-                } else if (coord >= 2 && coord < 4) {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = "";
-                } else {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = dashedStroke;
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = dashedStroke;
-                }
-            } else {
-                top3.style.stroke = cerulean;
-                top3.style.strokeDasharray = "";
-                left1.style.stroke = cerulean;
-                left1.style.strokeDasharray = "";
-                coord = +(x1coord.value);
-                if (coord >= 0 && coord < 2) {
-                    top1.style.stroke = cerulean;
-                    top1.style.strokeDasharray = dashedStroke;
-                    right1.style.stroke = cerulean;
-                    right1.style.strokeDasharray = dashedStroke;
-                } else if (coord >= 2 && coord < 4) {
-                    top1.style.stroke = noLine;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = noLine;
-                    right1.style.strokeDasharray = "";
-                } else {
-                    top1.style.stroke = gold;
-                    top1.style.strokeDasharray = "";
-                    right1.style.stroke = gold;
-                    right1.style.strokeDasharray = "";
-                }
-            }
-            break;
-    }
+    // let coord = 0;
+    // switch (quad) {
+    //     case 1:
+    //         bottom3.style.stroke = noLine;
+    //         bottom3.style.strokeDasharray = "";
+    //         left3.style.stroke = noLine;
+    //         left3.style.strokeDasharray = "";
+    //         coord = +(x1coord.value);
+    //         if (coord >= 1 && coord < 3) {
+    //             bottom2.style.stroke = cerulean;
+    //             bottom2.style.strokeDasharray = dashedStroke;
+    //             top2.style.stroke = cerulean;
+    //             top2.style.strokeDasharray = dashedStroke;
+    //         } else if (coord >= 3 && coord < 5) {
+    //             bottom2.style.stroke = gold;
+    //             bottom2.style.strokeDasharray = "";
+    //             top2.style.stroke = gold;
+    //             top2.style.strokeDasharray = "";
+    //         } else {
+    //             bottom2.style.stroke = cerulean;
+    //             bottom2.style.strokeDasharray = "";
+    //             top2.style.stroke = cerulean;
+    //             top2.style.strokeDasharray = "";
+    //         }
+    //         if (coord >= 0 && coord < 2) {
+    //             right3.style.stroke = gold;
+    //             right3.style.strokeDasharray = "";
+    //             bottom1.style.stroke = gold;
+    //             bottom1.style.strokeDasharray = "";
+    //         } else if (coord >= 2 && coord < 4) {
+    //             right3.style.stroke = cerulean;
+    //             right3.style.strokeDasharray = "";
+    //             bottom1.style.stroke = cerulean;
+    //             bottom1.style.strokeDasharray = "";
+    //         } else {
+    //             right3.style.stroke = cerulean;
+    //             right3.style.strokeDasharray = dashedStroke;
+    //             bottom1.style.stroke = cerulean;
+    //             bottom1.style.strokeDasharray = dashedStroke;
+    //         }
+    //         coord = +(x2coord.value);
+    //         if (coord >= 1 && coord < 3) {
+    //             right2.style.stroke = cerulean;
+    //             right2.style.strokeDasharray = dashedStroke;
+    //             left2.style.stroke = cerulean;
+    //             left2.style.strokeDasharray = dashedStroke;
+    //         } else if (coord >= 3 && coord < 5) {
+    //             right2.style.stroke = cerulean;
+    //             right2.style.strokeDasharray = "";
+    //             left2.style.stroke = cerulean;
+    //             left2.style.strokeDasharray = "";
+    //         } else {
+    //             right2.style.stroke = gold;
+    //             right2.style.strokeDasharray = "";
+    //             left2.style.stroke = gold;
+    //             left2.style.strokeDasharray = "";
+    //         }
+    //         if (coord >= 0 && coord < 2) {
+    //             top3.style.stroke = cerulean;
+    //             top3.style.strokeDasharray = "";
+    //             left1.style.stroke = cerulean;
+    //             left1.style.strokeDasharray = "";
+    //             coord = +(x1coord.value);
+    //             if (coord >= 0 && coord < 2) {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = dashedStroke;
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = dashedStroke;
+    //             } else if (coord >= 2 && coord < 4) {
+    //                 top1.style.stroke = noLine;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = noLine;
+    //                 right1.style.strokeDasharray = "";
+    //             } else {
+    //                 top1.style.stroke = gold;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = gold;
+    //                 right1.style.strokeDasharray = "";
+    //             }
+    //         } else if (coord >= 2 && coord < 4) {
+    //             top3.style.stroke = gold;
+    //             top3.style.strokeDasharray = "";
+    //             left1.style.stroke = gold;
+    //             left1.style.strokeDasharray = "";
+    //             coord = +(x1coord.value);
+    //             if (coord >= 0 && coord < 2) {
+    //                 top1.style.stroke = noLine;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = noLine;
+    //                 right1.style.strokeDasharray = "";
+    //             } else if (coord >= 2 && coord < 4) {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = dashedStroke;
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = dashedStroke;
+    //             } else {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = "";
+    //             }
+    //         } else {
+    //             top3.style.stroke = cerulean;
+    //             top3.style.strokeDasharray = dashedStroke;
+    //             left1.style.stroke = cerulean;
+    //             left1.style.strokeDasharray = dashedStroke;
+    //             coord = +(x1coord.value);
+    //             if (coord >= 0 && coord < 2) {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = "";
+    //             } else if (coord >= 2 && coord < 4) {
+    //                 top1.style.stroke = gold;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = gold;
+    //                 right1.style.strokeDasharray = "";
+    //             } else {
+    //                 top1.style.stroke = noLine;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = noLine;
+    //                 right1.style.strokeDasharray = "";
+    //             }
+    //         }
+    //         break;
+    //     case 2:
+    //         bottom3.style.stroke = cerulean;
+    //         bottom3.style.strokeDasharray = "";
+    //         left3.style.stroke = cerulean;
+    //         left3.style.strokeDasharray = "";
+    //         coord = +(x1coord.value);
+    //         if (coord >= 1 && coord < 3) {
+    //             bottom2.style.stroke = cerulean;
+    //             bottom2.style.strokeDasharray = dashedStroke;
+    //             top2.style.stroke = cerulean;
+    //             top2.style.strokeDasharray = dashedStroke;
+    //         } else if (coord >= 3 && coord < 5) {
+    //             bottom2.style.stroke = gold;
+    //             bottom2.style.strokeDasharray = "";
+    //             top2.style.stroke = gold;
+    //             top2.style.strokeDasharray = "";
+    //         } else {
+    //             bottom2.style.stroke = cerulean;
+    //             bottom2.style.strokeDasharray = "";
+    //             top2.style.stroke = cerulean;
+    //             top2.style.strokeDasharray = "";
+    //         }
+    //         if (coord >= 0 && coord < 2) {
+    //             right3.style.stroke = cerulean;
+    //             right3.style.strokeDasharray = dashedStroke;
+    //             bottom1.style.stroke = cerulean;
+    //             bottom1.style.strokeDasharray = dashedStroke;
+    //         } else if (coord >= 2 && coord < 4) {
+    //             right3.style.stroke = noLine;
+    //             right3.style.strokeDasharray = "";
+    //             bottom1.style.stroke = noLine;
+    //             bottom1.style.strokeDasharray = "";
+    //         } else {
+    //             right3.style.stroke = gold;
+    //             right3.style.strokeDasharray = "";
+    //             bottom1.style.stroke = gold;
+    //             bottom1.style.strokeDasharray = "";
+    //         }
+    //         coord = +(x2coord.value);
+    //         if (coord >= 1 && coord < 3) {
+    //             right2.style.stroke = cerulean;
+    //             right2.style.strokeDasharray = dashedStroke;
+    //             left2.style.stroke = cerulean;
+    //             left2.style.strokeDasharray = dashedStroke;
+    //         } else if (coord >= 3 && coord < 5) {
+    //             right2.style.stroke = cerulean;
+    //             right2.style.strokeDasharray = "";
+    //             left2.style.stroke = cerulean;
+    //             left2.style.strokeDasharray = "";
+    //         } else {
+    //             right2.style.stroke = gold;
+    //             right2.style.strokeDasharray = "";
+    //             left2.style.stroke = gold;
+    //             left2.style.strokeDasharray = "";
+    //         }
+    //         if (coord >= 0 && coord < 2) {
+    //             top3.style.stroke = noLine;
+    //             top3.style.strokeDasharray = "";
+    //             left1.style.stroke = noLine;
+    //             left1.style.strokeDasharray = "";
+    //             coord = +(x1coord.value);
+    //             if (coord >= 0 && coord < 2) {
+    //                 top1.style.stroke = gold;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = gold;
+    //                 right1.style.strokeDasharray = "";
+    //             } else if (coord >= 2 && coord < 4) {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = "";
+    //             } else {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = dashedStroke;
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = dashedStroke;
+    //             }
+    //         } else if (coord >= 2 && coord < 4) {
+    //             top3.style.stroke = cerulean;
+    //             top3.style.strokeDasharray = dashedStroke;
+    //             left1.style.stroke = cerulean;
+    //             left1.style.strokeDasharray = dashedStroke;
+    //             coord = +(x1coord.value);
+    //             if (coord >= 0 && coord < 2) {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = "";
+    //             } else if (coord >= 2 && coord < 4) {
+    //                 top1.style.stroke = gold;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = gold;
+    //                 right1.style.strokeDasharray = "";
+    //             } else {
+    //                 top1.style.stroke = noLine;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = noLine;
+    //                 right1.style.strokeDasharray = "";
+    //             }
+    //         } else {
+    //             top3.style.stroke = gold;
+    //             top3.style.strokeDasharray = "";
+    //             left1.style.stroke = gold;
+    //             left1.style.strokeDasharray = "";
+    //             coord = +(x1coord.value);
+    //             if (coord >= 0 && coord < 2) {
+    //                 top1.style.stroke = noLine;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = noLine;
+    //                 right1.style.strokeDasharray = "";
+    //             } else if (coord >= 2 && coord < 4) {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = dashedStroke;
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = dashedStroke;
+    //             } else {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = "";
+    //             }
+    //         }
+    //         break;
+    //     case 3:
+    //         bottom3.style.stroke = cerulean;
+    //         bottom3.style.strokeDasharray = dashedStroke;
+    //         left3.style.stroke = cerulean;
+    //         left3.style.strokeDasharray = dashedStroke;
+    //         coord = +(x1coord.value);
+    //         if (coord >= 1 && coord < 3) {
+    //             bottom2.style.stroke = cerulean;
+    //             bottom2.style.strokeDasharray = dashedStroke;
+    //             top2.style.stroke = cerulean;
+    //             top2.style.strokeDasharray = dashedStroke;
+    //         } else if (coord >= 3 && coord < 5) {
+    //             bottom2.style.stroke = gold;
+    //             bottom2.style.strokeDasharray = "";
+    //             top2.style.stroke = gold;
+    //             top2.style.strokeDasharray = "";
+    //         } else {
+    //             bottom2.style.stroke = cerulean;
+    //             bottom2.style.strokeDasharray = "";
+    //             top2.style.stroke = cerulean;
+    //             top2.style.strokeDasharray = "";
+    //         }
+    //         if (coord >= 0 && coord < 2) {
+    //             right3.style.stroke = cerulean;
+    //             right3.style.strokeDasharray = "";
+    //             bottom1.style.stroke = cerulean;
+    //             bottom1.style.strokeDasharray = "";
+    //         } else if (coord >= 2 && coord < 4) {
+    //             right3.style.stroke = gold;
+    //             right3.style.strokeDasharray = "";
+    //             bottom1.style.stroke = gold;
+    //             bottom1.style.strokeDasharray = "";
+    //         } else {
+    //             right3.style.stroke = noLine;
+    //             right3.style.strokeDasharray = "";
+    //             bottom1.style.stroke = noLine;
+    //             bottom1.style.strokeDasharray = "";
+    //         }
+    //         coord = +(x2coord.value);
+    //         if (coord >= 1 && coord < 3) {
+    //             right2.style.stroke = cerulean;
+    //             right2.style.strokeDasharray = dashedStroke;
+    //             left2.style.stroke = cerulean;
+    //             left2.style.strokeDasharray = dashedStroke;
+    //         } else if (coord >= 3 && coord < 5) {
+    //             right2.style.stroke = cerulean;
+    //             right2.style.strokeDasharray = "";
+    //             left2.style.stroke = cerulean;
+    //             left2.style.strokeDasharray = "";
+    //         } else {
+    //             right2.style.stroke = gold;
+    //             right2.style.strokeDasharray = "";
+    //             left2.style.stroke = gold;
+    //             left2.style.strokeDasharray = "";
+    //         }
+    //         if (coord >= 0 && coord < 2) {
+    //             top3.style.stroke = gold;
+    //             top3.style.strokeDasharray = "";
+    //             left1.style.stroke = gold;
+    //             left1.style.strokeDasharray = "";
+    //             coord = +(x1coord.value);
+    //             if (coord >= 0 && coord < 2) {
+    //                 top1.style.stroke = noLine;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = noLine;
+    //                 right1.style.strokeDasharray = "";
+    //             } else if (coord >= 2 && coord < 4) {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = dashedStroke;
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = dashedStroke;
+    //             } else {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = "";
+    //             }
+    //         } else if (coord >= 2 && coord < 4) {
+    //             top3.style.stroke = cerulean;
+    //             top3.style.strokeDasharray = "";
+    //             left1.style.stroke = cerulean;
+    //             left1.style.strokeDasharray = "";
+    //             coord = +(x1coord.value);
+    //             if (coord >= 0 && coord < 2) {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = dashedStroke;
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = dashedStroke;
+    //             } else if (coord >= 2 && coord < 4) {
+    //                 top1.style.stroke = noLine;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = noLine;
+    //                 right1.style.strokeDasharray = "";
+    //             } else {
+    //                 top1.style.stroke = gold;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = gold;
+    //                 right1.style.strokeDasharray = "";
+    //             }
+    //         } else {
+    //             top3.style.stroke = noLine;
+    //             top3.style.strokeDasharray = "";
+    //             left1.style.stroke = noLine;
+    //             left1.style.strokeDasharray = "";
+    //             coord = +(x1coord.value);
+    //             if (coord >= 0 && coord < 2) {
+    //                 top1.style.stroke = gold;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = gold;
+    //                 right1.style.strokeDasharray = "";
+    //             } else if (coord >= 2 && coord < 4) {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = "";
+    //             } else {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = dashedStroke;
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = dashedStroke;
+    //             }
+    //         }
+    //         break;
+    //     case 4:
+    //         bottom3.style.stroke = gold;
+    //         bottom3.style.strokeDasharray = "";
+    //         left3.style.stroke = gold;
+    //         left3.style.strokeDasharray = "";
+    //         coord = +(x1coord.value);
+    //         if (coord >= 1 && coord < 3) {
+    //             bottom2.style.stroke = cerulean;
+    //             bottom2.style.strokeDasharray = dashedStroke;
+    //             top2.style.stroke = cerulean;
+    //             top2.style.strokeDasharray = dashedStroke;
+    //         } else if (coord >= 3 && coord < 5) {
+    //             bottom2.style.stroke = gold;
+    //             bottom2.style.strokeDasharray = "";
+    //             top2.style.stroke = gold;
+    //             top2.style.strokeDasharray = "";
+    //         } else {
+    //             bottom2.style.stroke = cerulean;
+    //             bottom2.style.strokeDasharray = "";
+    //             top2.style.stroke = cerulean;
+    //             top2.style.strokeDasharray = "";
+    //         }
+    //         if (coord >= 0 && coord < 2) {
+    //             right3.style.stroke = noLine;
+    //             right3.style.strokeDasharray = "";
+    //             bottom1.style.stroke = noLine;
+    //             bottom1.style.strokeDasharray = "";
+    //         } else if (coord >= 2 && coord < 4) {
+    //             right3.style.stroke = cerulean;
+    //             right3.style.strokeDasharray = dashedStroke;
+    //             bottom1.style.stroke = cerulean;
+    //             bottom1.style.strokeDasharray = dashedStroke;
+    //         } else {
+    //             right3.style.stroke = cerulean;
+    //             right3.style.strokeDasharray = "";
+    //             bottom1.style.stroke = cerulean;
+    //             bottom1.style.strokeDasharray = "";
+    //         }
+    //         coord = +(x2coord.value);
+    //         if (coord >= 1 && coord < 3) {
+    //             right2.style.stroke = cerulean;
+    //             right2.style.strokeDasharray = dashedStroke;
+    //             left2.style.stroke = cerulean;
+    //             left2.style.strokeDasharray = dashedStroke;
+    //         } else if (coord >= 3 && coord < 5) {
+    //             right2.style.stroke = cerulean;
+    //             right2.style.strokeDasharray = "";
+    //             left2.style.stroke = cerulean;
+    //             left2.style.strokeDasharray = "";
+    //         } else {
+    //             right2.style.stroke = gold;
+    //             right2.style.strokeDasharray = "";
+    //             left2.style.stroke = gold;
+    //             left2.style.strokeDasharray = "";
+    //         }
+    //         if (coord >= 0 && coord < 2) {
+    //             top3.style.stroke = cerulean;
+    //             top3.style.strokeDasharray = dashedStroke;
+    //             left1.style.stroke = cerulean;
+    //             left1.style.strokeDasharray = dashedStroke;
+    //             coord = +(x1coord.value);
+    //             if (coord >= 0 && coord < 2) {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = "";
+    //             } else if (coord >= 2 && coord < 4) {
+    //                 top1.style.stroke = gold;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = gold;
+    //                 right1.style.strokeDasharray = "";
+    //             } else {
+    //                 top1.style.stroke = noLine;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = noLine;
+    //                 right1.style.strokeDasharray = "";
+    //             }
+    //         } else if (coord >= 2 && coord < 4) {
+    //             top3.style.stroke = noLine;
+    //             top3.style.strokeDasharray = "";
+    //             left1.style.stroke = noLine;
+    //             left1.style.strokeDasharray = "";
+    //             coord = +(x1coord.value);
+    //             if (coord >= 0 && coord < 2) {
+    //                 top1.style.stroke = gold;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = gold;
+    //                 right1.style.strokeDasharray = "";
+    //             } else if (coord >= 2 && coord < 4) {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = "";
+    //             } else {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = dashedStroke;
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = dashedStroke;
+    //             }
+    //         } else {
+    //             top3.style.stroke = cerulean;
+    //             top3.style.strokeDasharray = "";
+    //             left1.style.stroke = cerulean;
+    //             left1.style.strokeDasharray = "";
+    //             coord = +(x1coord.value);
+    //             if (coord >= 0 && coord < 2) {
+    //                 top1.style.stroke = cerulean;
+    //                 top1.style.strokeDasharray = dashedStroke;
+    //                 right1.style.stroke = cerulean;
+    //                 right1.style.strokeDasharray = dashedStroke;
+    //             } else if (coord >= 2 && coord < 4) {
+    //                 top1.style.stroke = noLine;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = noLine;
+    //                 right1.style.strokeDasharray = "";
+    //             } else {
+    //                 top1.style.stroke = gold;
+    //                 top1.style.strokeDasharray = "";
+    //                 right1.style.stroke = gold;
+    //                 right1.style.strokeDasharray = "";
+    //             }
+    //         }
+    //         break;
+    // }
 
     if (matrixA[0]- matrixA[2] >= -error && matrixB[0] - matrixB[1] >= -error) {
         if (matrixA[0] >= rowMax && matrixB[0] >= colMax)
@@ -1441,13 +1461,14 @@ function update() {
     } else {
         point4Big.style.opacity = 0;
     }
-    if (0 < x1coord.value && x1coord.value < 3 && 0 < x2coord.value && x2coord.value < 3 && 0 < b1coord.value && b1coord.value < 6 && 0 < b2coord.value && b2coord.value < 6) {
+    if (0 < x1coord.value && x1coord.value < 3 && 0 < x2coord.value && x2coord.value < 3 && b1coord.value < 6 && b2coord.value < 6) {
         const mixedRow = mixedPayoff(matrixA);
         const mixedCol = mixedPayoff(matrixB);
         point5Big.style = "fill:" + mixedColor;
         point5Big.style.r = eqRadiiBig*widthBig;
         point5Big.cx.baseVal.value = mixedRow*widthBig/6+paddingBig;
         point5Big.cy.baseVal.value = (1-mixedCol/6)*widthBig+paddingBig;
+        if (6 - mixedRow < error && 6 - mixedCol < error) point5Big.style.opacity = 0;
     } else {
         point5Big.style.opacity = 0;
     }
@@ -1645,203 +1666,210 @@ function update() {
     const arrows1 = document.getElementById("arrows1");
     const arrows2 = document.getElementById("arrows2");
 
-    if (coords[2] >= 6 && coords[3] >= 6) {
-        wholeFigure.style.display = "none";
-        arrows1.style.display = "none";
-        arrows2.style.display = "none";
-        edgeFigure.style.display = "none";
-    } else if (coords[3] == 6) {
-        wholeFigure.style.display = "none";
-        arrows1.style.display = "";
-        arrows2.style.display = "none";
-        edgeFigure.style.display = "";
+    if (!fixImageSize) {
+        if (coords[2] >= 6 && coords[3] >= 6) {
+            wholeFigure.style.display = "none";
+            arrows1.style.display = "none";
+            arrows2.style.display = "none";
+            edgeFigure.style.display = "none";
+        } else if (coords[3] == 6) {
+            wholeFigure.style.display = "none";
+            arrows1.style.display = "";
+            arrows2.style.display = "none";
+            edgeFigure.style.display = "";
 
-        const bar = document.getElementById("bar");
-        const bar1 = document.getElementById("bar1");
-        const bar2 = document.getElementById("bar2");
-        const bar3 = document.getElementById("bar3");
-        const bar4 = document.getElementById("bar4");
-        const red1 = document.getElementById("red-point1");
-        const red2 = document.getElementById("red-point2");
-        const red3 = document.getElementById("red-point3");
-        const green1 = document.getElementById("green-point1");
-        const green2 = document.getElementById("green-point2");
-        const green3 = document.getElementById("green-point3");
-        const green4 = document.getElementById("green-point4");
-         
-        switch (quad) {
-            case 1:
-                bar1.style.display = "";
-                bar2.style.display = "";
-                bar3.style.display = "";
-                bar4.style.display = "none";
-                bar1.style.stroke = lightGreen;
-                bar2.style.stroke = bad;
-                bar3.style.stroke = lightGreen;
-                break;
-            case 2:
-                bar1.style.display = "";
-                bar2.style.display = "none";
-                bar3.style.display = "";
-                bar4.style.display = "";
-                bar1.style.stroke = gold;
-                bar3.style.stroke = gold;
-                bar4.style.stroke = bad;
-                break;
-            case 3:
-                bar1.style.display = "";
-                bar2.style.display = "";
-                bar3.style.display = "";
-                bar4.style.display = "";
-                bar1.style.stroke = cerulean;
-                bar2.style.stroke = gold;
-                bar3.style.stroke = bad;
-                bar4.style.stroke = gold;
-                break;
-            case 4:
-                bar1.style.display = "";
-                bar2.style.display = "none";
-                bar3.style.display = "";
-                bar4.style.display = "none";
-                bar1.style.stroke = bad;
-                bar3.style.stroke = cerulean;
-                break;
+            const bar = document.getElementById("bar");
+            const bar1 = document.getElementById("bar1");
+            const bar2 = document.getElementById("bar2");
+            const bar3 = document.getElementById("bar3");
+            const bar4 = document.getElementById("bar4");
+            const red1 = document.getElementById("red-point1");
+            const red2 = document.getElementById("red-point2");
+            const red3 = document.getElementById("red-point3");
+            const green1 = document.getElementById("green-point1");
+            const green2 = document.getElementById("green-point2");
+            const green3 = document.getElementById("green-point3");
+            const green4 = document.getElementById("green-point4");
+            
+            switch (quad) {
+                case 1:
+                    bar1.style.display = "";
+                    bar2.style.display = "";
+                    bar3.style.display = "";
+                    bar4.style.display = "none";
+                    bar1.style.stroke = lightGreen;
+                    bar2.style.stroke = bad;
+                    bar3.style.stroke = lightGreen;
+                    break;
+                case 2:
+                    bar1.style.display = "";
+                    bar2.style.display = "none";
+                    bar3.style.display = "";
+                    bar4.style.display = "";
+                    bar1.style.stroke = gold;
+                    bar3.style.stroke = gold;
+                    bar4.style.stroke = bad;
+                    break;
+                case 3:
+                    bar1.style.display = "";
+                    bar2.style.display = "";
+                    bar3.style.display = "";
+                    bar4.style.display = "";
+                    bar1.style.stroke = cerulean;
+                    bar2.style.stroke = gold;
+                    bar3.style.stroke = bad;
+                    bar4.style.stroke = gold;
+                    break;
+                case 4:
+                    bar1.style.display = "";
+                    bar2.style.display = "none";
+                    bar3.style.display = "";
+                    bar4.style.display = "none";
+                    bar1.style.stroke = bad;
+                    bar3.style.stroke = cerulean;
+                    break;
+            }
+
+            const barOffset = 0.1*container.width.baseVal.value;
+            const barSeparation = 0.03*container.width.baseVal.value;
+            bar.x1.baseVal.value = picPadding1;
+            bar.x2.baseVal.value = picPadding1 + picWidth;
+            bar.y1.baseVal.value = picPadding2;
+            bar.y2.baseVal.value = picPadding2;
+            bar.style.stroke = "#d3d3d3";
+            bar1.x1.baseVal.value = picPadding1;
+            bar1.x2.baseVal.value = picPadding1 + picWidth/2 + 1;
+            bar1.y1.baseVal.value = picPadding2 + barOffset;
+            bar1.y2.baseVal.value = picPadding2 + barOffset;
+            bar2.x1.baseVal.value = picPadding1;
+            bar2.x2.baseVal.value = picPadding1 + picWidth/2;
+            bar2.y1.baseVal.value = picPadding2 + barOffset + barSeparation;
+            bar2.y2.baseVal.value = picPadding2 + barOffset + barSeparation;
+            bar3.x1.baseVal.value = picPadding1 + picWidth;
+            bar3.x2.baseVal.value = picPadding1 + picWidth/2;
+            bar3.y1.baseVal.value = picPadding2 + barOffset;
+            bar3.y2.baseVal.value = picPadding2 + barOffset;
+            bar4.x1.baseVal.value = picPadding1 + picWidth;
+            bar4.x2.baseVal.value = picPadding1 + picWidth/2;
+            bar4.y1.baseVal.value = picPadding2 + barOffset + barSeparation;
+            bar4.y2.baseVal.value = picPadding2 + barOffset + barSeparation;
+
+            green1.cx.baseVal.value = picPadding1;
+            red1.cx.baseVal.value = picPadding1 + picWidth/6;
+            green2.cx.baseVal.value = picPadding1 + picWidth/3;
+            red2.cx.baseVal.value = picPadding1 + picWidth/2;
+            green3.cx.baseVal.value = picPadding1 + picWidth*2/3;
+            red3.cx.baseVal.value = picPadding1 + picWidth*5/6;
+            green4.cx.baseVal.value = picPadding1 + picWidth;
+            green1.cy.baseVal.value = picPadding2;
+            red1.cy.baseVal.value = picPadding2;
+            green2.cy.baseVal.value = picPadding2;
+            red2.cy.baseVal.value = picPadding2;
+            green3.cy.baseVal.value = picPadding2;
+            red3.cy.baseVal.value = picPadding2;
+            green4.cy.baseVal.value = picPadding2;
+        } else if (coords[2] == 6) {
+            wholeFigure.style.display = "none";
+            arrows1.style.display = "none";
+            arrows2.style.display = "";
+            edgeFigure.style.display = "";
+
+            const bar = document.getElementById("bar");
+            const bar1 = document.getElementById("bar1");
+            const bar2 = document.getElementById("bar2");
+            const bar3 = document.getElementById("bar3");
+            const bar4 = document.getElementById("bar4");
+            const red1 = document.getElementById("red-point1");
+            const red2 = document.getElementById("red-point2");
+            const red3 = document.getElementById("red-point3");
+            const green1 = document.getElementById("green-point1");
+            const green2 = document.getElementById("green-point2");
+            const green3 = document.getElementById("green-point3");
+            const green4 = document.getElementById("green-point4");
+            
+            switch (quad) {
+                case 1:
+                    bar1.style.display = "none";
+                    bar2.style.display = "";
+                    bar3.style.display = "";
+                    bar4.style.display = "";
+                    bar2.style.stroke = lightGreen;
+                    bar3.style.stroke = bad;
+                    bar4.style.stroke = lightGreen;
+                    break;
+                case 2:
+                    bar1.style.display = "";
+                    bar2.style.display = "none";
+                    bar3.style.display = "";
+                    bar4.style.display = "none";
+                    bar1.style.stroke = gold;
+                    bar3.style.stroke = bad;
+                    break;
+                case 3:
+                    bar1.style.display = "";
+                    bar2.style.display = "";
+                    bar3.style.display = "";
+                    bar4.style.display = "";
+                    bar1.style.stroke = cerulean;
+                    bar2.style.stroke = bad;
+                    bar3.style.stroke = cerulean;
+                    bar4.style.stroke = gold;
+                    break;
+                case 4:
+                    bar1.style.display = "";
+                    bar2.style.display = "";
+                    bar3.style.display = "none";
+                    bar4.style.display = "";
+                    bar1.style.stroke = bad;
+                    bar2.style.stroke = cerulean;
+                    bar4.style.stroke = cerulean;
+                    break;
+            }
+
+            const barOffset = 0.1*container.width.baseVal.value;
+            const barSeparation = 0.03*container.width.baseVal.value;
+            bar.y1.baseVal.value = picPadding2;
+            bar.y2.baseVal.value = picPadding2 + picHeight;
+            bar.x1.baseVal.value = picPadding1;
+            bar.x2.baseVal.value = picPadding1;
+            bar.style.stroke = "#d3d3d3";
+            bar1.y1.baseVal.value = picPadding2;
+            bar1.y2.baseVal.value = picPadding2 + picHeight/2 + 1;
+            bar1.x1.baseVal.value = picPadding1 + barOffset;
+            bar1.x2.baseVal.value = picPadding1 + barOffset;
+            bar2.y1.baseVal.value = picPadding2;
+            bar2.y2.baseVal.value = picPadding2 + picHeight/2;
+            bar2.x1.baseVal.value = picPadding1 + barOffset + barSeparation;
+            bar2.x2.baseVal.value = picPadding1 + barOffset + barSeparation;
+            bar3.y1.baseVal.value = picPadding2 + picHeight;
+            bar3.y2.baseVal.value = picPadding2 + picHeight/2;
+            bar3.x1.baseVal.value = picPadding1 + barOffset;
+            bar3.x2.baseVal.value = picPadding1 + barOffset;
+            bar4.y1.baseVal.value = picPadding2 + picHeight;
+            bar4.y2.baseVal.value = picPadding2 + picHeight/2;
+            bar4.x1.baseVal.value = picPadding1 + barOffset + barSeparation;
+            bar4.x2.baseVal.value = picPadding1 + barOffset + barSeparation;
+
+            green1.cy.baseVal.value = picPadding2;
+            red1.cy.baseVal.value = picPadding2 + picHeight/6;
+            green2.cy.baseVal.value = picPadding2 + picHeight/3;
+            red2.cy.baseVal.value = picPadding2 + picHeight/2;
+            green3.cy.baseVal.value = picPadding2 + picHeight*2/3;
+            red3.cy.baseVal.value = picPadding2 + picHeight*5/6;
+            green4.cy.baseVal.value = picPadding2 + picHeight;
+            green1.cx.baseVal.value = picPadding1;
+            red1.cx.baseVal.value = picPadding1;
+            green2.cx.baseVal.value = picPadding1;
+            red2.cx.baseVal.value = picPadding1;
+            green3.cx.baseVal.value = picPadding1;
+            red3.cx.baseVal.value = picPadding1;
+            green4.cx.baseVal.value = picPadding1;
+        } else {
+            wholeFigure.style.display = "";
+            arrows1.style.display = "";
+            arrows2.style.display = "";
+            edgeFigure.style.display = "none";
         }
-
-        const barOffset = 0.1*container.width.baseVal.value;
-        const barSeparation = 0.03*container.width.baseVal.value;
-        bar.x1.baseVal.value = picPadding1;
-        bar.x2.baseVal.value = picPadding1 + picWidth;
-        bar.y1.baseVal.value = picPadding2;
-        bar.y2.baseVal.value = picPadding2;
-        bar.style.stroke = "#d3d3d3";
-        bar1.x1.baseVal.value = picPadding1;
-        bar1.x2.baseVal.value = picPadding1 + picWidth/2 + 1;
-        bar1.y1.baseVal.value = picPadding2 + barOffset;
-        bar1.y2.baseVal.value = picPadding2 + barOffset;
-        bar2.x1.baseVal.value = picPadding1;
-        bar2.x2.baseVal.value = picPadding1 + picWidth/2;
-        bar2.y1.baseVal.value = picPadding2 + barOffset + barSeparation;
-        bar2.y2.baseVal.value = picPadding2 + barOffset + barSeparation;
-        bar3.x1.baseVal.value = picPadding1 + picWidth;
-        bar3.x2.baseVal.value = picPadding1 + picWidth/2;
-        bar3.y1.baseVal.value = picPadding2 + barOffset;
-        bar3.y2.baseVal.value = picPadding2 + barOffset;
-        bar4.x1.baseVal.value = picPadding1 + picWidth;
-        bar4.x2.baseVal.value = picPadding1 + picWidth/2;
-        bar4.y1.baseVal.value = picPadding2 + barOffset + barSeparation;
-        bar4.y2.baseVal.value = picPadding2 + barOffset + barSeparation;
-
-        green1.cx.baseVal.value = picPadding1;
-        red1.cx.baseVal.value = picPadding1 + picWidth/6;
-        green2.cx.baseVal.value = picPadding1 + picWidth/3;
-        red2.cx.baseVal.value = picPadding1 + picWidth/2;
-        green3.cx.baseVal.value = picPadding1 + picWidth*2/3;
-        red3.cx.baseVal.value = picPadding1 + picWidth*5/6;
-        green4.cx.baseVal.value = picPadding1 + picWidth;
-        green1.cy.baseVal.value = picPadding2;
-        red1.cy.baseVal.value = picPadding2;
-        green2.cy.baseVal.value = picPadding2;
-        red2.cy.baseVal.value = picPadding2;
-        green3.cy.baseVal.value = picPadding2;
-        red3.cy.baseVal.value = picPadding2;
-        green4.cy.baseVal.value = picPadding2;
-    } else if (coords[2] == 6) {
-        wholeFigure.style.display = "none";
-        arrows1.style.display = "none";
-        arrows2.style.display = "";
-        edgeFigure.style.display = "";
-
-        const bar = document.getElementById("bar");
-        const bar1 = document.getElementById("bar1");
-        const bar2 = document.getElementById("bar2");
-        const bar3 = document.getElementById("bar3");
-        const bar4 = document.getElementById("bar4");
-        const red1 = document.getElementById("red-point1");
-        const red2 = document.getElementById("red-point2");
-        const red3 = document.getElementById("red-point3");
-        const green1 = document.getElementById("green-point1");
-        const green2 = document.getElementById("green-point2");
-        const green3 = document.getElementById("green-point3");
-        const green4 = document.getElementById("green-point4");
-         
-        switch (quad) {
-            case 1:
-                bar1.style.display = "none";
-                bar2.style.display = "";
-                bar3.style.display = "";
-                bar4.style.display = "";
-                bar2.style.stroke = lightGreen;
-                bar3.style.stroke = bad;
-                bar4.style.stroke = lightGreen;
-                break;
-            case 2:
-                bar1.style.display = "";
-                bar2.style.display = "none";
-                bar3.style.display = "";
-                bar4.style.display = "none";
-                bar1.style.stroke = gold;
-                bar3.style.stroke = bad;
-                break;
-            case 3:
-                bar1.style.display = "";
-                bar2.style.display = "";
-                bar3.style.display = "";
-                bar4.style.display = "";
-                bar1.style.stroke = cerulean;
-                bar2.style.stroke = bad;
-                bar3.style.stroke = cerulean;
-                bar4.style.stroke = gold;
-                break;
-            case 4:
-                bar1.style.display = "";
-                bar2.style.display = "";
-                bar3.style.display = "none";
-                bar4.style.display = "";
-                bar1.style.stroke = bad;
-                bar2.style.stroke = cerulean;
-                bar4.style.stroke = cerulean;
-                break;
-        }
-
-        const barOffset = 0.1*container.width.baseVal.value;
-        const barSeparation = 0.03*container.width.baseVal.value;
-        bar.y1.baseVal.value = picPadding2;
-        bar.y2.baseVal.value = picPadding2 + picHeight;
-        bar.x1.baseVal.value = picPadding1;
-        bar.x2.baseVal.value = picPadding1;
-        bar.style.stroke = "#d3d3d3";
-        bar1.y1.baseVal.value = picPadding2;
-        bar1.y2.baseVal.value = picPadding2 + picHeight/2 + 1;
-        bar1.x1.baseVal.value = picPadding1 + barOffset;
-        bar1.x2.baseVal.value = picPadding1 + barOffset;
-        bar2.y1.baseVal.value = picPadding2;
-        bar2.y2.baseVal.value = picPadding2 + picHeight/2;
-        bar2.x1.baseVal.value = picPadding1 + barOffset + barSeparation;
-        bar2.x2.baseVal.value = picPadding1 + barOffset + barSeparation;
-        bar3.y1.baseVal.value = picPadding2 + picHeight;
-        bar3.y2.baseVal.value = picPadding2 + picHeight/2;
-        bar3.x1.baseVal.value = picPadding1 + barOffset;
-        bar3.x2.baseVal.value = picPadding1 + barOffset;
-        bar4.y1.baseVal.value = picPadding2 + picHeight;
-        bar4.y2.baseVal.value = picPadding2 + picHeight/2;
-        bar4.x1.baseVal.value = picPadding1 + barOffset + barSeparation;
-        bar4.x2.baseVal.value = picPadding1 + barOffset + barSeparation;
-
-        green1.cy.baseVal.value = picPadding2;
-        red1.cy.baseVal.value = picPadding2 + picHeight/6;
-        green2.cy.baseVal.value = picPadding2 + picHeight/3;
-        red2.cy.baseVal.value = picPadding2 + picHeight/2;
-        green3.cy.baseVal.value = picPadding2 + picHeight*2/3;
-        red3.cy.baseVal.value = picPadding2 + picHeight*5/6;
-        green4.cy.baseVal.value = picPadding2 + picHeight;
-        green1.cx.baseVal.value = picPadding1;
-        red1.cx.baseVal.value = picPadding1;
-        green2.cx.baseVal.value = picPadding1;
-        red2.cx.baseVal.value = picPadding1;
-        green3.cx.baseVal.value = picPadding1;
-        red3.cx.baseVal.value = picPadding1;
-        green4.cx.baseVal.value = picPadding1;
     } else {
         wholeFigure.style.display = "";
         arrows1.style.display = "";
@@ -2001,6 +2029,75 @@ function update() {
             pointObjects[i].style.display = "none";
         }
     }
+
+    if (backgroundOutOfDate && (+b1coord.value != 6 && +b2coord.value != 6 || fixImageSize) && viewMode != 0) {
+        const foreignObject = document.getElementById("canvasForeignObject");
+        const canvas = document.getElementById("canvas");
+
+        // update the size of the canvas
+        foreignObject.x.baseVal.value = picPadding1;
+        foreignObject.y.baseVal.value = picPadding2;
+        foreignObject.width.baseVal.value = picWidth;
+        foreignObject.height.baseVal.value = picHeight;
+        canvas.width = picWidth;
+        canvas.height = picHeight;
+
+        if (time % 3 == 0 || switchMode) {
+            // get the appropriate values for the density plot
+            let x1Offset = 0;
+            let x2Offset = 0;
+            switch (quad) {
+                case 2:
+                    x1Offset = -6;
+                    break;
+                case 3:
+                    x1Offset = -6;
+                    x2Offset = -6;
+                    break;
+                case 4:
+                    x2Offset = -6;
+                    break;
+            }
+            
+            valuesX = 6*Math.round(picWidth/20);
+            valuesY = 6*Math.round(picHeight/20);
+            values = [];
+            for (let j = 0; j < valuesY; j++) {
+                values.push([]);
+                for (let i = 0; i < valuesX; i++) {
+                    const [rowM, colM] = coordsToMatrices((i+0.5)/valuesX*6 + x1Offset, (valuesY-j-0.5)/valuesY*6 + x2Offset,
+                                                        +b1coord.value != 0 ? b1coord.value : b1coord.value + error*2,
+                                                        +b2coord.value != 0 ? b2coord.value : b2coord.value + error*2);
+                    switch (viewMode) {
+                        case 1:
+                            values[j].push(payoff(rowM, colM));
+                            break;
+                        case 2:
+                            values[j].push(payoffTransferable(rowM, colM));
+                            break;
+                    }
+                }
+            }
+            switchMode = false;
+            backgroundOutOfDate = false;
+        }
+
+        const ctx = canvas.getContext("2d");
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        for (let j = 0; j < canvas.height; j++) {
+            for (let i = 0; i < canvas.width; i++) {
+                const color = colorFunction(values[Math.floor(j/canvas.height*valuesY)][Math.floor(i/canvas.width*valuesX)]/6);
+                data[(j*canvas.width+i)*4]   = color[0];
+                data[(j*canvas.width+i)*4+1] = color[1];
+                data[(j*canvas.width+i)*4+2] = color[2];
+                data[(j*canvas.width+i)*4+3] = 255;
+            }
+        }
+        ctx.putImageData(imageData,0,0);
+    }
+
+    time++;
 }
 
 function qOverBlue(p1, q0, x1, x2) {
@@ -2121,6 +2218,8 @@ function wiggle(p1) {
 }
 
 function updateBackground() {
+    backgroundOutOfDate = true;
+
     const region1 = document.getElementById("region1");
     const region2 = document.getElementById("region2");
     const region3 = document.getElementById("region3");
@@ -2285,7 +2384,11 @@ function coordsToMatrices(x1,x2,b1,b2) {
 }
 
 function changeCoords(e) {
-    if (+b1coord.value == 6 || +b2coord.value == 6) {
+    const x1coord = document.getElementById("x1coord");
+    const x2coord = document.getElementById("x2coord");
+    const b1coord = document.getElementById("b1coord");
+    const b2coord = document.getElementById("b2coord");
+    if ((+b1coord.value == 6 || +b2coord.value == 6) && !fixImageSize) {
         const container = document.getElementById("container");
         const edgeFig = document.getElementById("edge-figure");
         const rect1 = container.getBoundingClientRect();
@@ -2297,21 +2400,19 @@ function changeCoords(e) {
             x1coord.value = (x - rect2.left) / rect2.width * 6;
             enRoute = false;
         }
-        if (+b1coord.value == 6 && rect2.top-margins <= y && rect2.bottom+margins >= y && rect1.left+rect1.height/2-margins <= y && rect1.left+rect1.height/2+margins >= y) {
+        if (+b1coord.value == 6 && rect2.top-margins <= y && rect2.bottom+margins >= y && rect1.left+rect1.height/2-margins <= x && rect1.left+rect1.height/2+margins >= x) {
             x2coord.value = 6 - (y - rect2.top) / rect2.height * 6;
             enRoute = false;
         }
     }
     else {
         const wholeFigure = document.getElementById("whole-figure");
-        const rect1 = wholeFigure.getBoundingClientRect();
-        const relativeX1 = e.pageX - rect1.left;
-        const relativeY1 = e.pageY - rect1.top;
-        const newX1 = relativeX1 / rect1.width * 6;
-        const newX2 = (1 - relativeY1 / rect1.height) * 6;
+        const rect = wholeFigure.getBoundingClientRect();
+        const relativeX1 = e.pageX - rect.left;
+        const relativeY1 = e.pageY - rect.top;
+        const newX1 = relativeX1 / rect.width * 6;
+        const newX2 = (1 - relativeY1 / rect.height) * 6;
         if (-0.1 <= newX1 && newX1 <= 6.1 && -0.1 <= newX2 && newX2 <= 6.1) {
-            const x1coord = document.getElementById("x1coord");
-            const x2coord = document.getElementById("x2coord");
             if (isMouseDown) {
                 x1coord.value = newX1;
                 x2coord.value = newX2;
@@ -2360,7 +2461,8 @@ function changeCoords(e) {
         }
 
         if (0.02 <= relativeX && relativeX <= 0.48 && 0.02 <= relativeY && relativeY <= 0.48) {
-            quad = 2;
+            if (quad != 2) { quad = 2; updateBackground(); }
+            else quad = 2;
             const newX1 = 6 * (relativeX - 0.04) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.04) / 0.42;
             const x1coord = document.getElementById("x1coord");
@@ -2368,9 +2470,9 @@ function changeCoords(e) {
             x1coord.value = newX1;
             x2coord.value = newX2;
             enRoute = false;
-            updateBackground();
         } else if (0.52 <= relativeX && relativeX <= 0.98 && 0.02 <= relativeY && relativeY <= 0.48) {
-            quad = 1;
+            if (quad != 1) { quad = 1; updateBackground(); }
+            else quad = 1;
             const newX1 = 6 * (relativeX - 0.54) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.04) / 0.42;
             const x1coord = document.getElementById("x1coord");
@@ -2378,9 +2480,9 @@ function changeCoords(e) {
             x1coord.value = newX1;
             x2coord.value = newX2;
             enRoute = false;
-            updateBackground();
         } else if (0.02 <= relativeX && relativeX <= 0.48 && 0.52 <= relativeY && relativeY <= 0.98) {
-            quad = 3;
+            if (quad != 3) { quad = 3; updateBackground(); }
+            else quad = 3;
             const newX1 = 6 * (relativeX - 0.04) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.54) / 0.42;
             const x1coord = document.getElementById("x1coord");
@@ -2388,9 +2490,9 @@ function changeCoords(e) {
             x1coord.value = newX1;
             x2coord.value = newX2;
             enRoute = false;
-            updateBackground();
         } else if (0.52 <= relativeX && relativeX <= 0.98 && 0.52 <= relativeY && relativeY <= 0.98) {
-            quad = 4;
+            if (quad != 4) { quad = 4; updateBackground(); }
+            else quad = 4;
             const newX1 = 6 * (relativeX - 0.54) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.54) / 0.42;
             const x1coord = document.getElementById("x1coord");
@@ -2468,7 +2570,7 @@ function growBox(e) {
         startPoint[3] = +b2coord.value;
         startPoint[4] = +x1coord.value;
         startPoint[5] = +x2coord.value;
-        time = 0;
+        animTime = 0;
     }
 }
 
@@ -2499,4 +2601,91 @@ function placePoint(point, q, x1, x2) {
             point.cy.baseVal.value = (0.96 - x2/6*0.42)*bigPictureWidth;
             break;
     }
+}
+
+function payoff([a1,b1,c1,d1], [a2,b2,c2,d2]) {
+    const error = 0.00001;
+    if (a2 - b2 > error && c2 - d2 > error) {
+        return Math.max(a1, c1);
+    } else if (b2 - a2 > error && d2 - c2 > error) {
+        return Math.max(b1, d1);
+    } else if (a1 - c1 > error && b1 - d1 > error) {
+        if (a2 - b2 > error) return a1;
+        else return b1;
+    } else if (c1 - a1 > error && d1 - b1 > error) {
+        if (c2 - d2 > error) return c1;
+        else return d1;
+    } else {
+        return mixedPayoff([a1,b1,c1,d1]);
+    }
+}
+
+function payoffTransferable(m1, m2) {
+    const error = 0.00001;
+    let biggestEntry = 0;
+    let max = m1[0]+m2[0];
+    for (let i = 1; i < 4; i++) {
+        if (max < m1[i]+m2[i] - error) {
+            biggestEntry = i;
+            max = m1[i]+m2[i];
+        }
+    }
+    let rowBackstop = 0;
+    let colBackstop = 0;
+    if (Math.min(m1[0],m1[1]) < Math.min(m1[2],m1[3])) rowBackstop = Math.min(m1[2],m1[3]);
+    else rowBackstop = Math.min(m1[0],m1[1]);
+    if (Math.min(m2[0],m2[2]) < Math.min(m2[1],m2[3])) colBackstop = Math.min(m2[1],m2[3]);
+    else colBackstop = Math.min(m2[0],m2[2]);
+
+    return (max + rowBackstop - colBackstop)/2;
+}
+
+function colorFunction(value) {
+    const colors = [[255,100,100],[150,150,150],[100,255,150],[255,255,255]];
+    const cutoffs = [0,0.5,1,1.5];
+    const result = [0,0,0];
+    for (let i = 1; i <= cutoffs.length; i++) {
+        if (value <= cutoffs[i]) {
+            for (let j = 0; j < 3; j++) result[j] = Math.floor((1-(value-cutoffs[i-1])/(cutoffs[i]-cutoffs[i-1]))*colors[i-1][j] + (value-cutoffs[i-1])/(cutoffs[i]-cutoffs[i-1])*colors[i][j]);
+        return result;
+        }
+    }
+}
+
+function changeViewMode(mode) {
+    viewMode = mode;
+    const canvas = document.getElementById("canvas");
+    if (mode == 0) {
+        canvas.style.display = "none";
+        canvas.width = 0;
+        canvas.height = 0;
+        canvas.x = 0;
+        canvas.y = 0;
+    } else {
+        canvas.style.display = "";
+        switchMode = true;
+        backgroundOutOfDate = true;
+    }
+
+    const curButton = document.getElementsByClassName("current-mode")[0];
+    curButton.classList.remove("current-mode");
+    switch (mode) {
+        case 0:
+            document.getElementById("regular-mode").classList.add("current-mode");
+            break;
+        case 1:
+            document.getElementById("return-mode").classList.add("current-mode");
+            break;
+        case 2:
+            document.getElementById("transferable-mode").classList.add("current-mode");
+            break;
+    }
+}
+
+function fixImage() {
+    backgroundOutOfDate = true;
+    fixImageSize = !fixImageSize;
+    const fixImageButton = document.getElementById("fix-image-button");
+    if (fixImageSize) fixImageButton.innerHTML = "Unfix image size";
+    else fixImageButton.innerHTML = "Fix image size";
 }

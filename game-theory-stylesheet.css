@@ -96,3 +96,15 @@ button {
     cursor: pointer;
     width: 12vw;
 }
+
+.mode-button {
+    width: 20vw;
+}
+
+button:hover, .current-mode {
+    background-color: #ddd;
+}
+
+#fix-image-button {
+    margin: 20px;
+}
