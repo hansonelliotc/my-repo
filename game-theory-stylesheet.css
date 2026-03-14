@@ -1,7 +1,7 @@
 html, body {
-  overflow: hidden;
-  height: 100%;
-  margin: 0;
+    overflow: hidden;
+    height: 100%;
+    margin: 0;
 }
 
 .red-line, .green-line, .edge-line {
@@ -80,9 +80,13 @@ html, body {
     background: blue;
 }
 
-p, h1 {
+p, h1, td {
     font-family: Helvetica, sans-serif;
     padding: none;
+}
+
+p, td {
+    font-size: 10pt;
 }
 
 button {
@@ -101,10 +105,20 @@ button {
     width: 20vw;
 }
 
+.half-mode-button {
+    width: 10vw;
+    margin: 0;
+}
+
 button:hover, .current-mode {
     background-color: #ddd;
 }
 
 #fix-image-button {
     margin: 20px;
+}
+
+span {
+    margin: 0;
+    padding: 0;
 }

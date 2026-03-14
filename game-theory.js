@@ -421,6 +421,7 @@ function init() {
 }
 
 function update() {
+    const error = 0.00001;
     const x1coord = document.getElementById("x1coord");
     const x2coord = document.getElementById("x2coord");
     const b1coord = document.getElementById("b1coord");
@@ -548,10 +549,49 @@ function update() {
     d2.innerHTML = matrixB[3].toFixed(2);
 
     // update returns data
+    const rowX = document.getElementById("x-row");
+    const rowB = document.getElementById("b-row");
+    const colX = document.getElementById("x-col");
+    const colB = document.getElementById("b-col");
     const rowReturns = document.getElementById("row-return");
+    const colReturns = document.getElementById("col-return");
+    const rowMixedReturns = document.getElementById("row-return-mixed");
+    const colMixedReturns = document.getElementById("col-return-mixed");
     const rowReturnsTrans = document.getElementById("row-return-transferable");
-    rowReturns.innerHTML = payoff(matrixA, matrixB).toFixed(1);
-    rowReturnsTrans.innerHTML = payoffTransferable(matrixA, matrixB).toFixed(1);
+    const colReturnsTrans = document.getElementById("col-return-transferable");
+    rowX.innerHTML = (+x1coord.value).toFixed(1);
+    rowB.innerHTML = (+b1coord.value).toFixed(1);
+    colX.innerHTML = (+x2coord.value).toFixed(1);
+    colB.innerHTML = (+b2coord.value).toFixed(1);
+    let x1Offset = 0;
+    let x2Offset = 0;
+    switch (quad) {
+        case 2:
+            x1Offset = -6;
+            break;
+        case 3:
+            x1Offset = -6;
+            x2Offset = -6;
+            break;
+        case 4:
+            x2Offset = -6;
+            break;
+    }
+    const [rowM, colM] = coordsToMatrices(+x1coord.value % 3 > error ? +x1coord.value + x1Offset : +x1coord.value + x1Offset + error,
+                                                +x2coord.value % 3 > error ? +x2coord.value + x2Offset : +x2coord.value + x2Offset + error,
+                                                +b1coord.value != 0 ? b1coord.value : b1coord.value + error*2,
+                                                +b2coord.value != 0 ? b2coord.value : b2coord.value + error*2);
+    rowReturns.innerHTML = payoffModified(rowM, colM).toFixed(1);
+    colReturns.innerHTML = payoffModified(flip(colM), flip(rowM)).toFixed(1);
+    if (+x1coord.value < 3 && +x2coord.value < 3) {
+        rowMixedReturns.innerHTML = " (" + payoff(rowM, colM).toFixed(1) + ")";
+        colMixedReturns.innerHTML = " (" + payoff(flip(colM), flip(rowM)).toFixed(1) + ")";
+    } else {
+        rowMixedReturns.innerHTML = "";
+        colMixedReturns.innerHTML = "";
+    }
+    rowReturnsTrans.innerHTML = payoffTransferable(rowM, colM).toFixed(1);
+    colReturnsTrans.innerHTML = payoffTransferable(flip(colM), flip(rowM)).toFixed(1);
 
     const crossBlue1 = document.getElementById("cross-blue-1");
     const crossBlue2 = document.getElementById("cross-blue-2");
@@ -660,7 +700,6 @@ function update() {
     corner4.cx.baseVal.value = matrixA[3]*width/6+padding;
     corner4.cy.baseVal.value = (1-matrixB[3]/6)*width+padding;
 
-    const error = 0.00001;
     const rowMax = Math.max(...matrixA) - error;
     const colMax = Math.max(...matrixB) - error;
 
@@ -807,6 +846,10 @@ function update() {
     const corner2Big = document.getElementById("corner2-big");
     const corner3Big = document.getElementById("corner3-big");
     const corner4Big = document.getElementById("corner4-big");
+    const number1 = document.getElementById("vertex-number-1");
+    const number2 = document.getElementById("vertex-number-2");
+    const number3 = document.getElementById("vertex-number-3");
+    const number4 = document.getElementById("vertex-number-4");
     // const top1 = document.getElementById("top-1-big");
     // const top2 = document.getElementById("top-2-big");
     // const top3 = document.getElementById("top-3-big");
@@ -851,12 +894,40 @@ function update() {
 
     point1Big.cx.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
     point1Big.cy.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
+    number1.setAttribute('x',matrixA[0]*widthBig/6+paddingBig);
+    number1.setAttribute('y',(1-matrixB[0]/6)*widthBig+paddingBig);
     point2Big.cx.baseVal.value = matrixA[1]*widthBig/6+paddingBig;
     point2Big.cy.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig;
+    number2.setAttribute('x',matrixA[1]*widthBig/6+paddingBig);
+    number2.setAttribute('y',(1-matrixB[1]/6)*widthBig+paddingBig);
     point3Big.cx.baseVal.value = matrixA[2]*widthBig/6+paddingBig;
     point3Big.cy.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig;
+    number3.setAttribute('x',matrixA[2]*widthBig/6+paddingBig);
+    number3.setAttribute('y',(1-matrixB[2]/6)*widthBig+paddingBig);
     point4Big.cx.baseVal.value = matrixA[3]*widthBig/6+paddingBig;
     point4Big.cy.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig;
+    number4.setAttribute('x',matrixA[3]*widthBig/6+paddingBig);
+    number4.setAttribute('y',(1-matrixB[3]/6)*widthBig+paddingBig);
+
+    const overlap = [1,1,1,1];
+    if (Math.abs(matrixA[0] - matrixA[1]) < error && Math.abs(matrixB[0] - matrixB[1]) < error) { overlap[0]++; overlap[1]++; }
+    if (Math.abs(matrixA[0] - matrixA[2]) < error && Math.abs(matrixB[0] - matrixB[2]) < error) { overlap[0]++; overlap[2]++; }
+    if (Math.abs(matrixA[0] - matrixA[3]) < error && Math.abs(matrixB[0] - matrixB[3]) < error) { overlap[0]++; overlap[3]++; }
+    if (Math.abs(matrixA[1] - matrixA[2]) < error && Math.abs(matrixB[1] - matrixB[2]) < error) { overlap[1]++; overlap[2]++; }
+    if (Math.abs(matrixA[1] - matrixA[3]) < error && Math.abs(matrixB[1] - matrixB[3]) < error) { overlap[1]++; overlap[3]++; }
+    if (Math.abs(matrixA[2] - matrixA[3]) < error && Math.abs(matrixB[2] - matrixB[3]) < error) { overlap[2]++; overlap[3]++; }
+    number1.innerHTML = overlap[0];
+    number2.innerHTML = overlap[1];
+    number3.innerHTML = overlap[2];
+    number4.innerHTML = overlap[3];
+    if (overlap[0] == 1) number1.style.display = "none";
+    else number1.style.display = "";
+    if (overlap[1] == 1) number2.style.display = "none";
+    else number2.style.display = "";
+    if (overlap[2] == 1) number3.style.display = "none";
+    else number3.style.display = "";
+    if (overlap[3] == 1) number4.style.display = "none";
+    else number4.style.display = "";
 
     corner1Big.cx.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
     corner1Big.cy.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
@@ -2075,6 +2146,9 @@ function update() {
                         case 2:
                             values[j].push(payoffTransferable(rowM, colM));
                             break;
+                        case 3:
+                            values[j].push(payoffModified(rowM, colM));
+                            break;
                     }
                 }
             }
@@ -2087,6 +2161,11 @@ function update() {
         const data = imageData.data;
         for (let j = 0; j < canvas.height; j++) {
             for (let i = 0; i < canvas.width; i++) {
+                // const n = Math.floor(i/canvas.width*valuesX);
+                // const m = Math.floor(j/canvas.height*valuesY);
+                // if (i < canvas.weight/2 && j >= canvas.height/2) {
+                //     if (n != 0 && Math.abs(values[m][n-1] - values[m][n]) > 0.2) boundary = false;
+                // }
                 const color = colorFunction(values[Math.floor(j/canvas.height*valuesY)][Math.floor(i/canvas.width*valuesX)]/6);
                 data[(j*canvas.width+i)*4]   = color[0];
                 data[(j*canvas.width+i)*4+1] = color[1];
@@ -2620,6 +2699,29 @@ function payoff([a1,b1,c1,d1], [a2,b2,c2,d2]) {
     }
 }
 
+function payoffModified([a1,b1,c1,d1], [a2,b2,c2,d2]) {
+    const error = 0.000001;
+    if (a2 - b2 > error && c2 - d2 > error) {
+        return Math.max(a1, c1);
+    } else if (b2 - a2 > error && d2 - c2 > error) {
+        return Math.max(b1, d1);
+    } else if (a1 - c1 > error && b1 - d1 > error) {
+        if (a2 - b2 > error) return a1;
+        else return b1;
+    } else if (c1 - a1 > error && d1 - b1 > error) {
+        if (c2 - d2 > error) return c1;
+        else return d1;
+    }
+    if (a1 - c1 > error && a2 - b2 > error && d1 - b1 > error && d2 - c2 > error) {
+        if ((a1-c1)*(a2-b2) - (d1-b1)*(d2-c2) > error) return a1;
+        else return d1;
+    } else if (b1 - d1 > error && b2 - a2 > error && c1 - a1 > error && c2 - d2 > error) {
+        if ((b1-d1)*(b2-a2) - (c1-a1)*(c2-d2) > error) return b1;
+        else return c1;
+    }
+    return mixedPayoff([a1,b1,c1,d1]);
+}
+
 function payoffTransferable(m1, m2) {
     const error = 0.00001;
     let biggestEntry = 0;
@@ -2674,10 +2776,13 @@ function changeViewMode(mode) {
             document.getElementById("regular-mode").classList.add("current-mode");
             break;
         case 1:
-            document.getElementById("return-mode").classList.add("current-mode");
+            document.getElementById("return-mode-1").classList.add("current-mode");
             break;
         case 2:
             document.getElementById("transferable-mode").classList.add("current-mode");
+            break;
+        case 3:
+            document.getElementById("return-mode-2").classList.add("current-mode");
             break;
     }
 }

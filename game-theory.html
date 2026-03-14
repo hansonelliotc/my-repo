@@ -9,26 +9,40 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-	<div style="position:absolute; top:10vh; left:100vh; width:22vw">
+	<div style="position:absolute; top:6vh; left:100vh; width:22vw">
 		<h1 id="quad-header">Bad Quadrant</h1>
-		<p>Row's return: <span id="row-return"></span></p>
-		<p>Row's Shapley return: <span id="row-return-transferable"></span></p>
 		<table>
+			<tr><td style="text-align:center"><b>Row Player (P1)</b></td><td style="text-align:center"><b>Column Player (P2)</b></td></tr>
+			<tr height="3pt"></tr>
+			<tr><td style="text-align:center" colspan="2">x,b</td></tr>
+			<tr><td style="text-align:center"><span id="x-row"></span>, <span id="b-row"></span></td><td style="text-align:center"><span id="x-col"></span>, <span id="b-col"></span></td></tr>
+			<tr height="3pt"></tr>
+			<tr><td style="text-align:center" colspan="2">Returns (with mixed)</td></tr>
+			<tr><td style="text-align:center"><span id="row-return"></span><span id="row-return-mixed"></span></td><td style="text-align:center"><span id="col-return"></span><span id="col-return-mixed"></span></td></tr>
+			<tr height="3pt"></tr>
+			<tr><td style="text-align:center" colspan="2">Shapley returns</td></tr>
+			<tr><td style="text-align:center"><span id="row-return-transferable"></span></td><td style="text-align:center"><span id="col-return-transferable"></span></td></tr>
+			<tr height="3pt"></tr>
+			<tr><td style="text-align:center" colspan="2">Matrices</td></tr>
 			<tr>
-				<td><div style="display:flex;align-items:center">
-					<div style="display:inline-block; margin-left:2vw">R =</div>
+				<td style="text-align:center">
+					<!-- <div style="display:flex;align-items:center;"> -->
+					<!-- <div style="display:inline-block; margin-left:2vw">R =</div> -->
 					<table style="border:2px solid;margin:10px;display:inline-block">
 						<tr><td id="a1"></td><td id="b1"></td></tr>
 						<tr><td id="c1"></td><td id="d1"></td></tr>
 					</table>
-				</div></td>
-				<td><div style="display:flex;align-items:center">
-					<div style="display:inline-block; margin-left:2vw">C =</div>
-					<table style="border:2px solid;margin:10px;">
+					<!-- </div> -->
+				</td>
+				<td style="text-align:center">
+					<!-- <div style="display:flex;align-items:center"> -->
+					<!-- <div style="display:inline-block; margin-left:2vw">C =</div> -->
+					<table style="border:2px solid;margin:10px;display:inline-block">
 						<tr><td id="a2"></td><td id="b2"></td></tr>
 						<tr><td id="c2"></td><td id="d2"></td></tr>
 					</table>
-				</div></td>
+					<!-- </div> -->
+				</td>
 			</td>
 			</tr>
 			<tr height="5vh" />
@@ -52,7 +66,7 @@
 		</table>
 		<br><br><br>
 		<button class="mode-button current-mode" id="regular-mode" onclick="changeViewMode(0)">Regular view</button>
-		<button class="mode-button" id="return-mode" onclick="changeViewMode(1)">Returns</button>
+		<span><button class="half-mode-button" id="return-mode-2" onclick="changeViewMode(3)">Returns</button></span><span><button class="half-mode-button" id="return-mode-1" onclick="changeViewMode(1)">Use mixed</button></span>
 		<button class="mode-button" id="transferable-mode" onclick="changeViewMode(2)">Shapley returns</button>
 	</div>
 	<svg id="big-picture" width="18vw" height="18vw" style="position:absolute; right:5%; top:5%">
@@ -151,6 +165,10 @@
 		<circle id="point3-big"/>
 		<circle id="point4-big"/>
 		<circle id="point5-big"/>
+		<text id="vertex-number-1" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="bold" />
+		<text id="vertex-number-2" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="bold" />
+		<text id="vertex-number-3" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="bold" />
+		<text id="vertex-number-4" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="bold" />
 		<!-- <line id="gold-bar-1"/>
 		<line id="gold-bar-2"/>
 		<line id="gold-bar-3"/>
