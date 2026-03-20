@@ -559,6 +559,8 @@ function update() {
     const colMixedReturns = document.getElementById("col-return-mixed");
     const rowReturnsTrans = document.getElementById("row-return-transferable");
     const colReturnsTrans = document.getElementById("col-return-transferable");
+    const rowReturnsCoco = document.getElementById("row-return-coco");
+    const colReturnsCoco = document.getElementById("col-return-coco");
     rowX.innerHTML = (+x1coord.value).toFixed(1);
     rowB.innerHTML = (+b1coord.value).toFixed(1);
     colX.innerHTML = (+x2coord.value).toFixed(1);
@@ -592,6 +594,8 @@ function update() {
     }
     rowReturnsTrans.innerHTML = payoffTransferable(rowM, colM).toFixed(1);
     colReturnsTrans.innerHTML = payoffTransferable(flip(colM), flip(rowM)).toFixed(1);
+    rowReturnsCoco.innerHTML = payoffCoco(rowM, colM).toFixed(1);
+    colReturnsCoco.innerHTML = payoffCoco(flip(colM), flip(rowM)).toFixed(1);
 
     const crossBlue1 = document.getElementById("cross-blue-1");
     const crossBlue2 = document.getElementById("cross-blue-2");
@@ -2130,8 +2134,8 @@ function update() {
                     break;
             }
             
-            valuesX = 6*Math.round(picWidth/20);
-            valuesY = 6*Math.round(picHeight/20);
+            valuesX = 6*Math.round(picWidth/30);
+            valuesY = 6*Math.round(picHeight/30);
             values = [];
             for (let j = 0; j < valuesY; j++) {
                 values.push([]);
@@ -2149,6 +2153,9 @@ function update() {
                         case 3:
                             values[j].push(payoffModified(rowM, colM));
                             break;
+                        case 4:
+                            values[j].push(payoffCoco(rowM, colM));
+                            break;
                     }
                 }
             }
@@ -2161,12 +2168,65 @@ function update() {
         const data = imageData.data;
         for (let j = 0; j < canvas.height; j++) {
             for (let i = 0; i < canvas.width; i++) {
-                // const n = Math.floor(i/canvas.width*valuesX);
-                // const m = Math.floor(j/canvas.height*valuesY);
-                // if (i < canvas.weight/2 && j >= canvas.height/2) {
-                //     if (n != 0 && Math.abs(values[m][n-1] - values[m][n]) > 0.2) boundary = false;
-                // }
-                const color = colorFunction(values[Math.floor(j/canvas.height*valuesY)][Math.floor(i/canvas.width*valuesX)]/6);
+                let value = 0;
+
+                // Apply linear interpolation between samples
+                value = values[Math.floor(j/canvas.height*valuesY)][Math.floor(i/canvas.width*valuesX)];
+                if (viewMode == 3 || viewMode == 1) {
+                    const weight1 = i/canvas.width*valuesX % 1;
+                    if (Math.ceil(i/canvas.width*valuesX)%valuesX == valuesX/2) {
+                        value = values[Math.floor(j/canvas.height*valuesY)][Math.floor(i/canvas.width*valuesX)];
+                    } else {
+                        value = values[Math.floor(j/canvas.height*valuesY)][Math.floor(i/canvas.width*valuesX)] * (1-weight1) +
+                                values[Math.floor(j/canvas.height*valuesY)%valuesY][Math.ceil(i/canvas.width*valuesX)%valuesX] * weight1;
+                    }
+                } else {
+                    const weight1 = i/canvas.width*valuesX % 1;
+                    const weight2 = j/canvas.height*valuesY % 1;
+                    value = values[Math.floor(j/canvas.height*valuesY)][Math.floor(i/canvas.width*valuesX)] * (1-weight1) * (1-weight2) +
+                            values[Math.floor(j/canvas.height*valuesY)%valuesY][Math.ceil(i/canvas.width*valuesX)%valuesX] * weight1 * (1-weight2) +
+                            values[Math.ceil(j/canvas.height*valuesY)%valuesY][Math.floor(i/canvas.width*valuesX)%valuesX] * (1-weight1) * weight2 +
+                            values[Math.ceil(j/canvas.height*valuesY)%valuesY][Math.ceil(i/canvas.width*valuesX)%valuesX] * weight1 * weight2;
+                }
+
+                // Render discontinuities in higher resolution
+                if (i < canvas.width/2 && j >= canvas.height/2 && viewMode == 3 && (quad == 1 || quad == 3)) {
+                    const n = Math.floor(i/canvas.width*valuesX);
+                    const m = Math.floor(j/canvas.height*valuesY);
+                    const jumpSize = 0.4;
+                    let boundary = false;
+                    if (n != 0 && Math.abs(values[m][n-1] - values[m][n]) > jumpSize) boundary = true;
+                    if (n != 0 && m != 0 && Math.abs(values[m-1][n-1] - values[m][n]) > jumpSize) boundary = true;
+                    if (m != 0 && Math.abs(values[m-1][n] - values[m][n]) > jumpSize) boundary = true;
+                    if (n != valuesX-1 && m != 0 && Math.abs(values[m-1][n+1] - values[m][n]) > jumpSize) boundary = true;
+                    if (n != valuesX-1 && Math.abs(values[m][n+1] - values[m][n]) > jumpSize) boundary = true;
+                    if (n != valuesX-1 && m != valuesY-1 && Math.abs(values[m+1][n+1] - values[m][n]) > jumpSize) boundary = true;
+                    if (m != valuesY-1 && Math.abs(values[m][n+1] - values[m][n]) > jumpSize) boundary = true;
+                    if (n != 0 && m != valuesY-1 && Math.abs(values[m-1][n+1] - values[m][n]) > jumpSize) boundary = true;
+
+                    if (boundary) {
+                        const [rowM, colM] = coordsToMatrices(i/canvas.width*6 + x1Offset, (canvas.height-j)/canvas.height*6 + x2Offset,
+                                                            +b1coord.value != 0 ? b1coord.value : b1coord.value + error*2,
+                                                            +b2coord.value != 0 ? b2coord.value : b2coord.value + error*2);
+                        switch (viewMode) {
+                            case 1:
+                                value = payoff(rowM, colM);
+                                break;
+                            case 2:
+                                value = payoffTransferable(rowM, colM);
+                                break;
+                            case 3:
+                                value = payoffModified(rowM, colM);
+                                break;
+                            case 4:
+                                value = payoffCoco(rowM, colM);
+                                break;
+                        }
+                        // value = 9;
+                    }
+                }
+
+                const color = colorFunction(value/6);
                 data[(j*canvas.width+i)*4]   = color[0];
                 data[(j*canvas.width+i)*4+1] = color[1];
                 data[(j*canvas.width+i)*4+2] = color[2];
@@ -2579,7 +2639,6 @@ function changeCoords(e) {
             x1coord.value = newX1;
             x2coord.value = newX2;
             enRoute = false;
-            updateBackground();
         }
     }
 }
@@ -2742,8 +2801,24 @@ function payoffTransferable(m1, m2) {
     return (max + rowBackstop - colBackstop)/2;
 }
 
+function payoffCoco(m1, m2) {
+    const newM1 = [m1[0]-m2[0], m1[1]-m2[1], m1[2]-m2[2], m1[3]-m2[3]];
+    const newM2 = [m2[0]-m1[0], m2[1]-m1[1], m2[2]-m1[2], m2[3]-m1[3]];
+    const zeroSumPayoff = payoff(newM1, newM2);
+    const error = 0.00001;
+    let biggestEntry = 0;
+    let max = m1[0]+m2[0];
+    for (let i = 1; i < 4; i++) {
+        if (max < m1[i]+m2[i] - error) {
+            biggestEntry = i;
+            max = m1[i]+m2[i];
+        }
+    }
+    return (max + zeroSumPayoff)/2;
+}
+
 function colorFunction(value) {
-    const colors = [[255,100,100],[150,150,150],[100,255,150],[255,255,255]];
+    const colors = [[255,100,100],[170,170,170],[100,255,150],[255,255,255]];
     const cutoffs = [0,0.5,1,1.5];
     const result = [0,0,0];
     for (let i = 1; i <= cutoffs.length; i++) {
@@ -2783,6 +2858,9 @@ function changeViewMode(mode) {
             break;
         case 3:
             document.getElementById("return-mode-2").classList.add("current-mode");
+            break;
+        case 4:
+            document.getElementById("coco-mode").classList.add("current-mode");
             break;
     }
 }
