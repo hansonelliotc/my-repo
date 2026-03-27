@@ -561,6 +561,10 @@ function update() {
     const colReturnsTrans = document.getElementById("col-return-transferable");
     const rowReturnsCoco = document.getElementById("row-return-coco");
     const colReturnsCoco = document.getElementById("col-return-coco");
+    const rowReturnsBargaining1 = document.getElementById("row-return-bargaining-1");
+    const colReturnsBargaining1 = document.getElementById("col-return-bargaining-1");
+    const rowReturnsBargaining2 = document.getElementById("row-return-bargaining-2");
+    const colReturnsBargaining2 = document.getElementById("col-return-bargaining-2");
     rowX.innerHTML = (+x1coord.value).toFixed(1);
     rowB.innerHTML = (+b1coord.value).toFixed(1);
     colX.innerHTML = (+x2coord.value).toFixed(1);
@@ -596,6 +600,10 @@ function update() {
     colReturnsTrans.innerHTML = payoffTransferable(flip(colM), flip(rowM)).toFixed(1);
     rowReturnsCoco.innerHTML = payoffCoco(rowM, colM).toFixed(1);
     colReturnsCoco.innerHTML = payoffCoco(flip(colM), flip(rowM)).toFixed(1);
+    rowReturnsBargaining1.innerHTML = payoffBargainingBackstop(rowM, colM).toFixed(1);
+    colReturnsBargaining1.innerHTML = payoffBargainingBackstop(flip(colM), flip(rowM)).toFixed(1);
+    rowReturnsBargaining2.innerHTML = payoffBargainingDisagreement(rowM, colM).toFixed(1);
+    colReturnsBargaining2.innerHTML = payoffBargainingDisagreement(flip(colM), flip(rowM)).toFixed(1);
 
     const crossBlue1 = document.getElementById("cross-blue-1");
     const crossBlue2 = document.getElementById("cross-blue-2");
@@ -2156,6 +2164,12 @@ function update() {
                         case 4:
                             values[j].push(payoffCoco(rowM, colM));
                             break;
+                        case 5:
+                            values[j].push(payoffBargainingBackstop(rowM, colM));
+                            break;
+                        case 6:
+                            values[j].push(payoffBargainingDisagreement(rowM, colM));
+                            break;
                     }
                 }
             }
@@ -2221,12 +2235,18 @@ function update() {
                             case 4:
                                 value = payoffCoco(rowM, colM);
                                 break;
+                            case 5:
+                                value = payoffBargainingBackstop(rowM, colM);
+                                break;
+                            case 6:
+                                value = payoffBargainingDisagreement(rowM, colM);
+                                break;
                         }
-                        // value = 9;
                     }
                 }
 
                 const color = colorFunction(value/6);
+                // console.log(value/6);
                 data[(j*canvas.width+i)*4]   = color[0];
                 data[(j*canvas.width+i)*4+1] = color[1];
                 data[(j*canvas.width+i)*4+2] = color[2];
@@ -2415,6 +2435,13 @@ function normalize(M) {
 function mixedPayoff([a,b,c,d]) {
     if (-a+b+c-d != 0)
         return (a*d - b*c)/(a - b - c + d);
+    else return null;
+}
+
+function mixedEquilibrium([a,b,c,d]) {
+    // takes the other player's matrix
+    if (a-b-c+d != 0)
+        return (d - c)/(a - b - c + d);
     else return null;
 }
 
@@ -2758,6 +2785,25 @@ function payoff([a1,b1,c1,d1], [a2,b2,c2,d2]) {
     }
 }
 
+function equilibrium([a1,b1,c1,d1], [a2,b2,c2,d2]) {
+    const error = 0.00001;
+    if (a2 - b2 > error && c2 - d2 > error) {
+        if (a1 - c1 > error) return 1;
+        else return 0;
+    } else if (b2 - a2 > error && d2 - c2 > error) {
+        if (b1 - d1 > error) return 1;
+        else return 0;
+    } else if (a1 - c1 > error && b1 - d1 > error) {
+        if (a2 - b2 > error) return 1;
+        else return 1;
+    } else if (c1 - a1 > error && d1 - b1 > error) {
+        if (c2 - d2 > error) return 0;
+        else return 0;
+    } else {
+        return mixedEquilibrium([a2,b2,c2,d2]);
+    }
+}
+
 function payoffModified([a1,b1,c1,d1], [a2,b2,c2,d2]) {
     const error = 0.000001;
     if (a2 - b2 > error && c2 - d2 > error) {
@@ -2817,9 +2863,126 @@ function payoffCoco(m1, m2) {
     return (max + zeroSumPayoff)/2;
 }
 
+function payoffBargainingBackstop(m1, m2) {
+    // console.log("check");
+    let rowBackstop = 0;
+    let colBackstop = 0;
+    if (Math.min(m1[0],m1[1]) < Math.min(m1[2],m1[3])) rowBackstop = Math.min(m1[2],m1[3]);
+    else rowBackstop = Math.min(m1[0],m1[1]);
+    if (Math.min(m2[0],m2[2]) < Math.min(m2[1],m2[3])) colBackstop = Math.min(m2[1],m2[3]);
+    else colBackstop = Math.min(m2[0],m2[2]);
+
+    let vertices = [];
+    for (let i = 0; i < 4; i++) {
+        let pareto = true;
+        for (let j = 0; j < 4; j++) {
+            if (m1[i] < m1[j] && m2[i] < m2[j]) {
+                pareto = false;
+                break;
+            }
+        }
+        if (pareto) vertices.push(i);
+    }
+
+    let return1 = m1[vertices[0]];
+    let max = -10000;
+    for (let n = 0; n < vertices.length; n++) {
+        for (let m = n + 1; m < vertices.length; m++) {
+            const i = vertices[n];
+            const j = vertices[m];
+            const x1 = m1[i] - rowBackstop;
+            const x2 = m1[j] - rowBackstop;
+            const y1 = m2[i] - colBackstop;
+            const y2 = m2[j] - colBackstop;
+            if (y1 == y2 || x1 == x2){ console.log("error!"); return 0; }
+            // maximizing   (x1*t+x2*(1-t))*(y1*t+y2*(1-t))
+            // derivative   (x1*t+x2*(1-t))*(y1-y2)+(y1*t+y2*(1-t))*(x1-x2) = 0
+            // solve        t*(x1-x2)*(y1-y2)*2+x2*(y1-y2)+y2*(x1-x2) = 0
+            //              t = (x2*(y1-y2)+y2*(x1-x2))/((x1-x2)*(y1-y2)*2)
+            const t = -(x2*(y1-y2)+y2*(x1-x2))/((x1-x2)*(y1-y2)*2);
+            const value1 = x1*y1;
+            const value2 = x2*y2;
+            const value3 = (t < 1 && t > 0) ? (x1*t+x2*(1-t))*(y1*t+y2*(1-t)) : -1;
+            // console.log(i + " " + j + ": " + value1.toFixed(1) + " " + value2.toFixed(1) + " " + value3.toFixed(1) + " " + t.toFixed(2));
+            if (value1 >= max && value1 >= value2 && value1 >= value3) {
+                max = value1;
+                return1 = m1[i];
+                // console.log(i + ": " + value1);
+            } else if (value2 >= max && value2 >= value3) {
+                max = value2;
+                return1 = m1[j];
+                // console.log(j + ": " + value2);
+            } else if (value3 >= max) {
+                max = value3;
+                return1 = m1[i]*t + m1[j]*(1-t);
+                // console.log(i + "-" + j + ": " + value3);
+            }
+        }
+    }
+    // console.log("");
+    // if (max == 0) return 8;
+    return return1;
+}
+
+function payoffBargainingDisagreement(m1, m2) {
+    const newM1 = [m1[0]-m2[0], m1[1]-m2[1], m1[2]-m2[2], m1[3]-m2[3]];
+    const newM2 = [m2[0]-m1[0], m2[1]-m1[1], m2[2]-m1[2], m2[3]-m1[3]];
+    const rowEquilibrium = equilibrium(newM1, newM2);
+    const colEquilibrium = 1-equilibrium(flip(newM2), flip(newM1));
+    const rowDisagreement = rowEquilibrium*colEquilibrium*m1[0] + rowEquilibrium*(1-colEquilibrium)*m1[1] + (1-rowEquilibrium)*colEquilibrium*m1[2] + (1-rowEquilibrium)*(1-colEquilibrium)*m1[3];
+    const colDisagreement = rowEquilibrium*colEquilibrium*m2[0] + rowEquilibrium*(1-colEquilibrium)*m2[1] + (1-rowEquilibrium)*colEquilibrium*m2[2] + (1-rowEquilibrium)*(1-colEquilibrium)*m2[3];
+
+    let vertices = [];
+    for (let i = 0; i < 4; i++) {
+        let pareto = true;
+        for (let j = 0; j < 4; j++) {
+            if (m1[i] < m1[j] && m2[i] < m2[j]) {
+                pareto = false;
+                break;
+            }
+        }
+        if (pareto) vertices.push(i);
+    }
+
+    let return1 = m1[vertices[0]];
+    let max = -10000;
+    for (let n = 0; n < vertices.length; n++) {
+        for (let m = n + 1; m < vertices.length; m++) {
+            const i = vertices[n];
+            const j = vertices[m];
+            const x1 = m1[i] - rowDisagreement;
+            const x2 = m1[j] - rowDisagreement;
+            const y1 = m2[i] - colDisagreement;
+            const y2 = m2[j] - colDisagreement;
+            if (y1 == y2 || x1 == x2){ console.log("error!"); return 0; }
+            const t = -(x2*(y1-y2)+y2*(x1-x2))/((x1-x2)*(y1-y2)*2);
+            const value1 = x1*y1;
+            const value2 = x2*y2;
+            const value3 = (t < 1 && t > 0) ? (x1*t+x2*(1-t))*(y1*t+y2*(1-t)) : -1;
+            // console.log(i + " " + j + ": " + value1.toFixed(1) + " " + value2.toFixed(1) + " " + value3.toFixed(1) + " " + t.toFixed(2));
+            if (value1 >= max && value1 >= value2 && value1 >= value3) {
+                max = value1;
+                return1 = m1[i];
+                // console.log(i + ": " + value1);
+            } else if (value2 >= max && value2 >= value3) {
+                max = value2;
+                return1 = m1[j];
+                // console.log(j + ": " + value2);
+            } else if (value3 >= max) {
+                max = value3;
+                return1 = m1[i]*t + m1[j]*(1-t);
+                // console.log(i + "-" + j + ": " + value3);
+            }
+        }
+    }
+    // console.log("");
+    // if (max == 0) return 8;
+    return return1;
+}
+
 function colorFunction(value) {
-    const colors = [[255,100,100],[170,170,170],[100,255,150],[255,255,255]];
-    const cutoffs = [0,0.5,1,1.5];
+    const colors = [[255,100,100],[170,170,170],[100,255,150],[255,255,255],[255,255,255]];
+    const cutoffs = [0,0.5,1,1.5,2];
     const result = [0,0,0];
     for (let i = 1; i <= cutoffs.length; i++) {
         if (value <= cutoffs[i]) {
@@ -2861,6 +3024,12 @@ function changeViewMode(mode) {
             break;
         case 4:
             document.getElementById("coco-mode").classList.add("current-mode");
+            break;
+        case 5:
+            document.getElementById("bargaining-mode-1").classList.add("current-mode");
+            break;
+        case 6:
+            document.getElementById("bargaining-mode-2").classList.add("current-mode");
             break;
     }
 }
