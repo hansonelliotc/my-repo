@@ -417,6 +417,22 @@ function init() {
     const canvas = document.getElementById("canvas");
     canvas.getContext("2d", { willReadFrequently: true});
 
+    const navButtons = document.getElementsByClassName("nav-button");
+    for (let button of navButtons) {
+        button.addEventListener("click", () => {
+            for (let otherButton of navButtons) {
+                otherButton.classList.remove("selected");
+            }
+            button.classList.add("selected");
+            document.getElementById("game-info").style.display = "none";
+            document.getElementById("navigation").style.display = "none";
+            document.getElementById("view-modes").style.display = "none";
+            document.getElementById(button.id.slice(0,-7)).style.display = "";
+        });
+    }
+    document.getElementById("navigation").style.display = "none";
+    document.getElementById("view-modes").style.display = "none";
+
     update();
 }
 
@@ -3007,29 +3023,29 @@ function changeViewMode(mode) {
         backgroundOutOfDate = true;
     }
 
-    const curButton = document.getElementsByClassName("current-mode")[0];
-    curButton.classList.remove("current-mode");
+    const curButton = document.getElementsByClassName("selected")[1];
+    curButton.classList.remove("selected");
     switch (mode) {
         case 0:
-            document.getElementById("regular-mode").classList.add("current-mode");
+            document.getElementById("regular-mode").classList.add("selected");
             break;
         case 1:
-            document.getElementById("return-mode-1").classList.add("current-mode");
+            document.getElementById("return-mode-1").classList.add("selected");
             break;
         case 2:
-            document.getElementById("transferable-mode").classList.add("current-mode");
+            document.getElementById("transferable-mode").classList.add("selected");
             break;
         case 3:
-            document.getElementById("return-mode-2").classList.add("current-mode");
+            document.getElementById("return-mode-2").classList.add("selected");
             break;
         case 4:
-            document.getElementById("coco-mode").classList.add("current-mode");
+            document.getElementById("coco-mode").classList.add("selected");
             break;
         case 5:
-            document.getElementById("bargaining-mode-1").classList.add("current-mode");
+            document.getElementById("bargaining-mode-1").classList.add("selected");
             break;
         case 6:
-            document.getElementById("bargaining-mode-2").classList.add("current-mode");
+            document.getElementById("bargaining-mode-2").classList.add("selected");
             break;
     }
 }

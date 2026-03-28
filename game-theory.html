@@ -9,33 +9,14 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-	<div style="position:absolute; top:2vh; left:100vh; width:25vw">
+	<div id="nav-bar">
+		<button id="game-info-button" class="nav-button selected">Game info</button>
+		<button id="navigation-button" class="nav-button">Navigation</button>
+		<button id="view-modes-button" class="nav-button">View modes</button>
+	</div>
+	<div id="content" style="position:absolute; bottom:9vh; left:100vh; width:25vw; height:85vh">
 		<h1 id="quad-header">Bad Quadrant</h1>
-		<button class="expand-button">Show game data</button>
-		<table class="game-data collapsing">
-			<tr><td style="text-align:center"><b>Row Player (P1)</b></td><td style="text-align:center"><b>Column Player (P2)</b></td></tr>
-			<tr height="3pt"></tr>
-			<tr><td style="text-align:center" colspan="2">x,b</td></tr>
-			<tr><td style="text-align:center"><span id="x-row"></span>, <span id="b-row"></span></td><td style="text-align:center"><span id="x-col"></span>, <span id="b-col"></span></td></tr>
-			<tr height="3pt"></tr>
-			<tr><td style="text-align:center" colspan="2">Returns (with mixed)</td></tr>
-			<tr><td style="text-align:center"><span id="row-return"></span><span id="row-return-mixed"></span></td><td style="text-align:center"><span id="col-return"></span><span id="col-return-mixed"></span></td></tr>
-			<tr height="3pt"></tr>
-			<tr><td style="text-align:center" colspan="2">Shapley returns</td></tr>
-			<tr><td style="text-align:center"><span id="row-return-transferable"></span></td><td style="text-align:center"><span id="col-return-transferable"></span></td></tr>
-			<tr height="3pt"></tr>
-			<tr><td style="text-align:center" colspan="2">Coco returns</td></tr>
-			<tr><td style="text-align:center"><span id="row-return-coco"></span></td><td style="text-align:center"><span id="col-return-coco"></span></td></tr>
-			<tr height="3pt"></tr>
-			<tr><td style="text-align:center" colspan="2">Bargaining returns (backstop)</td></tr>
-			<tr><td style="text-align:center"><span id="row-return-bargaining-1"></span></td><td style="text-align:center"><span id="col-return-bargaining-1"></span></td></tr>
-			<tr height="3pt"></tr>
-			<tr><td style="text-align:center" colspan="2">Bargaining returns (zero sum)</td></tr>
-			<tr><td style="text-align:center"><span id="row-return-bargaining-2"></span></td><td style="text-align:center"><span id="col-return-bargaining-2"></span></td></tr>
-			<tr height="3pt"></tr>
-			<tr><td style="text-align:center" colspan="2">Matrices</td></tr>
-		</table>
-		<table class="game-data">
+		<table id="matrices">
 			<tr>
 				<td style="text-align:center">
 					<!-- <div style="display:flex;align-items:center;"> -->
@@ -58,8 +39,29 @@
 			</tr>
 			<tr height="5vh" />
 		</table>
-		<button class="expand-button">Show navigation</button>
-		<table id="navigation" class="collapsing" style="display:none">
+		<table id="game-info">
+			<tr><td style="text-align:center"><b>Row Player (P1)</b></td><td style="text-align:center"><b>Column Player (P2)</b></td></tr>
+			<tr height="3pt"></tr>
+			<tr><td style="text-align:center" colspan="2">x,b</td></tr>
+			<tr><td style="text-align:center"><span id="x-row"></span>, <span id="b-row"></span></td><td style="text-align:center"><span id="x-col"></span>, <span id="b-col"></span></td></tr>
+			<tr height="3pt"></tr>
+			<tr><td style="text-align:center" colspan="2">Returns (with mixed)</td></tr>
+			<tr><td style="text-align:center"><span id="row-return"></span><span id="row-return-mixed"></span></td><td style="text-align:center"><span id="col-return"></span><span id="col-return-mixed"></span></td></tr>
+			<tr height="3pt"></tr>
+			<tr><td style="text-align:center" colspan="2">Shapley returns</td></tr>
+			<tr><td style="text-align:center"><span id="row-return-transferable"></span></td><td style="text-align:center"><span id="col-return-transferable"></span></td></tr>
+			<tr height="3pt"></tr>
+			<tr><td style="text-align:center" colspan="2">Coco returns</td></tr>
+			<tr><td style="text-align:center"><span id="row-return-coco"></span></td><td style="text-align:center"><span id="col-return-coco"></span></td></tr>
+			<tr height="3pt"></tr>
+			<tr><td style="text-align:center" colspan="2">Bargaining returns (backstop)</td></tr>
+			<tr><td style="text-align:center"><span id="row-return-bargaining-1"></span></td><td style="text-align:center"><span id="col-return-bargaining-1"></span></td></tr>
+			<tr height="3pt"></tr>
+			<tr><td style="text-align:center" colspan="2">Bargaining returns (zero sum)</td></tr>
+			<tr><td style="text-align:center"><span id="row-return-bargaining-2"></span></td><td style="text-align:center"><span id="col-return-bargaining-2"></span></td></tr>
+			<tr height="3pt"></tr>
+		</table>
+		<table id="navigation">
 			<tr>
 				<td><button id="cross-blue-1" onclick="crossBlue(true)" title="Flip the row player's biggest entries">Cross player one's blue</button></td>
 				<td><button id="cross-blue-2" onclick="crossBlue(false)" title="Flip the column player's biggest entries">Cross player two's blue</button></td>
@@ -79,9 +81,8 @@
 			</tr>
 		</table>
 		<br>
-		<button class="expand-button">Show view modes</button>
-		<div class="collapsing">
-			<button class="mode-button current-mode" id="regular-mode" onclick="changeViewMode(0)">Regular view</button>
+		<div id="view-modes">
+			<button class="mode-button selected" id="regular-mode" onclick="changeViewMode(0)">Regular view</button>
 			<span><button class="half-mode-button" id="return-mode-2" onclick="changeViewMode(3)">Returns</button></span><span><button class="half-mode-button" id="return-mode-1" onclick="changeViewMode(1)">Use mixed</button></span>
 			<span><button class="half-mode-button" id="transferable-mode" onclick="changeViewMode(2)">Shapley returns</button></span><span><button class="half-mode-button" id="coco-mode" onclick="changeViewMode(4)">Coco returns</button></span>
 			<span><button class="half-mode-button" id="bargaining-mode-1" onclick="changeViewMode(5)">Bargaining (bs)</button></span><span><button class="half-mode-button" id="bargaining-mode-2" onclick="changeViewMode(6)">Bargaining (zs)</button></span>
