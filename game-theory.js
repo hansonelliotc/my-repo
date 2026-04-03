@@ -3092,7 +3092,7 @@ function coordination(m1, m2) {
     const mean2 = (newM2[0]+newM2[1]+newM2[2]+newM2[3])/4;
     const norm1 = (m1[0]-mean1)**2 + (m1[1]-mean1)**2 + (m1[2]-mean1)**2 + (m1[3]-mean1)**2;
     const norm2 = (m2[0]-mean2)**2 + (m2[1]-mean2)**2 + (m2[2]-mean2)**2 + (m2[3]-mean2)**2;
-    return ((norm1 / (norm1 + norm2))*6-3)*5+3;
+    return (norm1 / (norm1 + norm2))*6;
 }
 
 function colorFunction(value) {
