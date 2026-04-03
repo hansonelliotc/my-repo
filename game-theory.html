@@ -13,8 +13,9 @@
 		<button id="game-info-button" class="nav-button selected">Game info</button>
 		<button id="navigation-button" class="nav-button">Navigation</button>
 		<button id="view-modes-button" class="nav-button">View modes</button>
+		<button id="controls-button" class="nav-button">Controls</button>
 	</div>
-	<div id="content" style="position:absolute; bottom:9vh; left:100vh; width:25vw; height:85vh">
+	<div id="content">
 		<h1 id="quad-header">Bad Quadrant</h1>
 		<table id="matrices">
 			<tr>
@@ -75,10 +76,18 @@
 				<td><button id="cross-red-2" onclick="crossRed(false)" title="Flip the column player's smallest entries">Cross player two's red</button></td>
 			</tr>
 			<tr height="10vh" />
+			<!-- <tr>
+				<td colspan="2"><button id="switch-players" onclick="wiggle(true)" title="Exchanges each player's matrix with the transpose of the other player's matrix">Switch the players</button></td>
+			</tr> -->
 			<tr>
-				<td><button id="cross-blue-1" onclick="wiggle(true)" title="Flip both the row player's smallest and their biggest entries">Wiggle player one</button></td>
-				<td><button id="cross-blue-2" onclick="wiggle(false)" title="Flip both the column player's smallest and their biggest entries">Wiggle player two</button></td>
+				<td><button id="wiggle-1" onclick="wiggle(true)" title="Flip both the row player's smallest and their biggest entries">Wiggle player one</button></td>
+				<td><button id="wiggle-2" onclick="wiggle(false)" title="Flip both the column player's smallest and their biggest entries">Wiggle player two</button></td>
 			</tr>
+			<!-- <tr height="10vh" />
+			<tr>
+				<td><button id="random-1" onclick="randomize(true)" title="Randomize the row player's matrix">Randomize player one</button></td>
+				<td><button id="random-2" onclick="randomize(false)" title="Randomize the column player's matrix">Randomize player two</button></td>
+			</tr> -->
 		</table>
 		<br>
 		<div id="view-modes">
@@ -86,6 +95,41 @@
 			<span><button class="half-mode-button" id="return-mode-2" onclick="changeViewMode(3)">Returns</button></span><span><button class="half-mode-button" id="return-mode-1" onclick="changeViewMode(1)">Use mixed</button></span>
 			<span><button class="half-mode-button" id="transferable-mode" onclick="changeViewMode(2)">Shapley returns</button></span><span><button class="half-mode-button" id="coco-mode" onclick="changeViewMode(4)">Coco returns</button></span>
 			<span><button class="half-mode-button" id="bargaining-mode-1" onclick="changeViewMode(5)">Bargaining (bs)</button></span><span><button class="half-mode-button" id="bargaining-mode-2" onclick="changeViewMode(6)">Bargaining (zs)</button></span>
+			<button class="mode-button" id="custom-mode" onclick="changeViewMode(7)">Custom</button>
+			<p id="custom-options">
+				<select name="Choice 1" id="view-custom-1">
+					<option value="returns">Returns</option>
+					<option value="returns-mixed">Returns with mixed</option>
+					<option value="returns-shapley">Shapley value</option>
+					<option value="returns-coco">Coco returns</option>
+					<option value="returns-bargaining-bs">Bargaining (bs)</option>
+					<option value="returns-bargaining-zs">Bargaining (zs)</option>
+				</select>
+				minus
+				<select name="Choice 2" id="view-custom-2">
+					<option value="returns">Returns</option>
+					<option value="returns-mixed">Returns with mixed</option>
+					<option value="returns-shapley">Shapley value</option>
+					<option value="returns-coco">Coco returns</option>
+					<option value="returns-bargaining-bs">Bargaining (bs)</option>
+					<option value="returns-bargaining-zs">Bargaining (zs)</option>
+				</select>
+			</p>
+		</div>
+		<div id="controls">
+			<p>
+				<strong>Using the keyboard</strong><br>
+				The arrow keys change x<sub>1</sub> and x<sub>2</sub>.<br>
+				The WASD keys change b<sub>1</sub> and b<sub>2</sub>.<br>
+				Hold SHIFT while doing the above to apply velocity.<br>
+				Press SPACE to reset all velocities to zero.
+			</p>
+			<p>There are five other ways to change the current game:</p>
+			<p>1. Use the sliders by main figure (left).</p>
+			<p>2. Click or drag in the main figure.</p>
+			<p>3. Click or drag in the global figure (top right).</p>
+			<p>4. Use the buttons in the Navigation tab.</p>
+			<p>5. Click in the large diagram (bottom right) to go to a nearby extremal game.</p>
 		</div>
 	</div>
 	<svg id="big-picture" width="18vw" height="18vw" style="position:absolute; right:5%; top:5%">

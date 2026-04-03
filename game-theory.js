@@ -36,6 +36,7 @@ let valuesY = 0;
 let backgroundOutOfDate = true;
 let switchMode = false;
 let fixImageSize = false;
+let viewModeVolatile = false;
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.05;
@@ -427,11 +428,13 @@ function init() {
             document.getElementById("game-info").style.display = "none";
             document.getElementById("navigation").style.display = "none";
             document.getElementById("view-modes").style.display = "none";
+            document.getElementById("controls").style.display = "none";
             document.getElementById(button.id.slice(0,-7)).style.display = "";
         });
     }
     document.getElementById("navigation").style.display = "none";
     document.getElementById("view-modes").style.display = "none";
+    document.getElementById("controls").style.display = "none";
 
     update();
 }
@@ -657,6 +660,8 @@ function update() {
     } else {
         crossRed2.style.color = "black";
     }
+
+    if (viewModeVolatile) backgroundOutOfDate = true;
 
     const container = document.getElementById("container");
     const diagram = document.getElementById("diagram");
@@ -2186,6 +2191,9 @@ function update() {
                         case 6:
                             values[j].push(payoffBargainingDisagreement(rowM, colM));
                             break;
+                        case 7:
+                            values[j].push(payoffCustom(rowM, colM));
+                            break;
                     }
                 }
             }
@@ -2256,6 +2264,9 @@ function update() {
                                 break;
                             case 6:
                                 value = payoffBargainingDisagreement(rowM, colM);
+                                break;
+                            case 7:
+                                value = payoffCustom(rowM, colM);
                                 break;
                         }
                     }
@@ -2918,7 +2929,7 @@ function payoffBargainingBackstop(m1, m2) {
             const t = -(x2*(y1-y2)+y2*(x1-x2))/((x1-x2)*(y1-y2)*2);
             const value1 = x1*y1;
             const value2 = x2*y2;
-            const value3 = (t < 1 && t > 0) ? (x1*t+x2*(1-t))*(y1*t+y2*(1-t)) : -1;
+            const value3 = (t < 1 && t > 0 && (x1*t+x2*(1-t))>0 && (y1*t+y2*(1-t))>0) ? (x1*t+x2*(1-t))*(y1*t+y2*(1-t)) : -1;
             // console.log(i + " " + j + ": " + value1.toFixed(1) + " " + value2.toFixed(1) + " " + value3.toFixed(1) + " " + t.toFixed(2));
             if (value1 >= max && value1 >= value2 && value1 >= value3) {
                 max = value1;
@@ -2974,7 +2985,7 @@ function payoffBargainingDisagreement(m1, m2) {
             const t = -(x2*(y1-y2)+y2*(x1-x2))/((x1-x2)*(y1-y2)*2);
             const value1 = x1*y1;
             const value2 = x2*y2;
-            const value3 = (t < 1 && t > 0) ? (x1*t+x2*(1-t))*(y1*t+y2*(1-t)) : -1;
+            const value3 = (t < 1 && t > 0 && (x1*t+x2*(1-t))>0 && (y1*t+y2*(1-t))>0) ? (x1*t+x2*(1-t))*(y1*t+y2*(1-t)) : -1;
             // console.log(i + " " + j + ": " + value1.toFixed(1) + " " + value2.toFixed(1) + " " + value3.toFixed(1) + " " + t.toFixed(2));
             if (value1 >= max && value1 >= value2 && value1 >= value3) {
                 max = value1;
@@ -2994,6 +3005,43 @@ function payoffBargainingDisagreement(m1, m2) {
     // console.log("");
     // if (max == 0) return 8;
     return return1;
+}
+
+function payoffCustom(m1, m2) {
+    const choice1 = document.getElementById("view-custom-1").value;
+    const choice2 = document.getElementById("view-custom-2").value;
+    let value1 = 0;
+    let value2 = 0;
+
+    if (choice1 == "returns") {
+        value1 = payoffModified(m1,m2);
+    } else if (choice1 == "returns-mixed") {
+        value1 = payoff(m1,m2);
+    } else if (choice1 == "returns-shapley") {
+        value1 = payoffTransferable(m1,m2);
+    } else if (choice1 == "returns-coco") {
+        value1 = payoffCoco(m1,m2);
+    } else if (choice1 == "returns-bargaining-bs") {
+        value1 = payoffBargainingBackstop(m1,m2);
+    } else if (choice1 == "returns-bargaining-zs") {
+        value1 = payoffBargainingDisagreement(m1,m2);
+    }
+
+    if (choice2 == "returns") {
+        value2 = payoffModified(m1,m2);
+    } else if (choice2 == "returns-mixed") {
+        value2 = payoff(m1,m2);
+    } else if (choice2 == "returns-shapley") {
+        value2 = payoffTransferable(m1,m2);
+    } else if (choice2 == "returns-coco") {
+        value2 = payoffCoco(m1,m2);
+    } else if (choice2 == "returns-bargaining-bs") {
+        value2 = payoffBargainingBackstop(m1,m2);
+    } else if (choice2 == "returns-bargaining-zs") {
+        value2 = payoffBargainingDisagreement(m1,m2);
+    }
+
+    return (value1 - value2)/2+3;
 }
 
 function colorFunction(value) {
@@ -3047,6 +3095,14 @@ function changeViewMode(mode) {
         case 6:
             document.getElementById("bargaining-mode-2").classList.add("selected");
             break;
+        case 7:
+            document.getElementById("custom-mode").classList.add("selected");
+            break;
+    }
+    if (mode == 7) {
+        viewModeVolatile = true;
+    } else {
+        viewModeVolatile = false;
     }
 }
 
