@@ -38,6 +38,9 @@ let switchMode = false;
 let fixImageSize = false;
 let viewModeVolatile = false;
 
+let disagree = [0,0];
+let bargainingReturns = [0,0];
+
 const lineWidth = 0.08;
 const lineWidthBig = 0.05;
 const eqRadii = 0.08;
@@ -54,6 +57,7 @@ const ceruleanBackground = "#c4e0eb";
 const goldBackground = "#fff3d0"; // "#e6d3b0"
 const grayBackground = "#ddd" // "#bbb"
 const noLine = "#ddd";
+const brown = "#7c4700";
 const dashedStroke = "10,10";
 const animationFrames = 70;
 const points = [];
@@ -99,6 +103,8 @@ function init() {
     const line2Big = document.getElementById("line2-big");
     const line3Big = document.getElementById("line3-big");
     const line4Big = document.getElementById("line4-big");
+    const line5Big = document.getElementById("line5-big");
+    const line6Big = document.getElementById("line6-big");
     const corner1Big = document.getElementById("corner1-big");
     const corner2Big = document.getElementById("corner2-big");
     const corner3Big = document.getElementById("corner3-big");
@@ -143,6 +149,12 @@ function init() {
     line3Big.style.strokeDasharray = dashedStroke;
     line4Big.style.stroke = gold;
     line4Big.style.strokeWidth = lineWidthBig*widthBig;
+    line5Big.style.stroke = noLine;
+    line5Big.style.strokeWidth = lineWidthBig*widthBig;
+    line5Big.style.opacity = 0.6;
+    line6Big.style.stroke = noLine;
+    line6Big.style.strokeWidth = lineWidthBig*widthBig;
+    line6Big.style.opacity = 0.6;
     corner1Big.style = "fill:" + cerulean;
     corner1Big.r.baseVal.value = lineWidthBig*widthBig/2;
     corner2Big.style = "fill:" + cerulean;
@@ -243,6 +255,19 @@ function init() {
     smallLine7.y2.baseVal.value = bigDiagramWidth - paddingBig;
     smallLine8.y1.baseVal.value = paddingBig;
     smallLine8.y2.baseVal.value = bigDiagramWidth - paddingBig;
+
+    const disagreementPoint = document.getElementById("disagreement-point");
+    const bargainingPoint = document.getElementById("bargaining-returns");
+    const bargainingLine = document.getElementById("bargaining-line");
+    disagreementPoint.r.baseVal.value = lineWidthBig*widthBig*0.6;
+    disagreementPoint.style.fill = brown;
+    bargainingPoint.r.baseVal.value = lineWidthBig*widthBig*0.6;
+    bargainingPoint.style.fill = brown;
+    bargainingLine.style.stroke = brown;
+    bargainingLine.style.strokeWidth = lineWidthBig*widthBig*0.6;
+    disagreementPoint.style.fillOpacity = 0;
+    bargainingPoint.style.fillOpacity = 0;
+    bargainingLine.style.fillOpacity = 0;
 
     const container = document.getElementById("container");
     const x1label = document.getElementById("x1-label");
@@ -870,6 +895,8 @@ function update() {
     const line2Big = document.getElementById("line2-big");
     const line3Big = document.getElementById("line3-big");
     const line4Big = document.getElementById("line4-big");
+    const line5Big = document.getElementById("line5-big");
+    const line6Big = document.getElementById("line6-big");
     const point1Big = document.getElementById("point1-big");
     const point2Big = document.getElementById("point2-big");
     const point3Big = document.getElementById("point3-big");
@@ -903,6 +930,9 @@ function update() {
     const smallLine6 = document.getElementById("small-line-6");
     const smallLine7 = document.getElementById("small-line-7");
     const smallLine8 = document.getElementById("small-line-8");
+    const disagreementPoint = document.getElementById("disagreement-point");
+    const bargainingPoint = document.getElementById("bargaining-returns");
+    const bargainingLine = document.getElementById("bargaining-line");
 
     const bigDiagramWidth = bigDiagram.getBoundingClientRect().width;
     const paddingBig = 0.1*bigDiagramWidth;
@@ -915,6 +945,10 @@ function update() {
     line3Big.x2.baseVal.value = matrixA[2]*widthBig/6+paddingBig;
     line4Big.x1.baseVal.value = matrixA[2]*widthBig/6+paddingBig;
     line4Big.x2.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
+    line5Big.x1.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
+    line5Big.x2.baseVal.value = matrixA[3]*widthBig/6+paddingBig;
+    line6Big.x1.baseVal.value = matrixA[1]*widthBig/6+paddingBig;
+    line6Big.x2.baseVal.value = matrixA[2]*widthBig/6+paddingBig;
 
     line1Big.y1.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
     line1Big.y2.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig;
@@ -924,6 +958,10 @@ function update() {
     line3Big.y2.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig;
     line4Big.y1.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig;
     line4Big.y2.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
+    line5Big.y1.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
+    line5Big.y2.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig;
+    line6Big.y1.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig;
+    line6Big.y2.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig;
 
     point1Big.cx.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
     point1Big.cy.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
@@ -941,6 +979,24 @@ function update() {
     point4Big.cy.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig;
     number4.setAttribute('x',matrixA[3]*widthBig/6+paddingBig);
     number4.setAttribute('y',(1-matrixB[3]/6)*widthBig+paddingBig);
+
+    if (viewMode == 5 || viewMode == 6) {
+        disagreementPoint.cx.baseVal.value = disagree[0]*widthBig/6+paddingBig;
+        disagreementPoint.cy.baseVal.value = (6-disagree[1])*widthBig/6+paddingBig;
+        bargainingPoint.cx.baseVal.value = bargainingReturns[0]*widthBig/6+paddingBig;
+        bargainingPoint.cy.baseVal.value = (6-bargainingReturns[1])*widthBig/6+paddingBig;
+        bargainingLine.x1.baseVal.value = disagree[0]*widthBig/6+paddingBig;
+        bargainingLine.y1.baseVal.value = (6-disagree[1])*widthBig/6+paddingBig;
+        bargainingLine.x2.baseVal.value = bargainingReturns[0]*widthBig/6+paddingBig;
+        bargainingLine.y2.baseVal.value = (6-bargainingReturns[1])*widthBig/6+paddingBig;
+        disagreementPoint.style.fillOpacity = 1;
+        bargainingPoint.style.fillOpacity = 1;
+        bargainingLine.style.fillOpacity = 1;
+    } else {
+        disagreementPoint.style.fillOpacity = 0;
+        bargainingPoint.style.fillOpacity = 0;
+        bargainingLine.style.fillOpacity = 0;
+    }
 
     const overlap = [1,1,1,1];
     if (Math.abs(matrixA[0] - matrixA[1]) < error && Math.abs(matrixB[0] - matrixB[1]) < error) { overlap[0]++; overlap[1]++; }
@@ -2925,6 +2981,11 @@ function payoffBargainingBackstop(m1, m2) {
     if (Math.min(m2[0],m2[2]) < Math.min(m2[1],m2[3])) colBackstop = Math.min(m2[1],m2[3]);
     else colBackstop = Math.min(m2[0],m2[2]);
 
+    if (viewMode == 5) {
+        disagree[1] = rowBackstop;
+        disagree[0] = colBackstop;
+    }
+
     let vertices = [];
     for (let i = 0; i < 4; i++) {
         let pareto = true;
@@ -2938,6 +2999,10 @@ function payoffBargainingBackstop(m1, m2) {
     }
 
     let return1 = m1[vertices[0]];
+    if (viewMode == 5) {
+        bargainingReturns[1] = 6;
+        bargainingReturns[0] = 6;
+    }
     let max = -10000;
     for (let n = 0; n < vertices.length; n++) {
         for (let m = n + 1; m < vertices.length; m++) {
@@ -2947,12 +3012,12 @@ function payoffBargainingBackstop(m1, m2) {
             const x2 = m1[j] - rowBackstop;
             const y1 = m2[i] - colBackstop;
             const y2 = m2[j] - colBackstop;
-            if (y1 == y2 || x1 == x2){ console.log("error!"); return 0; }
+            // if (y1 == y2 || x1 == x2){ console.log("error!"); return 0; }
             // maximizing   (x1*t+x2*(1-t))*(y1*t+y2*(1-t))
             // derivative   (x1*t+x2*(1-t))*(y1-y2)+(y1*t+y2*(1-t))*(x1-x2) = 0
             // solve        t*(x1-x2)*(y1-y2)*2+x2*(y1-y2)+y2*(x1-x2) = 0
             //              t = (x2*(y1-y2)+y2*(x1-x2))/((x1-x2)*(y1-y2)*2)
-            const t = -(x2*(y1-y2)+y2*(x1-x2))/((x1-x2)*(y1-y2)*2);
+            const t = (y1 == y2 || x1 == x2) ? -1 : -(x2*(y1-y2)+y2*(x1-x2))/((x1-x2)*(y1-y2)*2);
             const value1 = x1*y1;
             const value2 = x2*y2;
             const value3 = (t < 1 && t > 0 && (x1*t+x2*(1-t))>0 && (y1*t+y2*(1-t))>0) ? (x1*t+x2*(1-t))*(y1*t+y2*(1-t)) : -1;
@@ -2960,14 +3025,26 @@ function payoffBargainingBackstop(m1, m2) {
             if (value1 >= max && value1 >= value2 && value1 >= value3) {
                 max = value1;
                 return1 = m1[i];
+                if (viewMode == 5) {
+                    bargainingReturns[1] = m1[i];
+                    bargainingReturns[0] = m2[i];
+                }
                 // console.log(i + ": " + value1);
             } else if (value2 >= max && value2 >= value3) {
                 max = value2;
                 return1 = m1[j];
+                if (viewMode == 5) {
+                    bargainingReturns[1] = m1[j];
+                    bargainingReturns[0] = m2[j];
+                }
                 // console.log(j + ": " + value2);
             } else if (value3 >= max) {
                 max = value3;
                 return1 = m1[i]*t + m1[j]*(1-t);
+                if (viewMode == 5) {
+                    bargainingReturns[1] = m1[i]*t + m1[j]*(1-t);
+                    bargainingReturns[0] = m2[i]*t + m2[j]*(1-t);
+                }
                 // console.log(i + "-" + j + ": " + value3);
             }
         }
@@ -2984,6 +3061,11 @@ function payoffBargainingDisagreement(m1, m2) {
     const colEquilibrium = 1-equilibrium(flip(newM2), flip(newM1));
     const rowDisagreement = rowEquilibrium*colEquilibrium*m1[0] + rowEquilibrium*(1-colEquilibrium)*m1[1] + (1-rowEquilibrium)*colEquilibrium*m1[2] + (1-rowEquilibrium)*(1-colEquilibrium)*m1[3];
     const colDisagreement = rowEquilibrium*colEquilibrium*m2[0] + rowEquilibrium*(1-colEquilibrium)*m2[1] + (1-rowEquilibrium)*colEquilibrium*m2[2] + (1-rowEquilibrium)*(1-colEquilibrium)*m2[3];
+
+    if (viewMode == 6) {
+        disagree[0] = rowDisagreement;
+        disagree[1] = colDisagreement;
+    }
 
     let equilibriumPoint = -1;
     if (rowEquilibrium == 1 && colEquilibrium == 1) {
@@ -3006,12 +3088,16 @@ function payoffBargainingDisagreement(m1, m2) {
             }
         }
         if (pareto) {
-            if (i == equilibriumPoint) return rowDisagreement;
+            // if (i == equilibriumPoint) return rowDisagreement;
             vertices.push(i);
         }
     }
 
     let return1 = m1[vertices[0]];
+    if (viewMode == 6) {
+        bargainingReturns[0] = 6;
+        bargainingReturns[1] = 6;
+    }
     let max = -10000;
     for (let n = 0; n < vertices.length; n++) {
         for (let m = n + 1; m < vertices.length; m++) {
@@ -3021,8 +3107,8 @@ function payoffBargainingDisagreement(m1, m2) {
             const x2 = m1[j] - rowDisagreement;
             const y1 = m2[i] - colDisagreement;
             const y2 = m2[j] - colDisagreement;
-            if (y1 == y2 || x1 == x2){ console.log("error!"); return 0; }
-            const t = -(x2*(y1-y2)+y2*(x1-x2))/((x1-x2)*(y1-y2)*2);
+            // if (y1 == y2 || x1 == x2){ console.log("error!"); return 0; }
+            const t = (y1 == y2 || x1 == x2) ? -1 : -(x2*(y1-y2)+y2*(x1-x2))/((x1-x2)*(y1-y2)*2);
             const value1 = x1*y1;
             const value2 = x2*y2;
             const value3 = (t < 1 && t > 0 && (x1*t+x2*(1-t))>0 && (y1*t+y2*(1-t))>0) ? (x1*t+x2*(1-t))*(y1*t+y2*(1-t)) : -1;
@@ -3031,14 +3117,26 @@ function payoffBargainingDisagreement(m1, m2) {
             if (value1 >= max && value1 >= value2 && value1 >= value3) {
                 max = value1;
                 return1 = m1[i];
+                if (viewMode == 6) {
+                    bargainingReturns[0] = m1[i];
+                    bargainingReturns[1] = m2[i];
+                }
                 // console.log(i + ": " + value1);
             } else if (value2 >= max && value2 >= value3) {
                 max = value2;
                 return1 = m1[j];
+                if (viewMode == 6) {
+                    bargainingReturns[0] = m1[j];
+                    bargainingReturns[1] = m2[j];
+                }
                 // console.log(j + ": " + value2);
             } else if (value3 >= max) {
                 max = value3;
                 return1 = m1[i]*t + m1[j]*(1-t);
+                if (viewMode == 6) {
+                    bargainingReturns[0] = m1[i]*t + m1[j]*(1-t);
+                    bargainingReturns[1] = m2[i]*t + m2[j]*(1-t);
+                }
                 // console.log(i + "-" + j + ": " + value3);
             }
         }
@@ -3095,9 +3193,22 @@ function coordination(m1, m2) {
     return (norm1 / (norm1 + norm2))*6;
 }
 
-function colorFunction(value) {
+function colorFunctionOld(value) {
     const colors = [[255,100,100],[170,170,170],[100,255,150],[255,255,255],[255,255,255]];
     const cutoffs = [0,0.5,1,1.5,2];
+    const result = [0,0,0];
+    for (let i = 1; i <= cutoffs.length; i++) {
+        if (value <= cutoffs[i]) {
+            for (let j = 0; j < 3; j++) result[j] = Math.floor((1-(value-cutoffs[i-1])/(cutoffs[i]-cutoffs[i-1]))*colors[i-1][j] + (value-cutoffs[i-1])/(cutoffs[i]-cutoffs[i-1])*colors[i][j]);
+        return result;
+        }
+    }
+}
+
+function colorFunction(value) {
+    const colors = [[38,84,138],[70,102,168],[110,116,144],[150,130,121],[190,144,97],[229,158,74],
+                    [236,174,94],[242,190,113],[249,206,133],[255,222,153],[255,242,191],[142,255,142],[0,113,0],[255,255,255]];
+    const cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.25,1.5,2];
     const result = [0,0,0];
     for (let i = 1; i <= cutoffs.length; i++) {
         if (value <= cutoffs[i]) {
