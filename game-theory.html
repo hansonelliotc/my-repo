@@ -79,9 +79,24 @@
 			<!-- <tr>
 				<td colspan="2"><button id="switch-players" onclick="wiggle(true)" title="Exchanges each player's matrix with the transpose of the other player's matrix">Switch the players</button></td>
 			</tr> -->
-			<tr>
+			<!-- <tr>
 				<td><button id="wiggle-1" onclick="wiggle(true)" title="Flip both the row player's smallest and their biggest entries">Wiggle player one</button></td>
 				<td><button id="wiggle-2" onclick="wiggle(false)" title="Flip both the column player's smallest and their biggest entries">Wiggle player two</button></td>
+			</tr> -->
+			<tr>
+				<td><button id="switch-matrices" onclick="switchMatrices()" title="Exchange the players' matrices">Switch matrices</button></td>
+				<td><button id="flip-matrices" onclick="flipMatrices()" title="Each player's matrix is flipped">Flip both matrices</button></td>
+			</tr>
+			<tr>
+				<td><button id="negate-1" onclick="negate(true)" title="Each entry in the row player's matrix is subtracted from 6.">Negate player one</button></td>
+				<td><button id="negate-2" onclick="negate(false)" title="Each entry in the column player's matrix is subtracted from 6.">Negate player two</button></td>
+			</tr>
+			<tr>
+				<td><button id="switch-rows" onclick="switchRows()" title="The rows in the row player's matrix are switched.">Switch player 1's rows</button></td>
+				<td><button id="switch-cols" onclick="switchColumns(false)" title="The columns in the column player's matrix are switched.">Switch player 2's columns</button></td>
+			</tr>
+			<tr>
+				<td><button id="rotate" onclick="rotate()" title="Rotates each matrix's first, third, and fourth entries.">Rotate both matrices</button></td>
 			</tr>
 			<!-- <tr height="10vh" />
 			<tr>
@@ -124,7 +139,8 @@
 				The arrow keys change x<sub>1</sub> and x<sub>2</sub>.<br>
 				The WASD keys change b<sub>1</sub> and b<sub>2</sub>.<br>
 				Hold SHIFT while doing the above to apply velocity.<br>
-				Press SPACE to reset all velocities to zero.
+				Press SPACE to reset all velocities to zero.<br>
+				Press R to go to a random game.
 			</p>
 			<p>There are five other ways to change the current game:</p>
 			<p>1. Use the sliders by main figure (left).</p>

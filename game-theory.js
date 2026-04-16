@@ -355,6 +355,9 @@ function init() {
                     b1V = 0;
                     b2V = 0;
                     break;
+                case "r":
+                    randomGame();
+                    break;
             }
         } else {
             switch (e.key) {
@@ -2467,6 +2470,70 @@ function wiggle(p1) {
     updateBackground();
 }
 
+function switchMatrices() {
+    for (let i = 0; i < 4; i++) {
+        let temp = matrixA[i];
+        matrixA[i] = matrixB[i];
+        matrixB[i] = temp;
+    }
+    updateCoords();
+}
+
+function flipMatrices() {
+    let tempA = flip(matrixA);
+    let tempB = flip(matrixB);
+    for (let i = 0; i < 4; i++) {
+        matrixA[i] = tempA[i];
+        matrixB[i] = tempB[i];
+    }
+    updateCoords();
+}
+
+function negate(p1) {
+    if (p1) {
+        for (let i = 0; i < 4; i++) matrixA[i] = 6 - matrixA[i];
+    } else {
+        for (let i = 0; i < 4; i++) matrixB[i] = 6 - matrixB[i];
+    }
+    updateCoords();
+}
+
+function switchRows() {
+    const temp = [...matrixA];
+    matrixA[0] = temp[2];
+    matrixA[1] = temp[3];
+    matrixA[2] = temp[0];
+    matrixA[3] = temp[1];
+    updateCoords();
+}
+
+function switchColumns() {
+    const temp = [...matrixB];
+    matrixB[0] = temp[1];
+    matrixB[1] = temp[0];
+    matrixB[2] = temp[3];
+    matrixB[3] = temp[2];
+    updateCoords();
+}
+
+function rotate() {
+    const tempA = [...matrixA];
+    const tempB = [...matrixB];
+    matrixA[0] = tempA[3];
+    matrixA[2] = tempA[0];
+    matrixA[3] = tempA[2];
+    matrixB[0] = tempB[3];
+    matrixB[2] = tempB[0];
+    matrixB[3] = tempB[2];
+    updateCoords();
+}
+
+function randomGame() {
+    matrixA = normalize([Math.random(),Math.random(),Math.random(),Math.random()]);
+    matrixB = normalize([Math.random(),Math.random(),Math.random(),Math.random()]);
+    updateCoords();
+}
+
 function updateBackground() {
     backgroundOutOfDate = true;
 
@@ -3256,6 +3323,75 @@ function fixImage() {
     const fixImageButton = document.getElementById("fix-image-button");
     if (fixImageSize) fixImageButton.innerHTML = "Unfix image size";
     else fixImageButton.innerHTML = "Fix image size";
+}
+
+function matrixToCoords(m) {
+    let pos0 = -1;
+    let pos1 = -1;
+    let pos2 = -1;
+    let pos3 = -1;
+    for (let i = 0; i < 4; i++) {
+        if (m[i] == 6 && pos3 == -1) pos3 = i;
+        else if (m[i] == 0 && pos0 == -1) pos0 = i;
+        else if (pos1 == -1) pos1 = i;
+        else {
+            if (m[i] >= m[pos1]) pos2 = i;
+            else {
+                pos2 = pos1;
+                pos1 = i;
+            }
+        }
+    }
+
+    const redModified = m[pos1]/m[pos2];
+    const blue = 6 - m[pos2];
+
+    let cell = -1;
+    if (pos2 == 0 && pos3 == 1 || pos2 == 1 && pos3 == 0 || pos2 == 2 && pos3 == 3 || pos2 == 3 && pos3 == 2) {
+        if (pos0 == 0 && pos3 == 2 || pos0 == 2 && pos3 == 0 || pos0 == 1 && pos3 == 3 || pos0 == 3 && pos3 == 1) cell = 5;
+        else cell = 4;
+    } else if (pos2 == 0 && pos3 == 2 || pos2 == 2 && pos3 == 0 || pos2 == 1 && pos3 == 3 || pos2 == 3 && pos3 == 1) {
+        if (pos0 == 0 && pos3 == 1 || pos0 == 1 && pos3 == 0 || pos0 == 2 && pos3 == 3 || pos0 == 3 && pos3 == 2) cell = 2;
+        else cell = 3;
+    } else {
+        if (pos0 == 0 && pos3 == 2 || pos0 == 2 && pos3 == 0 || pos0 == 1 && pos3 == 3 || pos0 == 3 && pos3 == 1) cell = 0;
+        else cell = 1;
+    }
+
+    let x = -1;
+    if (cell % 2 == 0) x = cell + 1 - redModified;
+    else x = cell + redModified;
+
+    return [x,blue];
+}
+
+function updateCoords() {
+    console.log(matrixA);
+    const coords1 = matrixToCoords(matrixA);
+    const coords2 = matrixToCoords(flip(matrixB));
+    coords = [coords1[0],coords2[0],coords1[1],coords1[1]];
+    const x1coord = document.getElementById("x1coord");
+    const x2coord = document.getElementById("x2coord");
+    const b1coord = document.getElementById("b1coord");
+    const b2coord = document.getElementById("b2coord");
+    x1coord.value = coords1[0];
+    x2coord.value = coords2[0];
+    b1coord.value = coords1[1];
+    b2coord.value = coords2[1];
+
+    let max1 = -1;
+    let max2 = -1;
+    const error = 0.00001;
+    for (let i = 0; i < 4; i++) {
+        if (Math.abs(matrixA[i] - 6) < error) max1 = i;
+        if (Math.abs(matrixB[i] - 6) < error) max2 = i;
+    }
+    console.log(max1 + ' ' + max2);
+    if (max1 == max2) quad = 1;
+    else if (max1 == 0 && max2 == 2 || max1 == 2 && max2 == 0 || max1 == 1 && max2 == 3 || max1 == 3 && max2 == 1) quad = 2;
+    else if (max1 == 0 && max2 == 1 || max1 == 1 && max2 == 0 || max1 == 2 && max2 == 3 || max1 == 3 && max2 == 2) quad = 4;
+    else quad = 3;
+    updateBackground();
 }
 
 // operations to add
