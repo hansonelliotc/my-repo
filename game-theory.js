@@ -97,6 +97,14 @@ function init() {
     corner4.style = "fill:" + cerulean;
     corner4.r.baseVal.value = lineWidth*width/2;
 
+    // Initialize blue lines
+    const blueLine1 = document.getElementById("blue-line-1");
+    const blueLine2 = document.getElementById("blue-line-2");
+    const blueCorner = document.getElementById("blue-corner");
+    blueLine1.style.stroke = "blue";
+    blueLine2.style.stroke = "blue";
+    blueCorner.style.fill = "blue";
+
     // Initialize big-diagram
     const bigDiagram = document.getElementById("big-diagram");
     const line1Big = document.getElementById("line1-big");
@@ -415,6 +423,9 @@ function init() {
             case "s":
                 b2down = false;
                 break;
+            case "c":
+                createDiagram();
+                break;
         }
     });
 
@@ -574,6 +585,7 @@ function update() {
         tempCoords[1] = tempCoords[1] - 6;
         if (tempCoords[1] == 0) tempCoords[1] = -6;
     }
+    if (fixImageSize && [...tempCoords] != [...coords]) updateDiagramGrid();
     if (tempCoords[2] != coords[2] || tempCoords[3] != coords[3]) backgroundOutOfDate = true;
     coords = tempCoords;
 
@@ -687,206 +699,7 @@ function update() {
 
     if (viewModeVolatile) backgroundOutOfDate = true;
 
-    const container = document.getElementById("container");
-    const diagram = document.getElementById("diagram");
-    const diagramWidth = diagram.width.baseVal.value;
-    const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*(6 - +b1coord.value)/6;
-    const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*(6 - +b2coord.value)/6;
-    const picPadding1 = (container.width.baseVal.value-picWidth)/2;
-    const picPadding2 = (container.height.baseVal.value-picHeight)/2;
-    const maxPicWidth = (container.width.baseVal.value - diagram.width.baseVal.value);
-    const maxPicHeight = (container.height.baseVal.value - diagram.height.baseVal.value);
-
-    const line1 = document.getElementById("line1");
-    const line2 = document.getElementById("line2");
-    const line3 = document.getElementById("line3");
-    const line4 = document.getElementById("line4");
-    const point1 = document.getElementById("point1");
-    const point2 = document.getElementById("point2");
-    const point3 = document.getElementById("point3");
-    const point4 = document.getElementById("point4");
-    const point5 = document.getElementById("point5");
-    const corner1 = document.getElementById("corner1");
-    const corner2 = document.getElementById("corner2");
-    const corner3 = document.getElementById("corner3");
-    const corner4 = document.getElementById("corner4");
-    const diagramBox = document.getElementById("diagram-box");
-
-    diagram.x.baseVal.value = (+(x1coord.value))/6*picWidth+picPadding1-diagramWidth/2;
-    diagram.y.baseVal.value = (6 - +(x2coord.value))/6*picHeight+picPadding2-diagramWidth/2;
-
-    const padding = 0.1*diagramWidth;
-    const width = diagramWidth - 2*padding;
-    diagramBox.width.baseVal.value = width;
-    diagramBox.height.baseVal.value = width;
-    diagramBox.x.baseVal.value = padding;
-    diagramBox.y.baseVal.value = padding;
-    line1.x1.baseVal.value = matrixA[0]*width/6+padding;
-    line1.x2.baseVal.value = matrixA[1]*width/6+padding;
-    line2.x1.baseVal.value = matrixA[1]*width/6+padding;
-    line2.x2.baseVal.value = matrixA[3]*width/6+padding;
-    line3.x1.baseVal.value = matrixA[3]*width/6+padding;
-    line3.x2.baseVal.value = matrixA[2]*width/6+padding;
-    line4.x1.baseVal.value = matrixA[2]*width/6+padding;
-    line4.x2.baseVal.value = matrixA[0]*width/6+padding;
-
-    line1.y1.baseVal.value = (1-matrixB[0]/6)*width+padding;
-    line1.y2.baseVal.value = (1-matrixB[1]/6)*width+padding;
-    line2.y1.baseVal.value = (1-matrixB[1]/6)*width+padding;
-    line2.y2.baseVal.value = (1-matrixB[3]/6)*width+padding;
-    line3.y1.baseVal.value = (1-matrixB[3]/6)*width+padding;
-    line3.y2.baseVal.value = (1-matrixB[2]/6)*width+padding;
-    line4.y1.baseVal.value = (1-matrixB[2]/6)*width+padding;
-    line4.y2.baseVal.value = (1-matrixB[0]/6)*width+padding;
-
-    point1.cx.baseVal.value = matrixA[0]*width/6+padding;
-    point1.cy.baseVal.value = (1-matrixB[0]/6)*width+padding;
-    point2.cx.baseVal.value = matrixA[1]*width/6+padding;
-    point2.cy.baseVal.value = (1-matrixB[1]/6)*width+padding;
-    point3.cx.baseVal.value = matrixA[2]*width/6+padding;
-    point3.cy.baseVal.value = (1-matrixB[2]/6)*width+padding;
-    point4.cx.baseVal.value = matrixA[3]*width/6+padding;
-    point4.cy.baseVal.value = (1-matrixB[3]/6)*width+padding;
-
-    corner1.cx.baseVal.value = matrixA[0]*width/6+padding;
-    corner1.cy.baseVal.value = (1-matrixB[0]/6)*width+padding;
-    corner2.cx.baseVal.value = matrixA[1]*width/6+padding;
-    corner2.cy.baseVal.value = (1-matrixB[1]/6)*width+padding;
-    corner3.cx.baseVal.value = matrixA[2]*width/6+padding;
-    corner3.cy.baseVal.value = (1-matrixB[2]/6)*width+padding;
-    corner4.cx.baseVal.value = matrixA[3]*width/6+padding;
-    corner4.cy.baseVal.value = (1-matrixB[3]/6)*width+padding;
-
-    const rowMax = Math.max(...matrixA) - error;
-    const colMax = Math.max(...matrixB) - error;
-
-    if (matrixA[0] - matrixA[2] >= -error && matrixB[0] - matrixB[1] >= -error) {
-        if (matrixA[0] >= rowMax && matrixB[0] >= colMax) {
-            point1.style = "fill:" + lightGreen;
-            a1.style.color = lightGreen;
-            a2.style.color = lightGreen;
-        } else if (matrixA[0] >= rowMax) {
-            point1.style = "fill:" + gold;
-            a1.style.color = gold;
-            a2.style.color = gold;
-        } else if (matrixB[0] >= colMax) {
-            point1.style = "fill:" + cerulean;
-            a1.style.color = cerulean;
-            a2.style.color = cerulean;
-        } else {
-            point1.style = "fill:" + bad;
-            a1.style.color = bad;
-            a2.style.color = bad;
-        }
-        a1.style.fontWeight = "bold";
-        a2.style.fontWeight = "bold";
-        point1.style.r = eqRadii*width;
-    } else {
-        point1.style.opacity = 0;
-        a1.style.color = "black";
-        a1.style.fontWeight = "";
-        a2.style.color = "black";
-        a2.style.fontWeight = "";
-    }
-    
-    if (matrixA[1] - matrixA[3] >= -error && matrixB[1] - matrixB[0] >= -error) {
-        if (matrixA[1] >= rowMax && matrixB[1] >= colMax) {
-            point2.style = "fill:" + lightGreen;
-            b1.style.color = lightGreen;
-            b2.style.color = lightGreen;
-        } else if (matrixA[1] >= rowMax) {
-            point2.style = "fill:" + gold;
-            b1.style.color = gold;
-            b2.style.color = gold;
-        } else if (matrixB[1] >= colMax) {
-            point2.style = "fill:" + cerulean;
-            b1.style.color = cerulean;
-            b2.style.color = cerulean;
-        } else {
-            point2.style = "fill:" + bad;
-            b1.style.color = bad;
-            b2.style.color = bad;
-        }
-        b1.style.fontWeight = "bold";
-        b2.style.fontWeight = "bold";
-        point2.style.r = eqRadii*width;
-    } else {
-        point2.style.opacity = 0;
-        b1.style.color = "black";
-        b1.style.fontWeight = "";
-        b2.style.color = "black";
-        b2.style.fontWeight = "";
-    }
-
-    if (matrixA[2] - matrixA[0] >= -error && matrixB[2] - matrixB[3] >= -error) {
-        if (matrixA[2] >= rowMax && matrixB[2] >= colMax) {
-            point3.style = "fill:" + lightGreen;
-            c1.style.color = lightGreen;
-            c2.style.color = lightGreen;
-        } else if (matrixA[2] >= rowMax) {
-            point3.style = "fill:" + gold;
-            c1.style.color = gold;
-            c2.style.color = gold;
-        } else if (matrixB[2] >= colMax) {
-            point3.style = "fill:" + cerulean;
-            c1.style.color = cerulean;
-            c2.style.color = cerulean;
-        } else {
-            point3.style = "fill:" + bad;
-            c1.style.color = bad;
-            c2.style.color = bad;
-        }
-        c1.style.fontWeight = "bold";
-        c2.style.fontWeight = "bold";
-        point3.style.r = eqRadii*width;
-    } else {
-        point3.style.opacity = 0;
-        c1.style.color = "black";
-        c1.style.fontWeight = "";
-        c2.style.color = "black";
-        c2.style.fontWeight = "";
-    }
-
-    if (matrixA[3] - matrixA[1] >= -error && matrixB[3] - matrixB[2] >= -error) {
-        if (matrixA[3] >= rowMax && matrixB[3] >= colMax) {
-            point4.style = "fill:" + lightGreen;
-            d1.style.color = lightGreen;
-            d2.style.color = lightGreen;
-        } else if (matrixA[3] >= rowMax) {
-            point4.style = "fill:" + gold;
-            d1.style.color = gold;
-            d2.style.color = gold;
-        } else if (matrixB[3] >= colMax) {
-            point4.style = "fill:" + cerulean;
-            d1.style.color = cerulean;
-            d2.style.color = cerulean;
-        } else {
-            point4.style = "fill:" + bad;
-            d1.style.color = bad;
-            d2.style.color = bad;
-        }
-        d1.style.fontWeight = "bold";
-        d2.style.fontWeight = "bold";
-        point4.style.r = eqRadii*width;
-    } else {
-        point4.style.opacity = 0;
-        d1.style.color = "black";
-        d1.style.fontWeight = "";
-        d2.style.color = "black";
-        d2.style.fontWeight = "";
-    }
-
-    if (0 < x1coord.value && x1coord.value < 3 && 0 < x2coord.value && x2coord.value < 3 && b1coord.value < 6 && b2coord.value < 6) {
-        const mixedRow = mixedPayoff(matrixA);
-        const mixedCol = mixedPayoff(matrixB);
-        point5.style = "fill:" + mixedColor;
-        point5.style.r = eqRadii*width;
-        point5.cx.baseVal.value = mixedRow*width/6+padding;
-        point5.cy.baseVal.value = (1-mixedCol/6)*width+padding;
-        if (6 - mixedRow < error && 6 - mixedCol < error) point5.style.opacity = 0;
-    } else {
-        point5.style.opacity = 0;
-    }
+    updateDiagram();
 
     // Update big-diagram elements
     const bigDiagram = document.getElementById("big-diagram");
@@ -1565,7 +1378,16 @@ function update() {
     //         break;
     // }
 
-    if (matrixA[0]- matrixA[2] >= -error && matrixB[0] - matrixB[1] >= -error) {
+    const diagram = document.getElementById("diagram");
+    const diagramWidth = diagram.width.baseVal.value;
+    const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*(6 - +b1coord.value)/6;
+    const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*(6 - +b2coord.value)/6;
+    const rowMax = Math.max(...matrixA) - error;
+    const colMax = Math.max(...matrixB) - error;
+    const picPadding1 = (container.width.baseVal.value-picWidth)/2;
+    const picPadding2 = (container.height.baseVal.value-picHeight)/2;
+
+    if (matrixA[0] - matrixA[2] >= -error && matrixB[0] - matrixB[1] >= -error) {
         if (matrixA[0] >= rowMax && matrixB[0] >= colMax)
             point1Big.style = "fill:" + lightGreen;
         else if (matrixA[0] >= rowMax)
@@ -2141,6 +1963,22 @@ function update() {
     picCorner4.cx.baseVal.value = picWidth+picPadding1;
     picCorner4.cy.baseVal.value = picHeight+picPadding2;
 
+    // update blue lines
+    const blueLine1 = document.getElementById("blue-line-1");
+    const blueLine2 = document.getElementById("blue-line-2");
+    const blueCorner = document.getElementById("blue-corner");
+    const blueLinePadding = 15;
+    blueLine1.x1.baseVal.value = picWidth + picPadding1 + blueLinePadding;
+    blueLine1.y1.baseVal.value = picHeight + picPadding2 + blueLinePadding;
+    blueLine1.x2.baseVal.value = picWidth + picPadding1 + blueLinePadding;
+    blueLine1.y2.baseVal.value = picPadding2;
+    blueLine2.x1.baseVal.value = picWidth + picPadding1 + blueLinePadding;
+    blueLine2.y1.baseVal.value = picHeight + picPadding2 + blueLinePadding;
+    blueLine2.x2.baseVal.value = picPadding1;
+    blueLine2.y2.baseVal.value = picHeight + picPadding2 + blueLinePadding;
+    blueCorner.cx.baseVal.value = picWidth + picPadding1 + blueLinePadding;
+    blueCorner.cy.baseVal.value = picHeight + picPadding2 + blueLinePadding;
+
     const bigPicPoint1 = document.getElementById("big-pic-point1");
     const bigPicPoint2 = document.getElementById("big-pic-point2");
     const bigPicPoint3 = document.getElementById("big-pic-point3");
@@ -2571,6 +2409,9 @@ function updateBackground() {
             region4.style.fill = ceruleanBackground;
             header.innerHTML = "Column Quadrant";
             break;
+    }
+    if (fixImageSize) {
+        updateDiagramGrid();
     }
 }
 
@@ -3321,8 +3162,21 @@ function fixImage() {
     backgroundOutOfDate = true;
     fixImageSize = !fixImageSize;
     const fixImageButton = document.getElementById("fix-image-button");
-    if (fixImageSize) fixImageButton.innerHTML = "Unfix image size";
-    else fixImageButton.innerHTML = "Fix image size";
+    const diagram = document.getElementById("diagram");
+    if (fixImageSize) {
+        fixImageButton.innerHTML = "Unfix image size";
+        
+        diagram.style.opacity = 0;
+        updateDiagramGrid();
+    } else {
+        fixImageButton.innerHTML = "Fix image size";
+
+        let element;
+        while (element = document.querySelector(".clone")) {
+            element.remove();
+        }
+        diagram.style.opacity = 1;
+    }
 }
 
 function matrixToCoords(m) {
@@ -3394,11 +3248,266 @@ function updateCoords() {
     updateBackground();
 }
 
-// operations to add
-// 1. switch the matrices
-// 2. negate row's matrix
-// 3. negate column's matrix
-// 4. switch the rows in one matrix
-// 5. switch the columns in one matrix
-// 6. rotate a-c-d in both matrices
-// 7. flip both matrices
+function createDiagram() {
+    const diagram = document.getElementById("diagram");
+    const clone = diagram.cloneNode(true);
+    clone.classList.add("clone");
+    clone.style.opacity = 1;
+    const box = clone.querySelector('#diagram-box');
+    box.remove();
+    const container = document.getElementById("container");
+    container.appendChild(clone);
+}
+
+function updateDiagram() {
+    const error = 0.00001;
+    const x1coord = document.getElementById("x1coord");
+    const x2coord = document.getElementById("x2coord");
+    const b1coord = document.getElementById("b1coord");
+    const b2coord = document.getElementById("b2coord");
+
+    let tempCoords = [+(x1coord.value), +(x2coord.value), +(b1coord.value), +(b2coord.value)];
+    if (x1coord.value == 0) tempCoords[0] += 6;
+    if (x2coord.value == 0) tempCoords[1] += 6;
+    if (quad == 2 || quad == 3) {
+        tempCoords[0] = tempCoords[0] - 6;
+        if (tempCoords[0] == 0) tempCoords[0] = -6;
+    }
+    if (quad == 3 || quad == 4) {
+        tempCoords[1] = tempCoords[1] - 6;
+        if (tempCoords[1] == 0) tempCoords[1] = -6;
+    }
+    if (tempCoords[2] != coords[2] || tempCoords[3] != coords[3]) backgroundOutOfDate = true;
+    coords = tempCoords;
+    [matrixA,matrixB] = coordsToMatrices(...coords);
+
+    const container = document.getElementById("container");
+    const diagram = document.getElementById("diagram");
+    const diagramWidth = diagram.width.baseVal.value;
+    const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*(6 - +b1coord.value)/6;
+    const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*(6 - +b2coord.value)/6;
+    const picPadding1 = (container.width.baseVal.value-picWidth)/2;
+    const picPadding2 = (container.height.baseVal.value-picHeight)/2;
+    const maxPicWidth = (container.width.baseVal.value - diagram.width.baseVal.value);
+    const maxPicHeight = (container.height.baseVal.value - diagram.height.baseVal.value);
+
+    const line1 = document.getElementById("line1");
+    const line2 = document.getElementById("line2");
+    const line3 = document.getElementById("line3");
+    const line4 = document.getElementById("line4");
+    const point1 = document.getElementById("point1");
+    const point2 = document.getElementById("point2");
+    const point3 = document.getElementById("point3");
+    const point4 = document.getElementById("point4");
+    const point5 = document.getElementById("point5");
+    const corner1 = document.getElementById("corner1");
+    const corner2 = document.getElementById("corner2");
+    const corner3 = document.getElementById("corner3");
+    const corner4 = document.getElementById("corner4");
+    const diagramBox = document.getElementById("diagram-box");
+
+    diagram.x.baseVal.value = (+(x1coord.value))/6*picWidth+picPadding1-diagramWidth/2;
+    diagram.y.baseVal.value = (6 - +(x2coord.value))/6*picHeight+picPadding2-diagramWidth/2;
+
+    const padding = 0.1*diagramWidth;
+    const width = diagramWidth - 2*padding;
+    diagramBox.width.baseVal.value = width;
+    diagramBox.height.baseVal.value = width;
+    diagramBox.x.baseVal.value = padding;
+    diagramBox.y.baseVal.value = padding;
+    line1.x1.baseVal.value = matrixA[0]*width/6+padding;
+    line1.x2.baseVal.value = matrixA[1]*width/6+padding;
+    line2.x1.baseVal.value = matrixA[1]*width/6+padding;
+    line2.x2.baseVal.value = matrixA[3]*width/6+padding;
+    line3.x1.baseVal.value = matrixA[3]*width/6+padding;
+    line3.x2.baseVal.value = matrixA[2]*width/6+padding;
+    line4.x1.baseVal.value = matrixA[2]*width/6+padding;
+    line4.x2.baseVal.value = matrixA[0]*width/6+padding;
+
+    line1.y1.baseVal.value = (1-matrixB[0]/6)*width+padding;
+    line1.y2.baseVal.value = (1-matrixB[1]/6)*width+padding;
+    line2.y1.baseVal.value = (1-matrixB[1]/6)*width+padding;
+    line2.y2.baseVal.value = (1-matrixB[3]/6)*width+padding;
+    line3.y1.baseVal.value = (1-matrixB[3]/6)*width+padding;
+    line3.y2.baseVal.value = (1-matrixB[2]/6)*width+padding;
+    line4.y1.baseVal.value = (1-matrixB[2]/6)*width+padding;
+    line4.y2.baseVal.value = (1-matrixB[0]/6)*width+padding;
+
+    point1.cx.baseVal.value = matrixA[0]*width/6+padding;
+    point1.cy.baseVal.value = (1-matrixB[0]/6)*width+padding;
+    point2.cx.baseVal.value = matrixA[1]*width/6+padding;
+    point2.cy.baseVal.value = (1-matrixB[1]/6)*width+padding;
+    point3.cx.baseVal.value = matrixA[2]*width/6+padding;
+    point3.cy.baseVal.value = (1-matrixB[2]/6)*width+padding;
+    point4.cx.baseVal.value = matrixA[3]*width/6+padding;
+    point4.cy.baseVal.value = (1-matrixB[3]/6)*width+padding;
+
+    corner1.cx.baseVal.value = matrixA[0]*width/6+padding;
+    corner1.cy.baseVal.value = (1-matrixB[0]/6)*width+padding;
+    corner2.cx.baseVal.value = matrixA[1]*width/6+padding;
+    corner2.cy.baseVal.value = (1-matrixB[1]/6)*width+padding;
+    corner3.cx.baseVal.value = matrixA[2]*width/6+padding;
+    corner3.cy.baseVal.value = (1-matrixB[2]/6)*width+padding;
+    corner4.cx.baseVal.value = matrixA[3]*width/6+padding;
+    corner4.cy.baseVal.value = (1-matrixB[3]/6)*width+padding;
+
+    const rowMax = Math.max(...matrixA) - error;
+    const colMax = Math.max(...matrixB) - error;
+
+    if (matrixA[0] - matrixA[2] >= -error && matrixB[0] - matrixB[1] >= -error) {
+        if (matrixA[0] >= rowMax && matrixB[0] >= colMax) {
+            point1.style = "fill:" + lightGreen;
+            a1.style.color = lightGreen;
+            a2.style.color = lightGreen;
+        } else if (matrixA[0] >= rowMax) {
+            point1.style = "fill:" + gold;
+            a1.style.color = gold;
+            a2.style.color = gold;
+        } else if (matrixB[0] >= colMax) {
+            point1.style = "fill:" + cerulean;
+            a1.style.color = cerulean;
+            a2.style.color = cerulean;
+        } else {
+            point1.style = "fill:" + bad;
+            a1.style.color = bad;
+            a2.style.color = bad;
+        }
+        a1.style.fontWeight = "bold";
+        a2.style.fontWeight = "bold";
+        point1.style.r = eqRadii*width;
+    } else {
+        point1.style.opacity = 0;
+        a1.style.color = "black";
+        a1.style.fontWeight = "";
+        a2.style.color = "black";
+        a2.style.fontWeight = "";
+    }
+    
+    if (matrixA[1] - matrixA[3] >= -error && matrixB[1] - matrixB[0] >= -error) {
+        if (matrixA[1] >= rowMax && matrixB[1] >= colMax) {
+            point2.style = "fill:" + lightGreen;
+            b1.style.color = lightGreen;
+            b2.style.color = lightGreen;
+        } else if (matrixA[1] >= rowMax) {
+            point2.style = "fill:" + gold;
+            b1.style.color = gold;
+            b2.style.color = gold;
+        } else if (matrixB[1] >= colMax) {
+            point2.style = "fill:" + cerulean;
+            b1.style.color = cerulean;
+            b2.style.color = cerulean;
+        } else {
+            point2.style = "fill:" + bad;
+            b1.style.color = bad;
+            b2.style.color = bad;
+        }
+        b1.style.fontWeight = "bold";
+        b2.style.fontWeight = "bold";
+        point2.style.r = eqRadii*width;
+    } else {
+        point2.style.opacity = 0;
+        b1.style.color = "black";
+        b1.style.fontWeight = "";
+        b2.style.color = "black";
+        b2.style.fontWeight = "";
+    }
+
+    if (matrixA[2] - matrixA[0] >= -error && matrixB[2] - matrixB[3] >= -error) {
+        if (matrixA[2] >= rowMax && matrixB[2] >= colMax) {
+            point3.style = "fill:" + lightGreen;
+            c1.style.color = lightGreen;
+            c2.style.color = lightGreen;
+        } else if (matrixA[2] >= rowMax) {
+            point3.style = "fill:" + gold;
+            c1.style.color = gold;
+            c2.style.color = gold;
+        } else if (matrixB[2] >= colMax) {
+            point3.style = "fill:" + cerulean;
+            c1.style.color = cerulean;
+            c2.style.color = cerulean;
+        } else {
+            point3.style = "fill:" + bad;
+            c1.style.color = bad;
+            c2.style.color = bad;
+        }
+        c1.style.fontWeight = "bold";
+        c2.style.fontWeight = "bold";
+        point3.style.r = eqRadii*width;
+    } else {
+        point3.style.opacity = 0;
+        c1.style.color = "black";
+        c1.style.fontWeight = "";
+        c2.style.color = "black";
+        c2.style.fontWeight = "";
+    }
+
+    if (matrixA[3] - matrixA[1] >= -error && matrixB[3] - matrixB[2] >= -error) {
+        if (matrixA[3] >= rowMax && matrixB[3] >= colMax) {
+            point4.style = "fill:" + lightGreen;
+            d1.style.color = lightGreen;
+            d2.style.color = lightGreen;
+        } else if (matrixA[3] >= rowMax) {
+            point4.style = "fill:" + gold;
+            d1.style.color = gold;
+            d2.style.color = gold;
+        } else if (matrixB[3] >= colMax) {
+            point4.style = "fill:" + cerulean;
+            d1.style.color = cerulean;
+            d2.style.color = cerulean;
+        } else {
+            point4.style = "fill:" + bad;
+            d1.style.color = bad;
+            d2.style.color = bad;
+        }
+        d1.style.fontWeight = "bold";
+        d2.style.fontWeight = "bold";
+        point4.style.r = eqRadii*width;
+    } else {
+        point4.style.opacity = 0;
+        d1.style.color = "black";
+        d1.style.fontWeight = "";
+        d2.style.color = "black";
+        d2.style.fontWeight = "";
+    }
+
+    if (0 < x1coord.value && x1coord.value < 3 && 0 < x2coord.value && x2coord.value < 3 && b1coord.value < 6 && b2coord.value < 6) {
+        const mixedRow = mixedPayoff(matrixA);
+        const mixedCol = mixedPayoff(matrixB);
+        point5.style = "fill:" + mixedColor;
+        point5.style.r = eqRadii*width;
+        point5.cx.baseVal.value = mixedRow*width/6+padding;
+        point5.cy.baseVal.value = (1-mixedCol/6)*width+padding;
+        if (6 - mixedRow < error && 6 - mixedCol < error) point5.style.opacity = 0;
+    } else {
+        point5.style.opacity = 0;
+    }
+}
+
+function updateDiagramGrid() {
+    let element;
+    while (element = document.querySelector(".clone")) {
+        element.remove();
+    }
+    const x1coord = document.getElementById("x1coord");
+    const x2coord = document.getElementById("x2coord");
+    for (let i = 0; i < 6; i++) {
+        for (let j = 0; j < 6; j++) {
+            if (j % 2 == 0) {
+                let redLine = Math.round((+x1coord.value+1)/2)*2-1;
+                if (+x1coord.value != 4)
+                    x1coord.value = (redLine - (+x1coord.value - redLine) + 6) % 6;
+                else
+                    x1coord.value = 6;
+            } else crossGreen(true);
+            updateDiagram();
+            createDiagram();
+        }
+        if (i % 2 == 0) {
+            let redLine = Math.round((+x2coord.value+1)/2)*2-1;
+            if (+x2coord.value != 4)
+                x2coord.value = (redLine - (+x2coord.value - redLine) + 6) % 6;
+            else
+                x2coord.value = 6;
+        } else crossGreen(false);
+    }
+}

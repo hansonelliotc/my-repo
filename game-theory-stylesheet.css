@@ -4,7 +4,7 @@ html, body {
     margin: 0;
 }
 
-.red-line, .green-line, .edge-line {
+.red-line, .green-line, .edge-line, .blue-line {
     stroke-width: 1%;
 }
 
@@ -158,4 +158,16 @@ span {
 
 #navigation {
     width: 26vw;
+}
+
+#blue-line-1 {
+    cursor: col-resize;
+}
+
+#blue-line-2 {
+    cursor: row-resize;
+}
+
+#blue-corner {
+    cursor: all-scroll;
 }
