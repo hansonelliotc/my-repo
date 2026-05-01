@@ -1,6 +1,8 @@
-let matrixA = [1,2,3,4];
+const PI = 3.1415926535897932385;
+
+let matrixA = [0,0,0,0];
 let matrixB = [1,2,3,4];
-let coords = [1.5,1.5,1.1,1.1];
+let coords = [3.5,3.5,2,2];
 let quad = 3;
 
 let changeQuad1 = false;
@@ -23,6 +25,8 @@ let x1V   = 0;
 let x2V   = 0;
 let b1V   = 0;
 let b2V   = 0;
+let draggingB1 = false;
+let draggingB2 = false;
 let startPoint = [0,0,0,0,0,0]; // r1,r2,b1,b2,x1,x2
 let destination = [0,0,0,0]; // r1,r2,b1,b2
 let animTime = 0;
@@ -37,6 +41,7 @@ let backgroundOutOfDate = true;
 let switchMode = false;
 let fixImageSize = false;
 let viewModeVolatile = false;
+let updateRequired = false;
 
 let disagree = [0,0];
 let bargainingReturns = [0,0];
@@ -61,6 +66,8 @@ const brown = "#7c4700";
 const dashedStroke = "10,10";
 const animationFrames = 70;
 const points = [];
+const blueLinePadding = 15;
+const birhombicPadding = 20;
 
 init();
 setInterval('update()', 50);
@@ -100,10 +107,13 @@ function init() {
     // Initialize blue lines
     const blueLine1 = document.getElementById("blue-line-1");
     const blueLine2 = document.getElementById("blue-line-2");
-    const blueCorner = document.getElementById("blue-corner");
+    const blueCorner1 = document.getElementById("blue-corner-1");
+    const blueCorner2 = document.getElementById("blue-corner-2");
     blueLine1.style.stroke = "blue";
     blueLine2.style.stroke = "blue";
-    blueCorner.style.fill = "blue";
+    blueCorner1.style.fill = "blue";
+    blueCorner2.style.fill = "blue";
+    blueCorner2.style.display = "none";
 
     // Initialize big-diagram
     const bigDiagram = document.getElementById("big-diagram");
@@ -278,24 +288,10 @@ function init() {
     bargainingLine.style.strokeOpacity = 0;
 
     const container = document.getElementById("container");
-    const x1label = document.getElementById("x1-label");
-    const b1label = document.getElementById("b1-label");
     const maxPicWidth = (container.width.baseVal.value - diagram.width.baseVal.value);
     const maxPicHeight = (container.height.baseVal.value - diagram.height.baseVal.value);
     const minPicPadding1 = (container.width.baseVal.value-maxPicWidth)/2;
     const minPicPadding2 = (container.height.baseVal.value-maxPicHeight)/2;
-    const b1coord = document.getElementById("b1coord");
-    const b2coord = document.getElementById("b2coord");
-    x1label.style.width = (minPicPadding1-12.5).toString()+"px";
-    b1label.style.width = (minPicPadding1-12.5).toString()+"px";
-    b1coord.style.width = (maxPicWidth/2+26).toString() + "px";
-    b2coord.parentElement.style.top = (container.height.baseVal.value/2-12.5).toString()+"px";
-    b2coord.style.height = (maxPicHeight/2+26).toString() + "px";
-
-    b1coord.addEventListener("mousedown", ()=>{changeQuad1 = true;});
-    b1coord.addEventListener("mouseup", ()=>{changeQuad1 = false; hitZero1 = false; wasPositive1=false;});
-    b2coord.addEventListener("mousedown", ()=>{changeQuad2 = true;});
-    b2coord.addEventListener("mouseup", ()=>{changeQuad2 = false; hitZero2 = false; wasPositive2=false;});
 
     const stop1 = document.getElementById("stop1");
     const stop2 = document.getElementById("stop2");
@@ -318,9 +314,12 @@ function init() {
     region2.style.fill = grayBackground;
     region3.style.fill = "url('#gradient2')";
     region4.style.fill = goldBackground;
+
+    const backdrop = document.getElementById("backdrop");
+    backdrop.style.fill = "#eee";
             
     document.addEventListener('mousedown', (e) => { changeCoords(e); isMouseDown = true; });
-    document.addEventListener('mouseup', () => { isMouseDown = false; });
+    document.addEventListener('mouseup', () => { draggingB1 = false; draggingB2 = false; isMouseDown = false; });
     document.addEventListener('mousemove', (e) => {
         if (isMouseDown) {
             changeCoords(e);
@@ -345,10 +344,10 @@ function init() {
                 case "ArrowDown":
                     x2down = true;
                     break;
-                case "d":
+                case "a":
                     b1up = true;
                     break;
-                case "a":
+                case "d":
                     b1down = true;
                     break;
                 case "w":
@@ -411,10 +410,10 @@ function init() {
             case "ArrowDown":
                 x2down = false;
                 break;
-            case "d":
+            case "a":
                 b1up = false;
                 break;
-            case "a":
+            case "d":
                 b1down = false;
                 break;
             case "w":
@@ -454,6 +453,220 @@ function init() {
     bigPicQuad4a.style.fill = grayBackground;
     bigPicQuad4b.style.fill = "white";
 
+    // initialize birhombic picture
+    const birhombicPic = document.getElementById("birhombic-pic");
+    const brBlueLine1 = document.getElementById("br-blue-line-1");
+    const brBlueLine2 = document.getElementById("br-blue-line-2");
+    const brBlueLine3 = document.getElementById("br-blue-line-3");
+    const brBlueLine4 = document.getElementById("br-blue-line-4");
+    const brBlueLine5 = document.getElementById("br-blue-line-5");
+    const brBlueLine6 = document.getElementById("br-blue-line-6");
+    const brGreenLine1 = document.getElementById("br-green-line-1");
+    const brGreenLine2 = document.getElementById("br-green-line-2");
+    const brGreenLine3 = document.getElementById("br-green-line-3");
+    const brGreenLine4 = document.getElementById("br-green-line-4");
+    const brGreenLine5 = document.getElementById("br-green-line-5");
+    const brGreenLine6 = document.getElementById("br-green-line-6");
+    const brGreenLine7 = document.getElementById("br-green-line-7");
+    const brGreenLine8 = document.getElementById("br-green-line-8");
+    const brGreenLine9 = document.getElementById("br-green-line-9");
+    const brRedLine1 = document.getElementById("br-red-line-1");
+    const brRedLine2 = document.getElementById("br-red-line-2");
+    const brRedLine3 = document.getElementById("br-red-line-3");
+    const brRedLine4 = document.getElementById("br-red-line-4");
+    const brRedLine5 = document.getElementById("br-red-line-5");
+    const brRedLine6 = document.getElementById("br-red-line-6");
+    const brRedLine7 = document.getElementById("br-red-line-7");
+    const brBlueCorner1 = document.getElementById("br-blue-corner-1");
+    const brBlueCorner2 = document.getElementById("br-blue-corner-2");
+    const brBlueCorner3 = document.getElementById("br-blue-corner-3");
+    const brBlueCorner4 = document.getElementById("br-blue-corner-4");
+    const brRowPlayer = document.getElementById("br-row-player");
+    const brColPlayer = document.getElementById("br-col-player");
+    const brRowPlayerPoly = document.getElementById("br-row-player-poly");
+    const brColPlayerPoly = document.getElementById("br-col-player-poly");
+    const brRowRect = document.getElementById("br-row-rect");
+    const brColRect = document.getElementById("br-col-rect");
+
+    const birhombicWidth = birhombicPic.width.baseVal.value;
+    const birhombicHeight = birhombicPic.height.baseVal.value;
+    const birhombicDiagramWidth = birhombicWidth - birhombicPadding*2;
+    const birhombicDiagramHeight = birhombicDiagramWidth*Math.sqrt(3)/4;
+    const birhombicDiagramPadding = (birhombicHeight - birhombicDiagramHeight)/2;
+    const brLineWidth = 5;
+    const starWidth = 20;
+
+    brBlueLine1.style.stroke = "blue";
+    brBlueLine2.style.stroke = "blue";
+    brBlueLine3.style.stroke = "blue";
+    brBlueLine4.style.stroke = "blue";
+    brBlueLine5.style.stroke = "blue";
+    brBlueLine6.style.stroke = "blue";
+    brBlueLine1.style.strokeWidth = brLineWidth;
+    brBlueLine2.style.strokeWidth = brLineWidth;
+    brBlueLine3.style.strokeWidth = brLineWidth;
+    brBlueLine4.style.strokeWidth = brLineWidth;
+    brBlueLine5.style.strokeWidth = brLineWidth;
+    brBlueLine6.style.strokeWidth = brLineWidth;
+    brBlueCorner1.style.fill = "blue";
+    brBlueCorner2.style.fill = "blue";
+    brBlueCorner3.style.fill = "blue";
+    brBlueCorner4.style.fill = "blue";
+    brBlueCorner1.r.baseVal.value = brLineWidth/2;
+    brBlueCorner2.r.baseVal.value = brLineWidth/2;
+    brBlueCorner3.r.baseVal.value = brLineWidth/2;
+    brBlueCorner4.r.baseVal.value = brLineWidth/2;
+    brRedLine1.style.stroke = "red";
+    brRedLine2.style.stroke = "red";
+    brRedLine3.style.stroke = "red";
+    brRedLine4.style.stroke = "red";
+    brRedLine5.style.stroke = "red";
+    brRedLine6.style.stroke = "red";
+    brRedLine7.style.stroke = "red";
+    brRedLine1.style.strokeWidth = brLineWidth;
+    brRedLine2.style.strokeWidth = brLineWidth;
+    brRedLine3.style.strokeWidth = brLineWidth;
+    brRedLine4.style.strokeWidth = brLineWidth;
+    brRedLine5.style.strokeWidth = brLineWidth;
+    brRedLine6.style.strokeWidth = brLineWidth;
+    brRedLine7.style.strokeWidth = brLineWidth;
+    brGreenLine1.style.stroke = "green";
+    brGreenLine2.style.stroke = "green";
+    brGreenLine3.style.stroke = "green";
+    brGreenLine4.style.stroke = "green";
+    brGreenLine5.style.stroke = "green";
+    brGreenLine6.style.stroke = "green";
+    brGreenLine7.style.stroke = "green";
+    brGreenLine8.style.stroke = "green";
+    brGreenLine9.style.stroke = "green";
+    brGreenLine1.style.strokeWidth = brLineWidth;
+    brGreenLine2.style.strokeWidth = brLineWidth;
+    brGreenLine3.style.strokeWidth = brLineWidth;
+    brGreenLine4.style.strokeWidth = brLineWidth;
+    brGreenLine5.style.strokeWidth = brLineWidth;
+    brGreenLine6.style.strokeWidth = brLineWidth;
+    brGreenLine7.style.strokeWidth = brLineWidth;
+    brGreenLine8.style.strokeWidth = brLineWidth;
+    brGreenLine9.style.strokeWidth = brLineWidth;
+
+    brBlueLine1.x1.baseVal.value = birhombicPadding;
+    brBlueLine1.y1.baseVal.value = (birhombicHeight + birhombicDiagramHeight)/2;
+    brBlueLine1.x2.baseVal.value = birhombicWidth - birhombicPadding;
+    brBlueLine1.y2.baseVal.value = (birhombicHeight + birhombicDiagramHeight)/2;
+    brBlueLine2.x1.baseVal.value = birhombicDiagramWidth/4 + birhombicPadding;
+    brBlueLine2.y1.baseVal.value = birhombicDiagramPadding;
+    brBlueLine2.x2.baseVal.value = birhombicDiagramWidth*3/4 + birhombicPadding;
+    brBlueLine2.y2.baseVal.value = birhombicDiagramPadding;
+    brBlueLine3.x1.baseVal.value = birhombicPadding;
+    brBlueLine3.y1.baseVal.value = (birhombicHeight + birhombicDiagramHeight)/2;
+    brBlueLine3.x2.baseVal.value = birhombicDiagramWidth/4 + birhombicPadding;
+    brBlueLine3.y2.baseVal.value = birhombicDiagramPadding;
+    brBlueLine4.x1.baseVal.value = birhombicDiagramWidth/4 + birhombicPadding;
+    brBlueLine4.y1.baseVal.value = birhombicDiagramPadding;
+    brBlueLine4.x2.baseVal.value = birhombicDiagramWidth/2 + birhombicPadding;
+    brBlueLine4.y2.baseVal.value = (birhombicHeight + birhombicDiagramHeight)/2;
+    brBlueLine5.x1.baseVal.value = birhombicDiagramWidth/2 + birhombicPadding;
+    brBlueLine5.y1.baseVal.value = (birhombicHeight + birhombicDiagramHeight)/2;
+    brBlueLine5.x2.baseVal.value = birhombicDiagramWidth*3/4 + birhombicPadding;
+    brBlueLine5.y2.baseVal.value = birhombicDiagramPadding;
+    brBlueLine6.x1.baseVal.value = birhombicDiagramWidth*3/4 + birhombicPadding;
+    brBlueLine6.y1.baseVal.value = birhombicDiagramPadding;
+    brBlueLine6.x2.baseVal.value = birhombicDiagramWidth + birhombicPadding;
+    brBlueLine6.y2.baseVal.value = (birhombicHeight + birhombicDiagramHeight)/2;
+
+    brRedLine1.x1.baseVal.value = birhombicDiagramWidth/8 + birhombicPadding;
+    brRedLine1.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight/2;
+    brRedLine1.x2.baseVal.value = birhombicDiagramWidth/4 + birhombicPadding;
+    brRedLine1.y2.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight*2/3;
+    brRedLine2.x1.baseVal.value = birhombicDiagramWidth/4 + birhombicPadding;
+    brRedLine2.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight*2/3;
+    brRedLine2.x2.baseVal.value = birhombicDiagramWidth/4 + birhombicPadding;
+    brRedLine2.y2.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight;
+    brRedLine3.x1.baseVal.value = birhombicDiagramWidth/2 + birhombicPadding;
+    brRedLine3.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight/3;
+    brRedLine3.x2.baseVal.value = birhombicDiagramWidth/4 + birhombicPadding;
+    brRedLine3.y2.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight*2/3;
+    brRedLine4.x1.baseVal.value = birhombicDiagramWidth/2 + birhombicPadding;
+    brRedLine4.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight/3;
+    brRedLine4.x2.baseVal.value = birhombicDiagramWidth*3/4 + birhombicPadding;
+    brRedLine4.y2.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight*2/3;
+    brRedLine5.x1.baseVal.value = birhombicDiagramWidth*3/4 + birhombicPadding;
+    brRedLine5.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight;
+    brRedLine5.x2.baseVal.value = birhombicDiagramWidth*3/4 + birhombicPadding;
+    brRedLine5.y2.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight*2/3;
+    brRedLine6.x1.baseVal.value = birhombicDiagramWidth*7/8 + birhombicPadding;
+    brRedLine6.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight/2;
+    brRedLine6.x2.baseVal.value = birhombicDiagramWidth*3/4 + birhombicPadding;
+    brRedLine6.y2.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight*2/3;
+    brRedLine7.x1.baseVal.value = birhombicDiagramWidth/2 + birhombicPadding;
+    brRedLine7.y1.baseVal.value = birhombicDiagramPadding;
+    brRedLine7.x2.baseVal.value = birhombicDiagramWidth/2 + birhombicPadding;
+    brRedLine7.y2.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight/3;
+    
+    brGreenLine1.x1.baseVal.value = birhombicPadding;
+    brGreenLine1.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight;
+    brGreenLine1.x2.baseVal.value = birhombicDiagramWidth/4 + birhombicPadding;
+    brGreenLine1.y2.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight*2/3;
+    brGreenLine2.x1.baseVal.value = birhombicDiagramWidth/4 + birhombicPadding;
+    brGreenLine2.y1.baseVal.value = birhombicDiagramPadding;
+    brGreenLine2.x2.baseVal.value = birhombicDiagramWidth/4 + birhombicPadding;
+    brGreenLine2.y2.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight*2/3;
+    brGreenLine3.x1.baseVal.value = birhombicDiagramWidth/2 + birhombicPadding;
+    brGreenLine3.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight;
+    brGreenLine3.x2.baseVal.value = birhombicDiagramWidth/4 + birhombicPadding;
+    brGreenLine3.y2.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight*2/3;
+    brGreenLine4.x1.baseVal.value = birhombicDiagramWidth/2 + birhombicPadding;
+    brGreenLine4.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight/3;
+    brGreenLine4.x2.baseVal.value = birhombicDiagramWidth/4 + birhombicPadding;
+    brGreenLine4.y2.baseVal.value = birhombicDiagramPadding;
+    brGreenLine5.x1.baseVal.value = birhombicDiagramWidth/2 + birhombicPadding;
+    brGreenLine5.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight/3;
+    brGreenLine5.x2.baseVal.value = birhombicDiagramWidth/2 + birhombicPadding;
+    brGreenLine5.y2.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight;
+    brGreenLine6.x1.baseVal.value = birhombicDiagramWidth/2 + birhombicPadding;
+    brGreenLine6.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight;
+    brGreenLine6.x2.baseVal.value = birhombicDiagramWidth*3/4 + birhombicPadding;
+    brGreenLine6.y2.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight*2/3;
+    brGreenLine7.x1.baseVal.value = birhombicDiagramWidth/2 + birhombicPadding;
+    brGreenLine7.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight/3;
+    brGreenLine7.x2.baseVal.value = birhombicDiagramWidth*3/4 + birhombicPadding;
+    brGreenLine7.y2.baseVal.value = birhombicDiagramPadding;
+    brGreenLine8.x1.baseVal.value = birhombicDiagramWidth*3/4 + birhombicPadding;
+    brGreenLine8.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight*2/3;
+    brGreenLine8.x2.baseVal.value = birhombicDiagramWidth*3/4 + birhombicPadding;
+    brGreenLine8.y2.baseVal.value = birhombicDiagramPadding;
+    brGreenLine9.x1.baseVal.value = birhombicDiagramWidth*3/4 + birhombicPadding;
+    brGreenLine9.y1.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight*2/3;
+    brGreenLine9.x2.baseVal.value = birhombicDiagramWidth + birhombicPadding;
+    brGreenLine9.y2.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight;
+
+    brBlueCorner1.cx.baseVal.value = birhombicPadding;
+    brBlueCorner1.cy.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight;
+    brBlueCorner2.cx.baseVal.value = birhombicDiagramWidth/4 + birhombicPadding;
+    brBlueCorner2.cy.baseVal.value = birhombicDiagramPadding;
+    brBlueCorner3.cx.baseVal.value = birhombicDiagramWidth*3/4 + birhombicPadding;
+    brBlueCorner3.cy.baseVal.value = birhombicDiagramPadding;
+    brBlueCorner4.cx.baseVal.value = birhombicDiagramWidth + birhombicPadding;
+    brBlueCorner4.cy.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight;
+
+    brRowRect.width.baseVal.value = starWidth;
+    brRowRect.height.baseVal.value = starWidth;
+    let points = "";
+    for (let i = 0; i < 5; i++) {
+        points = points + (starWidth/2*Math.cos(2*PI*i*2/5 - PI/2) + starWidth/2).toString() + ","
+                        + (starWidth/2*Math.sin(2*PI*i*2/5 - PI/2) + starWidth/2).toString() + " ";
+    }
+    brRowPlayerPoly.setAttribute("points",points);
+    brColPlayer.width.baseVal.value = starWidth;
+    brColPlayer.height.baseVal.value = starWidth;
+    points = "";
+    for (let i = 0; i < 5; i++) {
+        points = points + (starWidth/2*Math.cos(2*PI*i*2/5 + PI/2) + starWidth/2).toString() + ","
+                        + (starWidth/2*Math.sin(2*PI*i*2/5 + PI/2) + starWidth/2).toString() + " ";
+    }
+    brColPlayerPoly.setAttribute("points",points);
+    
+
     const canvas = document.getElementById("canvas");
     canvas.getContext("2d", { willReadFrequently: true});
 
@@ -480,114 +693,130 @@ function init() {
 
 function update() {
     const error = 0.00001;
-    const x1coord = document.getElementById("x1coord");
-    const x2coord = document.getElementById("x2coord");
-    const b1coord = document.getElementById("b1coord");
-    const b2coord = document.getElementById("b2coord");
 
-    if (Math.abs(+x1coord.value - Math.round(+x1coord.value*2)/2) < 0.05 && !isMouseDown && !x1up && !x1down && x1V == 0 && !enRoute) {
-        x1coord.value = Math.round(+x1coord.value*2)/2;
+    if (Math.abs(coords[0] - Math.round(coords[0]*2)/2) < 0.05 && !isMouseDown && !x1up && !x1down && x1V == 0 && !enRoute) {
+        coords[0] = Math.round(coords[0]*2)/2;
+        updateRequired = true;
     }
-    if (Math.abs(+x2coord.value - Math.round(+x2coord.value*2)/2) < 0.05 && !isMouseDown && !x2up && !x2down && x2V == 0 && !enRoute) {
-        x2coord.value = Math.round(+x2coord.value*2)/2;
+    if (Math.abs(coords[1] - Math.round(coords[1]*2)/2) < 0.05 && !isMouseDown && !x2up && !x2down && x2V == 0 && !enRoute) {
+        coords[1] = Math.round(coords[1]*2)/2;
+        updateRequired = true;
     }
-    if (Math.abs(+b1coord.value - Math.round(+b1coord.value)) < 0.05 && !b1up && !b1down && b1V == 0 && !enRoute) {
-        b1coord.value = Math.round(+b1coord.value);
+    if (Math.abs(coords[2] - Math.round(coords[2])) < 0.05 && !b1up && !b1down && b1V == 0 && !enRoute) {
+        coords[2] = Math.round(coords[2]);
+        updateRequired = true;
     }
-    if (Math.abs(+b2coord.value - Math.round(+b2coord.value)) < 0.05 && !b2up && !b2down && b2V == 0 && !enRoute) {
-        b2coord.value = Math.round(+b2coord.value);
+    if (Math.abs(coords[3] - Math.round(coords[3])) < 0.05 && !b2up && !b2down && b2V == 0 && !enRoute) {
+        coords[3] = Math.round(coords[3]);
+        updateRequired = true;
     }
 
     if (x1up) {
-        x1coord.value = (+x1coord.value + 5*+x1coord.step) % 6;
+        coords[0] = (coords[0] + 0.05) % 6;
+        updateRequired = true;
     }
     if (x1down) {
-        x1coord.value = (+x1coord.value - 5*+x1coord.step + 6) % 6;
+        coords[0] = (coords[0] - 0.05 + 6) % 6;
+        updateRequired = true;
     }
     if (x2up) {
-        x2coord.value = (+x2coord.value + 5*+x2coord.step) % 6;
+        coords[1] = (coords[1] + 0.05) % 6;
+        updateRequired = true;
     }
     if (x2down) {
-        x2coord.value = (+x2coord.value - 5*+x2coord.step + 6) % 6;
+        coords[1] = (coords[1] - 0.05 + 6) % 6;
+        updateRequired = true;
     }
     if (b1up) {
-        b1coord.value = +b1coord.value + 10*+b1coord.step;
+        coords[2] = coords[2] + 0.1;
+        backgroundOutOfDate = true;
+        updateRequired = true;
     }
     if (b1down) {
-        // if (+b1coord.value == 10*+b1coord.step) crossBlue(true);
-        b1coord.value = +b1coord.value - 10*+b1coord.step;
+        coords[2] = coords[2] - 0.1;
+        backgroundOutOfDate = true;
+        updateRequired = true;
     }
     if (b2up) {
-        b2coord.value = +b2coord.value + 10*+b2coord.step;
+        coords[3] = coords[3] + 0.1;
+        backgroundOutOfDate = true;
+        updateRequired = true;
     }
     if (b2down) {
-        // if (+b2coord.value == 10*+b2coord.step) crossBlue(false);
-        b2coord.value = +b2coord.value - 10*+b2coord.step;
+        coords[3] = coords[3] - 0.1;
+        updateRequired = true;
+        backgroundOutOfDate = true;
     }
 
-    if (x1V != 0) x1coord.value = (+x1coord.value + x1V + 6) % 6;
-    if (x2V != 0) x2coord.value = (+x2coord.value + x2V + 6) % 6;
-    b1coord.value = +b1coord.value + b1V;
-    if (+b1coord.value == 0 && b1V != 0) {
+    if (x1V != 0) {
+        coords[0] = (coords[0] + x1V + 6) % 6;
+        updateRequired = true;
+    }
+    if (x2V != 0) {
+        coords[1] = (coords[1] + x2V + 6) % 6;
+        updateRequired = true;
+    }
+    coords[2] += b1V;
+    if (b1V != 0) {
+        backgroundOutOfDate = true;
+        updateRequired = true;
+    }
+    if (coords[2] <= 0 && b1V != 0) {
         crossBlue(true);
         b1V = -b1V;
-    } else if (+b1coord.value == 6 && b1V != 0) {
+    } else if (coords[2] >= 6 && b1V != 0) {
         b1V = -b1V;
-        b1coord.value = +b1coord.value + b1V;
+        coords[2] = coords[2] + b1V;
     }
-    b2coord.value = +b2coord.value + b2V;
-    if (+b2coord.value == 0 && b2V != 0) {
+    coords[3] = coords[3] + b2V;
+    if (b2V != 0) {
+        backgroundOutOfDate = true;
+        updateRequired = true;
+    }
+    if (coords[3] <= 0 && b2V != 0) {
         crossBlue(false);
         b2V = -b2V;
-    } else if (+b2coord.value == 6 && b2V != 0) {
+    } else if (coords[3] >= 6 && b2V != 0) {
         b2V = -b2V;
-        b2coord.value = +b2coord.value + b2V;
+        coords[3] = coords[3] + b2V;
     }
+    fixCoords();
 
-    if (changeQuad1 && +b1coord.value != 0 && coords[2] == 0) {
-        hitZero1 = true;
-    }
-    if (changeQuad2 && +b2coord.value != 0 && coords[3] == 0) {
-        hitZero2 = true;
-    }
-    if (changeQuad1 && +b1coord.value == 0 && coords[2] != 0) {
-        wasPositive1 = true;
-    }
-    if (changeQuad2 && +b2coord.value == 0 && coords[3] != 0) {
-        wasPositive2 = true;
-    }
-    if (wasPositive1 && hitZero1 && changeQuad1) {
-        crossBlue(true);
-        wasPositive1 = false;
-    } else if (wasPositive2 && hitZero2 && changeQuad2) {
-        crossBlue(false);
-        wasPositive2 = false;
-    }
+    // if (changeQuad1 && +b1coord.value != 0 && coords[2] == 0) {
+    //     hitZero1 = true;
+    // }
+    // if (changeQuad2 && +b2coord.value != 0 && coords[3] == 0) {
+    //     hitZero2 = true;
+    // }
+    // if (changeQuad1 && +b1coord.value == 0 && coords[2] != 0) {
+    //     wasPositive1 = true;
+    // }
+    // if (changeQuad2 && +b2coord.value == 0 && coords[3] != 0) {
+    //     wasPositive2 = true;
+    // }
+    // if (wasPositive1 && hitZero1 && changeQuad1) {
+    //     crossBlue(true);
+    //     wasPositive1 = false;
+    // } else if (wasPositive2 && hitZero2 && changeQuad2) {
+    //     crossBlue(false);
+    //     wasPositive2 = false;
+    // }
 
     if (enRoute) {
         animTime++;
-        b1coord.value = animTime/animationFrames*destination[2] + (1 - animTime/animationFrames)*startPoint[2];
-        b2coord.value = animTime/animationFrames*destination[3] + (1 - animTime/animationFrames)*startPoint[3];
-        x1coord.value = fromNearestRed(startPoint[4], (animTime/animationFrames*destination[0] + (1 - animTime/animationFrames)*startPoint[0])/(6 - +b1coord.value));
-        x2coord.value = fromNearestRed(startPoint[5], (animTime/animationFrames*destination[1] + (1 - animTime/animationFrames)*startPoint[1])/(6 - +b2coord.value));
+        coords[2] = animTime/animationFrames*destination[2] + (1 - animTime/animationFrames)*startPoint[2];
+        coords[3] = animTime/animationFrames*destination[3] + (1 - animTime/animationFrames)*startPoint[3];
+        coords[0] = fromNearestRed(startPoint[4], (animTime/animationFrames*destination[0] + (1 - animTime/animationFrames)*startPoint[0])/(6 - coords[2]));
+        coords[1] = fromNearestRed(startPoint[5], (animTime/animationFrames*destination[1] + (1 - animTime/animationFrames)*startPoint[1])/(6 - coords[3]));
+        backgroundOutOfDate = true;
+        updateRequired = true;
         if (animTime == animationFrames)
             enRoute = false;
     }
 
-    let tempCoords = [+(x1coord.value), +(x2coord.value), +(b1coord.value), +(b2coord.value)];
-    if (x1coord.value == 0) tempCoords[0] += 6;
-    if (x2coord.value == 0) tempCoords[1] += 6;
-    if (quad == 2 || quad == 3) {
-        tempCoords[0] = tempCoords[0] - 6;
-        if (tempCoords[0] == 0) tempCoords[0] = -6;
+    if (fixImageSize && updateRequired) {
+        updateDiagramGrid();
     }
-    if (quad == 3 || quad == 4) {
-        tempCoords[1] = tempCoords[1] - 6;
-        if (tempCoords[1] == 0) tempCoords[1] = -6;
-    }
-    if (fixImageSize && [...tempCoords] != [...coords]) updateDiagramGrid();
-    if (tempCoords[2] != coords[2] || tempCoords[3] != coords[3]) backgroundOutOfDate = true;
-    coords = tempCoords;
 
     [matrixA,matrixB] = coordsToMatrices(...coords);
     const a1 = document.getElementById("a1");
@@ -624,31 +853,16 @@ function update() {
     const colReturnsBargaining1 = document.getElementById("col-return-bargaining-1");
     const rowReturnsBargaining2 = document.getElementById("row-return-bargaining-2");
     const colReturnsBargaining2 = document.getElementById("col-return-bargaining-2");
-    rowX.innerHTML = (+x1coord.value).toFixed(1);
-    rowB.innerHTML = (+b1coord.value).toFixed(1);
-    colX.innerHTML = (+x2coord.value).toFixed(1);
-    colB.innerHTML = (+b2coord.value).toFixed(1);
-    let x1Offset = 0;
-    let x2Offset = 0;
-    switch (quad) {
-        case 2:
-            x1Offset = -6;
-            break;
-        case 3:
-            x1Offset = -6;
-            x2Offset = -6;
-            break;
-        case 4:
-            x2Offset = -6;
-            break;
-    }
-    const [rowM, colM] = coordsToMatrices(+x1coord.value + x1Offset,
-                                                +x2coord.value + x2Offset,
-                                                +b1coord.value != 0 ? b1coord.value : b1coord.value + error*2,
-                                                +b2coord.value != 0 ? b2coord.value : b2coord.value + error*2);
+    rowX.innerHTML = coords[0].toFixed(1);
+    rowB.innerHTML = coords[2].toFixed(1);
+    colX.innerHTML = coords[1].toFixed(1);
+    colB.innerHTML = coords[3].toFixed(1);
+    const [rowM, colM] = coordsToMatrices(coords[0], coords[1],
+                                          coords[2] != 0 ? coords[2] : coords[2] + error*2,
+                                          coords[3] != 0 ? coords[3] : coords[3] + error*2);
     rowReturns.innerHTML = payoffModified(rowM, colM).toFixed(1);
     colReturns.innerHTML = payoffModified(flip(colM), flip(rowM)).toFixed(1);
-    if (+x1coord.value < 3 && +x2coord.value < 3) {
+    if (coords[0] < 3 && coords[1] < 3) {
         rowMixedReturns.innerHTML = " (" + payoff(rowM, colM).toFixed(1) + ")";
         colMixedReturns.innerHTML = " (" + payoff(flip(colM), flip(rowM)).toFixed(1) + ")";
     } else {
@@ -1380,8 +1594,8 @@ function update() {
 
     const diagram = document.getElementById("diagram");
     const diagramWidth = diagram.width.baseVal.value;
-    const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*(6 - +b1coord.value)/6;
-    const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*(6 - +b2coord.value)/6;
+    const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*(6 - coords[2])/6;
+    const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*(6 - coords[3])/6;
     const rowMax = Math.max(...matrixA) - error;
     const colMax = Math.max(...matrixB) - error;
     const picPadding1 = (container.width.baseVal.value-picWidth)/2;
@@ -1442,7 +1656,7 @@ function update() {
     } else {
         point4Big.style.opacity = 0;
     }
-    if (0 < x1coord.value && x1coord.value < 3 && 0 < x2coord.value && x2coord.value < 3 && b1coord.value < 6 && b2coord.value < 6) {
+    if (0 < coords[0] && coords[0] < 3 && 0 < coords[1] && coords[1] < 3 && coords[2] < 6 && coords[3] < 6) {
         const mixedRow = mixedPayoff(matrixA);
         const mixedCol = mixedPayoff(matrixB);
         point5Big.style = "fill:" + mixedColor;
@@ -1545,7 +1759,7 @@ function update() {
     let arrowA = "url(#arrow)";
     let arrowB = "url(#arrow)";
 
-    if (changeQuad1 && (wasPositive1 || (hitZero1 && b1coord.value != 0))) {
+    if (changeQuad1 && (wasPositive1 || (hitZero1 && coords[2] != 0))) {
         arrow1.style.stroke = "blue";
         arrow2.style.stroke = "blue";
         arrow3.style.stroke = "blue";
@@ -1560,7 +1774,7 @@ function update() {
         arrow4.style.stroke = "black";
         arrow5.style.stroke = "black";
         arrow6.style.stroke = "black";
-    } if (changeQuad2 && (wasPositive2 || (hitZero2 && b2coord.value != 0))) {
+    } if (changeQuad2 && (wasPositive2 || (hitZero2 && coords[3] != 0))) {
         arrow7.style.stroke = "blue";
         arrow8.style.stroke = "blue";
         arrow9.style.stroke = "blue";
@@ -1634,13 +1848,6 @@ function update() {
         arrow7.style.markerEnd = "";
         arrow8.style.markerEnd = "";
     }
-
-    x1coord.style.width = (picWidth+26).toString()+"px";
-    x1coord.style.left = (picPadding1-diagram.width.baseVal.value/2).toString()+"px";
-    x2coord.style.height = (picHeight+26).toString()+"px";
-    x2coord.parentElement.style.top = (picPadding2-12.5).toString()+"px";
-    const x2label = document.getElementById("x2-label");
-    x2label.style.top = (picPadding2 - diagramWidth/2).toString() + "px";
 
     const wholeFigure = document.getElementById("whole-figure");
     const edgeFigure = document.getElementById("edge-figure");
@@ -1879,6 +2086,12 @@ function update() {
     region4.width.baseVal.value = picWidth/2;
     region4.height.baseVal.value = picHeight/2;
 
+    const backdrop = document.getElementById("backdrop");
+    backdrop.x.baseVal.value = container.width.baseVal.value/2 - diagramWidth*3;
+    backdrop.y.baseVal.value = container.height.baseVal.value/2 - diagramWidth*3;
+    backdrop.width.baseVal.value = diagramWidth*6;
+    backdrop.height.baseVal.value = diagramWidth*6;
+
     const red1 = document.getElementById("red1");
     const red2 = document.getElementById("red2");
     const red3 = document.getElementById("red3");
@@ -1963,22 +2176,9 @@ function update() {
     picCorner4.cx.baseVal.value = picWidth+picPadding1;
     picCorner4.cy.baseVal.value = picHeight+picPadding2;
 
-    // update blue lines
-    const blueLine1 = document.getElementById("blue-line-1");
-    const blueLine2 = document.getElementById("blue-line-2");
-    const blueCorner = document.getElementById("blue-corner");
-    const blueLinePadding = 15;
-    blueLine1.x1.baseVal.value = picWidth + picPadding1 + blueLinePadding;
-    blueLine1.y1.baseVal.value = picHeight + picPadding2 + blueLinePadding;
-    blueLine1.x2.baseVal.value = picWidth + picPadding1 + blueLinePadding;
-    blueLine1.y2.baseVal.value = picPadding2;
-    blueLine2.x1.baseVal.value = picWidth + picPadding1 + blueLinePadding;
-    blueLine2.y1.baseVal.value = picHeight + picPadding2 + blueLinePadding;
-    blueLine2.x2.baseVal.value = picPadding1;
-    blueLine2.y2.baseVal.value = picHeight + picPadding2 + blueLinePadding;
-    blueCorner.cx.baseVal.value = picWidth + picPadding1 + blueLinePadding;
-    blueCorner.cy.baseVal.value = picHeight + picPadding2 + blueLinePadding;
+    updateBlueLines();
 
+    // update big picture
     const bigPicPoint1 = document.getElementById("big-pic-point1");
     const bigPicPoint2 = document.getElementById("big-pic-point2");
     const bigPicPoint3 = document.getElementById("big-pic-point3");
@@ -1990,22 +2190,22 @@ function update() {
     const bigPicPoint9 = document.getElementById("big-pic-point9");
     const pointObjects = [ bigPicPoint1, bigPicPoint2, bigPicPoint3, bigPicPoint4, bigPicPoint5, bigPicPoint6, bigPicPoint7, bigPicPoint8, bigPicPoint9 ];
     points.length = 0;
-    points.push([ quad, +x1coord.value % 6, +x2coord.value % 6 ]);
-    if (+b1coord.value == 0) {
+    points.push([ quad, coords[0] % 6, coords[1] % 6 ]);
+    if (coords[2] == 0) {
         let redLine = Math.round((points[0][1]+1)/2)*2-1;
         points.push([ qOverBlue(true, quad, points[0][1], points[0][2]), (redLine - (points[0][1] - redLine) + 6) % 6, points[0][2] ]);
-        if (Number.isInteger(+x1coord.value/2)) {
+        if (Number.isInteger(coords[0]/2)) {
             let redLine = Math.round((points[1][1]+1)/2)*2-1;
             points.push([ qOverBlue(true, points[1][0], points[1][1], points[1][2]), (redLine - (points[1][1] - redLine) + 6) % 6, points[1][2] ]);
         }
     }
-    if (+b2coord.value == 0) {
+    if (coords[2] == 0) {
         const length = points.length;
         for (let i = 0; i < length; i++) {
             let redLine = Math.round((points[i][2]+1)/2)*2-1;
             points.push([ qOverBlue(false, points[i][0], points[i][1], points[i][2]), points[i][1], (redLine - (points[i][2] - redLine) + 6) % 6 ]);
         }
-        if (Number.isInteger(+x2coord.value/2)) {
+        if (Number.isInteger(coords[1]/2)) {
             for (let i = length; i < 2*length; i++) {
                 let redLine = Math.round((points[i][2]+1)/2)*2-1;
                 points.push([ qOverBlue(false, points[i][0], points[i][1], points[i][2]), points[i][1], (redLine - (points[i][2] - redLine) + 6) % 6 ]);
@@ -2013,7 +2213,7 @@ function update() {
         }
     }
     if (draggingInBigPic && isMouseDown) {
-        placePoint(bigPicPoint1, quad, +x1coord.value, +x2coord.value);
+        placePoint(bigPicPoint1, quad, coords[0], coords[1]);
     } else {
         placePoint(pointObjects[0], points[0][0], points[0][1], points[0][2]);
         draggingInBigPic = false;
@@ -2027,7 +2227,32 @@ function update() {
         }
     }
 
-    if (backgroundOutOfDate && (+b1coord.value != 6 && +b2coord.value != 6 || fixImageSize) && viewMode != 0) {
+    // update birhombic picture
+    const birhombicPic = document.getElementById("birhombic-pic");
+    const brRowPlayer = document.getElementById("br-row-player");
+    const brColPlayer = document.getElementById("br-col-player");
+    const brRowRect = document.getElementById("br-row-rect");
+
+    const birhombicWidth = birhombicPic.width.baseVal.value;
+    const birhombicHeight = birhombicPic.height.baseVal.value;
+    const birhombicDiagramWidth = birhombicWidth - birhombicPadding*2;
+    const birhombicDiagramHeight = birhombicDiagramWidth*Math.sqrt(3)/4;
+    const birhombicDiagramPadding = (birhombicHeight - birhombicDiagramHeight)/2;
+    const starWidth = brRowRect.width.baseVal.value;
+
+    let [brRowX, brRowY] = coordsToRhombic(true, coords[0], coords[2], quad);
+    brRowX = brRowX*birhombicDiagramWidth/4 + birhombicDiagramWidth/2 + birhombicPadding - starWidth/2;
+    brRowY = birhombicDiagramHeight - brRowY*birhombicDiagramHeight/Math.sqrt(3) + birhombicDiagramPadding - starWidth/2;
+    brRowPlayer.x.baseVal.value = brRowX;
+    brRowPlayer.y.baseVal.value = brRowY;
+    let [brColX, brColY] = coordsToRhombic(false, coords[1], coords[3], quad);
+    brColX = brColX*birhombicDiagramWidth/4 + birhombicDiagramWidth/2 + birhombicPadding - starWidth/2;
+    brColY = birhombicDiagramHeight - brColY*birhombicDiagramHeight/Math.sqrt(3) + birhombicDiagramPadding - starWidth/2;
+    brColPlayer.x.baseVal.value = brColX;
+    brColPlayer.y.baseVal.value = brColY;
+
+    // update canvas
+    if (backgroundOutOfDate && (coords[2] != 6 && coords[3] != 6 || fixImageSize) && viewMode != 0) {
         const foreignObject = document.getElementById("canvasForeignObject");
         const canvas = document.getElementById("canvas");
 
@@ -2040,31 +2265,15 @@ function update() {
         canvas.height = picHeight;
 
         if (time % 3 == 0 || switchMode) {
-            // get the appropriate values for the density plot
-            let x1Offset = 0;
-            let x2Offset = 0;
-            switch (quad) {
-                case 2:
-                    x1Offset = -6;
-                    break;
-                case 3:
-                    x1Offset = -6;
-                    x2Offset = -6;
-                    break;
-                case 4:
-                    x2Offset = -6;
-                    break;
-            }
-            
             valuesX = 6*Math.round(picWidth/30);
             valuesY = 6*Math.round(picHeight/30);
             values = [];
             for (let j = 0; j < valuesY; j++) {
                 values.push([]);
                 for (let i = 0; i < valuesX; i++) {
-                    const [rowM, colM] = coordsToMatrices((i+0.5)/valuesX*6 + x1Offset, (valuesY-j-0.5)/valuesY*6 + x2Offset,
-                                                        +b1coord.value != 0 ? b1coord.value : b1coord.value + error*2,
-                                                        +b2coord.value != 0 ? b2coord.value : b2coord.value + error*2);
+                    const [rowM, colM] = coordsToMatrices((i+0.5)/valuesX*6, (valuesY-j-0.5)/valuesY*6,
+                                                        coords[2] != 0 ? coords[2] : coords[2] + error*2,
+                                                        coords[3] != 0 ? coords[3] : coords[3] + error*2);
                     switch (viewMode) {
                         case 1:
                             values[j].push(payoff(rowM, colM));
@@ -2142,9 +2351,9 @@ function update() {
                     if (n != 0 && m != valuesY-1 && Math.abs(values[m-1][n+1] - values[m][n]) > jumpSize) boundary = true;
 
                     if (boundary) {
-                        const [rowM, colM] = coordsToMatrices(i/canvas.width*6 + x1Offset, (canvas.height-j)/canvas.height*6 + x2Offset,
-                                                            +b1coord.value != 0 ? b1coord.value : b1coord.value + error*2,
-                                                            +b2coord.value != 0 ? b2coord.value : b2coord.value + error*2);
+                        const [rowM, colM] = coordsToMatrices(i/canvas.width*6, (canvas.height-j)/canvas.height*6,
+                                                            coords[2] != 0 ? coords[2] : coords[2] + error*2,
+                                                            coords[3] != 0 ? coords[3] : coords[3] + error*2);
                         switch (viewMode) {
                             case 1:
                                 value = payoff(rowM, colM);
@@ -2236,40 +2445,34 @@ function qOverBlue(p1, q0, x1, x2) {
 }
 
 function crossBlue(p1) {
-    quad = qOverBlue(p1, quad, +x1coord.value, +x2coord.value);
+    quad = qOverBlue(p1, quad, coords[0], coords[1]);
     updateBackground();
     if (p1) {
-        const x1coord = document.getElementById("x1coord");
-        let redLine = Math.round((+x1coord.value+1)/2)*2-1;
-        x1coord.value = (redLine - (+x1coord.value - redLine) + 6) % 6;
+        let redLine = Math.round((coords[0]+1)/2)*2-1;
+        coords[0] = (redLine - (coords[0] - redLine) + 6) % 6;
     } else {
-        const x2coord = document.getElementById("x2coord");
-        let redLine = Math.round((+x2coord.value+1)/2)*2-1;
-        x2coord.value = (redLine - (+x2coord.value - redLine) + 6) % 6;
+        let redLine = Math.round((coords[1]+1)/2)*2-1;
+        coords[1] = (redLine - (coords[1] - redLine) + 6) % 6;
     }
 }
 
 function crossRed(p1) {
     if (p1) {
-        const x1coord = document.getElementById("x1coord");
-        let redLine = Math.round((+x1coord.value+1)/2)*2-1;
-        x1coord.value = (redLine - (+x1coord.value - redLine) + 6) % 6;
+        let redLine = Math.round((coords[0]+1)/2)*2-1;
+        coords[0] = (redLine - (coords[0] - redLine) + 6) % 6;
     } else {
-        const x2coord = document.getElementById("x2coord");
-        let redLine = Math.round((+x2coord.value+1)/2)*2-1;
-        x2coord.value = (redLine - (+x2coord.value - redLine) + 6) % 6;
+        let redLine = Math.round((coords[1]+1)/2)*2-1;
+        coords[1] = (redLine - (coords[1] - redLine) + 6) % 6;
     }
 }
 
 function crossGreen(p1) {
     if (p1) {
-        const x1coord = document.getElementById("x1coord");
-        let greenLine = Math.round(+x1coord.value/2)*2;
-        x1coord.value = (greenLine - (+x1coord.value - greenLine) + 6) % 6;
+        let greenLine = Math.round(coords[0]/2)*2;
+        coords[0] = (greenLine - (coords[0] - greenLine) + 6) % 6;
     } else {
-        const x2coord = document.getElementById("x2coord");
-        let greenLine = Math.round(+x2coord.value/2)*2;
-        x2coord.value = (greenLine - (+x2coord.value - greenLine) + 6) % 6;
+        let greenLine = Math.round(coords[1]/2)*2;
+        coords[1] = (greenLine - (coords[1] - greenLine) + 6) % 6;
     }
 }
 
@@ -2374,6 +2577,7 @@ function randomGame() {
 
 function updateBackground() {
     backgroundOutOfDate = true;
+    updateRequired = true;
 
     const region1 = document.getElementById("region1");
     const region2 = document.getElementById("region2");
@@ -2541,9 +2745,21 @@ function XBtoMatrix([x,b]) {
 }
 
 function coordsToMatrices(x1,x2,b1,b2) {
-    if (-6 <= x1 && x1 <= 6 && -6 <= x2 && x2 <= 6 && 
+    let x1new = x1;
+    let x2new = x2;
+    if (quad == 2 || quad == 3) {
+        x1new -= 6;
+    } else if (x1 == 0) {
+        x1new += 6;
+    }
+    if (quad == 3 || quad == 4) {
+        x2new -= 6;
+    } else if (x2 == 0) {
+        x2new += 6;
+    }
+    if (-6 <= x1new && x1new <= 6 && -6 <= x2new && x2new <= 6 && 
          0 <= b1 && b1 <= 6 && 0 <= b2 && b2 <= 6) {
-        return [XBtoMatrix([-x1,b1]), flip(XBtoMatrix([-x2,b2]))];
+        return [XBtoMatrix([-x1new,b1]), flip(XBtoMatrix([-x2new,b2]))];
     }
     else {
         console.log("error");
@@ -2552,11 +2768,56 @@ function coordsToMatrices(x1,x2,b1,b2) {
 }
 
 function changeCoords(e) {
-    const x1coord = document.getElementById("x1coord");
-    const x2coord = document.getElementById("x2coord");
-    const b1coord = document.getElementById("b1coord");
-    const b2coord = document.getElementById("b2coord");
-    if ((+b1coord.value == 6 || +b2coord.value == 6) && !fixImageSize) {
+    if (!isMouseDown) {
+        const x = e.pageX;
+        const y = e.pageY;
+        const blueCorner1 = document.getElementById("blue-corner-1");
+        const blueCorner2 = document.getElementById("blue-corner-2");
+        const blueLine1 = document.getElementById("blue-line-1");
+        const blueLine2 = document.getElementById("blue-line-2");
+        const elements = document.elementsFromPoint(x,y);
+        if (!fixImageSize) {
+            if (elements.includes(blueCorner1)) {
+                draggingB1 = true;
+                draggingB2 = true;
+            } else if (elements.includes(blueLine1)) {
+                draggingB1 = true;
+            } else if (elements.includes(blueLine2)) {
+                draggingB2 = true;
+            }
+        } else {
+            if (elements.includes(blueCorner1) || (elements.includes(blueLine2) && coords[2] == 0 && coords[3] == 0)) {
+                draggingB2 = true;
+            }
+            if (elements.includes(blueCorner2) || (elements.includes(blueLine1) && coords[2] == 0 && coords[3] == 0)) {
+                draggingB1 = true;
+            }
+        }
+    }
+    if (draggingB1 || draggingB2) {
+        const container = document.getElementById("container");
+        const diagram = document.getElementById("diagram");
+        if (draggingB1) {
+            const x = e.pageX;
+            const containerWidth = container.width.baseVal.value;
+            const diagramWidth = diagram.width.baseVal.value;
+            coords[2] = 6 - 2*(x - containerWidth/2 - blueLinePadding) / diagramWidth;
+        }
+        if (draggingB2) {
+            const y = e.pageY;
+            const containerHeight = container.height.baseVal.value;
+            const diagramHeight = diagram.height.baseVal.value;
+            coords[3] = 6 - 2*(y - containerHeight/2 - blueLinePadding) / diagramHeight;
+        }
+        if (fixImageSize) {
+            fixCoords();
+            updateDiagramGrid();
+            updateBlueLines();
+        }
+        return;
+    }
+
+    if ((coords[2] == 6 || coords[3] == 6) && !fixImageSize) {
         const container = document.getElementById("container");
         const edgeFig = document.getElementById("edge-figure");
         const rect1 = container.getBoundingClientRect();
@@ -2564,12 +2825,12 @@ function changeCoords(e) {
         const x = e.pageX;
         const y = e.pageY;
         const margins = 20;
-        if (+b2coord.value == 6 && rect2.left-margins <= x && rect2.right+margins >= x && rect1.top+rect1.width/2-margins <= y && rect1.top+rect1.width/2+margins >= y) {
-            x1coord.value = (x - rect2.left) / rect2.width * 6;
+        if (coords[3] == 6 && rect2.left-margins <= x && rect2.right+margins >= x && rect1.top+rect1.width/2-margins <= y && rect1.top+rect1.width/2+margins >= y) {
+            coords[0] = (x - rect2.left) / rect2.width * 6;
             enRoute = false;
         }
-        if (+b1coord.value == 6 && rect2.top-margins <= y && rect2.bottom+margins >= y && rect1.left+rect1.height/2-margins <= x && rect1.left+rect1.height/2+margins >= x) {
-            x2coord.value = 6 - (y - rect2.top) / rect2.height * 6;
+        if (coords[2] == 6 && rect2.top-margins <= y && rect2.bottom+margins >= y && rect1.left+rect1.height/2-margins <= x && rect1.left+rect1.height/2+margins >= x) {
+            coords[1] = 6 - (y - rect2.top) / rect2.height * 6;
             enRoute = false;
         }
     }
@@ -2582,11 +2843,11 @@ function changeCoords(e) {
         const newX2 = (1 - relativeY1 / rect.height) * 6;
         if (-0.1 <= newX1 && newX1 <= 6.1 && -0.1 <= newX2 && newX2 <= 6.1) {
             if (isMouseDown) {
-                x1coord.value = newX1;
-                x2coord.value = newX2;
+                coords[0] = newX1;
+                coords[1] = newX2;
             } else {
-                x1coord.value = Math.round(newX1*6)/6;
-                x2coord.value = Math.round(newX2*6)/6;
+                coords[0] = Math.round(newX1*6)/6;
+                coords[1] = Math.round(newX2*6)/6;
             }
             enRoute = false;
         }
@@ -2633,42 +2894,38 @@ function changeCoords(e) {
             else quad = 2;
             const newX1 = 6 * (relativeX - 0.04) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.04) / 0.42;
-            const x1coord = document.getElementById("x1coord");
-            const x2coord = document.getElementById("x2coord");
-            x1coord.value = newX1;
-            x2coord.value = newX2;
+            coords[0] = newX1;
+            coords[1] = newX2;
             enRoute = false;
         } else if (0.52 <= relativeX && relativeX <= 0.98 && 0.02 <= relativeY && relativeY <= 0.48) {
             if (quad != 1) { quad = 1; updateBackground(); }
             else quad = 1;
             const newX1 = 6 * (relativeX - 0.54) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.04) / 0.42;
-            const x1coord = document.getElementById("x1coord");
-            const x2coord = document.getElementById("x2coord");
-            x1coord.value = newX1;
-            x2coord.value = newX2;
+            coords[0] = newX1;
+            coords[1] = newX2;
             enRoute = false;
         } else if (0.02 <= relativeX && relativeX <= 0.48 && 0.52 <= relativeY && relativeY <= 0.98) {
             if (quad != 3) { quad = 3; updateBackground(); }
             else quad = 3;
             const newX1 = 6 * (relativeX - 0.04) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.54) / 0.42;
-            const x1coord = document.getElementById("x1coord");
-            const x2coord = document.getElementById("x2coord");
-            x1coord.value = newX1;
-            x2coord.value = newX2;
+            coords[0] = newX1;
+            coords[1] = newX2;
             enRoute = false;
         } else if (0.52 <= relativeX && relativeX <= 0.98 && 0.52 <= relativeY && relativeY <= 0.98) {
             if (quad != 4) { quad = 4; updateBackground(); }
             else quad = 4;
             const newX1 = 6 * (relativeX - 0.54) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.54) / 0.42;
-            const x1coord = document.getElementById("x1coord");
-            const x2coord = document.getElementById("x2coord");
-            x1coord.value = newX1;
-            x2coord.value = newX2;
+            coords[0] = newX1;
+            coords[1] = newX2;
             enRoute = false;
         }
+    }
+    if (fixImageSize) {
+        fixCoords();
+        updateDiagramGrid();
     }
 }
 
@@ -2677,27 +2934,22 @@ function take(array, rank) {
     return sortedArray[rank];
 }
 
-function sideWidth(side) {
-    const totalA = matrixA.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-    const totalB = matrixB.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-    switch (side) {
-        case 1:
-            return (totalB - 6)/12;
-        case 2:
-            return (totalA - 6)/12;
-        case 3:
-            return (18 - totalB)/12;
-        case 4:
-            return (18 - totalA)/12;
-    }
-}
+// function sideWidth(side) {
+//     const totalA = matrixA.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+//     const totalB = matrixB.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+//     switch (side) {
+//         case 1:
+//             return (totalB - 6)/12;
+//         case 2:
+//             return (totalA - 6)/12;
+//         case 3:
+//             return (18 - totalB)/12;
+//         case 4:
+//             return (18 - totalA)/12;
+//     }
+// }
 
 function growBox(e) {
-    const x1coord = document.getElementById("x1coord");
-    const x2coord = document.getElementById("x2coord");
-    const b1coord = document.getElementById("b1coord");
-    const b2coord = document.getElementById("b2coord");
-
     const bigDiagram = document.getElementById("big-diagram");
     const rect = bigDiagram.getBoundingClientRect();
     if (rect.width == 0) {
@@ -2733,10 +2985,10 @@ function growBox(e) {
 
         startPoint[0] = take(matrixA,1);
         startPoint[1] = take(matrixB,1);
-        startPoint[2] = +b1coord.value;
-        startPoint[3] = +b2coord.value;
-        startPoint[4] = +x1coord.value;
-        startPoint[5] = +x2coord.value;
+        startPoint[2] = coords[2];
+        startPoint[3] = coords[3];
+        startPoint[4] = coords[0];
+        startPoint[5] = coords[1];
         animTime = 0;
     }
 }
@@ -3224,14 +3476,6 @@ function updateCoords() {
     const coords1 = matrixToCoords(matrixA);
     const coords2 = matrixToCoords(flip(matrixB));
     coords = [coords1[0],coords2[0],coords1[1],coords1[1]];
-    const x1coord = document.getElementById("x1coord");
-    const x2coord = document.getElementById("x2coord");
-    const b1coord = document.getElementById("b1coord");
-    const b2coord = document.getElementById("b2coord");
-    x1coord.value = coords1[0];
-    x2coord.value = coords2[0];
-    b1coord.value = coords1[1];
-    b2coord.value = coords2[1];
 
     let max1 = -1;
     let max2 = -1;
@@ -3261,31 +3505,13 @@ function createDiagram() {
 
 function updateDiagram() {
     const error = 0.00001;
-    const x1coord = document.getElementById("x1coord");
-    const x2coord = document.getElementById("x2coord");
-    const b1coord = document.getElementById("b1coord");
-    const b2coord = document.getElementById("b2coord");
-
-    let tempCoords = [+(x1coord.value), +(x2coord.value), +(b1coord.value), +(b2coord.value)];
-    if (x1coord.value == 0) tempCoords[0] += 6;
-    if (x2coord.value == 0) tempCoords[1] += 6;
-    if (quad == 2 || quad == 3) {
-        tempCoords[0] = tempCoords[0] - 6;
-        if (tempCoords[0] == 0) tempCoords[0] = -6;
-    }
-    if (quad == 3 || quad == 4) {
-        tempCoords[1] = tempCoords[1] - 6;
-        if (tempCoords[1] == 0) tempCoords[1] = -6;
-    }
-    if (tempCoords[2] != coords[2] || tempCoords[3] != coords[3]) backgroundOutOfDate = true;
-    coords = tempCoords;
     [matrixA,matrixB] = coordsToMatrices(...coords);
 
     const container = document.getElementById("container");
     const diagram = document.getElementById("diagram");
     const diagramWidth = diagram.width.baseVal.value;
-    const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*(6 - +b1coord.value)/6;
-    const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*(6 - +b2coord.value)/6;
+    const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*(6 - coords[2])/6;
+    const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*(6 - coords[3])/6;
     const picPadding1 = (container.width.baseVal.value-picWidth)/2;
     const picPadding2 = (container.height.baseVal.value-picHeight)/2;
     const maxPicWidth = (container.width.baseVal.value - diagram.width.baseVal.value);
@@ -3306,8 +3532,8 @@ function updateDiagram() {
     const corner4 = document.getElementById("corner4");
     const diagramBox = document.getElementById("diagram-box");
 
-    diagram.x.baseVal.value = (+(x1coord.value))/6*picWidth+picPadding1-diagramWidth/2;
-    diagram.y.baseVal.value = (6 - +(x2coord.value))/6*picHeight+picPadding2-diagramWidth/2;
+    diagram.x.baseVal.value = coords[0]/6*picWidth+picPadding1-diagramWidth/2;
+    diagram.y.baseVal.value = (6 - coords[1])/6*picHeight+picPadding2-diagramWidth/2;
 
     const padding = 0.1*diagramWidth;
     const width = diagramWidth - 2*padding;
@@ -3470,7 +3696,7 @@ function updateDiagram() {
         d2.style.fontWeight = "";
     }
 
-    if (0 < x1coord.value && x1coord.value < 3 && 0 < x2coord.value && x2coord.value < 3 && b1coord.value < 6 && b2coord.value < 6) {
+    if (0 < coords[0] && coords[0] < 3 && 0 < coords[1] && coords[1] < 3 && coords[2] < 6 && coords[3] < 6) {
         const mixedRow = mixedPayoff(matrixA);
         const mixedCol = mixedPayoff(matrixB);
         point5.style = "fill:" + mixedColor;
@@ -3484,30 +3710,110 @@ function updateDiagram() {
 }
 
 function updateDiagramGrid() {
+    updateRequired = false;
     let element;
     while (element = document.querySelector(".clone")) {
         element.remove();
     }
-    const x1coord = document.getElementById("x1coord");
-    const x2coord = document.getElementById("x2coord");
     for (let i = 0; i < 6; i++) {
         for (let j = 0; j < 6; j++) {
             if (j % 2 == 0) {
-                let redLine = Math.round((+x1coord.value+1)/2)*2-1;
-                if (+x1coord.value != 4)
-                    x1coord.value = (redLine - (+x1coord.value - redLine) + 6) % 6;
+                let redLine = Math.round((coords[0]+1)/2)*2-1;
+                if (coords[0] != 4)
+                    coords[0] = (redLine - (coords[0] - redLine) + 6) % 6;
                 else
-                    x1coord.value = 6;
+                    coords[0] = 6;
             } else crossGreen(true);
             updateDiagram();
             createDiagram();
         }
         if (i % 2 == 0) {
-            let redLine = Math.round((+x2coord.value+1)/2)*2-1;
-            if (+x2coord.value != 4)
-                x2coord.value = (redLine - (+x2coord.value - redLine) + 6) % 6;
+            let redLine = Math.round((coords[1]+1)/2)*2-1;
+            if (coords[1] != 4)
+                coords[1] = (redLine - (coords[1] - redLine) + 6) % 6;
             else
-                x2coord.value = 6;
+                coords[1] = 6;
         } else crossGreen(false);
     }
+}
+
+function updateBlueLines() {
+    const container = document.getElementById("container");
+    const diagram = document.getElementById("diagram");
+    const diagramWidth = diagram.width.baseVal.value;
+    const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*(6 - coords[2])/6;
+    const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*(6 - coords[3])/6;
+    const picPadding1 = (container.width.baseVal.value-picWidth)/2;
+    const picPadding2 = (container.height.baseVal.value-picHeight)/2;
+
+    const blueLine1 = document.getElementById("blue-line-1");
+    const blueLine2 = document.getElementById("blue-line-2");
+    const blueCorner1 = document.getElementById("blue-corner-1");
+    const blueCorner2 = document.getElementById("blue-corner-2");
+    const blueLineWidth = (container.width.baseVal.value - diagramWidth)*(6 - coords[2])/6;
+    const blueLineHeight = (container.height.baseVal.value - diagramWidth)*(6 - coords[3])/6;
+    const blueLinePadding1 = (container.width.baseVal.value-blueLineWidth)/2;
+    const blueLinePadding2 = (container.height.baseVal.value-blueLineHeight)/2;
+    blueLine1.x1.baseVal.value = picWidth + picPadding1 + blueLinePadding;
+    blueLine1.y1.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
+    blueLine1.x2.baseVal.value = picWidth + picPadding1 + blueLinePadding;
+    blueLine1.y2.baseVal.value = blueLinePadding2;
+    blueLine2.x1.baseVal.value = blueLineWidth + blueLinePadding1 + blueLinePadding;
+    blueLine2.y1.baseVal.value = picHeight + picPadding2 + blueLinePadding;
+    blueLine2.x2.baseVal.value = blueLinePadding1;
+    blueLine2.y2.baseVal.value = picHeight + picPadding2 + blueLinePadding;
+    blueCorner1.cx.baseVal.value = picWidth + picPadding1 + blueLinePadding;
+    blueCorner1.cy.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
+    if (fixImageSize) {
+        blueCorner2.style.display = "";
+        blueCorner2.cx.baseVal.value = blueLineWidth + blueLinePadding1 + blueLinePadding;
+        blueCorner2.cy.baseVal.value = picHeight + picPadding2 + blueLinePadding;
+        if (coords[2] == 0 && coords[3] == 0) {
+            blueLine1.style.cursor = "ew-resize";
+            blueLine2.style.cursor = "ns-resize";
+            blueCorner1.style.cursor = "all-scroll";
+        } else {
+            blueLine1.style.cursor = "auto";
+            blueLine2.style.cursor = "auto";
+            blueCorner1.style.cursor = "ns-resize";
+        }
+    } else {
+        blueCorner2.style.display = "none";
+        blueLine1.style.cursor = "ew-resize";
+        blueLine2.style.cursor = "ns-resize";
+        blueCorner1.style.cursor = "all-scroll";
+    }
+}
+
+function fixCoords() {
+    if (coords[0] < 0) coords[0] = 0;
+    else if (coords[0] > 6) coords[0] = 6;
+    if (coords[1] < 0) coords[1] = 0;
+    else if (coords[1] > 6) coords[1] = 6;
+    if (coords[2] < 0) coords[2] = 0;
+    else if (coords[2] > 6) coords[2] = 6;
+    if (coords[3] < 0) coords[3] = 0;
+    else if (coords[3] > 6) coords[3] = 6;
+}
+
+function coordsToRhombic(p1,x,b,quad) {
+    function rotate3([i,j]) {
+        return [(-i - Math.sqrt(3)*j) / 2, (Math.sqrt(3)*i - j) / 2];
+    }
+    let i = (x % 2 - 1) * (6-b)/6;
+    let j = -1/Math.sqrt(3) * (6-b)/6;
+    if (x >= 2 && x != 6) [i,j] = rotate3([i,j]);
+    if (x >= 4 && x != 6) [i,j] = rotate3([i,j]);
+    const goodSide = quad == 1 || (p1 && quad == 2) || (!p1 && quad == 4);
+    if (goodSide) {
+        i = -i;
+        j = -j + 2/Math.sqrt(3);
+    } else {
+        i -= 1;
+        j += 1/Math.sqrt(3);
+    }
+    if (!p1) {
+        i = -i;
+    }
+    return [i,j];
 }

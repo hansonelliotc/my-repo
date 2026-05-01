@@ -134,7 +134,7 @@ span {
     display: flex;
     position: absolute;
     bottom: 1vh;
-    left: calc(100vh - 3vw);
+    left: calc(80vh - 3vw);
 }
 
 #nav-bar button {
@@ -146,7 +146,7 @@ span {
 #content {
     position:absolute;
     bottom:9vh;
-    left:100vh;
+    left:80vh;
     width:26vw;
     height:85vh;
     text-align: center
@@ -161,13 +161,17 @@ span {
 }
 
 #blue-line-1 {
-    cursor: col-resize;
+    cursor: ew-resize;
 }
 
 #blue-line-2 {
-    cursor: row-resize;
+    cursor: ns-resize;
 }
 
-#blue-corner {
+#blue-corner-1 {
     cursor: all-scroll;
+}
+
+#blue-corner-2 {
+    cursor: ew-resize;
 }
