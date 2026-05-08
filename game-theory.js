@@ -45,6 +45,7 @@ let updateRequired = false;
 let draggingRhombus1 = false;
 let draggingRhombus2 = false;
 let useAltSchema = false;
+let diagramGrid = false;
 
 let disagree = [0,0];
 let bargainingReturns = [0,0];
@@ -503,6 +504,8 @@ function init() {
     const brColPlayer = document.getElementById("br-col-player");
     const brRowRect = document.getElementById("br-row-rect");
     const brColRect = document.getElementById("br-col-rect");
+    const brRowStar = document.getElementById("br-row-player-poly");
+    const brColStar = document.getElementById("br-col-player-poly");
 
     const birhombicWidth = birhombicPic.width.baseVal.value;
     const birhombicHeight = birhombicPic.height.baseVal.value;
@@ -667,6 +670,9 @@ function init() {
 
     brRowRect.width.baseVal.value = starWidth;
     brRowRect.height.baseVal.value = starWidth;
+    brRowStar.style.fill = gold;
+    brColStar.style.fill = cerulean;
+
     let points = "";
     for (let i = 0; i < 5; i++) {
         points = points + (starWidth/2*Math.cos(2*PI*i*2/5 - PI/2) + starWidth/2).toString() + ","
@@ -830,7 +836,7 @@ function update() {
             enRoute = false;
     }
 
-    if (fixImageSize && updateRequired) {
+    if (diagramGrid && updateRequired) {
         updateDiagramGrid();
     }
 
@@ -2634,7 +2640,7 @@ function updateBackground() {
             header.innerHTML = "Column Quadrant";
             break;
     }
-    if (fixImageSize) {
+    if (diagramGrid) {
         updateDiagramGrid();
     }
 }
@@ -2831,8 +2837,10 @@ function changeCoords(e) {
         }
         if (fixImageSize) {
             fixCoords();
-            updateDiagramGrid();
             updateBlueLines();
+            if (diagramGrid) {
+                updateDiagramGrid();
+            }
         }
         return;
     }
@@ -2983,7 +2991,7 @@ function changeCoords(e) {
         }
     }
 
-    if (fixImageSize) {
+    if (diagramGrid) {
         fixCoords();
         updateDiagramGrid();
     }
@@ -3472,7 +3480,8 @@ function changeViewMode(mode) {
 
 function fixImage() {
     backgroundOutOfDate = true;
-    fixImageSize = !fixImageSize;
+    diagramGrid = !diagramGrid;
+    fixImageSize = diagramGrid;
     const fixImageButton = document.getElementById("fix-image-button");
     const diagram = document.getElementById("diagram");
     if (fixImageSize) {
@@ -3980,16 +3989,16 @@ function coordsToMatricesAlt(x1,x2,quad) {
     }
     let x1new = (x1+5)%6;
     let x2new = (x2+5)%6;
-    if (x1new <= 2) {
+    if (x1new < 2) {
         rowM = mix((x1new%2)/2,m1,m2);
-    } else if (x1new <= 4) {
+    } else if (x1new < 4) {
         rowM = mix((x1new%2)/2,m2,m3);
     } else {
         rowM = mix((x1new%2)/2,m3,m1);
     }
-    if (x2new <= 2) {
+    if (x2new < 2) {
         colM = mix((x2new%2)/2,m4,m5);
-    } else if (x2new <= 4) {
+    } else if (x2new < 4) {
         colM = mix((x2new%2)/2,m5,m6);
     } else {
         colM = mix((x2new%2)/2,m6,m4);
@@ -3999,4 +4008,6 @@ function coordsToMatricesAlt(x1,x2,quad) {
 
 function altImage() {
     useAltSchema = !useAltSchema;
+    fixImageSize = useAltSchema;
+    // diagramGrid = false;
 }
