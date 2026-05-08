@@ -42,6 +42,9 @@ let switchMode = false;
 let fixImageSize = false;
 let viewModeVolatile = false;
 let updateRequired = false;
+let draggingRhombus1 = false;
+let draggingRhombus2 = false;
+let useAltSchema = false;
 
 let disagree = [0,0];
 let bargainingReturns = [0,0];
@@ -317,13 +320,28 @@ function init() {
 
     const backdrop = document.getElementById("backdrop");
     backdrop.style.fill = "#eee";
-            
+
+    const brRowPlayerPoly = document.getElementById("br-row-player-poly");
+    const brColPlayerPoly = document.getElementById("br-col-player-poly");
+
     document.addEventListener('mousedown', (e) => { changeCoords(e); isMouseDown = true; });
-    document.addEventListener('mouseup', () => { draggingB1 = false; draggingB2 = false; isMouseDown = false; });
+    document.addEventListener('mouseup', () => {
+        draggingB1 = false;
+        draggingB2 = false;
+        draggingRhombus1 = false;
+        draggingRhombus2 = false;
+        isMouseDown = false;
+    });
     document.addEventListener('mousemove', (e) => {
         if (isMouseDown) {
             changeCoords(e);
         }
+    });
+    brRowPlayerPoly.addEventListener("mousedown", (e) => {
+        draggingRhombus1 = true;
+    });
+    brColPlayerPoly.addEventListener("mousedown", (e) => {
+        draggingRhombus2 = true;
     });
     bigDiagram.addEventListener('mousedown', (e) => { growBox(e); });
 
@@ -483,8 +501,6 @@ function init() {
     const brBlueCorner4 = document.getElementById("br-blue-corner-4");
     const brRowPlayer = document.getElementById("br-row-player");
     const brColPlayer = document.getElementById("br-col-player");
-    const brRowPlayerPoly = document.getElementById("br-row-player-poly");
-    const brColPlayerPoly = document.getElementById("br-col-player-poly");
     const brRowRect = document.getElementById("br-row-rect");
     const brColRect = document.getElementById("br-col-rect");
 
@@ -494,7 +510,7 @@ function init() {
     const birhombicDiagramHeight = birhombicDiagramWidth*Math.sqrt(3)/4;
     const birhombicDiagramPadding = (birhombicHeight - birhombicDiagramHeight)/2;
     const brLineWidth = 5;
-    const starWidth = 20;
+    const starWidth = 24;
 
     brBlueLine1.style.stroke = "blue";
     brBlueLine2.style.stroke = "blue";
@@ -818,7 +834,11 @@ function update() {
         updateDiagramGrid();
     }
 
-    [matrixA,matrixB] = coordsToMatrices(...coords);
+    if (!useAltSchema) {
+        [matrixA,matrixB] = coordsToMatrices(...coords);
+    } else {
+        [matrixA,matrixB] = coordsToMatricesAlt(coords[0],coords[1],quad);
+    }
     const a1 = document.getElementById("a1");
     const b1 = document.getElementById("b1");
     const c1 = document.getElementById("c1");
@@ -2923,6 +2943,46 @@ function changeCoords(e) {
             enRoute = false;
         }
     }
+
+    if (draggingRhombus1 || draggingRhombus2) {
+        const birhombicPic = document.getElementById("birhombic-pic");
+        const birhombicWidth = birhombicPic.width.baseVal.value;
+        const birhombicHeight = birhombicPic.height.baseVal.value;
+        const birhombicDiagramWidth = birhombicWidth - birhombicPadding*2;
+        const birhombicDiagramHeight = birhombicDiagramWidth*Math.sqrt(3)/4;
+        const birhombicDiagramPadding = (birhombicHeight - birhombicDiagramHeight)/2;
+        const rectBR = birhombicPic.getBoundingClientRect();
+        const starWidth = document.getElementById("br-row-rect").width.baseVal.value;
+        const relativeXbr = (e.pageX - rectBR.left - birhombicWidth/2)*4 / birhombicDiagramWidth;
+        const relativeYbr = (birhombicHeight - e.pageY + rectBR.top - birhombicDiagramPadding)*Math.sqrt(3)/birhombicDiagramHeight;
+
+        if (draggingRhombus1) {
+            let newCoords = rhombicToCoords(true,relativeXbr,relativeYbr);
+            if (newCoords != null) {
+                if (newCoords[2] != quad) {
+                    quad = newCoords[2];
+                    // let redLine = Math.round((coords[1]+1)/2)*2-1;
+                    // coords[1] = (redLine - (coords[1] - redLine) + 6) % 6;
+                    updateBackground();
+                }
+                coords[0] = newCoords[0];
+                coords[2] = newCoords[1];
+            }
+        } else {
+            let newCoords = rhombicToCoords(false,relativeXbr,relativeYbr);
+            if (newCoords != null) {
+                if (newCoords[2] != quad) {
+                    quad = newCoords[2];
+                    // let redLine = Math.round((coords[0]+1)/2)*2-1;
+                    // coords[0] = (redLine - (coords[0] - redLine) + 6) % 6;
+                    updateBackground();
+                }
+                coords[1] = newCoords[0];
+                coords[3] = newCoords[1];
+            }
+        }
+    }
+
     if (fixImageSize) {
         fixCoords();
         updateDiagramGrid();
@@ -3505,7 +3565,11 @@ function createDiagram() {
 
 function updateDiagram() {
     const error = 0.00001;
-    [matrixA,matrixB] = coordsToMatrices(...coords);
+    if (!useAltSchema) {
+        [matrixA,matrixB] = coordsToMatrices(...coords);
+    } else {
+        [matrixA,matrixB] = coordsToMatricesAlt(coords[0],coords[1],quad);
+    }
 
     const container = document.getElementById("container");
     const diagram = document.getElementById("diagram");
@@ -3797,23 +3861,142 @@ function fixCoords() {
 }
 
 function coordsToRhombic(p1,x,b,quad) {
-    function rotate3([i,j]) {
-        return [(-i - Math.sqrt(3)*j) / 2, (Math.sqrt(3)*i - j) / 2];
+    function rotate([y1,y2]) {
+        return [(-y1 + Math.sqrt(3)*y2) / 2, (-Math.sqrt(3)*y1 - y2) / 2];
     }
-    let i = (x % 2 - 1) * (6-b)/6;
-    let j = -1/Math.sqrt(3) * (6-b)/6;
-    if (x >= 2 && x != 6) [i,j] = rotate3([i,j]);
-    if (x >= 4 && x != 6) [i,j] = rotate3([i,j]);
+    let y1 = -(x % 2 - 1) * (6-b)/6;
+    let y2 = -1/Math.sqrt(3) * (6-b)/6;
+    if (x >= 2 && x != 6) [y1,y2] = rotate([y1,y2]);
+    if (x >= 4) [y1,y2] = rotate([y1,y2]);
     const goodSide = quad == 1 || (p1 && quad == 2) || (!p1 && quad == 4);
     if (goodSide) {
-        i = -i;
-        j = -j + 2/Math.sqrt(3);
+        y1 = -y1;
+        y2 = -y2 + 2/Math.sqrt(3);
     } else {
-        i -= 1;
-        j += 1/Math.sqrt(3);
+        y1 -= 1;
+        y2 += 1/Math.sqrt(3);
     }
     if (!p1) {
-        i = -i;
+        y1 = -y1;
     }
-    return [i,j];
+    return [y1,y2];
+}
+
+function rhombicToCoords(p1,y1,y2) {
+    const error = 0.00001;
+    const sqrt3 = Math.sqrt(3);
+    function rotate([y1,y2]) {
+        return [(-y1 + sqrt3*y2) / 2, (-sqrt3*y1 - y2) / 2];
+    }
+    let newY1 = y1;
+    let newY2 = y2;
+    let newQuad = quad;
+    if (!p1) {
+        newY1 = -newY1;
+    }
+    const margin = 0.2;
+    if (newY2 < -sqrt3*newY1 && newY2 < sqrt3*(newY1+2) + margin && newY2 > -margin) {
+        newY1 += 1;
+        newY2 -= 1/sqrt3;
+        if (p1) {
+            if (newQuad == 1) newQuad = 4;
+            else if (newQuad == 2) newQuad = 3;
+        } else {
+            if (newQuad == 1) newQuad = 2;
+            else if (newQuad == 4) newQuad = 3;
+        }
+    } else if (newY2 > -sqrt3*newY1 && newY2 > sqrt3*newY1 - margin && newY2 < sqrt3 + margin) {
+        newY1 = -newY1;
+        newY2 = -newY2 + 2/sqrt3;
+        if (p1) {
+            if (newQuad == 4) newQuad = 1;
+            else if (newQuad == 3) newQuad = 2;
+        } else {
+            if (newQuad == 2) newQuad = 1;
+            else if (newQuad == 3) newQuad = 4;
+        }
+    } else {
+        return null;
+    }
+    let x = 0;
+    newY1 = -newY1;
+    for (let i = 0; i < 3 && (newY2 > -newY1/sqrt3 || newY2 > newY1/sqrt3); i++) {
+        [newY1,newY2] = rotate([newY1,newY2]);
+        x = (x + 2) % 6;
+    }
+    let b = (newY2*sqrt3 + 1)*6;
+    x += newY1/(1 - b/6) + 1;
+    if (x > 6) x = 6;
+    else if (x < 0) x = 0;
+    if (b > 6) b = 6;
+    else if (b < 0) b = 0;
+    return [x,b,newQuad];
+}
+
+function coordsToMatricesAlt(x1,x2,quad) {
+    function mix(x,m1,m2) {
+        let result = [0,0,0,0];
+        for (let i = 0; i < 4; i++)
+            result[i] = x*m2[i]+(1-x)*m1[i];
+        return result;
+    }
+    let rowM = [0,0,0,0];
+    let colM = [0,0,0,0];
+
+    let m1 = [0,0,0,0];
+    let m2 = [0,0,0,0];
+    let m3 = [0,0,0,0];
+    let m4 = [0,0,0,0];
+    let m5 = [0,0,0,0];
+    let m6 = [0,0,0,0];
+    if (quad == 1) {
+        m1 = [0,6,6,0];
+        m2 = [0,6,0,6];
+        m3 = [6,6,0,0];
+        m4 = [0,6,6,0];
+        m5 = [6,6,0,0];
+        m6 = [0,6,0,6];
+    } else if (quad == 2) {
+        m1 = [6,0,0,6];
+        m2 = [0,6,0,6];
+        m3 = [0,0,6,6];
+        m4 = [0,6,6,0];
+        m5 = [6,6,0,0];
+        m6 = [0,0,6,6];
+    } else if (quad == 3) {
+        m1 = [6,0,0,6];
+        m2 = [0,6,0,6];
+        m3 = [0,0,6,6];
+        m4 = [6,0,0,6];
+        m5 = [6,6,0,0];
+        m6 = [6,0,6,0];
+    } else {
+        m1 = [0,6,6,0];
+        m2 = [0,6,0,6];
+        m3 = [6,6,0,0];
+        m4 = [6,0,0,6];
+        m5 = [6,6,0,0];
+        m6 = [6,0,6,0];
+    }
+    let x1new = (x1+5)%6;
+    let x2new = (x2+5)%6;
+    if (x1new <= 2) {
+        rowM = mix((x1new%2)/2,m1,m2);
+    } else if (x1new <= 4) {
+        rowM = mix((x1new%2)/2,m2,m3);
+    } else {
+        rowM = mix((x1new%2)/2,m3,m1);
+    }
+    if (x2new <= 2) {
+        colM = mix((x2new%2)/2,m4,m5);
+    } else if (x2new <= 4) {
+        colM = mix((x2new%2)/2,m5,m6);
+    } else {
+        colM = mix((x2new%2)/2,m6,m4);
+    }
+    return [rowM,colM];
+}
+
+function altImage() {
+    useAltSchema = !useAltSchema;
 }

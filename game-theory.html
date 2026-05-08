@@ -212,15 +212,15 @@
 		<line x1="54%" x2="54%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
 		<line x1="96%" x2="96%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
 
-		<circle id="big-pic-point1" r="2%" cx="25%" cy="25%" fill="black" />
-		<circle id="big-pic-point2" r="2%" cx="25%" cy="25%" fill="#888" />
-		<circle id="big-pic-point3" r="2%" cx="25%" cy="25%" fill="#888" />
-		<circle id="big-pic-point4" r="2%" cx="25%" cy="25%" fill="#888" />
-		<circle id="big-pic-point5" r="2%" cx="25%" cy="25%" fill="#888" />
-		<circle id="big-pic-point6" r="2%" cx="25%" cy="25%" fill="#888" />
-		<circle id="big-pic-point7" r="2%" cx="25%" cy="25%" fill="#888" />
-		<circle id="big-pic-point8" r="2%" cx="25%" cy="25%" fill="#888" />
 		<circle id="big-pic-point9" r="2%" cx="25%" cy="25%" fill="#888" />
+		<circle id="big-pic-point8" r="2%" cx="25%" cy="25%" fill="#888" />
+		<circle id="big-pic-point7" r="2%" cx="25%" cy="25%" fill="#888" />
+		<circle id="big-pic-point6" r="2%" cx="25%" cy="25%" fill="#888" />
+		<circle id="big-pic-point5" r="2%" cx="25%" cy="25%" fill="#888" />
+		<circle id="big-pic-point4" r="2%" cx="25%" cy="25%" fill="#888" />
+		<circle id="big-pic-point3" r="2%" cx="25%" cy="25%" fill="#888" />
+		<circle id="big-pic-point2" r="2%" cx="25%" cy="25%" fill="#888" />
+		<circle id="big-pic-point1" r="2%" cx="25%" cy="25%" fill="black" />
 	</svg>
 	<!-- <img src="files/fourFigureTables.png" width="20%" style="position:absolute; right:5%; top:40%"> -->
 	<svg id="big-diagram" width="16vw" height="16vw" style="position:absolute; right:5%; bottom:1%;">
@@ -272,7 +272,7 @@
 		<line id="bottom-3-big"/> -->
 	</svg>
 
-	<svg id="birhombic-pic" width="25vw" height="20vw" style="position:absolute; right:0%; top:31%;">
+	<svg id="birhombic-pic" width="25vw" height="13vw" style="position:absolute; right:0%; top:37%;">
 		<line id="br-red-line-1" />
 		<line id="br-red-line-2" />
 		<line id="br-red-line-3" />
@@ -299,13 +299,13 @@
 		<circle id="br-blue-corner-2" />
 		<circle id="br-blue-corner-3" />
 		<circle id="br-blue-corner-4" />
+		<svg id="br-col-player">
+			<rect id="br-col-rect" opacity="0" />
+			<polygon id="br-col-player-poly" style="fill:#666" />
+		</svg>
 		<svg id="br-row-player">
 			<rect id="br-row-rect" opacity="0" />
 			<polygon id="br-row-player-poly" />
-		</svg>
-		<svg id="br-col-player">
-			<rect id="br-col-rect" opacity="0" />
-			<polygon id="br-col-player-poly" />
 		</svg>
 	</svg>
 
@@ -427,6 +427,7 @@
 	<div style="display:flex"><div id="b1-label">b<sub>1</sub></div>
 	<input id="b1coord" type="range" min="0" max="6" step="0.01" value="2"></div> -->
 	<button id="fix-image-button" onclick="fixImage()">Fix image size</button>
+	<button id="alt-image-button" onclick="altImage()">Alt Picture</button>
 
 	<script src="game-theory.js"></script>
 </body>
