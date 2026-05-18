@@ -121,9 +121,9 @@ button:hover, .selected {
     background-color: #ddd;
 }
 
-#fix-image-button {
+/* #fix-image-button {
     margin: 20px;
-}
+} */
 
 span {
     margin: 0;
@@ -194,4 +194,15 @@ span {
     stroke: black;
     user-select:none;
     /* text-shadow: 0 0 2px white; */
+}
+
+h2 {
+    padding: 0;
+    margin: 10px 0 0 0;
+    font-size: 13pt;
+}
+
+#display-options {
+    border-collapse: separate;
+    border-spacing: 10px 0;
 }

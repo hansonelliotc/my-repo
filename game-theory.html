@@ -63,19 +63,19 @@
 			<tr height="3pt"></tr>
 		</table>
 		<table id="navigation">
+			<tr><td colspan="2"><h2>Discontinuous Operations</h2></td></tr>
 			<tr>
-				<td><button id="cross-blue-1" onclick="crossBlue(true)" title="Flip the row player's biggest entries">Cross player one's blue</button></td>
-				<td><button id="cross-blue-2" onclick="crossBlue(false)" title="Flip the column player's biggest entries">Cross player two's blue</button></td>
+				<td><button id="cross-blue-1" onclick="crossBlue(true)" title="Flip the row player's biggest entries">Cross Row's blue</button></td>
+				<td><button id="cross-blue-2" onclick="crossBlue(false)" title="Flip the column player's biggest entries">Cross Column's blue</button></td>
 			</tr>
 			<tr>
-				<td><button id="cross-green-1" onclick="crossGreen(true)" title="Flip the row player's middle entries">Cross player one's green</button></td>
-				<td><button id="cross-green-2" onclick="crossGreen(false)" title="Flip the column player's middle entries">Cross player two's green</button></td>
+				<td><button id="cross-green-1" onclick="crossGreen(true)" title="Flip the row player's middle entries">Cross Row's green</button></td>
+				<td><button id="cross-green-2" onclick="crossGreen(false)" title="Flip the column player's middle entries">Cross Column's green</button></td>
 			</tr>
 			<tr>
-				<td><button id="cross-red-1" onclick="crossRed(true)" title="Flip the row player's smallest entries">Cross player one's red</button></td>
-				<td><button id="cross-red-2" onclick="crossRed(false)" title="Flip the column player's smallest entries">Cross player two's red</button></td>
+				<td><button id="cross-red-1" onclick="crossRed(true)" title="Flip the row player's smallest entries">Cross Row's red</button></td>
+				<td><button id="cross-red-2" onclick="crossRed(false)" title="Flip the column player's smallest entries">Cross Column's red</button></td>
 			</tr>
-			<tr height="10vh" />
 			<!-- <tr>
 				<td colspan="2"><button id="switch-players" onclick="wiggle(true)" title="Exchanges each player's matrix with the transpose of the other player's matrix">Switch the players</button></td>
 			</tr> -->
@@ -83,19 +83,21 @@
 				<td><button id="wiggle-1" onclick="wiggle(true)" title="Flip both the row player's smallest and their biggest entries">Wiggle player one</button></td>
 				<td><button id="wiggle-2" onclick="wiggle(false)" title="Flip both the column player's smallest and their biggest entries">Wiggle player two</button></td>
 			</tr> -->
+			<tr><td colspan="2"><h2>D<sub>4</sub> Operations</h2></td></tr>
+			<tr>
+				<td><button id="negate-1" onclick="negate(true)" title="Each entry in the row player's matrix is subtracted from 6.">Negate Row's matrix</button></td>
+				<td><button id="negate-2" onclick="negate(false)" title="Each entry in the column player's matrix is subtracted from 6.">Negate Column's matrix</button></td>
+			</tr>
 			<tr>
 				<td><button id="switch-matrices" onclick="switchMatrices()" title="Exchange the players' matrices">Switch matrices</button></td>
+			</tr>
+			<tr><td colspan="2"><h2>S<sub>4</sub> Operations</h2></td></tr>
+			<tr>
+				<td><button id="switch-rows" onclick="switchRows()" title="The rows in the row player's matrix are switched.">Switch Row's rows</button></td>
+				<td><button id="switch-cols" onclick="switchColumns(false)" title="The columns in the column player's matrix are switched.">Switch Column's columns</button></td>
+			</tr>
+			<tr>
 				<td><button id="flip-matrices" onclick="flipMatrices()" title="Each player's matrix is flipped">Flip both matrices</button></td>
-			</tr>
-			<tr>
-				<td><button id="negate-1" onclick="negate(true)" title="Each entry in the row player's matrix is subtracted from 6.">Negate player one</button></td>
-				<td><button id="negate-2" onclick="negate(false)" title="Each entry in the column player's matrix is subtracted from 6.">Negate player two</button></td>
-			</tr>
-			<tr>
-				<td><button id="switch-rows" onclick="switchRows()" title="The rows in the row player's matrix are switched.">Switch player 1's rows</button></td>
-				<td><button id="switch-cols" onclick="switchColumns(false)" title="The columns in the column player's matrix are switched.">Switch player 2's columns</button></td>
-			</tr>
-			<tr>
 				<td><button id="rotate" onclick="rotate()" title="Rotates each matrix's first, third, and fourth entries.">Rotate both matrices</button></td>
 			</tr>
 			<!-- <tr height="10vh" />
@@ -444,8 +446,16 @@
 	<input id="x1coord" type="range" min="0" max="6" step="0.01" value="3.5"></div>
 	<div style="display:flex"><div id="b1-label">b<sub>1</sub></div>
 	<input id="b1coord" type="range" min="0" max="6" step="0.01" value="2"></div> -->
-	<button id="fix-image-button" onclick="fixImage()">Show diagram grid</button>
-	<button id="alt-image-button" onclick="altImage()">Use alternate schema</button>
+	<table id="display-options" cellspacing="0" cellpadding="0">
+		<tr>
+			<td><button id="fix-image-button-1" onclick="fixImage(false)" class="selected">Show one game</button></td>
+			<td><button id="alt-image-button-1" onclick="altImage(false)" class="selected">All games</button></td>
+		</tr>
+		<tr>
+			<td><button id="fix-image-button-2" onclick="fixImage(true)">Show 36 games</button></td>
+			<td><button id="alt-image-button-2" onclick="altImage(true)">Balanced games only</button></td>
+		</tr>
+	</table>
 
 	<script src="game-theory.js"></script>
 </body>

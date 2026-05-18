@@ -3560,20 +3560,22 @@ function changeViewMode(mode) {
     }
 }
 
-function fixImage() {
+function fixImage(alt) {
     backgroundOutOfDate = true;
-    diagramGrid = !diagramGrid;
-    if (!useAltSchema) fixImageSize = diagramGrid;
-    const fixImageButton = document.getElementById("fix-image-button");
+    if (!useAltSchema) fixImageSize = alt;
+    const fixImageButton1 = document.getElementById("fix-image-button-1");
+    const fixImageButton2 = document.getElementById("fix-image-button-2");
     const diagram = document.getElementById("diagram");
-    if (diagramGrid) {
-        fixImageButton.innerHTML = "Hide diagram grid";
-        
+    if (!diagramGrid && alt) {
+        diagramGrid = alt;
+        fixImageButton1.classList.remove("selected");
+        fixImageButton2.classList.add("selected");
         diagram.style.opacity = 0;
         updateDiagramGrid();
-    } else {
-        fixImageButton.innerHTML = "Show diagram grid";
-
+    } else if (diagramGrid && !alt) {
+        diagramGrid = alt;
+        fixImageButton2.classList.remove("selected");
+        fixImageButton1.classList.add("selected");
         let element;
         while (element = document.querySelector(".clone")) {
             element.remove();
@@ -4127,17 +4129,22 @@ function standardToAltCoords(x1,x2,b1,b2) {
     return [y1+s1,y2+s2];
 }
 
-function altImage() {
-    const button = document.getElementById("alt-image-button");
-    useAltSchema = !useAltSchema;
-    if (!diagramGrid) fixImageSize = useAltSchema;
-    if (!useAltSchema) {
-        button.innerHTML = "Use alternate schema";
+function altImage(alt) {
+    const button1 = document.getElementById("alt-image-button-1");
+    const button2 = document.getElementById("alt-image-button-2");
+    // useAltSchema = alt;
+    if (!diagramGrid) fixImageSize = !useAltSchema;
+    if (useAltSchema && !alt) {
+        useAltSchema = alt;
+        button2.classList.remove("selected");
+        button1.classList.add("selected");
         const coords1 = matrixToCoords(matrixA);
         const coords2 = matrixToCoords(flip(matrixB));
         coords = [coords1[0],coords2[0],coords1[1],coords2[1]];
-    } else {
-        button.innerHTML = "Use standard schema";
+    } else if (!useAltSchema && alt) {
+        useAltSchema = alt;
+        button1.classList.remove("selected");
+        button2.classList.add("selected");
         coords[2] = take(matrixA,1);
         coords[3] = take(matrixB,1);
         [coords[0],coords[1]] = standardToAltCoords(coords[0],coords[1]);
