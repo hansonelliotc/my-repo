@@ -506,6 +506,25 @@ function init() {
     const brColRect = document.getElementById("br-col-rect");
     const brRowStar = document.getElementById("br-row-player-poly");
     const brColStar = document.getElementById("br-col-player-poly");
+    const brGreenBackground = document.getElementById("br-green-background");
+    const brGoldBackground = document.getElementById("br-gold-background");
+    const brCeruleanBackground = document.getElementById("br-cerulean-background");
+
+    const matrixClass1 = document.getElementById("matrix-class-number-1");
+    const matrixClass2 = document.getElementById("matrix-class-number-2");
+    const matrixClass3 = document.getElementById("matrix-class-number-3");
+    const matrixClass4 = document.getElementById("matrix-class-number-4");
+    const matrixClass5 = document.getElementById("matrix-class-number-5");
+    const matrixClass6 = document.getElementById("matrix-class-number-6");
+    const matrixClass7 = document.getElementById("matrix-class-number-7");
+    const matrixClass8 = document.getElementById("matrix-class-number-8");
+    const matrixClass9 = document.getElementById("matrix-class-number-9");
+    const matrixClass10 = document.getElementById("matrix-class-number-10");
+    const matrixClass11 = document.getElementById("matrix-class-number-11");
+    const matrixClass12 = document.getElementById("matrix-class-number-12");
+    const matrixClass13 = document.getElementById("matrix-class-number-13");
+    const matrixClass14 = document.getElementById("matrix-class-number-14");
+    const matrixClass15 = document.getElementById("matrix-class-number-15");
 
     const birhombicWidth = birhombicPic.width.baseVal.value;
     const birhombicHeight = birhombicPic.height.baseVal.value;
@@ -567,6 +586,10 @@ function init() {
     brGreenLine7.style.strokeWidth = brLineWidth;
     brGreenLine8.style.strokeWidth = brLineWidth;
     brGreenLine9.style.strokeWidth = brLineWidth;
+
+    brGreenBackground.style.fill = greenBackground;
+    brGoldBackground.style.fill = goldBackground;
+    brCeruleanBackground.style.fill = ceruleanBackground;
 
     brBlueLine1.x1.baseVal.value = birhombicPadding;
     brBlueLine1.y1.baseVal.value = (birhombicHeight + birhombicDiagramHeight)/2;
@@ -667,6 +690,53 @@ function init() {
     brBlueCorner3.cy.baseVal.value = birhombicDiagramPadding;
     brBlueCorner4.cx.baseVal.value = birhombicDiagramWidth + birhombicPadding;
     brBlueCorner4.cy.baseVal.value = birhombicDiagramPadding + birhombicDiagramHeight;
+
+    matrixClass1.setAttribute("x", birhombicPadding + birhombicDiagramWidth/4);
+    matrixClass1.setAttribute("y", birhombicDiagramPadding);
+    matrixClass2.setAttribute("x", birhombicPadding + birhombicDiagramWidth/2);
+    matrixClass2.setAttribute("y", birhombicDiagramPadding);
+    matrixClass3.setAttribute("x", birhombicPadding + birhombicDiagramWidth*3/4);
+    matrixClass3.setAttribute("y", birhombicDiagramPadding);
+    matrixClass4.setAttribute("x", birhombicPadding + birhombicDiagramWidth/2);
+    matrixClass4.setAttribute("y", birhombicDiagramPadding + birhombicDiagramHeight/3);
+    matrixClass5.setAttribute("x", birhombicPadding + birhombicDiagramWidth/8);
+    matrixClass5.setAttribute("y", birhombicDiagramPadding + birhombicDiagramHeight/2);
+    matrixClass6.setAttribute("x", birhombicPadding + birhombicDiagramWidth*3/8);
+    matrixClass6.setAttribute("y", birhombicDiagramPadding + birhombicDiagramHeight/2);
+    matrixClass7.setAttribute("x", birhombicPadding + birhombicDiagramWidth*5/8);
+    matrixClass7.setAttribute("y", birhombicDiagramPadding + birhombicDiagramHeight/2);
+    matrixClass8.setAttribute("x", birhombicPadding + birhombicDiagramWidth*7/8);
+    matrixClass8.setAttribute("y", birhombicDiagramPadding + birhombicDiagramHeight/2);
+    matrixClass9.setAttribute("x", birhombicPadding + birhombicDiagramWidth/4);
+    matrixClass9.setAttribute("y", birhombicDiagramPadding + birhombicDiagramHeight*2/3);
+    matrixClass10.setAttribute("x", birhombicPadding + birhombicDiagramWidth*3/4);
+    matrixClass10.setAttribute("y", birhombicDiagramPadding + birhombicDiagramHeight*2/3);
+    matrixClass11.setAttribute("x", birhombicPadding);
+    matrixClass11.setAttribute("y", birhombicDiagramPadding + birhombicDiagramHeight);
+    matrixClass12.setAttribute("x", birhombicPadding + birhombicDiagramWidth/4);
+    matrixClass12.setAttribute("y", birhombicDiagramPadding + birhombicDiagramHeight);
+    matrixClass13.setAttribute("x", birhombicPadding + birhombicDiagramWidth/2);
+    matrixClass13.setAttribute("y", birhombicDiagramPadding + birhombicDiagramHeight);
+    matrixClass14.setAttribute("x", birhombicPadding + birhombicDiagramWidth*3/4);
+    matrixClass14.setAttribute("y", birhombicDiagramPadding + birhombicDiagramHeight);
+    matrixClass15.setAttribute("x", birhombicPadding + birhombicDiagramWidth);
+    matrixClass15.setAttribute("y", birhombicDiagramPadding + birhombicDiagramHeight);
+
+    brGreenBackground.setAttribute("points",
+        (birhombicPadding + birhombicDiagramWidth/4) + "," + birhombicDiagramPadding + " " +
+        (birhombicPadding + birhombicDiagramWidth*3/4) + "," + birhombicDiagramPadding + " " +
+        (birhombicPadding + birhombicDiagramWidth/2) + "," + (birhombicDiagramPadding + birhombicDiagramHeight)
+    );
+    brGoldBackground.setAttribute("points",
+        (birhombicPadding + birhombicDiagramWidth/4) + "," + birhombicDiagramPadding + " " +
+        (birhombicPadding) + "," + (birhombicDiagramPadding + birhombicDiagramHeight) + " " +
+        (birhombicPadding + birhombicDiagramWidth/2) + "," + (birhombicDiagramPadding + birhombicDiagramHeight)
+    );
+    brCeruleanBackground.setAttribute("points",
+        (birhombicPadding + birhombicDiagramWidth) + "," + (birhombicDiagramPadding + birhombicDiagramHeight) + " " +
+        (birhombicPadding + birhombicDiagramWidth*3/4) + "," + birhombicDiagramPadding + " " +
+        (birhombicPadding + birhombicDiagramWidth/2) + "," + (birhombicDiagramPadding + birhombicDiagramHeight)
+    );
 
     brRowRect.width.baseVal.value = starWidth;
     brRowRect.height.baseVal.value = starWidth;
@@ -844,6 +914,8 @@ function update() {
         [matrixA,matrixB] = coordsToMatrices(...coords);
     } else {
         [matrixA,matrixB] = coordsToMatricesAlt(coords[0],coords[1],quad);
+        coords[2] = blue(matrixA);
+        coords[3] = blue(matrixB);
     }
     const a1 = document.getElementById("a1");
     const b1 = document.getElementById("b1");
@@ -879,13 +951,19 @@ function update() {
     const colReturnsBargaining1 = document.getElementById("col-return-bargaining-1");
     const rowReturnsBargaining2 = document.getElementById("row-return-bargaining-2");
     const colReturnsBargaining2 = document.getElementById("col-return-bargaining-2");
-    rowX.innerHTML = coords[0].toFixed(1);
+    if (!useAltSchema) {
+        rowX.innerHTML = coords[0].toFixed(1);
+        colX.innerHTML = coords[1].toFixed(1);
+    } else {
+        [rowX.innerHTML,colX.innerHTML] = altToStandardCoords(coords[0],coords[1],quad).map(num => num.toFixed(1));
+    }
     rowB.innerHTML = coords[2].toFixed(1);
-    colX.innerHTML = coords[1].toFixed(1);
     colB.innerHTML = coords[3].toFixed(1);
-    const [rowM, colM] = coordsToMatrices(coords[0], coords[1],
+    const [rowM, colM] = (!useAltSchema) ? 
+                         coordsToMatrices(coords[0], coords[1],
                                           coords[2] != 0 ? coords[2] : coords[2] + error*2,
-                                          coords[3] != 0 ? coords[3] : coords[3] + error*2);
+                                          coords[3] != 0 ? coords[3] : coords[3] + error*2) :
+                         coordsToMatricesAlt(coords[0], coords[1], quad);
     rowReturns.innerHTML = payoffModified(rowM, colM).toFixed(1);
     colReturns.innerHTML = payoffModified(flip(colM), flip(rowM)).toFixed(1);
     if (coords[0] < 3 && coords[1] < 3) {
@@ -2266,12 +2344,12 @@ function update() {
     const birhombicDiagramPadding = (birhombicHeight - birhombicDiagramHeight)/2;
     const starWidth = brRowRect.width.baseVal.value;
 
-    let [brRowX, brRowY] = coordsToRhombic(true, coords[0], coords[2], quad);
+    let [brRowX, brRowY] = coordsToRhombic(true, ...(!useAltSchema ? [coords[0], coords[2]] : matrixToCoords(matrixA)), quad);
     brRowX = brRowX*birhombicDiagramWidth/4 + birhombicDiagramWidth/2 + birhombicPadding - starWidth/2;
     brRowY = birhombicDiagramHeight - brRowY*birhombicDiagramHeight/Math.sqrt(3) + birhombicDiagramPadding - starWidth/2;
     brRowPlayer.x.baseVal.value = brRowX;
     brRowPlayer.y.baseVal.value = brRowY;
-    let [brColX, brColY] = coordsToRhombic(false, coords[1], coords[3], quad);
+    let [brColX, brColY] = coordsToRhombic(false, ...(!useAltSchema ? [coords[1], coords[3]] : matrixToCoords(flip(matrixB))), quad);
     brColX = brColX*birhombicDiagramWidth/4 + birhombicDiagramWidth/2 + birhombicPadding - starWidth/2;
     brColY = birhombicDiagramHeight - brColY*birhombicDiagramHeight/Math.sqrt(3) + birhombicDiagramPadding - starWidth/2;
     brColPlayer.x.baseVal.value = brColX;
@@ -2297,9 +2375,11 @@ function update() {
             for (let j = 0; j < valuesY; j++) {
                 values.push([]);
                 for (let i = 0; i < valuesX; i++) {
-                    const [rowM, colM] = coordsToMatrices((i+0.5)/valuesX*6, (valuesY-j-0.5)/valuesY*6,
-                                                        coords[2] != 0 ? coords[2] : coords[2] + error*2,
-                                                        coords[3] != 0 ? coords[3] : coords[3] + error*2);
+                    const [rowM, colM] = (!useAltSchema) ? 
+                                            coordsToMatrices((i+0.5)/valuesX*6, (valuesY-j-0.5)/valuesY*6,
+                                                            coords[2] != 0 ? coords[2] : coords[2] + error*2,
+                                                            coords[3] != 0 ? coords[3] : coords[3] + error*2) :
+                                            coordsToMatricesAlt((i+0.5)/valuesX*6, (valuesY-j-0.5)/valuesY*6, quad);
                     switch (viewMode) {
                         case 1:
                             values[j].push(payoff(rowM, colM));
@@ -2377,9 +2457,11 @@ function update() {
                     if (n != 0 && m != valuesY-1 && Math.abs(values[m-1][n+1] - values[m][n]) > jumpSize) boundary = true;
 
                     if (boundary) {
-                        const [rowM, colM] = coordsToMatrices(i/canvas.width*6, (canvas.height-j)/canvas.height*6,
+                        const [rowM, colM] = (!useAltSchema) ? 
+                                            coordsToMatrices(i/canvas.width*6, (canvas.height-j)/canvas.height*6,
                                                             coords[2] != 0 ? coords[2] : coords[2] + error*2,
-                                                            coords[3] != 0 ? coords[3] : coords[3] + error*2);
+                                                            coords[3] != 0 ? coords[3] : coords[3] + error*2) :
+                                            coordsToMatricesAlt(i/canvas.width*6, (canvas.height-j)/canvas.height*6, quad);
                         switch (viewMode) {
                             case 1:
                                 value = payoff(rowM, colM);
@@ -3481,16 +3563,16 @@ function changeViewMode(mode) {
 function fixImage() {
     backgroundOutOfDate = true;
     diagramGrid = !diagramGrid;
-    fixImageSize = diagramGrid;
+    if (!useAltSchema) fixImageSize = diagramGrid;
     const fixImageButton = document.getElementById("fix-image-button");
     const diagram = document.getElementById("diagram");
-    if (fixImageSize) {
-        fixImageButton.innerHTML = "Unfix image size";
+    if (diagramGrid) {
+        fixImageButton.innerHTML = "Hide diagram grid";
         
         diagram.style.opacity = 0;
         updateDiagramGrid();
     } else {
-        fixImageButton.innerHTML = "Fix image size";
+        fixImageButton.innerHTML = "Show diagram grid";
 
         let element;
         while (element = document.querySelector(".clone")) {
@@ -3541,10 +3623,15 @@ function matrixToCoords(m) {
 }
 
 function updateCoords() {
-    console.log(matrixA);
-    const coords1 = matrixToCoords(matrixA);
-    const coords2 = matrixToCoords(flip(matrixB));
-    coords = [coords1[0],coords2[0],coords1[1],coords1[1]];
+    if (!useAltSchema) {
+        const coords1 = matrixToCoords(matrixA);
+        const coords2 = matrixToCoords(flip(matrixB));
+        coords = [coords1[0],coords2[0],coords1[1],coords2[1]];
+    } else {
+        const coords1 = matrixToCoords(matrixA);
+        const coords2 = matrixToCoords(flip(matrixB));
+        [coords[0],coords[1]] = standardToAltCoords(coords1[0],coords2[0]);
+    }
 
     let max1 = -1;
     let max2 = -1;
@@ -3810,6 +3897,10 @@ function updateDiagramGrid() {
     }
 }
 
+function blue(M) {
+    return take(M,3) - take(M,2);
+}
+
 function updateBlueLines() {
     const container = document.getElementById("container");
     const diagram = document.getElementById("diagram");
@@ -3823,21 +3914,29 @@ function updateBlueLines() {
     const blueLine2 = document.getElementById("blue-line-2");
     const blueCorner1 = document.getElementById("blue-corner-1");
     const blueCorner2 = document.getElementById("blue-corner-2");
-    const blueLineWidth = (container.width.baseVal.value - diagramWidth)*(6 - coords[2])/6;
-    const blueLineHeight = (container.height.baseVal.value - diagramWidth)*(6 - coords[3])/6;
+    const blueLineWidth = (container.width.baseVal.value - diagramWidth)*(6 - blue(matrixA))/6;
+    const blueLineHeight = (container.height.baseVal.value - diagramWidth)*(6 - blue(matrixB))/6;
     const blueLinePadding1 = (container.width.baseVal.value-blueLineWidth)/2;
     const blueLinePadding2 = (container.height.baseVal.value-blueLineHeight)/2;
     blueLine1.x1.baseVal.value = picWidth + picPadding1 + blueLinePadding;
-    blueLine1.y1.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
+    blueLine1.y1.baseVal.value = blueLineHeight + blueLinePadding2 + (!useAltSchema ? blueLinePadding : 0);
     blueLine1.x2.baseVal.value = picWidth + picPadding1 + blueLinePadding;
     blueLine1.y2.baseVal.value = blueLinePadding2;
-    blueLine2.x1.baseVal.value = blueLineWidth + blueLinePadding1 + blueLinePadding;
+    blueLine2.x1.baseVal.value = blueLineWidth + blueLinePadding1 + (!useAltSchema ? blueLinePadding : 0);
     blueLine2.y1.baseVal.value = picHeight + picPadding2 + blueLinePadding;
     blueLine2.x2.baseVal.value = blueLinePadding1;
     blueLine2.y2.baseVal.value = picHeight + picPadding2 + blueLinePadding;
     blueCorner1.cx.baseVal.value = picWidth + picPadding1 + blueLinePadding;
     blueCorner1.cy.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
-    if (fixImageSize) {
+    
+    if (useAltSchema) {
+        blueCorner1.style.display = "none";
+        blueCorner2.style.display = "none";
+        blueLine1.style.cursor = "auto";
+        blueLine2.style.cursor = "auto";
+        blueCorner1.style.cursor = "auto";
+    } else if (fixImageSize) {
+        blueCorner1.style.display = "";
         blueCorner2.style.display = "";
         blueCorner2.cx.baseVal.value = blueLineWidth + blueLinePadding1 + blueLinePadding;
         blueCorner2.cy.baseVal.value = picHeight + picPadding2 + blueLinePadding;
@@ -3851,6 +3950,7 @@ function updateBlueLines() {
             blueCorner1.style.cursor = "ns-resize";
         }
     } else {
+        blueCorner1.style.display = "";
         blueCorner2.style.display = "none";
         blueLine1.style.cursor = "ew-resize";
         blueLine2.style.cursor = "ns-resize";
@@ -3971,7 +4071,7 @@ function coordsToMatricesAlt(x1,x2,quad) {
         m3 = [0,0,6,6];
         m4 = [0,6,6,0];
         m5 = [6,6,0,0];
-        m6 = [0,0,6,6];
+        m6 = [0,6,0,6];
     } else if (quad == 3) {
         m1 = [6,0,0,6];
         m2 = [0,6,0,6];
@@ -4003,11 +4103,44 @@ function coordsToMatricesAlt(x1,x2,quad) {
     } else {
         colM = mix((x2new%2)/2,m6,m4);
     }
+    // console.log(altToStandardCoords(x1,x2));
     return [rowM,colM];
 }
 
+function altToStandardCoords(x1,x2,b1,b2) {
+    let y1 = Math.floor(x1/2)*2;
+    let z1 = x1 % 2;
+    let s1 = (z1 < 1) ? (z1-1)/(z1+1) + 1 : (z1-1)/(3-z1) + 1;
+    let y2 = Math.floor(x2/2)*2;
+    let z2 = x2 % 2;
+    let s2 = (z2 < 1) ? (z2-1)/(z2+1) + 1 : (z2-1)/(3-z2) + 1;
+    return [y1+s1,y2+s2];
+}
+
+function standardToAltCoords(x1,x2,b1,b2) {
+    let y1 = Math.floor(x1/2)*2;
+    let z1 = x1 % 2;
+    let s1 = (z1 < 1) ? z1/(2-z1) : (3*z1-2)/z1;
+    let y2 = Math.floor(x2/2)*2;
+    let z2 = x2 % 2;
+    let s2 = (z2 < 1) ? z2/(2-z2) : (3*z2-2)/z2;
+    return [y1+s1,y2+s2];
+}
+
 function altImage() {
+    const button = document.getElementById("alt-image-button");
     useAltSchema = !useAltSchema;
-    fixImageSize = useAltSchema;
-    // diagramGrid = false;
+    if (!diagramGrid) fixImageSize = useAltSchema;
+    if (!useAltSchema) {
+        button.innerHTML = "Use alternate schema";
+        const coords1 = matrixToCoords(matrixA);
+        const coords2 = matrixToCoords(flip(matrixB));
+        coords = [coords1[0],coords2[0],coords1[1],coords2[1]];
+    } else {
+        button.innerHTML = "Use standard schema";
+        coords[2] = take(matrixA,1);
+        coords[3] = take(matrixB,1);
+        [coords[0],coords[1]] = standardToAltCoords(coords[0],coords[1]);
+    }
+    if (diagramGrid) updateDiagramGrid();
 }

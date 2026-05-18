@@ -152,6 +152,15 @@ span {
     text-align: center
 }
 
+#pictures {
+    display: flex-col;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 25vw;
+    text-align: center;
+}
+
 #switch-players {
     width: 25vw;
 }
@@ -174,4 +183,15 @@ span {
 
 #blue-corner-2 {
     cursor: ew-resize;
+}
+
+.matrix-class-number {
+    fill: white;
+    font-family: sans-serif;
+    font-size: 15pt;
+    font-weight: bold;
+    stroke-width: 1px;
+    stroke: black;
+    user-select:none;
+    /* text-shadow: 0 0 2px white; */
 }
