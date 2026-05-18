@@ -1,0 +1,23 @@
+button {
+    display:inline-block;
+    background-color:#eee;
+    border:none;
+    width:12vw;
+    height:25px;
+}
+
+#text-input {
+    width:11vw;
+    height:25px;
+    padding: 3px 0.5vw;
+    margin: 2vh 0;
+}
+
+button:hover {
+    cursor:pointer;
+    background-color:#ccc;
+}
+
+.selected {
+    background-color:#ccc;
+}
