@@ -3976,7 +3976,7 @@ function coordsToRhombic(p1,x,b,quad) {
     let y1 = -(x % 2 - 1) * (6-b)/6;
     let y2 = -1/Math.sqrt(3) * (6-b)/6;
     if (x >= 2 && x != 6) [y1,y2] = rotate([y1,y2]);
-    if (x >= 4) [y1,y2] = rotate([y1,y2]);
+    if (x >= 4 && x != 6) [y1,y2] = rotate([y1,y2]);
     const goodSide = quad == 1 || (p1 && quad == 2) || (!p1 && quad == 4);
     if (goodSide) {
         y1 = -y1;
