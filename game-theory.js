@@ -46,9 +46,12 @@ let draggingRhombus1 = false;
 let draggingRhombus2 = false;
 let useAltSchema = false;
 let diagramGrid = false;
+let showAllReturns = false;
+let showAllReturnsAlways = false;
+let nearestCentroid = [0,0];
 
 let disagree = [0,0];
-let bargainingReturns = [0,0];
+let bargainingReturns = [[0,0],[0,0],[0,0],[0,0]];
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.05;
@@ -72,6 +75,7 @@ const animationFrames = 70;
 const points = [];
 const blueLinePadding = 15;
 const birhombicPadding = 20;
+let xWidth = 0;
 
 init();
 setInterval('update()', 50);
@@ -155,10 +159,23 @@ function init() {
     const smallLine6 = document.getElementById("small-line-6");
     const smallLine7 = document.getElementById("small-line-7");
     const smallLine8 = document.getElementById("small-line-8");
+    const smallRedLine1 = document.getElementById("small-red-line-1");
+    const smallRedLine2 = document.getElementById("small-red-line-2");
+    const smallGreenLine1 = document.getElementById("small-green-line-1");
+    const smallGreenLine2 = document.getElementById("small-green-line-2");
+    const smallBlueLine1 = document.getElementById("small-blue-line-1");
+    const smallBlueLine2 = document.getElementById("small-blue-line-2");
+    const smallCorner = document.getElementById("small-corner");
+    const redBox = document.getElementById("red-box");
+    const greenBox = document.getElementById("green-box");
+    const blueBox = document.getElementById("blue-box");
+    const transUtilBoundary = document.getElementById("transferable-util-boundary");
 
-    const bigDiagramWidth = bigDiagram.getBoundingClientRect().width;
-    const paddingBig = 0.1*bigDiagramWidth;
-    const widthBig = bigDiagramWidth - 2*paddingBig;
+    const bigDiagramWidth = bigDiagram.width.baseVal.value;
+    const bigDiagramHeight = bigDiagram.height.baseVal.value;
+    const paddingBig1 = 0.32*bigDiagramWidth;
+    const paddingBig2 = 0.04*bigDiagramWidth;
+    const widthBig = bigDiagramWidth - paddingBig1 - paddingBig2;
     const smallLineWidth = lineWidthBig*widthBig*0.1;
 
     line1Big.style.stroke = cerulean;
@@ -253,42 +270,100 @@ function init() {
     smallLine7.style.strokeWidth = smallLineWidth;
     smallLine8.style.stroke = "#000";
     smallLine8.style.strokeWidth = smallLineWidth;
-    smallLine1.x1.baseVal.value = paddingBig;
-    smallLine1.x2.baseVal.value = bigDiagramWidth - paddingBig;
-    smallLine1.y1.baseVal.value = paddingBig;
-    smallLine1.y2.baseVal.value = paddingBig;
-    smallLine2.x1.baseVal.value = bigDiagramWidth - paddingBig;
-    smallLine2.x2.baseVal.value = bigDiagramWidth - paddingBig;
-    smallLine2.y1.baseVal.value = paddingBig;
-    smallLine2.y2.baseVal.value = bigDiagramWidth - paddingBig;
-    smallLine3.x1.baseVal.value = paddingBig;
-    smallLine3.x2.baseVal.value = bigDiagramWidth - paddingBig;
-    smallLine3.y1.baseVal.value = bigDiagramWidth - paddingBig;
-    smallLine3.y2.baseVal.value = bigDiagramWidth - paddingBig;
-    smallLine4.x1.baseVal.value = paddingBig;
-    smallLine4.x2.baseVal.value = paddingBig;
-    smallLine4.y1.baseVal.value = paddingBig;
-    smallLine4.y2.baseVal.value = bigDiagramWidth - paddingBig;
-    smallLine5.x1.baseVal.value = paddingBig;
-    smallLine5.x2.baseVal.value = bigDiagramWidth - paddingBig;
-    smallLine6.x1.baseVal.value = paddingBig;
-    smallLine6.x2.baseVal.value = bigDiagramWidth - paddingBig;
-    smallLine7.y1.baseVal.value = paddingBig;
-    smallLine7.y2.baseVal.value = bigDiagramWidth - paddingBig;
-    smallLine8.y1.baseVal.value = paddingBig;
-    smallLine8.y2.baseVal.value = bigDiagramWidth - paddingBig;
+    smallLine1.x1.baseVal.value = paddingBig2;
+    smallLine1.x2.baseVal.value = bigDiagramWidth - paddingBig1;
+    smallLine1.y1.baseVal.value = paddingBig1;
+    smallLine1.y2.baseVal.value = paddingBig1;
+    smallLine2.x1.baseVal.value = bigDiagramWidth - paddingBig1;
+    smallLine2.x2.baseVal.value = bigDiagramWidth - paddingBig1;
+    smallLine2.y1.baseVal.value = paddingBig1;
+    smallLine2.y2.baseVal.value = bigDiagramWidth - paddingBig2;
+    smallLine3.x1.baseVal.value = paddingBig2;
+    smallLine3.x2.baseVal.value = bigDiagramWidth - paddingBig1;
+    smallLine3.y1.baseVal.value = bigDiagramWidth - paddingBig2;
+    smallLine3.y2.baseVal.value = bigDiagramWidth - paddingBig2;
+    smallLine4.x1.baseVal.value = paddingBig2;
+    smallLine4.x2.baseVal.value = paddingBig2;
+    smallLine4.y1.baseVal.value = paddingBig1;
+    smallLine4.y2.baseVal.value = bigDiagramWidth - paddingBig2;
+    smallLine5.x1.baseVal.value = paddingBig2;
+    smallLine5.x2.baseVal.value = bigDiagramWidth - paddingBig1;
+    smallLine6.x1.baseVal.value = paddingBig2;
+    smallLine6.x2.baseVal.value = bigDiagramWidth - paddingBig1;
+    smallLine7.y1.baseVal.value = paddingBig1;
+    smallLine7.y2.baseVal.value = bigDiagramWidth - paddingBig2;
+    smallLine8.y1.baseVal.value = paddingBig1;
+    smallLine8.y2.baseVal.value = bigDiagramWidth - paddingBig2;
+    const smallRGBLineWidth = smallLineWidth*5;
+    smallRedLine1.style.stroke = "red";
+    smallRedLine1.style.strokeWidth = smallRGBLineWidth;
+    smallRedLine2.style.stroke = "red";
+    smallRedLine2.style.strokeWidth = smallRGBLineWidth;
+    smallGreenLine1.style.stroke = "green";
+    smallGreenLine1.style.strokeWidth = smallRGBLineWidth;
+    smallGreenLine2.style.stroke = "green";
+    smallGreenLine2.style.strokeWidth = smallRGBLineWidth;
+    smallBlueLine1.style.stroke = "blue";
+    smallBlueLine1.style.strokeWidth = smallRGBLineWidth;
+    smallBlueLine2.style.stroke = "blue";
+    smallBlueLine2.style.strokeWidth = smallRGBLineWidth;
+    smallCorner.style.fill = "red";
+    smallCorner.r.baseVal.value = smallRGBLineWidth/2;
+
+    transUtilBoundary.style.stroke = brown;
+    transUtilBoundary.style.strokeWidth = lineWidthBig*widthBig;
+    transUtilBoundary.style.strokeOpacity = 0;
+    transUtilBoundary.x1.baseVal.value = 0;
+    transUtilBoundary.y2.baseVal.value = widthBig+paddingBig1+paddingBig2;
+
+    redBox.style.fill = "red";
+    redBox.style.opacity = 0.5;
+    greenBox.style.fill = "green";
+    greenBox.style.opacity = 0.5;
+    blueBox.style.fill = "blue";
+    blueBox.style.opacity = 0.5;
 
     const disagreementPoint = document.getElementById("disagreement-point");
-    const bargainingPoint = document.getElementById("bargaining-returns");
+    const bargainingPoint1 = document.getElementById("bargaining-returns-1");
+    const bargainingPoint2 = document.getElementById("bargaining-returns-2");
+    const bargainingPoint3 = document.getElementById("bargaining-returns-3");
+    const bargainingPoint4 = document.getElementById("bargaining-returns-4");
+    const bargainingPoint3poly = document.getElementById("bargaining-returns-3-poly");
+    const bargainingPoint4poly = document.getElementById("bargaining-returns-4-poly");
     const bargainingLine = document.getElementById("bargaining-line");
-    disagreementPoint.r.baseVal.value = lineWidthBig*widthBig*0.6;
+    disagreementPoint.r.baseVal.value = lineWidthBig*widthBig*0.55;
     disagreementPoint.style.fill = brown;
-    bargainingPoint.r.baseVal.value = lineWidthBig*widthBig*0.6;
-    bargainingPoint.style.fill = brown;
+    bargainingPoint1.r.baseVal.value = lineWidthBig*widthBig*0.7;
+    bargainingPoint1.style.fill = brown;
+    bargainingPoint2.r.baseVal.value = lineWidthBig*widthBig*0.7;
+    bargainingPoint2.style.fill = brown;
+    bargainingPoint3.style.fill = brown;
+    bargainingPoint4.style.fill = brown;
     bargainingLine.style.stroke = brown;
     bargainingLine.style.strokeWidth = lineWidthBig*widthBig*0.6;
+
+    xWidth = lineWidthBig*widthBig*1.7;
+    const xParameter = 4;
+    const str = (xWidth) + "," + (xWidth-xParameter) + " " + 
+        (xWidth/2+xParameter) + "," + (xWidth/2) + " " + 
+        (xWidth) + "," + (xParameter) + " " + 
+        (xWidth-xParameter) + "," + (0) + " " + 
+        (xWidth/2) + "," + (xWidth/2-xParameter) + " " + 
+        (xParameter) + "," + (0) + " " + 
+        (0) + "," + (xParameter) + " " + 
+        (xWidth/2-xParameter) + "," + (xWidth/2) + " " + 
+        (0) + "," + (xWidth-xParameter) + " " + 
+        (xParameter) + "," + (xWidth) + " " + 
+        (xWidth/2) + "," + (xWidth/2+xParameter) + " " + 
+        (xWidth-xParameter) + "," + (xWidth);
+    bargainingPoint3poly.setAttribute("points",str);
+    bargainingPoint4poly.setAttribute("points",str);
+
     disagreementPoint.style.fillOpacity = 0;
-    bargainingPoint.style.fillOpacity = 0;
+    bargainingPoint1.style.fillOpacity = 0;
+    bargainingPoint2.style.fillOpacity = 0;
+    bargainingPoint3.style.fillOpacity = 0;
+    bargainingPoint4.style.fillOpacity = 0;
     bargainingLine.style.strokeOpacity = 0;
 
     const container = document.getElementById("container");
@@ -337,6 +412,11 @@ function init() {
         if (isMouseDown) {
             changeCoords(e);
         }
+        if (!showAllReturnsAlways && document.elementsFromPoint(e.clientX, e.clientY).includes(document.getElementById("big-diagram"))) {
+            showAllReturns = true;
+        } else if (!showAllReturnsAlways) {
+            showAllReturns = false;
+        }
     });
     brRowPlayerPoly.addEventListener("mousedown", (e) => {
         draggingRhombus1 = true;
@@ -383,6 +463,15 @@ function init() {
                     break;
                 case "r":
                     randomGame();
+                    break;
+                case "v":
+                    showAllReturnsAlways = !showAllReturnsAlways;
+                    showAllReturns = showAllReturnsAlways;
+                    break;
+                case "c":
+                    if (!useAltSchema) coords = [...nearestCentroid,2,2];
+                    else coords = [...standardToAltCoords(...[...nearestCentroid,2,2]),2,2];
+                    backgroundOutOfDate = true;
                     break;
             }
         } else {
@@ -440,9 +529,6 @@ function init() {
                 break;
             case "s":
                 b2down = false;
-                break;
-            case "c":
-                createDiagram();
                 break;
         }
     });
@@ -780,6 +866,38 @@ function init() {
     document.getElementById("view-modes").style.display = "none";
     document.getElementById("controls").style.display = "none";
 
+    const legendContainer = document.getElementById("legend-container");
+    const legend = document.getElementById("legend-canvas");
+    const legendLabel1 = document.getElementById("legend-label-1");
+    const legendLabel2 = document.getElementById("legend-label-2");
+    const legendLabel3 = document.getElementById("legend-label-3");
+    const legendLabel4 = document.getElementById("legend-label-4");
+
+    legend.getContext("2d", { willReadFrequently: true});
+    legend.width = legendContainer.width.baseVal.value;
+    legend.height = legendContainer.height.baseVal.value;
+    const ctx = legend.getContext("2d");
+    const imageData = ctx.getImageData(0, 0, legend.width, legend.height);
+    const data = imageData.data;
+    for (let i = 0; i < legend.width; i++) {
+        const color = colorFunction(i/legend.width*1.5);
+        for (let j = 0; j < legend.height; j++) {
+            data[(j*legend.width+i)*4]   = color[0];
+            data[(j*legend.width+i)*4+1] = color[1];
+            data[(j*legend.width+i)*4+2] = color[2];
+            data[(j*legend.width+i)*4+3] = 255;
+        }
+    }
+    ctx.putImageData(imageData,0,0);
+    legendLabel1.setAttribute("x",0);
+    legendLabel1.setAttribute("y",legend.height+20);
+    legendLabel2.setAttribute("x",legend.width*0.33-7);
+    legendLabel2.setAttribute("y",legend.height+20);
+    legendLabel3.setAttribute("x",legend.width*0.66-7);
+    legendLabel3.setAttribute("y",legend.height+20);
+    legendLabel4.setAttribute("x",legend.width-15);
+    legendLabel4.setAttribute("y",legend.height+20);
+
     update();
 }
 
@@ -902,8 +1020,9 @@ function update() {
         coords[1] = fromNearestRed(startPoint[5], (animTime/animationFrames*destination[1] + (1 - animTime/animationFrames)*startPoint[1])/(6 - coords[3]));
         backgroundOutOfDate = true;
         updateRequired = true;
-        if (animTime == animationFrames)
+        if (animTime == animationFrames) {
             enRoute = false;
+        }
     }
 
     if (diagramGrid && updateRequired) {
@@ -1060,72 +1179,131 @@ function update() {
     const smallLine6 = document.getElementById("small-line-6");
     const smallLine7 = document.getElementById("small-line-7");
     const smallLine8 = document.getElementById("small-line-8");
+    const smallRedLine1 = document.getElementById("small-red-line-1");
+    const smallRedLine2 = document.getElementById("small-red-line-2");
+    const smallGreenLine1 = document.getElementById("small-green-line-1");
+    const smallGreenLine2 = document.getElementById("small-green-line-2");
+    const smallBlueLine1 = document.getElementById("small-blue-line-1");
+    const smallBlueLine2 = document.getElementById("small-blue-line-2");
+    const smallCorner = document.getElementById("small-corner");
+    const redBox = document.getElementById("red-box");
+    const greenBox = document.getElementById("green-box");
+    const blueBox = document.getElementById("blue-box");
+
     const disagreementPoint = document.getElementById("disagreement-point");
-    const bargainingPoint = document.getElementById("bargaining-returns");
+    const bargainingPoint1 = document.getElementById("bargaining-returns-1");
+    const bargainingPoint2 = document.getElementById("bargaining-returns-2");
+    const bargainingPoint3 = document.getElementById("bargaining-returns-3");
+    const bargainingPoint4 = document.getElementById("bargaining-returns-4");
     const bargainingLine = document.getElementById("bargaining-line");
+    const transUtilBoundary = document.getElementById("transferable-util-boundary");
 
     const bigDiagramWidth = bigDiagram.getBoundingClientRect().width;
-    const paddingBig = 0.1*bigDiagramWidth;
-    const widthBig = bigDiagramWidth - 2*paddingBig;
-    line1Big.x1.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
-    line1Big.x2.baseVal.value = matrixA[1]*widthBig/6+paddingBig;
-    line2Big.x1.baseVal.value = matrixA[1]*widthBig/6+paddingBig;
-    line2Big.x2.baseVal.value = matrixA[3]*widthBig/6+paddingBig;
-    line3Big.x1.baseVal.value = matrixA[3]*widthBig/6+paddingBig;
-    line3Big.x2.baseVal.value = matrixA[2]*widthBig/6+paddingBig;
-    line4Big.x1.baseVal.value = matrixA[2]*widthBig/6+paddingBig;
-    line4Big.x2.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
-    line5Big.x1.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
-    line5Big.x2.baseVal.value = matrixA[3]*widthBig/6+paddingBig;
-    line6Big.x1.baseVal.value = matrixA[1]*widthBig/6+paddingBig;
-    line6Big.x2.baseVal.value = matrixA[2]*widthBig/6+paddingBig;
+    const paddingBig1 = 0.32*bigDiagramWidth;
+    const paddingBig2 = 0.04*bigDiagramWidth;
+    const widthBig = bigDiagramWidth - paddingBig1 - paddingBig2;
+    line1Big.x1.baseVal.value = matrixA[0]*widthBig/6+paddingBig2;
+    line1Big.x2.baseVal.value = matrixA[1]*widthBig/6+paddingBig2;
+    line2Big.x1.baseVal.value = matrixA[1]*widthBig/6+paddingBig2;
+    line2Big.x2.baseVal.value = matrixA[3]*widthBig/6+paddingBig2;
+    line3Big.x1.baseVal.value = matrixA[3]*widthBig/6+paddingBig2;
+    line3Big.x2.baseVal.value = matrixA[2]*widthBig/6+paddingBig2;
+    line4Big.x1.baseVal.value = matrixA[2]*widthBig/6+paddingBig2;
+    line4Big.x2.baseVal.value = matrixA[0]*widthBig/6+paddingBig2;
+    line5Big.x1.baseVal.value = matrixA[0]*widthBig/6+paddingBig2;
+    line5Big.x2.baseVal.value = matrixA[3]*widthBig/6+paddingBig2;
+    line6Big.x1.baseVal.value = matrixA[1]*widthBig/6+paddingBig2;
+    line6Big.x2.baseVal.value = matrixA[2]*widthBig/6+paddingBig2;
 
-    line1Big.y1.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
-    line1Big.y2.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig;
-    line2Big.y1.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig;
-    line2Big.y2.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig;
-    line3Big.y1.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig;
-    line3Big.y2.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig;
-    line4Big.y1.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig;
-    line4Big.y2.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
-    line5Big.y1.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
-    line5Big.y2.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig;
-    line6Big.y1.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig;
-    line6Big.y2.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig;
+    line1Big.y1.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig1;
+    line1Big.y2.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig1;
+    line2Big.y1.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig1;
+    line2Big.y2.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig1;
+    line3Big.y1.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig1;
+    line3Big.y2.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig1;
+    line4Big.y1.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig1;
+    line4Big.y2.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig1;
+    line5Big.y1.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig1;
+    line5Big.y2.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig1;
+    line6Big.y1.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig1;
+    line6Big.y2.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig1;
 
-    point1Big.cx.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
-    point1Big.cy.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
-    number1.setAttribute('x',matrixA[0]*widthBig/6+paddingBig);
-    number1.setAttribute('y',(1-matrixB[0]/6)*widthBig+paddingBig);
-    point2Big.cx.baseVal.value = matrixA[1]*widthBig/6+paddingBig;
-    point2Big.cy.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig;
-    number2.setAttribute('x',matrixA[1]*widthBig/6+paddingBig);
-    number2.setAttribute('y',(1-matrixB[1]/6)*widthBig+paddingBig);
-    point3Big.cx.baseVal.value = matrixA[2]*widthBig/6+paddingBig;
-    point3Big.cy.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig;
-    number3.setAttribute('x',matrixA[2]*widthBig/6+paddingBig);
-    number3.setAttribute('y',(1-matrixB[2]/6)*widthBig+paddingBig);
-    point4Big.cx.baseVal.value = matrixA[3]*widthBig/6+paddingBig;
-    point4Big.cy.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig;
-    number4.setAttribute('x',matrixA[3]*widthBig/6+paddingBig);
-    number4.setAttribute('y',(1-matrixB[3]/6)*widthBig+paddingBig);
+    point1Big.cx.baseVal.value = matrixA[0]*widthBig/6+paddingBig2;
+    point1Big.cy.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig1;
+    number1.setAttribute('x',matrixA[0]*widthBig/6+paddingBig2);
+    number1.setAttribute('y',(1-matrixB[0]/6)*widthBig+paddingBig1);
+    point2Big.cx.baseVal.value = matrixA[1]*widthBig/6+paddingBig2;
+    point2Big.cy.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig1;
+    number2.setAttribute('x',matrixA[1]*widthBig/6+paddingBig2);
+    number2.setAttribute('y',(1-matrixB[1]/6)*widthBig+paddingBig1);
+    point3Big.cx.baseVal.value = matrixA[2]*widthBig/6+paddingBig2;
+    point3Big.cy.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig1;
+    number3.setAttribute('x',matrixA[2]*widthBig/6+paddingBig2);
+    number3.setAttribute('y',(1-matrixB[2]/6)*widthBig+paddingBig1);
+    point4Big.cx.baseVal.value = matrixA[3]*widthBig/6+paddingBig2;
+    point4Big.cy.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig1;
+    number4.setAttribute('x',matrixA[3]*widthBig/6+paddingBig2);
+    number4.setAttribute('y',(1-matrixB[3]/6)*widthBig+paddingBig1);
 
     if (viewMode == 5 || viewMode == 6) {
-        disagreementPoint.cx.baseVal.value = disagree[0]*widthBig/6+paddingBig;
-        disagreementPoint.cy.baseVal.value = (6-disagree[1])*widthBig/6+paddingBig;
-        bargainingPoint.cx.baseVal.value = bargainingReturns[0]*widthBig/6+paddingBig;
-        bargainingPoint.cy.baseVal.value = (6-bargainingReturns[1])*widthBig/6+paddingBig;
-        bargainingLine.x1.baseVal.value = disagree[0]*widthBig/6+paddingBig;
-        bargainingLine.y1.baseVal.value = (6-disagree[1])*widthBig/6+paddingBig;
-        bargainingLine.x2.baseVal.value = bargainingReturns[0]*widthBig/6+paddingBig;
-        bargainingLine.y2.baseVal.value = (6-bargainingReturns[1])*widthBig/6+paddingBig;
+        if (viewMode == 5) {
+            bargainingLine.x2.baseVal.value = bargainingReturns[0][0]*widthBig/6+paddingBig2;
+            bargainingLine.y2.baseVal.value = (6-bargainingReturns[0][1])*widthBig/6+paddingBig1;
+        } else {
+            bargainingLine.x2.baseVal.value = bargainingReturns[1][0]*widthBig/6+paddingBig2;
+            bargainingLine.y2.baseVal.value = (6-bargainingReturns[1][1])*widthBig/6+paddingBig1;
+        }
+        disagreementPoint.cx.baseVal.value = disagree[0]*widthBig/6+paddingBig2;
+        disagreementPoint.cy.baseVal.value = (6-disagree[1])*widthBig/6+paddingBig1;
+        bargainingLine.x1.baseVal.value = disagree[0]*widthBig/6+paddingBig2;
+        bargainingLine.y1.baseVal.value = (6-disagree[1])*widthBig/6+paddingBig1;
         disagreementPoint.style.fillOpacity = 1;
-        bargainingPoint.style.fillOpacity = 1;
         bargainingLine.style.strokeOpacity = 1;
     } else {
         disagreementPoint.style.fillOpacity = 0;
-        bargainingPoint.style.fillOpacity = 0;
         bargainingLine.style.strokeOpacity = 0;
+    }
+
+    if (viewMode == 5 || showAllReturns) {
+        bargainingPoint1.cx.baseVal.value = bargainingReturns[0][0]*widthBig/6+paddingBig2;
+        bargainingPoint1.cy.baseVal.value = (6-bargainingReturns[0][1])*widthBig/6+paddingBig1;
+        bargainingPoint1.style.fillOpacity = 1;
+    } else {
+        bargainingPoint1.style.fillOpacity = 0;
+    }
+
+    if (viewMode == 6 || showAllReturns) {
+        bargainingPoint3.x.baseVal.value = bargainingReturns[1][0]*widthBig/6+paddingBig2 - xWidth/2;
+        bargainingPoint3.y.baseVal.value = (6-bargainingReturns[1][1])*widthBig/6+paddingBig1 - xWidth/2;
+        bargainingPoint3.style.fillOpacity = 1;
+    } else {
+        bargainingPoint3.style.fillOpacity = 0;
+    }
+    
+    if (viewMode == 9 || viewMode == 4 || showAllReturns) {
+        transUtilBoundary.x2.baseVal.value = (bargainingReturns[2][0]+bargainingReturns[2][1])/6*widthBig+paddingBig2*2;
+        transUtilBoundary.y1.baseVal.value = widthBig - (bargainingReturns[2][0]+bargainingReturns[2][1])/6*widthBig + paddingBig1 - paddingBig2;
+        transUtilBoundary.style.strokeOpacity = 0.5;
+    } else {
+        transUtilBoundary.style.strokeOpacity = 0;
+        bargainingPoint2.style.fillOpacity = 0;
+        bargainingPoint4.style.fillOpacity = 0;
+    }
+
+    if (viewMode == 9 || showAllReturns) {
+        bargainingPoint2.style.fillOpacity = 1;
+        bargainingPoint2.cx.baseVal.value = bargainingReturns[2][0]/6*widthBig+paddingBig2;
+        bargainingPoint2.cy.baseVal.value = (1-bargainingReturns[2][1]/6)*widthBig+paddingBig1;
+    } else {
+        bargainingPoint2.style.fillOpacity = 0;
+    }
+
+    if (viewMode == 4 || showAllReturns) {
+        bargainingPoint4.style.fillOpacity = 1;
+        bargainingPoint4.x.baseVal.value = bargainingReturns[3][0]/6*widthBig+paddingBig2 - xWidth/2;
+        bargainingPoint4.y.baseVal.value = (1-bargainingReturns[3][1]/6)*widthBig+paddingBig1 - xWidth/2;
+    } else {
+        bargainingPoint4.style.fillOpacity = 0;
     }
 
     const overlap = [1,1,1,1];
@@ -1148,14 +1326,14 @@ function update() {
     if (overlap[3] == 1) number4.style.display = "none";
     else number4.style.display = "";
 
-    corner1Big.cx.baseVal.value = matrixA[0]*widthBig/6+paddingBig;
-    corner1Big.cy.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig;
-    corner2Big.cx.baseVal.value = matrixA[1]*widthBig/6+paddingBig;
-    corner2Big.cy.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig;
-    corner3Big.cx.baseVal.value = matrixA[2]*widthBig/6+paddingBig;
-    corner3Big.cy.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig;
-    corner4Big.cx.baseVal.value = matrixA[3]*widthBig/6+paddingBig;
-    corner4Big.cy.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig;
+    corner1Big.cx.baseVal.value = matrixA[0]*widthBig/6+paddingBig2;
+    corner1Big.cy.baseVal.value = (1-matrixB[0]/6)*widthBig+paddingBig1;
+    corner2Big.cx.baseVal.value = matrixA[1]*widthBig/6+paddingBig2;
+    corner2Big.cy.baseVal.value = (1-matrixB[1]/6)*widthBig+paddingBig1;
+    corner3Big.cx.baseVal.value = matrixA[2]*widthBig/6+paddingBig2;
+    corner3Big.cy.baseVal.value = (1-matrixB[2]/6)*widthBig+paddingBig1;
+    corner4Big.cx.baseVal.value = matrixA[3]*widthBig/6+paddingBig2;
+    corner4Big.cy.baseVal.value = (1-matrixB[3]/6)*widthBig+paddingBig1;
 
     // top1.x2.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
     // top2.x1.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
@@ -1174,14 +1352,54 @@ function update() {
     // bottom2.x2.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
     // bottom3.x1.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
 
-    smallLine5.y1.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
-    smallLine5.y2.baseVal.value = paddingBig + (1-take(matrixB,2)/6)*widthBig;
-    smallLine6.y1.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
-    smallLine6.y2.baseVal.value = paddingBig + (1-take(matrixB,1)/6)*widthBig;
-    smallLine7.x1.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
-    smallLine7.x2.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
-    smallLine8.x1.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
-    smallLine8.x2.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
+    smallLine5.y1.baseVal.value = paddingBig1 + (1-take(matrixB,2)/6)*widthBig;
+    smallLine5.y2.baseVal.value = paddingBig1 + (1-take(matrixB,2)/6)*widthBig;
+    smallLine6.y1.baseVal.value = paddingBig1 + (1-take(matrixB,1)/6)*widthBig;
+    smallLine6.y2.baseVal.value = paddingBig1 + (1-take(matrixB,1)/6)*widthBig;
+    smallLine7.x1.baseVal.value = paddingBig2 + take(matrixA,2)/6*widthBig;
+    smallLine7.x2.baseVal.value = paddingBig2 + take(matrixA,2)/6*widthBig;
+    smallLine8.x1.baseVal.value = paddingBig2 + take(matrixA,1)/6*widthBig;
+    smallLine8.x2.baseVal.value = paddingBig2 + take(matrixA,1)/6*widthBig;
+
+    smallRedLine1.x1.baseVal.value = paddingBig2;
+    smallRedLine1.x2.baseVal.value = paddingBig2 + take(matrixA,1)/6*widthBig;
+    smallRedLine1.y1.baseVal.value = paddingBig1 + widthBig;
+    smallRedLine1.y2.baseVal.value = paddingBig1 + widthBig;
+    smallGreenLine1.x1.baseVal.value = paddingBig2 + take(matrixA,1)/6*widthBig;
+    smallGreenLine1.x2.baseVal.value = paddingBig2 + take(matrixA,2)/6*widthBig;
+    smallGreenLine1.y1.baseVal.value = paddingBig1 + widthBig;
+    smallGreenLine1.y2.baseVal.value = paddingBig1 + widthBig;
+    smallBlueLine1.x1.baseVal.value = paddingBig2 + take(matrixA,2)/6*widthBig;
+    smallBlueLine1.x2.baseVal.value = paddingBig2 + widthBig;
+    smallBlueLine1.y1.baseVal.value = paddingBig1 + widthBig;
+    smallBlueLine1.y2.baseVal.value = paddingBig1 + widthBig;
+    smallRedLine2.x1.baseVal.value = paddingBig2;
+    smallRedLine2.x2.baseVal.value = paddingBig2;
+    smallRedLine2.y1.baseVal.value = paddingBig1 + widthBig;
+    smallRedLine2.y2.baseVal.value = paddingBig1 + (1-take(matrixB,1)/6)*widthBig;
+    smallGreenLine2.x1.baseVal.value = paddingBig2;
+    smallGreenLine2.x2.baseVal.value = paddingBig2;
+    smallGreenLine2.y1.baseVal.value = paddingBig1 + (1-take(matrixB,2)/6)*widthBig;
+    smallGreenLine2.y2.baseVal.value = paddingBig1 + (1-take(matrixB,1)/6)*widthBig;
+    smallBlueLine2.x1.baseVal.value = paddingBig2;
+    smallBlueLine2.x2.baseVal.value = paddingBig2;
+    smallBlueLine2.y1.baseVal.value = paddingBig1 + (1-take(matrixB,2)/6)*widthBig;
+    smallBlueLine2.y2.baseVal.value = paddingBig1;
+    smallCorner.cx.baseVal.value = paddingBig2;
+    smallCorner.cy.baseVal.value = paddingBig1 + widthBig;
+
+    redBox.x.baseVal.value = paddingBig2;
+    redBox.y.baseVal.value = paddingBig1 + (1-take(matrixB,1)/6)*widthBig;
+    redBox.width.baseVal.value = take(matrixA,1)/6*widthBig;
+    redBox.height.baseVal.value = take(matrixB,1)/6*widthBig;
+    greenBox.x.baseVal.value = paddingBig2 + take(matrixA,1)/6*widthBig;
+    greenBox.y.baseVal.value = paddingBig1 + (1-take(matrixB,2)/6)*widthBig;
+    greenBox.width.baseVal.value = (take(matrixA,2)-take(matrixA,1))/6*widthBig;
+    greenBox.height.baseVal.value = (take(matrixB,2)-take(matrixB,1))/6*widthBig;
+    blueBox.x.baseVal.value = paddingBig2 + take(matrixA,2)/6*widthBig;
+    blueBox.y.baseVal.value = paddingBig1;
+    blueBox.width.baseVal.value = (6-take(matrixA,2))/6*widthBig;
+    blueBox.height.baseVal.value = (6-take(matrixB,2))/6*widthBig;
 
     // top1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
     // top2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
@@ -1765,8 +1983,8 @@ function update() {
         const mixedCol = mixedPayoff(matrixB);
         point5Big.style = "fill:" + mixedColor;
         point5Big.style.r = eqRadiiBig*widthBig;
-        point5Big.cx.baseVal.value = mixedRow*widthBig/6+paddingBig;
-        point5Big.cy.baseVal.value = (1-mixedCol/6)*widthBig+paddingBig;
+        point5Big.cx.baseVal.value = mixedRow*widthBig/6+paddingBig2;
+        point5Big.cy.baseVal.value = (1-mixedCol/6)*widthBig+paddingBig1;
         if (6 - mixedRow < error && 6 - mixedCol < error) point5Big.style.opacity = 0;
     } else {
         point5Big.style.opacity = 0;
@@ -2505,6 +2723,13 @@ function update() {
         ctx.putImageData(imageData,0,0);
     }
 
+    if (coords[0] % 1 != 0) {
+        nearestCentroid[0] = Math.round(coords[0]-0.5)+0.5;
+    }
+    if (coords[1] % 1 != 0) {
+        nearestCentroid[1] = Math.round(coords[1]-0.5)+0.5;
+    }
+
     time++;
 }
 
@@ -2903,6 +3128,7 @@ function changeCoords(e) {
         }
     }
     if (draggingB1 || draggingB2) {
+        backgroundOutOfDate = true;
         const container = document.getElementById("container");
         const diagram = document.getElementById("diagram");
         if (draggingB1) {
@@ -3035,6 +3261,7 @@ function changeCoords(e) {
     }
 
     if (draggingRhombus1 || draggingRhombus2) {
+        backgroundOutOfDate = true;
         const birhombicPic = document.getElementById("birhombic-pic");
         const birhombicWidth = birhombicPic.width.baseVal.value;
         const birhombicHeight = birhombicPic.height.baseVal.value;
@@ -3260,6 +3487,10 @@ function payoffShapley(m1, m2) {
     if (Math.min(m2[0],m2[2]) < Math.min(m2[1],m2[3])) colBackstop = Math.min(m2[1],m2[3]);
     else colBackstop = Math.min(m2[0],m2[2]);
 
+    bargainingReturns[2] = [(max + rowBackstop - colBackstop)/2,(max + colBackstop - rowBackstop)/2];
+    if (viewMode == 9) {
+        disagree = [rowBackstop, colBackstop];
+    }
     return [(max + rowBackstop - colBackstop)/2,(max + colBackstop - rowBackstop)/2];
 }
 
@@ -3275,6 +3506,11 @@ function payoffCoco(m1, m2) {
             biggestEntry = i;
             max = m1[i]+m2[i];
         }
+    }
+    
+    bargainingReturns[3] = [(max + zeroSumPayoff)/2, (max - zeroSumPayoff)/2];
+    if (viewMode == 4) {
+        disagree = [zeroSumPayoff, 6-zeroSumPayoff];
     }
     return [(max + zeroSumPayoff)/2, (max - zeroSumPayoff)/2];
 }
@@ -3341,8 +3577,8 @@ function payoffBargainingBackstop(m1, m2) {
     }
     // console.log("");
     // if (max == 0) return 8;
+    bargainingReturns[0] = [return1,return2];
     if (viewMode == 5) {
-        bargainingReturns = [return1,return2];
         disagree = [rowBackstop, colBackstop];
     }
     return [return1,return2];
@@ -3413,7 +3649,7 @@ function payoffBargainingDisagreement(m1, m2) {
             } else if (value2 >= max && value2 >= value3) {
                 max = value2;
                 return1 = m1[j];
-                return2 = m2[i];
+                return2 = m2[j];
                 // console.log(j + ": " + value2);
             } else if (value3 >= max) {
                 max = value3;
@@ -3425,8 +3661,8 @@ function payoffBargainingDisagreement(m1, m2) {
     }
     // console.log("");
     // if (max == 0) return 8;
+    bargainingReturns[1] = [return1,return2];
     if (viewMode == 6) {
-        bargainingReturns = [return1,return2];
         disagree = [rowDisagreement, colDisagreement];
     }
     return [return1,return2];
@@ -3561,8 +3797,10 @@ function changeViewMode(mode) {
 }
 
 function fixImage(alt) {
-    backgroundOutOfDate = true;
-    if (!useAltSchema) fixImageSize = alt;
+    if (!useAltSchema) {
+        fixImageSize = alt;
+        backgroundOutOfDate = true;
+    }
     const fixImageButton1 = document.getElementById("fix-image-button-1");
     const fixImageButton2 = document.getElementById("fix-image-button-2");
     const diagram = document.getElementById("diagram");
@@ -3571,7 +3809,7 @@ function fixImage(alt) {
         fixImageButton1.classList.remove("selected");
         fixImageButton2.classList.add("selected");
         diagram.style.opacity = 0;
-        updateDiagramGrid();
+        // updateDiagramGrid();
     } else if (diagramGrid && !alt) {
         diagramGrid = alt;
         fixImageButton2.classList.remove("selected");
@@ -4133,7 +4371,10 @@ function altImage(alt) {
     const button1 = document.getElementById("alt-image-button-1");
     const button2 = document.getElementById("alt-image-button-2");
     // useAltSchema = alt;
-    if (!diagramGrid) fixImageSize = !useAltSchema;
+    if (!diagramGrid) {
+        fixImageSize = !useAltSchema;
+        backgroundOutOfDate = true;
+    }
     if (useAltSchema && !alt) {
         useAltSchema = alt;
         button2.classList.remove("selected");

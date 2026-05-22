@@ -134,6 +134,13 @@
 					<option value="returns-bargaining-tp">Bargaining (tp)</option>
 				</select>
 			</p>
+			<svg id="legend">
+				<foreignObject id="legend-container" x="0" y="0" width="20vw" height="30"><canvas id="legend-canvas"></canvas></foreignObject>
+				<text id="legend-label-1">0</text>
+				<text id="legend-label-2">3</text>
+				<text id="legend-label-3">6</text>
+				<text id="legend-label-4">9</text>
+			</svg>
 		</div>
 		<div id="controls">
 			<p>
@@ -152,7 +159,7 @@
 		</div>
 	</div>
 	<div id="pictures">
-		<svg id="big-picture" width="18vw" height="18vw">
+		<svg id="big-picture" width="35vh" height="35vh">
 			<rect x="0" y="0" width="100%" height="100%" fill="white" />
 			<rect id="quad1" x="54%" y="4%" width="42%" height="42%" />
 			<rect id="quad2" x="4%" y="4%" width="42%" height="42%" />
@@ -225,7 +232,7 @@
 			<circle id="big-pic-point2" r="2%" cx="25%" cy="25%" fill="#888" />
 			<circle id="big-pic-point1" r="2%" cx="25%" cy="25%" fill="black" />
 		</svg>
-		<svg id="birhombic-pic" width="25vw" height="11vw">
+		<svg id="birhombic-pic" width="45vh" height="20vh">
 			<polygon id="br-green-background" />
 			<polygon id="br-gold-background" />
 			<polygon id="br-cerulean-background" />
@@ -272,62 +279,80 @@
 			<text id="matrix-class-number-15" text-anchor="middle" dominant-baseline="middle" class="matrix-class-number">3</text>
 			<svg id="br-col-player">
 				<rect id="br-col-rect" opacity="0" />
-				<polygon id="br-col-player-poly" style="fill:#666" />
+				<polygon id="br-col-player-poly" />
 			</svg>
 			<svg id="br-row-player">
 				<rect id="br-row-rect" opacity="0" />
 				<polygon id="br-row-player-poly" />
 			</svg>
 		</svg>
-		<svg id="big-diagram" width="16vw" height="16vw">
-			<line id="small-line-1"/>
-			<line id="small-line-2"/>
-			<line id="small-line-3"/>
-			<line id="small-line-4"/>
-			<line id="small-line-5"/>
-			<line id="small-line-6"/>
-			<line id="small-line-7"/>
-			<line id="small-line-8"/>
-			<line id="line5-big"/>
-			<line id="line6-big"/>
-			<line id="line2-big"/>
-			<line id="line4-big"/>
-			<line id="line1-big"/>
-			<line id="line3-big"/>
-			<circle id="corner1-big"/>
-			<circle id="corner2-big"/>
-			<circle id="corner3-big"/>
-			<circle id="corner4-big"/>
-			<circle id="point1-big"/>
-			<circle id="point2-big"/>
-			<circle id="point3-big"/>
-			<circle id="point4-big"/>
-			<circle id="point5-big"/>
-			<circle id="disagreement-point" />
-			<circle id="bargaining-returns" />
-			<line id="bargaining-line" />
-			<text id="vertex-number-1" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="bold" />
-			<text id="vertex-number-2" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="bold" />
-			<text id="vertex-number-3" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="bold" />
-			<text id="vertex-number-4" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="bold" />
-			<!-- <line id="gold-bar-1"/>
-			<line id="gold-bar-2"/>
-			<line id="gold-bar-3"/>
-			<line id="gold-bar-4"/>
-			<line id="top-1-big"/>
-			<line id="top-2-big"/>
-			<line id="top-3-big"/>
-			<line id="left-1-big"/>
-			<line id="left-2-big"/>
-			<line id="left-3-big"/>
-			<line id="right-1-big"/>
-			<line id="right-2-big"/>
-			<line id="right-3-big"/>
-			<line id="bottom-1-big"/>
-			<line id="bottom-2-big"/>
-			<line id="bottom-3-big"/> -->
-		</svg>
 	</div>
+	<svg id="big-diagram" width="45vh" height="45vh" style="position:absolute;right:0;bottom:0;">
+		<rect id="red-box"/>
+		<rect id="green-box"/>
+		<rect id="blue-box"/>
+		<line id="small-line-1"/>
+		<line id="small-line-2"/>
+		<line id="small-line-3"/>
+		<line id="small-line-4"/>
+		<line id="small-line-5"/>
+		<line id="small-line-6"/>
+		<line id="small-line-7"/>
+		<line id="small-line-8"/>
+		<line id="small-red-line-1"/>
+		<line id="small-red-line-2"/>
+		<line id="small-green-line-1"/>
+		<line id="small-green-line-2"/>
+		<line id="small-blue-line-1"/>
+		<line id="small-blue-line-2"/>
+		<circle id="small-corner"/>
+		<line id="transferable-util-boundary"/>
+		<line id="line5-big"/>
+		<line id="line6-big"/>
+		<line id="line2-big"/>
+		<line id="line4-big"/>
+		<line id="line1-big"/>
+		<line id="line3-big"/>
+		<circle id="corner1-big"/>
+		<circle id="corner2-big"/>
+		<circle id="corner3-big"/>
+		<circle id="corner4-big"/>
+		<circle id="point1-big"/>
+		<circle id="point2-big"/>
+		<circle id="point3-big"/>
+		<circle id="point4-big"/>
+		<circle id="point5-big"/>
+		<circle id="disagreement-point"/>
+		<circle id="bargaining-returns-1"><title>Backstop returns</title></circle>
+		<circle id="bargaining-returns-2"><title>Shapley returns</title></circle>
+		<svg id="bargaining-returns-3">
+			<polygon id="bargaining-returns-3-poly"><title>Threat point returns</title></polygon>
+		</svg>
+		<svg id="bargaining-returns-4">
+			<polygon id="bargaining-returns-4-poly"><title>Coco returns</title></polygon>
+		</svg>
+		<line id="bargaining-line"/>
+		<text id="vertex-number-1" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="bold" />
+		<text id="vertex-number-2" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="bold" />
+		<text id="vertex-number-3" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="bold" />
+		<text id="vertex-number-4" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="bold" />
+		<!-- <line id="gold-bar-1"/>
+		<line id="gold-bar-2"/>
+		<line id="gold-bar-3"/>
+		<line id="gold-bar-4"/>
+		<line id="top-1-big"/>
+		<line id="top-2-big"/>
+		<line id="top-3-big"/>
+		<line id="left-1-big"/>
+		<line id="left-2-big"/>
+		<line id="left-3-big"/>
+		<line id="right-1-big"/>
+		<line id="right-2-big"/>
+		<line id="right-3-big"/>
+		<line id="bottom-1-big"/>
+		<line id="bottom-2-big"/>
+		<line id="bottom-3-big"/> -->
+	</svg>
 
 	<div style="display: flex;">
 		<svg id="container" width="80vh" height="80vh">
