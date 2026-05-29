@@ -1,3 +1,7 @@
+* {
+    user-select:none;
+}
+
 html, body {
     overflow: hidden;
     height: 100%;
@@ -5,7 +9,7 @@ html, body {
 }
 
 .red-line, .green-line, .edge-line, .blue-line {
-    stroke-width: 1%;
+    stroke-width: 0.8%;
 }
 
 .red-line {
@@ -27,57 +31,6 @@ html, body {
 #container {
     padding:0;
     margin:0;
-}
-
-#x1coord, #b1coord, #x2coord, #b2coord {
-    position: relative;
-    appearance: none;
-    background: #d3d3d3;
-    outline: none;
-    padding: 0;
-    margin: 0;
-}
-
-#x1-label, #b1-label {
-    flex-shrink: 0;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-}
-
-#x2-label, #b2-label {
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    position: relative;
-}
-
-#x1coord::-webkit-slider-thumb, #x2coord::-webkit-slider-thumb {
-    appearance: none;
-    width: 26px;
-    height: 26px;
-    cursor: pointer;
-}
-#b1coord::-webkit-slider-thumb {
-    appearance: none;
-    width: 26px;
-    height: 26px;
-    cursor: pointer;
-}
-
-#x2coord::-webkit-slider-thumb, #b2coord::-webkit-slider-thumb {
-    appearance: none;
-    width: 26px;
-    height: 26px;
-    cursor: pointer;
-}
-
-#x1coord::-webkit-slider-thumb, #x2coord::-webkit-slider-thumb {
-    background: black;
-}
-
-#b1coord::-webkit-slider-thumb, #b2coord::-webkit-slider-thumb {
-    background: blue;
 }
 
 p, h1, td {
@@ -102,6 +55,11 @@ button {
 
 #game-info tr td, #matrices tr td {
     width: 13vw;
+}
+
+#game-info tr td {
+    padding-top: 1vh;
+    text-align: center;
 }
 
 #matrices tr td table {
@@ -192,7 +150,6 @@ span {
     font-weight: bold;
     stroke-width: 1px;
     stroke: black;
-    user-select:none;
     /* text-shadow: 0 0 2px white; */
 }
 
@@ -206,3 +163,4 @@ h2 {
     border-collapse: separate;
     border-spacing: 10px 0;
 }
+

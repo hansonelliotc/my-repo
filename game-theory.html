@@ -41,26 +41,27 @@
 			<tr height="5vh" />
 		</table>
 		<table id="game-info">
-			<tr><td style="text-align:center"><b>Row Player (P1)</b></td><td style="text-align:center"><b>Column Player (P2)</b></td></tr>
-			<tr height="3pt"></tr>
-			<tr><td style="text-align:center" colspan="2">x,b</td></tr>
-			<tr><td style="text-align:center"><span id="x-row"></span>, <span id="b-row"></span></td><td style="text-align:center"><span id="x-col"></span>, <span id="b-col"></span></td></tr>
-			<tr height="3pt"></tr>
-			<tr><td style="text-align:center" colspan="2">Returns (with mixed)</td></tr>
-			<tr><td style="text-align:center"><span id="row-return"></span><span id="row-return-mixed"></span></td><td style="text-align:center"><span id="col-return"></span><span id="col-return-mixed"></span></td></tr>
-			<tr height="3pt"></tr>
-			<tr><td style="text-align:center" colspan="2">Shapley returns</td></tr>
-			<tr><td style="text-align:center"><span id="row-return-transferable"></span></td><td style="text-align:center"><span id="col-return-transferable"></span></td></tr>
-			<tr height="3pt"></tr>
-			<tr><td style="text-align:center" colspan="2">Coco returns</td></tr>
-			<tr><td style="text-align:center"><span id="row-return-coco"></span></td><td style="text-align:center"><span id="col-return-coco"></span></td></tr>
-			<tr height="3pt"></tr>
-			<tr><td style="text-align:center" colspan="2">Bargaining returns (backstop)</td></tr>
-			<tr><td style="text-align:center"><span id="row-return-bargaining-1"></span></td><td style="text-align:center"><span id="col-return-bargaining-1"></span></td></tr>
-			<tr height="3pt"></tr>
-			<tr><td style="text-align:center" colspan="2">Bargaining returns (threat point)</td></tr>
-			<tr><td style="text-align:center"><span id="row-return-bargaining-2"></span></td><td style="text-align:center"><span id="col-return-bargaining-2"></span></td></tr>
-			<tr height="3pt"></tr>
+			<tr><td><b>Row Player (P1)</b></td><td><b>Column Player (P2)</b></td></tr>
+			<tr><td colspan="2">x,b</td></tr>
+			<tr><td><span id="x-row"></span>, <span id="b-row"></span></td><td><span id="x-col"></span>, <span id="b-col"></span></td></tr>
+			<tr><td colspan="2">Returns</td></tr>
+			<tr>
+				<td><span id="row-return"></span>
+					<!-- <span id="row-return-mixed"></span></td> -->
+				<td><span id="col-return"></span>
+					<!-- <span id="col-return-mixed"></span></td> -->
+			</tr>
+			<tr><td colspan="2">Bargaining NTU (backstop, threat point)</td></tr>
+			<tr>
+				<td><span id="row-return-bargaining-1"></span>, <span id="row-return-bargaining-2"></span></td>
+				<td><span id="col-return-bargaining-1"></span>, <span id="col-return-bargaining-2"></span></td>
+			</tr>
+			<tr style="padding:1vh"></tr>
+			<tr><td colspan="2">Bargaining TU (backstop, threat point)</td></tr>
+			<tr>
+				<td><span id="row-return-transferable"></span>, <span id="row-return-coco"></span></td>
+				<td><span id="col-return-transferable"></span>, <span id="col-return-coco"></span></td>
+			</tr>
 		</table>
 		<table id="navigation">
 			<tr><td colspan="2"><h2>Discontinuous Operations</h2></td></tr>
@@ -108,38 +109,44 @@
 		</table>
 		<br>
 		<div id="view-modes">
-			<button class="mode-button selected" id="regular-mode" onclick="changeViewMode(0)">Regular view</button>
-			<span><button class="half-mode-button" id="return-mode-2" onclick="changeViewMode(3)">Returns</button></span><span><button class="half-mode-button" id="return-mode-1" onclick="changeViewMode(1)">Use mixed</button></span>
-			<button class="mode-button" id="transferable-mode" onclick="changeViewMode(2)">Transferable</button>
-			<span><button class="half-mode-button" id="shapley-mode" onclick="changeViewMode(9)">Shapley returns</button></span><span><button class="half-mode-button" id="coco-mode" onclick="changeViewMode(4)">Coco returns</button></span>
-			<span><button class="half-mode-button" id="bargaining-mode-1" onclick="changeViewMode(5)">Bargaining (bs)</button></span><span><button class="half-mode-button" id="bargaining-mode-2" onclick="changeViewMode(6)">Bargaining (tp)</button></span>
-			<button class="mode-button" id="coordination-mode" onclick="changeViewMode(8)">Coordination</button>
-			<button class="mode-button" id="custom-mode" onclick="changeViewMode(7)">Custom</button>
+			<button class="mode-button selected" id="regular-mode" onclick="changeViewMode(0)">Equilibrium</button>
+			<button class="mode-button" id="coordination-mode" onclick="changeViewMode(8)">Correlation</button>
+			<div style="padding:1vh"></div>
+			<span><button class="mode-button" id="return-mode-2" onclick="changeViewMode(3)">Returns</button></span></span>
+			<span><button class="half-mode-button" id="bargaining-mode-1" onclick="changeViewMode(5)">Backstop NTU</button></span><span><button class="half-mode-button" id="bargaining-mode-2" onclick="changeViewMode(6)">Threat point NTU</button></span>
+			<span><button class="half-mode-button" id="shapley-mode" onclick="changeViewMode(9)">Backstop TU</button></span><span><button class="half-mode-button" id="coco-mode" onclick="changeViewMode(4)">Threat point TU</button></span>
+			<button class="mode-button" id="transferable-mode" onclick="changeViewMode(2)">Max Total</button>
+			<div style="padding:1vh"></div>
+			<button class="mode-button" id="custom-mode" onclick="changeViewMode(7)">Difference</button>
 			<p id="custom-options">
 				<select name="Choice 1" id="view-custom-1">
 					<option value="returns">Returns</option>
-					<option value="returns-mixed">Returns with mixed</option>
-					<option value="returns-shapley">Shapley value</option>
-					<option value="returns-coco">Coco returns</option>
-					<option value="returns-bargaining-bs">Bargaining (bs)</option>
-					<option value="returns-bargaining-tp">Bargaining (tp)</option>
+					<!-- <option value="returns-mixed">Returns with mixed</option> -->
+					<option value="returns-bargaining-bs">Backstop NTU</option>
+					<option value="returns-bargaining-tp">Threat point NTU</option>
+					<option value="returns-shapley">Backstop TU</option>
+					<option value="returns-coco">Threat point TU</option>
+					<option value="returns-max-total">Max total</option>
 				</select>
 				minus
 				<select name="Choice 2" id="view-custom-2">
 					<option value="returns">Returns</option>
-					<option value="returns-mixed">Returns with mixed</option>
-					<option value="returns-shapley">Shapley value</option>
-					<option value="returns-coco">Coco returns</option>
-					<option value="returns-bargaining-bs">Bargaining (bs)</option>
-					<option value="returns-bargaining-tp">Bargaining (tp)</option>
+					<!-- <option value="returns-mixed">Returns with mixed</option> -->
+					<option value="returns-bargaining-bs">Backstop NTU</option>
+					<option value="returns-bargaining-tp">Threat point NTU</option>
+					<option value="returns-shapley">Backstop TU</option>
+					<option value="returns-coco">Threat point TU</option>
+					<option value="returns-max-total">Max total</option>
 				</select>
 			</p>
 			<svg id="legend">
 				<foreignObject id="legend-container" x="0" y="0" width="20vw" height="30"><canvas id="legend-canvas"></canvas></foreignObject>
 				<text id="legend-label-1">0</text>
-				<text id="legend-label-2">3</text>
-				<text id="legend-label-3">6</text>
-				<text id="legend-label-4">9</text>
+				<text id="legend-label-2">2</text>
+				<text id="legend-label-3">4</text>
+				<text id="legend-label-4">6</text>
+				<text id="legend-label-5">9</text>
+				<text id="legend-label-6">0</text>
 			</svg>
 		</div>
 		<div id="controls">
@@ -262,6 +269,9 @@
 			<circle id="br-blue-corner-2" />
 			<circle id="br-blue-corner-3" />
 			<circle id="br-blue-corner-4" />
+			<polygon id="br-hex-1" />
+			<polygon id="br-hex-2" />
+			<polygon id="br-hex-3" />
 			<text id="matrix-class-number-1" text-anchor="middle" dominant-baseline="middle" class="matrix-class-number">3</text>
 			<text id="matrix-class-number-2" text-anchor="middle" dominant-baseline="middle" class="matrix-class-number">D</text>
 			<text id="matrix-class-number-3" text-anchor="middle" dominant-baseline="middle" class="matrix-class-number">3</text>
@@ -419,10 +429,10 @@
 				<line class="green-line" id="green6" />
 				<line class="green-line" id="green7" />
 				<line class="green-line" id="green8" />
-				<circle class="pic-corner" id="green-corner1" r="0.5%" />
-				<circle class="pic-corner" id="green-corner2" r="0.5%" />
-				<circle class="pic-corner" id="green-corner3" r="0.5%" />
-				<circle class="pic-corner" id="green-corner4" r="0.5%" />
+				<circle class="pic-corner" id="green-corner1" r="0.4%" />
+				<circle class="pic-corner" id="green-corner2" r="0.4%" />
+				<circle class="pic-corner" id="green-corner3" r="0.4%" />
+				<circle class="pic-corner" id="green-corner4" r="0.4%" />
 			</svg>
 
 			<svg id="edge-figure">
@@ -473,12 +483,15 @@
 	<input id="b1coord" type="range" min="0" max="6" step="0.01" value="2"></div> -->
 	<table id="display-options" cellspacing="0" cellpadding="0">
 		<tr>
-			<td><button id="fix-image-button-1" onclick="fixImage(false)" class="selected">Show one game</button></td>
+			<td><button id="fix-image-button-0" onclick="hideGame()">Hide game</button></td>
 			<td><button id="alt-image-button-1" onclick="altImage(false)" class="selected">All games</button></td>
 		</tr>
 		<tr>
-			<td><button id="fix-image-button-2" onclick="fixImage(true)">Show 36 games</button></td>
+			<td><button id="fix-image-button-1" onclick="fixImage(false)" class="selected">Show one game</button></td>
 			<td><button id="alt-image-button-2" onclick="altImage(true)">Balanced games only</button></td>
+		</tr>
+		<tr>
+			<td><button id="fix-image-button-2" onclick="fixImage(true)">Show 36 games</button></td>
 		</tr>
 	</table>
 

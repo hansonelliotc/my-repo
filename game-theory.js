@@ -54,7 +54,7 @@ let disagree = [0,0];
 let bargainingReturns = [[0,0],[0,0],[0,0],[0,0]];
 
 const lineWidth = 0.08;
-const lineWidthBig = 0.05;
+const lineWidthBig = 0.04;
 const eqRadii = 0.08;
 const eqRadiiBig = 0.05;
 const cerulean = "#007BA7";
@@ -76,6 +76,8 @@ const points = [];
 const blueLinePadding = 15;
 const birhombicPadding = 20;
 let xWidth = 0;
+
+window.ondragstart = function() { return false; };
 
 init();
 setInterval('update()', 50);
@@ -428,7 +430,7 @@ function init() {
 
     const acc = 0.005;
     document.addEventListener('keydown', (e) => {
-        e.preventDefault();
+        // e.preventDefault();
         if (!e.shiftKey) {
             switch (e.key) {
                 case "ArrowRight":
@@ -595,6 +597,9 @@ function init() {
     const brGreenBackground = document.getElementById("br-green-background");
     const brGoldBackground = document.getElementById("br-gold-background");
     const brCeruleanBackground = document.getElementById("br-cerulean-background");
+    const brHex1 = document.getElementById("br-hex-1");
+    const brHex2 = document.getElementById("br-hex-2");
+    const brHex3 = document.getElementById("br-hex-3");
 
     const matrixClass1 = document.getElementById("matrix-class-number-1");
     const matrixClass2 = document.getElementById("matrix-class-number-2");
@@ -617,7 +622,7 @@ function init() {
     const birhombicDiagramWidth = birhombicWidth - birhombicPadding*2;
     const birhombicDiagramHeight = birhombicDiagramWidth*Math.sqrt(3)/4;
     const birhombicDiagramPadding = (birhombicHeight - birhombicDiagramHeight)/2;
-    const brLineWidth = 5;
+    const brLineWidth = 4;
     const starWidth = 24;
 
     brBlueLine1.style.stroke = "blue";
@@ -676,6 +681,19 @@ function init() {
     brGreenBackground.style.fill = greenBackground;
     brGoldBackground.style.fill = goldBackground;
     brCeruleanBackground.style.fill = ceruleanBackground;
+
+    brHex1.style.stroke = "black";
+    brHex1.style.strokeWidth = brLineWidth;
+    brHex1.style.fill = "none";
+    brHex1.style.display = "none";
+    brHex2.style.stroke = "black";
+    brHex2.style.strokeWidth = brLineWidth;
+    brHex2.style.fill = "none";
+    brHex2.style.display = "none";
+    brHex3.style.stroke = "black";
+    brHex3.style.strokeWidth = brLineWidth;
+    brHex3.style.fill = "none";
+    brHex3.style.display = "none";
 
     brBlueLine1.x1.baseVal.value = birhombicPadding;
     brBlueLine1.y1.baseVal.value = (birhombicHeight + birhombicDiagramHeight)/2;
@@ -824,6 +842,31 @@ function init() {
         (birhombicPadding + birhombicDiagramWidth/2) + "," + (birhombicDiagramPadding + birhombicDiagramHeight)
     );
 
+    brHex1.setAttribute("points",
+        (birhombicPadding + birhombicDiagramWidth/4) + "," + (birhombicDiagramPadding + birhombicDiagramHeight) + " " +
+        (birhombicPadding + birhombicDiagramWidth/8) + "," + (birhombicDiagramPadding + birhombicDiagramHeight*5/6) + " " +
+        (birhombicPadding + birhombicDiagramWidth/8) + "," + (birhombicDiagramPadding + birhombicDiagramHeight/2) + " " +
+        (birhombicPadding + birhombicDiagramWidth/4) + "," + (birhombicDiagramPadding + birhombicDiagramHeight/3) + " " +
+        (birhombicPadding + birhombicDiagramWidth*3/8) + "," + (birhombicDiagramPadding + birhombicDiagramHeight/2) + " " +
+        (birhombicPadding + birhombicDiagramWidth*3/8) + "," + (birhombicDiagramPadding + birhombicDiagramHeight*5/6)
+    );
+    brHex2.setAttribute("points",
+        (birhombicPadding + birhombicDiagramWidth/2) + "," + (birhombicDiagramPadding) + " " +
+        (birhombicPadding + birhombicDiagramWidth*3/8) + "," + (birhombicDiagramPadding + birhombicDiagramHeight/6) + " " +
+        (birhombicPadding + birhombicDiagramWidth*3/8) + "," + (birhombicDiagramPadding + birhombicDiagramHeight/2) + " " +
+        (birhombicPadding + birhombicDiagramWidth/2) + "," + (birhombicDiagramPadding + birhombicDiagramHeight*2/3) + " " +
+        (birhombicPadding + birhombicDiagramWidth*5/8) + "," + (birhombicDiagramPadding + birhombicDiagramHeight/2) + " " +
+        (birhombicPadding + birhombicDiagramWidth*5/8) + "," + (birhombicDiagramPadding + birhombicDiagramHeight/6)
+    );
+    brHex3.setAttribute("points",
+        (birhombicPadding + birhombicDiagramWidth*3/4) + "," + (birhombicDiagramPadding + birhombicDiagramHeight) + " " +
+        (birhombicPadding + birhombicDiagramWidth*7/8) + "," + (birhombicDiagramPadding + birhombicDiagramHeight*5/6) + " " +
+        (birhombicPadding + birhombicDiagramWidth*7/8) + "," + (birhombicDiagramPadding + birhombicDiagramHeight/2) + " " +
+        (birhombicPadding + birhombicDiagramWidth*3/4) + "," + (birhombicDiagramPadding + birhombicDiagramHeight/3) + " " +
+        (birhombicPadding + birhombicDiagramWidth*5/8) + "," + (birhombicDiagramPadding + birhombicDiagramHeight/2) + " " +
+        (birhombicPadding + birhombicDiagramWidth*5/8) + "," + (birhombicDiagramPadding + birhombicDiagramHeight*5/6)
+    );
+
     brRowRect.width.baseVal.value = starWidth;
     brRowRect.height.baseVal.value = starWidth;
     brRowStar.style.fill = gold;
@@ -872,31 +915,25 @@ function init() {
     const legendLabel2 = document.getElementById("legend-label-2");
     const legendLabel3 = document.getElementById("legend-label-3");
     const legendLabel4 = document.getElementById("legend-label-4");
-
+    const legendLabel5 = document.getElementById("legend-label-5");
+    const legendLabel6 = document.getElementById("legend-label-6");
     legend.getContext("2d", { willReadFrequently: true});
     legend.width = legendContainer.width.baseVal.value;
     legend.height = legendContainer.height.baseVal.value;
-    const ctx = legend.getContext("2d");
-    const imageData = ctx.getImageData(0, 0, legend.width, legend.height);
-    const data = imageData.data;
-    for (let i = 0; i < legend.width; i++) {
-        const color = colorFunction(i/legend.width*1.5);
-        for (let j = 0; j < legend.height; j++) {
-            data[(j*legend.width+i)*4]   = color[0];
-            data[(j*legend.width+i)*4+1] = color[1];
-            data[(j*legend.width+i)*4+2] = color[2];
-            data[(j*legend.width+i)*4+3] = 255;
-        }
-    }
-    ctx.putImageData(imageData,0,0);
     legendLabel1.setAttribute("x",0);
     legendLabel1.setAttribute("y",legend.height+20);
-    legendLabel2.setAttribute("x",legend.width*0.33-7);
+    legendLabel2.setAttribute("x",legend.width*0.22-7);
     legendLabel2.setAttribute("y",legend.height+20);
-    legendLabel3.setAttribute("x",legend.width*0.66-7);
+    legendLabel3.setAttribute("x",legend.width*0.44-7);
     legendLabel3.setAttribute("y",legend.height+20);
-    legendLabel4.setAttribute("x",legend.width-15);
+    legendLabel4.setAttribute("x",legend.width*0.67-7);
     legendLabel4.setAttribute("y",legend.height+20);
+    legendLabel5.setAttribute("x",legend.width-15);
+    legendLabel5.setAttribute("y",legend.height+20);
+    legendLabel6.setAttribute("x",legend.width*0.5-7);
+    legendLabel6.setAttribute("y",legend.height+20);
+    legendLabel6.style.display = "none";
+    updateLegend();
 
     update();
 }
@@ -1060,8 +1097,8 @@ function update() {
     const colB = document.getElementById("b-col");
     const rowReturns = document.getElementById("row-return");
     const colReturns = document.getElementById("col-return");
-    const rowMixedReturns = document.getElementById("row-return-mixed");
-    const colMixedReturns = document.getElementById("col-return-mixed");
+    // const rowMixedReturns = document.getElementById("row-return-mixed");
+    // const colMixedReturns = document.getElementById("col-return-mixed");
     const rowReturnsTrans = document.getElementById("row-return-transferable");
     const colReturnsTrans = document.getElementById("col-return-transferable");
     const rowReturnsCoco = document.getElementById("row-return-coco");
@@ -1085,13 +1122,13 @@ function update() {
                          coordsToMatricesAlt(coords[0], coords[1], quad);
     rowReturns.innerHTML = payoffModified(rowM, colM).toFixed(1);
     colReturns.innerHTML = payoffModified(flip(colM), flip(rowM)).toFixed(1);
-    if (coords[0] < 3 && coords[1] < 3) {
-        rowMixedReturns.innerHTML = " (" + payoff(rowM, colM).toFixed(1) + ")";
-        colMixedReturns.innerHTML = " (" + payoff(flip(colM), flip(rowM)).toFixed(1) + ")";
-    } else {
-        rowMixedReturns.innerHTML = "";
-        colMixedReturns.innerHTML = "";
-    }
+    // if (coords[0] < 3 && coords[1] < 3) {
+    //     rowMixedReturns.innerHTML = " (" + payoff(rowM, colM).toFixed(1) + ")";
+    //     colMixedReturns.innerHTML = " (" + payoff(flip(colM), flip(rowM)).toFixed(1) + ")";
+    // } else {
+    //     rowMixedReturns.innerHTML = "";
+    //     colMixedReturns.innerHTML = "";
+    // }
     [rowReturnsTrans.innerHTML,colReturnsTrans.innerHTML] = payoffShapley(rowM, colM).map(x => x.toFixed(1));
     [rowReturnsCoco.innerHTML, colReturnsCoco.innerHTML] = payoffCoco(rowM, colM).map(x => x.toFixed(1));
     [rowReturnsBargaining1.innerHTML,colReturnsBargaining1.innerHTML] = payoffBargainingBackstop(rowM, colM).map(x => x.toFixed(1));
@@ -2600,22 +2637,22 @@ function update() {
                                             coordsToMatricesAlt((i+0.5)/valuesX*6, (valuesY-j-0.5)/valuesY*6, quad);
                     switch (viewMode) {
                         case 1:
-                            values[j].push(payoff(rowM, colM));
+                            values[j].push(payoff(rowM, colM)/9);
                             break;
                         case 2:
-                            values[j].push(payoffTransferable(rowM, colM));
+                            values[j].push(payoffTransferable(rowM, colM)/9);
                             break;
                         case 3:
-                            values[j].push(payoffModified(rowM, colM));
+                            values[j].push(payoffModified(rowM, colM)/9);
                             break;
                         case 4:
-                            values[j].push(payoffCoco(rowM, colM)[0]);
+                            values[j].push(payoffCoco(rowM, colM)[0]/9);
                             break;
                         case 5:
-                            values[j].push(payoffBargainingBackstop(rowM, colM)[0]);
+                            values[j].push(payoffBargainingBackstop(rowM, colM)[0]/9);
                             break;
                         case 6:
-                            values[j].push(payoffBargainingDisagreement(rowM, colM)[0]);
+                            values[j].push(payoffBargainingDisagreement(rowM, colM)[0]/9);
                             break;
                         case 7:
                             values[j].push(payoffCustom(rowM, colM));
@@ -2624,7 +2661,7 @@ function update() {
                             values[j].push(coordination(rowM, colM));
                             break;
                         case 9:
-                            values[j].push(payoffShapley(rowM, colM)[0]);
+                            values[j].push(payoffShapley(rowM, colM)[0]/9);
                             break;
                     }
                 }
@@ -2660,10 +2697,10 @@ function update() {
                 }
 
                 // Render discontinuities in higher resolution
-                if (i < canvas.width/2 && j >= canvas.height/2 && viewMode == 3 && (quad == 1 || quad == 3)) {
+                if (i < canvas.width/2 && j >= canvas.height/2) { // && viewMode == 3 && (quad == 1 || quad == 3)
                     const n = Math.floor(i/canvas.width*valuesX);
                     const m = Math.floor(j/canvas.height*valuesY);
-                    const jumpSize = 0.4;
+                    const jumpSize = 0.01;
                     let boundary = false;
                     if (n != 0 && Math.abs(values[m][n-1] - values[m][n]) > jumpSize) boundary = true;
                     if (n != 0 && m != 0 && Math.abs(values[m-1][n-1] - values[m][n]) > jumpSize) boundary = true;
@@ -2672,7 +2709,7 @@ function update() {
                     if (n != valuesX-1 && Math.abs(values[m][n+1] - values[m][n]) > jumpSize) boundary = true;
                     if (n != valuesX-1 && m != valuesY-1 && Math.abs(values[m+1][n+1] - values[m][n]) > jumpSize) boundary = true;
                     if (m != valuesY-1 && Math.abs(values[m][n+1] - values[m][n]) > jumpSize) boundary = true;
-                    if (n != 0 && m != valuesY-1 && Math.abs(values[m-1][n+1] - values[m][n]) > jumpSize) boundary = true;
+                    if (n != 0 && m != valuesY-1 && Math.abs(values[m+1][n-1] - values[m][n]) > jumpSize) boundary = true;
 
                     if (boundary) {
                         const [rowM, colM] = (!useAltSchema) ? 
@@ -2682,22 +2719,22 @@ function update() {
                                             coordsToMatricesAlt(i/canvas.width*6, (canvas.height-j)/canvas.height*6, quad);
                         switch (viewMode) {
                             case 1:
-                                value = payoff(rowM, colM);
+                                value = payoff(rowM, colM)/9;
                                 break;
                             case 2:
-                                value = payoffTransferable(rowM, colM);
+                                value = payoffTransferable(rowM, colM)/9;
                                 break;
                             case 3:
-                                value = payoffModified(rowM, colM);
+                                value = payoffModified(rowM, colM)/9;
                                 break;
                             case 4:
-                                value = payoffCoco(rowM, colM)[0];
+                                value = payoffCoco(rowM, colM)[0]/9;
                                 break;
                             case 5:
-                                value = payoffBargainingBackstop(rowM, colM)[0];
+                                value = payoffBargainingBackstop(rowM, colM)[0]/9;
                                 break;
                             case 6:
-                                value = payoffBargainingDisagreement(rowM, colM)[0];
+                                value = payoffBargainingDisagreement(rowM, colM)[0]/9;
                                 break;
                             case 7:
                                 value = payoffCustom(rowM, colM);
@@ -2706,13 +2743,13 @@ function update() {
                                 value = coordination(rowM, colM);
                                 break;
                             case 9:
-                                value = payoffShapley(rowM, colM)[0];
+                                value = payoffShapley(rowM, colM)[0]/9;
                                 break;
                         }
                     }
                 }
 
-                const color = colorFunction(value/6);
+                const color = colorFunction(value);
                 // console.log(value/6);
                 data[(j*canvas.width+i)*4]   = color[0];
                 data[(j*canvas.width+i)*4+1] = color[1];
@@ -2730,6 +2767,7 @@ function update() {
         nearestCentroid[1] = Math.round(coords[1]-0.5)+0.5;
     }
 
+    coordination(matrixA,matrixB);
     time++;
 }
 
@@ -3686,6 +3724,8 @@ function payoffCustom(m1, m2) {
         value1 = payoffBargainingBackstop(m1,m2)[0];
     } else if (choice1 == "returns-bargaining-tp") {
         value1 = payoffBargainingDisagreement(m1,m2)[0];
+    } else if (choice1 == "returns-max-total") {
+        value1 = payoffTransferable(m1,m2);
     }
 
     if (choice2 == "returns") {
@@ -3700,19 +3740,22 @@ function payoffCustom(m1, m2) {
         value2 = payoffBargainingBackstop(m1,m2)[0];
     } else if (choice2 == "returns-bargaining-tp") {
         value2 = payoffBargainingDisagreement(m1,m2)[0];
+    } else if (choice2 == "returns-max-total") {
+        value2 = payoffTransferable(m1,m2);
     }
 
-    return (value1 - value2)/2+3;
+    return (value1 - value2)/12+1/2;
 }
 
 function coordination(m1, m2) {
     const newM1 = [m1[0]+m2[0], m1[1]+m2[1], m1[2]+m2[2], m1[3]+m2[3]];
     const newM2 = [m2[0]-m1[0], m2[1]-m1[1], m2[2]-m1[2], m2[3]-m1[3]];
-    const mean1 = (newM1[0]+newM1[1]+newM1[2]+newM1[3])/4;
-    const mean2 = (newM2[0]+newM2[1]+newM2[2]+newM2[3])/4;
-    const norm1 = (m1[0]-mean1)**2 + (m1[1]-mean1)**2 + (m1[2]-mean1)**2 + (m1[3]-mean1)**2;
-    const norm2 = (m2[0]-mean2)**2 + (m2[1]-mean2)**2 + (m2[2]-mean2)**2 + (m2[3]-mean2)**2;
-    return (norm1 / (norm1 + norm2))*6;
+    const mean1 = (newM1[0]+newM1[1]+newM1[2]+newM1[3])/4; // max 9
+    const mean2 = (newM2[0]+newM2[1]+newM2[2]+newM2[3])/4; // max 6
+    const norm1 = (newM1[0]-mean1)**2 + (newM1[1]-mean1)**2 + (newM1[2]-mean1)**2 + (newM1[3]-mean1)**2; // max 
+    const norm2 = (newM2[0]-mean2)**2 + (newM2[1]-mean2)**2 + (newM2[2]-mean2)**2 + (newM2[3]-mean2)**2;
+    // console.log(norm1 + " " + norm2);
+    return (norm1 / (norm1 + norm2));
 }
 
 function colorFunctionOld(value) {
@@ -3728,9 +3771,21 @@ function colorFunctionOld(value) {
 }
 
 function colorFunction(value) {
-    const colors = [[38,84,138],[70,102,168],[110,116,144],[150,130,121],[190,144,97],[229,158,74],
-                    [236,174,94],[242,190,113],[249,206,133],[255,222,153],[255,242,191],[142,255,142],[0,113,0],[255,255,255]];
-    const cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.25,1.5,2];
+    let colors = [];
+    let cutoffs = [];
+    // const colors = [[38,84,138],[70,102,168],[110,116,144],[150,130,121],[190,144,97],[229,158,74],
+    //                 [236,174,94],[242,190,113],[249,206,133],[255,222,153],[255,242,191],[142,255,142],[0,113,0],[255,255,255]];
+    // const cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.25,1.5,2];
+    if (viewMode == 7) {
+        colors = [[0,0,0],[0,0,86],[111,118,172],[255,255,255],[184,114,116],[86,0,0],[0,0,0]];
+        cutoffs = [0,0.25,0.375,0.5,0.625,0.75,1];
+    } else if (viewMode == 8) {
+        colors = [[0,0,86],[111,118,172],[255,255,255],[184,114,116],[86,0,0]];
+        cutoffs = [0,0.25,0.5,0.75,1];
+    } else {
+        colors = [[0,7,105],[0,98,162],[48,175,149],[94,190,64],[195,167,48],[199,111,8],[198,34,41],[255,255,255]];
+        cutoffs = [0,0.11,0.22,0.33,0.44,0.55,0.67,1];
+    }
     const result = [0,0,0];
     for (let i = 1; i <= cutoffs.length; i++) {
         if (value <= cutoffs[i]) {
@@ -3741,7 +3796,12 @@ function colorFunction(value) {
 }
 
 function changeViewMode(mode) {
-    viewMode = mode;
+    if (viewMode == 7 || mode == 7 || viewMode == 8 || mode == 8) {
+        viewMode = mode;
+        updateLegend();
+    } else {
+        viewMode = mode;
+    }
     const canvas = document.getElementById("canvas");
     if (mode == 0) {
         canvas.style.display = "none";
@@ -3798,20 +3858,24 @@ function changeViewMode(mode) {
 
 function fixImage(alt) {
     if (!useAltSchema) {
+        console.log(useAltSchema);
         fixImageSize = alt;
         backgroundOutOfDate = true;
     }
+    const fixImageButton0 = document.getElementById("fix-image-button-0");
     const fixImageButton1 = document.getElementById("fix-image-button-1");
     const fixImageButton2 = document.getElementById("fix-image-button-2");
     const diagram = document.getElementById("diagram");
-    if (!diagramGrid && alt) {
-        diagramGrid = alt;
+    fixImageButton0.classList.remove("selected");
+
+    if (alt) {
+        diagramGrid = true;
         fixImageButton1.classList.remove("selected");
         fixImageButton2.classList.add("selected");
         diagram.style.opacity = 0;
         // updateDiagramGrid();
-    } else if (diagramGrid && !alt) {
-        diagramGrid = alt;
+    } else {
+        diagramGrid = false;
         fixImageButton2.classList.remove("selected");
         fixImageButton1.classList.add("selected");
         let element;
@@ -4370,25 +4434,141 @@ function standardToAltCoords(x1,x2,b1,b2) {
 function altImage(alt) {
     const button1 = document.getElementById("alt-image-button-1");
     const button2 = document.getElementById("alt-image-button-2");
+
+    const pic = document.getElementById("birhombic-pic");
+    const rowPlayer = document.getElementById("br-row-player");
+    const colPlayer = document.getElementById("br-col-player");
+    const number2 = document.getElementById("matrix-class-number-2");
+    const number5 = document.getElementById("matrix-class-number-5");
+    const number6 = document.getElementById("matrix-class-number-6");
+    const number7 = document.getElementById("matrix-class-number-7");
+    const number8 = document.getElementById("matrix-class-number-8");
+    const number12 = document.getElementById("matrix-class-number-12");
+    const number14 = document.getElementById("matrix-class-number-14");
+    const hex1 = document.getElementById("br-hex-1");
+    const hex2 = document.getElementById("br-hex-2");
+    const hex3 = document.getElementById("br-hex-3");
+
     // useAltSchema = alt;
     if (!diagramGrid) {
         fixImageSize = !useAltSchema;
         backgroundOutOfDate = true;
     }
     if (useAltSchema && !alt) {
-        useAltSchema = alt;
+        useAltSchema = false;
         button2.classList.remove("selected");
         button1.classList.add("selected");
         const coords1 = matrixToCoords(matrixA);
         const coords2 = matrixToCoords(flip(matrixB));
         coords = [coords1[0],coords2[0],coords1[1],coords2[1]];
+
+        for (let child of pic.children) {
+            child.style.opacity = 1;
+        }
+        hex1.style.display = "none";
+        hex2.style.display = "none";
+        hex3.style.display = "none";
     } else if (!useAltSchema && alt) {
-        useAltSchema = alt;
+        useAltSchema = true;
         button1.classList.remove("selected");
         button2.classList.add("selected");
         coords[2] = take(matrixA,1);
         coords[3] = take(matrixB,1);
         [coords[0],coords[1]] = standardToAltCoords(coords[0],coords[1]);
+
+        for (let child of pic.children) {
+            child.style.opacity = 0.5;
+        }
+        hex1.style.display = "";
+        hex2.style.display = "";
+        hex3.style.display = "";
+        hex1.style.opacity = 1;
+        hex2.style.opacity = 1;
+        hex3.style.opacity = 1;
+        rowPlayer.style.opacity = 1;
+        colPlayer.style.opacity = 1;
+        number2.style.opacity = 1;
+        number5.style.opacity = 1;
+        number6.style.opacity = 1;
+        number7.style.opacity = 1;
+        number8.style.opacity = 1;
+        number12.style.opacity = 1;
+        number14.style.opacity = 1;
     }
     if (diagramGrid) updateDiagramGrid();
 }
+
+function hideGame() {
+    diagramGrid = false;
+    const fixImageButton0 = document.getElementById("fix-image-button-0");
+    const fixImageButton1 = document.getElementById("fix-image-button-1");
+    const fixImageButton2 = document.getElementById("fix-image-button-2");
+    fixImageButton0.classList.add("selected");
+    fixImageButton1.classList.remove("selected");
+    fixImageButton2.classList.remove("selected");
+
+    let element;
+    while (element = document.querySelector(".clone")) {
+        element.remove();
+    }
+
+    if (fixImageSize && !useAltSchema) {
+        fixImageSize = false;
+        backgroundOutOfDate = true;
+    }
+
+    const diagram = document.getElementById("diagram");
+    diagram.style.opacity = 0;
+}
+
+function updateLegend() {
+    const legendContainer = document.getElementById("legend-container");
+    const legend = document.getElementById("legend-canvas");
+    const legendLabel1 = document.getElementById("legend-label-1");
+    const legendLabel2 = document.getElementById("legend-label-2");
+    const legendLabel3 = document.getElementById("legend-label-3");
+    const legendLabel4 = document.getElementById("legend-label-4");
+    const legendLabel5 = document.getElementById("legend-label-5");
+    const legendLabel6 = document.getElementById("legend-label-6");
+
+    const ctx = legend.getContext("2d");
+    const imageData = ctx.getImageData(0, 0, legend.width, legend.height);
+    const data = imageData.data;
+    for (let i = 0; i < legend.width; i++) {
+        const color = colorFunction(i/legend.width);
+        for (let j = 0; j < legend.height; j++) {
+            data[(j*legend.width+i)*4]   = color[0];
+            data[(j*legend.width+i)*4+1] = color[1];
+            data[(j*legend.width+i)*4+2] = color[2];
+            data[(j*legend.width+i)*4+3] = 255;
+        }
+    }
+    ctx.putImageData(imageData,0,0);
+
+    if (viewMode == 7) {
+        legendLabel2.style.display = "none";
+        legendLabel3.style.display = "none";
+        legendLabel4.style.display = "none";
+        legendLabel6.style.display = "";
+        legendLabel1.innerHTML = "-6";
+        legendLabel5.innerHTML = "6";
+    } else if (viewMode == 8) {
+        legendLabel2.style.display = "none";
+        legendLabel3.style.display = "none";
+        legendLabel4.style.display = "none";
+        legendLabel6.style.display = "none";
+        legendLabel1.innerHTML = "0";
+        legendLabel5.innerHTML = "1";
+    } else {
+        legendLabel2.style.display = "";
+        legendLabel3.style.display = "";
+        legendLabel4.style.display = "";
+        legendLabel6.style.display = "none";
+        legendLabel1.innerHTML = "0";
+        legendLabel5.innerHTML = "9";
+    }
+}
+
+
+// add parameter for transferable utility (later)
+// replace arrows with three large lines (wait on that)
