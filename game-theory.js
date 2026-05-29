@@ -2697,7 +2697,7 @@ function update() {
                 }
 
                 // Render discontinuities in higher resolution
-                if (i < canvas.width/2 && j >= canvas.height/2) { // && viewMode == 3 && (quad == 1 || quad == 3)
+                if ((i < canvas.width/2 && j >= canvas.height/2 && viewMode == 3 && (quad == 1 || quad == 3)) || viewMode == 7) {
                     const n = Math.floor(i/canvas.width*valuesX);
                     const m = Math.floor(j/canvas.height*valuesY);
                     const jumpSize = 0.01;
