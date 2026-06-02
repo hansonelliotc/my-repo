@@ -12,7 +12,7 @@
 	<div id="nav-bar">
 		<button id="game-info-button" class="nav-button selected">Game info</button>
 		<button id="navigation-button" class="nav-button">Navigation</button>
-		<button id="view-modes-button" class="nav-button">View modes</button>
+		<button id="view-modes-button" class="nav-button">Background</button>
 		<button id="controls-button" class="nav-button">Controls</button>
 	</div>
 	<div id="content">
@@ -41,26 +41,25 @@
 			<tr height="5vh" />
 		</table>
 		<table id="game-info">
-			<tr><td><b>Row Player (P1)</b></td><td><b>Column Player (P2)</b></td></tr>
-			<tr><td colspan="2">x,b</td></tr>
+			<tr><td><b>Row Player</b></td><td><b>Column Player</b></td></tr>
+			<tr><td class="info-header" colspan="2">x,b</td></tr>
 			<tr><td><span id="x-row"></span>, <span id="b-row"></span></td><td><span id="x-col"></span>, <span id="b-col"></span></td></tr>
-			<tr><td colspan="2">Returns</td></tr>
+			<tr><td class="info-header" colspan="2">Equilibrium returns</td></tr>
 			<tr>
 				<td><span id="row-return"></span>
 					<!-- <span id="row-return-mixed"></span></td> -->
 				<td><span id="col-return"></span>
 					<!-- <span id="col-return-mixed"></span></td> -->
 			</tr>
-			<tr><td colspan="2">Bargaining NTU (backstop, threat point)</td></tr>
+			<tr><td class="info-header" colspan="2">Bargaining returns<br>(backstop & threat point)</td></tr>
+			<tr><td>bs, tp</td> <td>bs, tp</td> </tr>
 			<tr>
-				<td><span id="row-return-bargaining-1"></span>, <span id="row-return-bargaining-2"></span></td>
-				<td><span id="col-return-bargaining-1"></span>, <span id="col-return-bargaining-2"></span></td>
+				<td><span class="row-header">NTU</span><span id="row-return-bargaining-1"></span>, <span id="row-return-bargaining-2"></span></td>
+				<td><span class="row-header">NTU</span><span id="col-return-bargaining-1"></span>, <span id="col-return-bargaining-2"></span></td>
 			</tr>
-			<tr style="padding:1vh"></tr>
-			<tr><td colspan="2">Bargaining TU (backstop, threat point)</td></tr>
 			<tr>
-				<td><span id="row-return-transferable"></span>, <span id="row-return-coco"></span></td>
-				<td><span id="col-return-transferable"></span>, <span id="col-return-coco"></span></td>
+				<td><span class="row-header">TU</span><span id="row-return-transferable"></span>, <span id="row-return-coco"></span></td>
+				<td><span class="row-header">TU</span><span id="col-return-transferable"></span>, <span id="col-return-coco"></span></td>
 			</tr>
 		</table>
 		<table id="navigation">
@@ -107,47 +106,54 @@
 				<td><button id="random-2" onclick="randomize(false)" title="Randomize the column player's matrix">Randomize player two</button></td>
 			</tr> -->
 		</table>
-		<br>
 		<div id="view-modes">
-			<button class="mode-button selected" id="regular-mode" onclick="changeViewMode(0)">Equilibrium</button>
+			<button class="mode-button selected" id="regular-mode" onclick="changeViewMode(0)">Equilibria</button>
 			<button class="mode-button" id="coordination-mode" onclick="changeViewMode(8)">Correlation</button>
-			<div style="padding:1vh"></div>
-			<span><button class="mode-button" id="return-mode-2" onclick="changeViewMode(3)">Returns</button></span></span>
+			<!-- <div style="padding:1vh"></div> -->
+			<h2>Row Player</h2>
+			<span><button class="mode-button" id="return-mode-2" onclick="changeViewMode(3)">Equilibrium returns</button></span></span>
 			<span><button class="half-mode-button" id="bargaining-mode-1" onclick="changeViewMode(5)">Backstop NTU</button></span><span><button class="half-mode-button" id="bargaining-mode-2" onclick="changeViewMode(6)">Threat point NTU</button></span>
 			<span><button class="half-mode-button" id="shapley-mode" onclick="changeViewMode(9)">Backstop TU</button></span><span><button class="half-mode-button" id="coco-mode" onclick="changeViewMode(4)">Threat point TU</button></span>
-			<button class="mode-button" id="transferable-mode" onclick="changeViewMode(2)">Max Total</button>
+			<!-- <div style="padding:1vh"></div> -->
+			<h2>Column Player</h2>
+			<span><button class="mode-button" id="return-mode-2-col" onclick="changeViewMode(3, false)">Equilibrium returns</button></span></span>
+			<span><button class="half-mode-button" id="bargaining-mode-1-col" onclick="changeViewMode(5,false)">Backstop NTU</button></span><span><button class="half-mode-button" id="bargaining-mode-2-col" onclick="changeViewMode(6,false)">Threat point NTU</button></span>
+			<span><button class="half-mode-button" id="shapley-mode-col" onclick="changeViewMode(9,false)">Backstop TU</button></span><span><button class="half-mode-button" id="coco-mode-col" onclick="changeViewMode(4,false)">Threat point TU</button></span>
+			<div style="padding:1vh"></div>
+			<button class="mode-button" id="transferable-mode" onclick="changeViewMode(2)">Max total</button>
 			<div style="padding:1vh"></div>
 			<button class="mode-button" id="custom-mode" onclick="changeViewMode(7)">Difference</button>
 			<p id="custom-options">
 				<select name="Choice 1" id="view-custom-1">
-					<option value="returns">Returns</option>
+					<option value="returns">Row's equilibrium returns</option>
 					<!-- <option value="returns-mixed">Returns with mixed</option> -->
-					<option value="returns-bargaining-bs">Backstop NTU</option>
-					<option value="returns-bargaining-tp">Threat point NTU</option>
-					<option value="returns-shapley">Backstop TU</option>
-					<option value="returns-coco">Threat point TU</option>
+					<option value="returns-bargaining-bs">Row's backstop NTU</option>
+					<option value="returns-bargaining-tp">Row's threat point NTU</option>
+					<option value="returns-shapley">Row's backstop TU</option>
+					<option value="returns-coco">Row's threat point TU</option>
+					<option value="returns-col">Column's equilibrium returns</option>
+					<option value="returns-bargaining-bs-col">Column's backstop NTU</option>
+					<option value="returns-bargaining-tp-col">Column's threat point NTU</option>
+					<option value="returns-shapley-col">Column's backstop TU</option>
+					<option value="returns-coco-col">Column's threat point TU</option>
 					<option value="returns-max-total">Max total</option>
 				</select>
 				minus
 				<select name="Choice 2" id="view-custom-2">
-					<option value="returns">Returns</option>
+					<option value="returns">Row's equilibrium returns</option>
 					<!-- <option value="returns-mixed">Returns with mixed</option> -->
-					<option value="returns-bargaining-bs">Backstop NTU</option>
-					<option value="returns-bargaining-tp">Threat point NTU</option>
-					<option value="returns-shapley">Backstop TU</option>
-					<option value="returns-coco">Threat point TU</option>
+					<option value="returns-bargaining-bs">Row's backstop NTU</option>
+					<option value="returns-bargaining-tp">Row's threat point NTU</option>
+					<option value="returns-shapley">Row's backstop TU</option>
+					<option value="returns-coco">Row's threat point TU</option>
+					<option value="returns-col">Column's equilibrium returns</option>
+					<option value="returns-bargaining-bs-col">Column's backstop NTU</option>
+					<option value="returns-bargaining-tp-col">Column's threat point NTU</option>
+					<option value="returns-shapley-col">Column's backstop TU</option>
+					<option value="returns-coco-col">Column's threat point TU</option>
 					<option value="returns-max-total">Max total</option>
 				</select>
 			</p>
-			<svg id="legend">
-				<foreignObject id="legend-container" x="0" y="0" width="20vw" height="30"><canvas id="legend-canvas"></canvas></foreignObject>
-				<text id="legend-label-1">0</text>
-				<text id="legend-label-2">2</text>
-				<text id="legend-label-3">4</text>
-				<text id="legend-label-4">6</text>
-				<text id="legend-label-5">9</text>
-				<text id="legend-label-6">0</text>
-			</svg>
 		</div>
 		<div id="controls">
 			<p>
@@ -429,6 +435,7 @@
 				<line class="green-line" id="green6" />
 				<line class="green-line" id="green7" />
 				<line class="green-line" id="green8" />
+				<!-- <line class="cerulean-line" id="cerulean-line-1" /> -->
 				<circle class="pic-corner" id="green-corner1" r="0.4%" />
 				<circle class="pic-corner" id="green-corner2" r="0.4%" />
 				<circle class="pic-corner" id="green-corner3" r="0.4%" />
@@ -476,6 +483,15 @@
 			<input id="b2coord" type="range" min="0" max="6" step="0.01" value="2" style="writing-mode:vertical-lr;direction:rtl;">
 			<div id="b2-label">b<sub>2</sub></div>
 		</div> -->
+		<svg id="legend">
+			<foreignObject id="legend-container" y="20px" width="30px" height="40vh"><canvas id="legend-canvas"></canvas></foreignObject>
+			<text id="legend-label-1" dominant-baseline="middle">0</text>
+			<text id="legend-label-2" dominant-baseline="middle">2</text>
+			<text id="legend-label-3" dominant-baseline="middle">4</text>
+			<text id="legend-label-4" dominant-baseline="middle">6</text>
+			<text id="legend-label-5" dominant-baseline="middle">9</text>
+			<text id="legend-label-6" dominant-baseline="middle">0</text>
+		</svg>
 	</div>
 	<!-- <div style="display:flex"><div id="x1-label">x<sub>1</sub></div>
 	<input id="x1coord" type="range" min="0" max="6" step="0.01" value="3.5"></div>

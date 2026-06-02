@@ -33,6 +33,7 @@ let animTime = 0;
 let enRoute = false;
 let draggingInBigPic = false;
 let viewMode = 0;
+let viewModeP1 = true;
 let time = 0;
 let values = [];
 let valuesX = 0;
@@ -427,6 +428,13 @@ function init() {
         draggingRhombus2 = true;
     });
     bigDiagram.addEventListener('mousedown', (e) => { growBox(e); });
+
+    document.getElementById("view-custom-1").addEventListener('change', (event) => {
+        if (viewMode == 7) backgroundOutOfDate = true;
+    });
+    document.getElementById("view-custom-2").addEventListener('change', (event) => {
+        if (viewMode == 7) backgroundOutOfDate = true;
+    });
 
     const acc = 0.005;
     document.addEventListener('keydown', (e) => {
@@ -920,18 +928,18 @@ function init() {
     legend.getContext("2d", { willReadFrequently: true});
     legend.width = legendContainer.width.baseVal.value;
     legend.height = legendContainer.height.baseVal.value;
-    legendLabel1.setAttribute("x",0);
+    legendLabel1.setAttribute("x",legend.width+10);
     legendLabel1.setAttribute("y",legend.height+20);
-    legendLabel2.setAttribute("x",legend.width*0.22-7);
-    legendLabel2.setAttribute("y",legend.height+20);
-    legendLabel3.setAttribute("x",legend.width*0.44-7);
-    legendLabel3.setAttribute("y",legend.height+20);
-    legendLabel4.setAttribute("x",legend.width*0.67-7);
-    legendLabel4.setAttribute("y",legend.height+20);
-    legendLabel5.setAttribute("x",legend.width-15);
-    legendLabel5.setAttribute("y",legend.height+20);
-    legendLabel6.setAttribute("x",legend.width*0.5-7);
-    legendLabel6.setAttribute("y",legend.height+20);
+    legendLabel2.setAttribute("x",legend.width+10);
+    legendLabel2.setAttribute("y",legend.height*0.78+20);
+    legendLabel3.setAttribute("x",legend.width+10);
+    legendLabel3.setAttribute("y",legend.height*0.56+20);
+    legendLabel4.setAttribute("x",legend.width+10);
+    legendLabel4.setAttribute("y",legend.height*0.33+20);
+    legendLabel5.setAttribute("x",legend.width+10);
+    legendLabel5.setAttribute("y",20);
+    legendLabel6.setAttribute("x",legend.width+10);
+    legendLabel6.setAttribute("y",legend.height*0.5+20);
     legendLabel6.style.display = "none";
     updateLegend();
 
@@ -1120,8 +1128,17 @@ function update() {
                                           coords[2] != 0 ? coords[2] : coords[2] + error*2,
                                           coords[3] != 0 ? coords[3] : coords[3] + error*2) :
                          coordsToMatricesAlt(coords[0], coords[1], quad);
-    rowReturns.innerHTML = payoffModified(rowM, colM).toFixed(1);
-    colReturns.innerHTML = payoffModified(flip(colM), flip(rowM)).toFixed(1);
+    const returns = [
+        payoffModified(rowM, colM),payoffModified(flip(colM), flip(rowM)),
+        ...payoffBargainingBackstop(rowM, colM),
+        ...payoffBargainingDisagreement(rowM, colM),
+        ...payoffShapley(rowM, colM),
+        ...payoffCoco(rowM, colM)
+    ];
+    rowReturns.innerHTML = returns[0].toFixed(1);
+    rowReturns.style.color = `rgb(${colorFunction(returns[0]/9, 1)[0]}, ${colorFunction(returns[0]/9, 1)[1]}, ${colorFunction(returns[0]/9, 1)[2]})`;
+    colReturns.innerHTML = returns[1].toFixed(1);
+    colReturns.style.color = `rgb(${colorFunction(returns[1]/9, 1)[0]}, ${colorFunction(returns[1]/9, 1)[1]}, ${colorFunction(returns[1]/9, 1)[2]})`;
     // if (coords[0] < 3 && coords[1] < 3) {
     //     rowMixedReturns.innerHTML = " (" + payoff(rowM, colM).toFixed(1) + ")";
     //     colMixedReturns.innerHTML = " (" + payoff(flip(colM), flip(rowM)).toFixed(1) + ")";
@@ -1129,10 +1146,22 @@ function update() {
     //     rowMixedReturns.innerHTML = "";
     //     colMixedReturns.innerHTML = "";
     // }
-    [rowReturnsTrans.innerHTML,colReturnsTrans.innerHTML] = payoffShapley(rowM, colM).map(x => x.toFixed(1));
-    [rowReturnsCoco.innerHTML, colReturnsCoco.innerHTML] = payoffCoco(rowM, colM).map(x => x.toFixed(1));
-    [rowReturnsBargaining1.innerHTML,colReturnsBargaining1.innerHTML] = payoffBargainingBackstop(rowM, colM).map(x => x.toFixed(1));
-    [rowReturnsBargaining2.innerHTML,colReturnsBargaining2.innerHTML] = payoffBargainingDisagreement(rowM, colM).map(x => x.toFixed(1));
+    rowReturnsBargaining1.innerHTML = returns[2].toFixed(1);
+    rowReturnsBargaining1.style.color = `rgb(${colorFunction(returns[2]/9, 1)[0]}, ${colorFunction(returns[2]/9, 1)[1]}, ${colorFunction(returns[2]/9, 1)[2]})`;
+    colReturnsBargaining1.innerHTML = returns[3].toFixed(1);
+    colReturnsBargaining1.style.color = `rgb(${colorFunction(returns[3]/9, 1)[0]}, ${colorFunction(returns[3]/9, 1)[1]}, ${colorFunction(returns[3]/9, 1)[2]})`;
+    rowReturnsBargaining2.innerHTML = returns[4].toFixed(1);
+    rowReturnsBargaining2.style.color = `rgb(${colorFunction(returns[4]/9, 1)[0]}, ${colorFunction(returns[4]/9, 1)[1]}, ${colorFunction(returns[4]/9, 1)[2]})`;
+    colReturnsBargaining2.innerHTML = returns[5].toFixed(1);
+    colReturnsBargaining2.style.color = `rgb(${colorFunction(returns[5]/9, 1)[0]}, ${colorFunction(returns[5]/9, 1)[1]}, ${colorFunction(returns[5]/9, 1)[2]})`;
+    rowReturnsTrans.innerHTML = returns[6].toFixed(1);
+    rowReturnsTrans.style.color = `rgb(${colorFunction(returns[6]/9, 1)[0]}, ${colorFunction(returns[6]/9, 1)[1]}, ${colorFunction(returns[6]/9, 1)[2]})`;
+    colReturnsTrans.innerHTML = returns[7].toFixed(1);
+    colReturnsTrans.style.color = `rgb(${colorFunction(returns[7]/9, 1)[0]}, ${colorFunction(returns[7]/9, 1)[1]}, ${colorFunction(returns[7]/9, 1)[2]})`;
+    rowReturnsCoco.innerHTML = returns[8].toFixed(1);
+    rowReturnsCoco.style.color = `rgb(${colorFunction(returns[8]/9, 1)[0]}, ${colorFunction(returns[8]/9, 1)[1]}, ${colorFunction(returns[8]/9, 1)[2]})`;
+    colReturnsCoco.innerHTML = returns[9].toFixed(1);
+    colReturnsCoco.style.color = `rgb(${colorFunction(returns[9]/9, 1)[0]}, ${colorFunction(returns[9]/9, 1)[1]}, ${colorFunction(returns[9]/9, 1)[2]})`;
 
     const crossBlue1 = document.getElementById("cross-blue-1");
     const crossBlue2 = document.getElementById("cross-blue-2");
@@ -2630,11 +2659,14 @@ function update() {
             for (let j = 0; j < valuesY; j++) {
                 values.push([]);
                 for (let i = 0; i < valuesX; i++) {
-                    const [rowM, colM] = (!useAltSchema) ? 
+                    let [rowM, colM] = (!useAltSchema) ? 
                                             coordsToMatrices((i+0.5)/valuesX*6, (valuesY-j-0.5)/valuesY*6,
                                                             coords[2] != 0 ? coords[2] : coords[2] + error*2,
                                                             coords[3] != 0 ? coords[3] : coords[3] + error*2) :
                                             coordsToMatricesAlt((i+0.5)/valuesX*6, (valuesY-j-0.5)/valuesY*6, quad);
+                    if (!viewModeP1) {
+                        [rowM, colM] = [flip(rowM), flip(colM)].toReversed();
+                    }
                     switch (viewMode) {
                         case 1:
                             values[j].push(payoff(rowM, colM)/9);
@@ -2679,7 +2711,7 @@ function update() {
 
                 // Apply linear interpolation between samples
                 value = values[Math.floor(j/canvas.height*valuesY)][Math.floor(i/canvas.width*valuesX)];
-                if (viewMode == 3 || viewMode == 1) {
+                if ((viewMode == 3 || viewMode == 1) && viewModeP1) {
                     const weight1 = i/canvas.width*valuesX % 1;
                     if (Math.ceil(i/canvas.width*valuesX)%valuesX == valuesX/2) {
                         value = values[Math.floor(j/canvas.height*valuesY)][Math.floor(i/canvas.width*valuesX)];
@@ -2712,11 +2744,14 @@ function update() {
                     if (n != 0 && m != valuesY-1 && Math.abs(values[m+1][n-1] - values[m][n]) > jumpSize) boundary = true;
 
                     if (boundary) {
-                        const [rowM, colM] = (!useAltSchema) ? 
+                        let [rowM, colM] = (!useAltSchema) ? 
                                             coordsToMatrices(i/canvas.width*6, (canvas.height-j)/canvas.height*6,
                                                             coords[2] != 0 ? coords[2] : coords[2] + error*2,
                                                             coords[3] != 0 ? coords[3] : coords[3] + error*2) :
                                             coordsToMatricesAlt(i/canvas.width*6, (canvas.height-j)/canvas.height*6, quad);
+                        if (!viewModeP1) {
+                            [rowM, colM] = [flip(rowM), flip(colM)].toReversed();
+                        }
                         switch (viewMode) {
                             case 1:
                                 value = payoff(rowM, colM)/9;
@@ -2749,8 +2784,7 @@ function update() {
                     }
                 }
 
-                const color = colorFunction(value);
-                // console.log(value/6);
+                const color = colorFunction(value, viewMode);
                 data[(j*canvas.width+i)*4]   = color[0];
                 data[(j*canvas.width+i)*4+1] = color[1];
                 data[(j*canvas.width+i)*4+2] = color[2];
@@ -3133,7 +3167,6 @@ function coordsToMatrices(x1,x2,b1,b2) {
         return [XBtoMatrix([-x1new,b1]), flip(XBtoMatrix([-x2new,b2]))];
     }
     else {
-        console.log("error");
         return [[6, 6, 6, 6],[6,6,6,6]];
     }
 }
@@ -3217,6 +3250,12 @@ function changeCoords(e) {
         const newX2 = (1 - relativeY1 / rect.height) * 6;
         if (-0.1 <= newX1 && newX1 <= 6.1 && -0.1 <= newX2 && newX2 <= 6.1) {
             if (isMouseDown) {
+                if (coords[2] == 0 && integerBetween((coords[0]+1)/2,(newX1+1)/2) && coords[1] % 1 > 0.25 && coords[1] % 1 < 0.75) {
+                    crossBlue(true);
+                }
+                if (coords[3] == 0 && integerBetween((coords[1]+1)/2,(newX2+1)/2) && coords[0] % 1 > 0.25 && coords[0] % 1 < 0.75) {
+                    crossBlue(false);
+                }
                 coords[0] = newX1;
                 coords[1] = newX2;
             } else {
@@ -3554,7 +3593,6 @@ function payoffCoco(m1, m2) {
 }
 
 function payoffBargainingBackstop(m1, m2) {
-    // console.log("check");
     let rowBackstop = 0;
     let colBackstop = 0;
     if (Math.min(m1[0],m1[1]) < Math.min(m1[2],m1[3])) rowBackstop = Math.min(m1[2],m1[3]);
@@ -3585,7 +3623,6 @@ function payoffBargainingBackstop(m1, m2) {
             const x2 = m1[j] - rowBackstop;
             const y1 = m2[i] - colBackstop;
             const y2 = m2[j] - colBackstop;
-            // if (y1 == y2 || x1 == x2){ console.log("error!"); return 0; }
             // maximizing   (x1*t+x2*(1-t))*(y1*t+y2*(1-t))
             // derivative   (x1*t+x2*(1-t))*(y1-y2)+(y1*t+y2*(1-t))*(x1-x2) = 0
             // solve        t*(x1-x2)*(y1-y2)*2+x2*(y1-y2)+y2*(x1-x2) = 0
@@ -3594,26 +3631,21 @@ function payoffBargainingBackstop(m1, m2) {
             const value1 = x1*y1;
             const value2 = x2*y2;
             const value3 = (t < 1 && t > 0 && (x1*t+x2*(1-t))>0 && (y1*t+y2*(1-t))>0) ? (x1*t+x2*(1-t))*(y1*t+y2*(1-t)) : -1;
-            // console.log(i + " " + j + ": " + value1.toFixed(1) + " " + value2.toFixed(1) + " " + value3.toFixed(1) + " " + t.toFixed(2));
             if (value1 >= max && value1 >= value2 && value1 >= value3) {
                 max = value1;
                 return1 = m1[i];
                 return2 = m2[i];
-                // console.log(i + ": " + value1);
             } else if (value2 >= max && value2 >= value3) {
                 max = value2;
                 return1 = m1[j];
                 return2 = m2[j];
-                // console.log(j + ": " + value2);
             } else if (value3 >= max) {
                 max = value3;
                 return1 = m1[i]*t + m1[j]*(1-t);
                 return2 = m2[i]*t + m2[j]*(1-t);
-                // console.log(i + "-" + j + ": " + value3);
             }
         }
     }
-    // console.log("");
     // if (max == 0) return 8;
     bargainingReturns[0] = [return1,return2];
     if (viewMode == 5) {
@@ -3672,32 +3704,25 @@ function payoffBargainingDisagreement(m1, m2) {
             const x2 = m1[j] - rowDisagreement;
             const y1 = m2[i] - colDisagreement;
             const y2 = m2[j] - colDisagreement;
-            // if (y1 == y2 || x1 == x2){ console.log("error!"); return 0; }
             const t = (y1 == y2 || x1 == x2) ? -1 : -(x2*(y1-y2)+y2*(x1-x2))/((x1-x2)*(y1-y2)*2);
             const value1 = x1*y1;
             const value2 = x2*y2;
             const value3 = (t < 1 && t > 0 && (x1*t+x2*(1-t))>0 && (y1*t+y2*(1-t))>0) ? (x1*t+x2*(1-t))*(y1*t+y2*(1-t)) : -1;
-            // console.log(rowDisagreement + "," + colDisagreement);
-            // console.log(i + " " + j + ": " + value1.toFixed(1) + " " + value2.toFixed(1) + " " + value3.toFixed(1) + " " + t.toFixed(2));
             if (value1 >= max && value1 >= value2 && value1 >= value3) {
                 max = value1;
                 return1 = m1[i];
                 return2 = m2[i];
-                // console.log(i + ": " + value1);
             } else if (value2 >= max && value2 >= value3) {
                 max = value2;
                 return1 = m1[j];
                 return2 = m2[j];
-                // console.log(j + ": " + value2);
             } else if (value3 >= max) {
                 max = value3;
                 return1 = m1[i]*t + m1[j]*(1-t);
                 return2 = m2[i]*t + m2[j]*(1-t);
-                // console.log(i + "-" + j + ": " + value3);
             }
         }
     }
-    // console.log("");
     // if (max == 0) return 8;
     bargainingReturns[1] = [return1,return2];
     if (viewMode == 6) {
@@ -3726,6 +3751,18 @@ function payoffCustom(m1, m2) {
         value1 = payoffBargainingDisagreement(m1,m2)[0];
     } else if (choice1 == "returns-max-total") {
         value1 = payoffTransferable(m1,m2);
+    } else if (choice1 == "returns-col") {
+        value1 = payoffModified(flip(m2),flip(m1));
+    } else if (choice1 == "returns-mixed-col") {
+        value1 = payoff(flip(m2),flip(m1));
+    } else if (choice1 == "returns-shapley-col") {
+        value1 = payoffShapley(m1,m2)[1];
+    } else if (choice1 == "returns-coco") {
+        value1 = payoffCoco(m1,m2)[1];
+    } else if (choice1 == "returns-bargaining-bs-col") {
+        value1 = payoffBargainingBackstop(m1,m2)[1];
+    } else if (choice1 == "returns-bargaining-tp-col") {
+        value1 = payoffBargainingDisagreement(m1,m2)[1];
     }
 
     if (choice2 == "returns") {
@@ -3742,8 +3779,19 @@ function payoffCustom(m1, m2) {
         value2 = payoffBargainingDisagreement(m1,m2)[0];
     } else if (choice2 == "returns-max-total") {
         value2 = payoffTransferable(m1,m2);
+    } else if (choice2 == "returns-col") {
+        value2 = payoffModified(flip(m2),flip(m1));
+    } else if (choice2 == "returns-mixed-col") {
+        value2 = payoff(flip(m2),flip(m1));
+    } else if (choice2 == "returns-shapley-col") {
+        value2 = payoffShapley(m1,m2)[1];
+    } else if (choice2 == "returns-coco") {
+        value2 = payoffCoco(m1,m2)[1];
+    } else if (choice2 == "returns-bargaining-bs-col") {
+        value2 = payoffBargainingBackstop(m1,m2)[1];
+    } else if (choice2 == "returns-bargaining-tp-col") {
+        value2 = payoffBargainingDisagreement(m1,m2)[1];
     }
-
     return (value1 - value2)/12+1/2;
 }
 
@@ -3754,7 +3802,6 @@ function coordination(m1, m2) {
     const mean2 = (newM2[0]+newM2[1]+newM2[2]+newM2[3])/4; // max 6
     const norm1 = (newM1[0]-mean1)**2 + (newM1[1]-mean1)**2 + (newM1[2]-mean1)**2 + (newM1[3]-mean1)**2; // max 
     const norm2 = (newM2[0]-mean2)**2 + (newM2[1]-mean2)**2 + (newM2[2]-mean2)**2 + (newM2[3]-mean2)**2;
-    // console.log(norm1 + " " + norm2);
     return (norm1 / (norm1 + norm2));
 }
 
@@ -3770,16 +3817,16 @@ function colorFunctionOld(value) {
     }
 }
 
-function colorFunction(value) {
+function colorFunction(value,vMode) {
     let colors = [];
     let cutoffs = [];
     // const colors = [[38,84,138],[70,102,168],[110,116,144],[150,130,121],[190,144,97],[229,158,74],
     //                 [236,174,94],[242,190,113],[249,206,133],[255,222,153],[255,242,191],[142,255,142],[0,113,0],[255,255,255]];
     // const cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.25,1.5,2];
-    if (viewMode == 7) {
+    if (vMode == 7) {
         colors = [[0,0,0],[0,0,86],[111,118,172],[255,255,255],[184,114,116],[86,0,0],[0,0,0]];
         cutoffs = [0,0.25,0.375,0.5,0.625,0.75,1];
-    } else if (viewMode == 8) {
+    } else if (vMode == 8) {
         colors = [[0,0,86],[111,118,172],[255,255,255],[184,114,116],[86,0,0]];
         cutoffs = [0,0.25,0.5,0.75,1];
     } else {
@@ -3795,8 +3842,9 @@ function colorFunction(value) {
     }
 }
 
-function changeViewMode(mode) {
-    if (viewMode == 7 || mode == 7 || viewMode == 8 || mode == 8) {
+function changeViewMode(mode, p1=true) {
+    viewModeP1 = p1;
+    if (viewMode == 7 || mode == 7 || viewMode == 8 || mode == 8 || viewMode == 0 || mode == 0) {
         viewMode = mode;
         updateLegend();
     } else {
@@ -3817,48 +3865,82 @@ function changeViewMode(mode) {
 
     const curButton = document.getElementsByClassName("selected")[1];
     curButton.classList.remove("selected");
-    switch (mode) {
-        case 0:
-            document.getElementById("regular-mode").classList.add("selected");
-            break;
-        case 1:
-            document.getElementById("return-mode-1").classList.add("selected");
-            break;
-        case 2:
-            document.getElementById("transferable-mode").classList.add("selected");
-            break;
-        case 3:
-            document.getElementById("return-mode-2").classList.add("selected");
-            break;
-        case 4:
-            document.getElementById("coco-mode").classList.add("selected");
-            break;
-        case 5:
-            document.getElementById("bargaining-mode-1").classList.add("selected");
-            break;
-        case 6:
-            document.getElementById("bargaining-mode-2").classList.add("selected");
-            break;
-        case 7:
-            document.getElementById("custom-mode").classList.add("selected");
-            break;
-        case 8:
-            document.getElementById("coordination-mode").classList.add("selected");
-            break;
-        case 9:
-            document.getElementById("shapley-mode").classList.add("selected");
-            break;
-    }
-    if (mode == 7) {
-        viewModeVolatile = true;
+    if (p1) {
+        switch (mode) {
+            case 0:
+                document.getElementById("regular-mode").classList.add("selected");
+                break;
+            case 1:
+                document.getElementById("return-mode-1").classList.add("selected");
+                break;
+            case 2:
+                document.getElementById("transferable-mode").classList.add("selected");
+                break;
+            case 3:
+                document.getElementById("return-mode-2").classList.add("selected");
+                break;
+            case 4:
+                document.getElementById("coco-mode").classList.add("selected");
+                break;
+            case 5:
+                document.getElementById("bargaining-mode-1").classList.add("selected");
+                break;
+            case 6:
+                document.getElementById("bargaining-mode-2").classList.add("selected");
+                break;
+            case 7:
+                document.getElementById("custom-mode").classList.add("selected");
+                break;
+            case 8:
+                document.getElementById("coordination-mode").classList.add("selected");
+                break;
+            case 9:
+                document.getElementById("shapley-mode").classList.add("selected");
+                break;
+        }
     } else {
-        viewModeVolatile = false;
+        switch (mode) {
+            case 0:
+                document.getElementById("regular-mode-col").classList.add("selected");
+                break;
+            case 1:
+                document.getElementById("return-mode-1-col").classList.add("selected");
+                break;
+            case 2:
+                document.getElementById("transferable-mode-col").classList.add("selected");
+                break;
+            case 3:
+                document.getElementById("return-mode-2-col").classList.add("selected");
+                break;
+            case 4:
+                document.getElementById("coco-mode-col").classList.add("selected");
+                break;
+            case 5:
+                document.getElementById("bargaining-mode-1-col").classList.add("selected");
+                break;
+            case 6:
+                document.getElementById("bargaining-mode-2-col").classList.add("selected");
+                break;
+            case 7:
+                document.getElementById("custom-mode-col").classList.add("selected");
+                break;
+            case 8:
+                document.getElementById("coordination-mode-col").classList.add("selected");
+                break;
+            case 9:
+                document.getElementById("shapley-mode-col").classList.add("selected");
+                break;
+        }
     }
+    // if (mode == 7) {
+    //     viewModeVolatile = true;
+    // } else {
+    //     viewModeVolatile = false;
+    // }
 }
 
 function fixImage(alt) {
     if (!useAltSchema) {
-        console.log(useAltSchema);
         fixImageSize = alt;
         backgroundOutOfDate = true;
     }
@@ -3944,7 +4026,6 @@ function updateCoords() {
         if (Math.abs(matrixA[i] - 6) < error) max1 = i;
         if (Math.abs(matrixB[i] - 6) < error) max2 = i;
     }
-    console.log(max1 + ' ' + max2);
     if (max1 == max2) quad = 1;
     else if (max1 == 0 && max2 == 2 || max1 == 2 && max2 == 0 || max1 == 1 && max2 == 3 || max1 == 3 && max2 == 1) quad = 2;
     else if (max1 == 0 && max2 == 1 || max1 == 1 && max2 == 0 || max1 == 2 && max2 == 3 || max1 == 3 && max2 == 2) quad = 4;
@@ -4407,7 +4488,6 @@ function coordsToMatricesAlt(x1,x2,quad) {
     } else {
         colM = mix((x2new%2)/2,m6,m4);
     }
-    // console.log(altToStandardCoords(x1,x2));
     return [rowM,colM];
 }
 
@@ -4522,8 +4602,16 @@ function hideGame() {
 }
 
 function updateLegend() {
+    const legend = document.getElementById("legend");
+    if (viewMode == 0) {
+        legend.style.display = "none";
+        return;
+    } else {
+        legend.style.display = "";
+    }
+
     const legendContainer = document.getElementById("legend-container");
-    const legend = document.getElementById("legend-canvas");
+    const legendCanvas = document.getElementById("legend-canvas");
     const legendLabel1 = document.getElementById("legend-label-1");
     const legendLabel2 = document.getElementById("legend-label-2");
     const legendLabel3 = document.getElementById("legend-label-3");
@@ -4531,16 +4619,16 @@ function updateLegend() {
     const legendLabel5 = document.getElementById("legend-label-5");
     const legendLabel6 = document.getElementById("legend-label-6");
 
-    const ctx = legend.getContext("2d");
-    const imageData = ctx.getImageData(0, 0, legend.width, legend.height);
+    const ctx = legendCanvas.getContext("2d");
+    const imageData = ctx.getImageData(0, 0, legendCanvas.width, legendCanvas.height);
     const data = imageData.data;
-    for (let i = 0; i < legend.width; i++) {
-        const color = colorFunction(i/legend.width);
-        for (let j = 0; j < legend.height; j++) {
-            data[(j*legend.width+i)*4]   = color[0];
-            data[(j*legend.width+i)*4+1] = color[1];
-            data[(j*legend.width+i)*4+2] = color[2];
-            data[(j*legend.width+i)*4+3] = 255;
+    for (let j = 0; j < legendCanvas.height; j++) {
+        const color = colorFunction(1-j/legendCanvas.height, viewMode);
+        for (let i = 0; i < legendCanvas.height; i++) {
+            data[(j*legendCanvas.width+i)*4]   = color[0];
+            data[(j*legendCanvas.width+i)*4+1] = color[1];
+            data[(j*legendCanvas.width+i)*4+2] = color[2];
+            data[(j*legendCanvas.width+i)*4+3] = 255;
         }
     }
     ctx.putImageData(imageData,0,0);
@@ -4557,7 +4645,7 @@ function updateLegend() {
         legendLabel3.style.display = "none";
         legendLabel4.style.display = "none";
         legendLabel6.style.display = "none";
-        legendLabel1.innerHTML = "0";
+        legendLabel1.innerHTML = "-1";
         legendLabel5.innerHTML = "1";
     } else {
         legendLabel2.style.display = "";
@@ -4569,6 +4657,14 @@ function updateLegend() {
     }
 }
 
+function integerBetween(a,b) {
+    return a != b && (Math.floor(a) == Math.ceil(b) || Math.ceil(a) == Math.floor(b));
+}
 
-// add parameter for transferable utility (later)
-// replace arrows with three large lines (wait on that)
+
+// add parameter for transferable utility
+// replace arrows with three large lines
+// improve colors
+// DONE improve game info
+// color global picture
+// DONE add column player backgrounds

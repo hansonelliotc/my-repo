@@ -58,10 +58,12 @@ button {
 }
 
 #game-info tr td {
-    padding-top: 1vh;
     text-align: center;
 }
 
+.info-header {
+    padding: 2vh 0 1vh 0;
+}
 #matrices tr td table {
     width: 80px;
 }
@@ -92,7 +94,7 @@ span {
     display: flex;
     position: absolute;
     bottom: 1vh;
-    left: calc(80vh - 3vw);
+    left: calc(80vh + 1vw);
 }
 
 #nav-bar button {
@@ -103,8 +105,8 @@ span {
 
 #content {
     position:absolute;
-    bottom:9vh;
-    left:80vh;
+    top:2vh;
+    left: calc(80vh + 5vw);
     width:26vw;
     height:85vh;
     text-align: center
@@ -155,8 +157,9 @@ span {
 
 h2 {
     padding: 0;
-    margin: 10px 0 0 0;
+    margin: 10px 0 5px 0;
     font-size: 13pt;
+    font-family: sans-serif;
 }
 
 #display-options {
@@ -164,3 +167,14 @@ h2 {
     border-spacing: 10px 0;
 }
 
+.row-header {
+    position: absolute;
+    transform: translateX(calc(-100% - 10px));
+}
+
+#legend {
+    position: relative;
+    top: calc(80vh / 7 * 3 - 20px);
+    width: 5vw;
+    height: calc(40vh + 40px);
+}
