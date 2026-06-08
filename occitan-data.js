@@ -125,7 +125,7 @@ function showNearestNeighbors(x) {
 
     document.getElementById("header").innerHTML = titles[x];
     const body = document.getElementById("body");
-    const labels = ["Closest: ", "Second closeset: ", "Third closest: ", "Fourth closest: ", "Fifth closest: ", "Sixth closest: ", "Seventh closeset: ", "Eighth closest: ", "Nineth closest: "];
+    const labels = ["Closest: ", "Second closest: ", "Third closest: ", "Fourth closest: ", "Fifth closest: ", "Sixth closest: ", "Seventh closest: ", "Eighth closest: ", "Ninth closest: "];
     body.replaceChildren(body.firstElementChild);
     for (let i = 0; i < 10; i++) {
         const point = document.getElementById("point"+neighbors[x][i]);
