@@ -21,3 +21,12 @@ button:hover {
 .selected {
     background-color:#ccc;
 }
+
+.neighbor {
+    cursor: pointer;
+}
+
+.neighbor:hover {
+    text-decoration: underline;
+    color: red;
+}
