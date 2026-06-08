@@ -83,7 +83,7 @@ function showPoet(poet) {
         const button = document.getElementById("button"+poet)
         button.classList.remove("selected");
         button.style.color = "";
-        document.getElementById("header").innerHTML = selectedPoets.filter(x => x !== null).map(x => poets[x]).join(", ");
+        document.getElementById("header").innerHTML = selectedPoets.filter(x => x !== null).map((x) => '<span style="color:'+colors[selectedPoets.indexOf(x)]+'">'+poets[x]+"</span>").join(", ");
     } else if (selectedPoets.includes(null)) {
         document.getElementById("body").replaceChildren(body.firstElementChild);
         if (selectedPoets.every(val => val === null)) {
@@ -103,7 +103,7 @@ function showPoet(poet) {
         const button = document.getElementById("button"+poet)
         button.classList.add("selected");
         button.style.color = colors[index];
-        document.getElementById("header").innerHTML = selectedPoets.filter(x => x !== null).map(x => poets[x]).join(", ");
+        document.getElementById("header").innerHTML = selectedPoets.filter(x => x !== null).map((x) => '<span style="color:'+colors[selectedPoets.indexOf(x)]+'">'+poets[x]+"</span>").join(", ");
     } else {
         alert("There are no unused colors.");
     }
