@@ -410,6 +410,7 @@ function init() {
         draggingRhombus1 = false;
         draggingRhombus2 = false;
         isMouseDown = false;
+        backgroundOutOfDate = true;
     });
     document.addEventListener('mousemove', (e) => {
         if (isMouseDown) {
@@ -430,10 +431,16 @@ function init() {
     bigDiagram.addEventListener('mousedown', (e) => { growBox(e); });
 
     document.getElementById("view-custom-1").addEventListener('change', (event) => {
-        if (viewMode == 7) backgroundOutOfDate = true;
+        if (viewMode == 7) {
+            backgroundOutOfDate = true;
+            updateBigPicCanvas(payoffCustom);
+        }
     });
     document.getElementById("view-custom-2").addEventListener('change', (event) => {
-        if (viewMode == 7) backgroundOutOfDate = true;
+        if (viewMode == 7) {
+            backgroundOutOfDate = true;
+            updateBigPicCanvas((a,b)=>payoffCustom(flip(b),flip(a)));
+        }
     });
 
     const acc = 0.005;
@@ -482,6 +489,9 @@ function init() {
                     if (!useAltSchema) coords = [...nearestCentroid,2,2];
                     else coords = [...standardToAltCoords(...[...nearestCentroid,2,2]),2,2];
                     backgroundOutOfDate = true;
+                    break;
+                case "e":
+                    exportPNG();
                     break;
             }
         } else {
@@ -898,6 +908,8 @@ function init() {
 
     const canvas = document.getElementById("canvas");
     canvas.getContext("2d", { willReadFrequently: true});
+    const canvasBigPic = document.getElementById("big-pic-canvas");
+    canvasBigPic.getContext("2d", { willReadFrequently: true});
 
     const navButtons = document.getElementsByClassName("nav-button");
     for (let button of navButtons) {
@@ -942,6 +954,74 @@ function init() {
     legendLabel6.setAttribute("y",legend.height*0.5+20);
     legendLabel6.style.display = "none";
     updateLegend();
+
+    // initialize hotspots and boundaries
+    const boundaryLine1 = document.getElementById("boundary-line-1");
+    const boundaryLine2 = document.getElementById("boundary-line-2");
+    const boundaryLine3 = document.getElementById("boundary-line-3");
+    const boundaryLine4 = document.getElementById("boundary-line-4");
+    const boundaryLine5 = document.getElementById("boundary-line-5");
+    const boundaryLine6 = document.getElementById("boundary-line-6");
+    const boundaryLine7 = document.getElementById("boundary-line-7");
+    const boundaryLine8 = document.getElementById("boundary-line-8");
+    const boundaryLine9 = document.getElementById("boundary-line-9");
+    const boundaryLine10 = document.getElementById("boundary-line-10");
+    const boundaryLine11 = document.getElementById("boundary-line-11");
+    const boundaryLine12 = document.getElementById("boundary-line-12");
+    const boundaryLine13 = document.getElementById("boundary-line-13");
+    const boundaryLine14 = document.getElementById("boundary-line-14");
+    const boundaryLine15 = document.getElementById("boundary-line-15");
+    const boundaryLine16 = document.getElementById("boundary-line-16");
+    const boundaryLine17 = document.getElementById("boundary-line-17");
+    const boundaryLine18 = document.getElementById("boundary-line-18");
+    const boundaryLine19 = document.getElementById("boundary-line-19");
+    const boundaryLine20 = document.getElementById("boundary-line-20");
+    const boundaryLine21 = document.getElementById("boundary-line-21");
+    const boundaryLine22 = document.getElementById("boundary-line-22");
+    const boundaryLine23 = document.getElementById("boundary-line-23");
+    const boundaryLine24 = document.getElementById("boundary-line-24");
+    const boundaryPoint1 = document.getElementById("boundary-point-1");
+    const boundaryPoint2 = document.getElementById("boundary-point-2");
+    const boundaryPoint3 = document.getElementById("boundary-point-3");
+    const boundaryPoint4 = document.getElementById("boundary-point-4");
+    const boundaryPoint5 = document.getElementById("boundary-point-5");
+    const boundaryPoint6 = document.getElementById("boundary-point-6");
+    const boundaryPoint7 = document.getElementById("boundary-point-7");
+    const boundaryPoint8 = document.getElementById("boundary-point-8");
+    const boundaryPoint9 = document.getElementById("boundary-point-9");
+    const hotspot1 = document.getElementById("hotspot-1");
+    const hotspot2 = document.getElementById("hotspot-2");
+    const hotspot3 = document.getElementById("hotspot-3");
+    boundaryLine1.style.stroke = lightGreen;
+    boundaryLine2.style.stroke = cerulean;
+    boundaryLine3.style.stroke = gold;
+    boundaryLine4.style.stroke = lightGreen;
+    boundaryLine5.style.stroke = cerulean;
+    boundaryLine6.style.stroke = gold;
+    boundaryLine7.style.stroke = lightGreen;
+    boundaryLine8.style.stroke = cerulean;
+    boundaryLine9.style.stroke = gold;
+    boundaryLine10.style.stroke = cerulean;
+    boundaryLine11.style.stroke = cerulean;
+    boundaryLine12.style.stroke = cerulean;
+    boundaryLine13.style.stroke = gold;
+    boundaryLine14.style.stroke = gold;
+    boundaryLine15.style.stroke = gold;
+    boundaryLine16.style.stroke = lightGreen;
+    boundaryLine17.style.stroke = lightGreen;
+    boundaryLine18.style.stroke = lightGreen;
+    boundaryPoint1.style.fill = gold;
+    boundaryPoint2.style.fill = bad;
+    boundaryPoint3.style.fill = lightGreen;
+    boundaryPoint4.style.fill = cerulean;
+    boundaryPoint5.style.fill = lightGreen;
+    boundaryPoint6.style.fill = bad;
+    boundaryPoint7.style.fill = bad;
+    boundaryPoint8.style.fill = gold;
+    boundaryPoint9.style.fill = cerulean;
+    hotspot1.style.fill = cerulean;
+    hotspot2.style.fill = gold;
+    hotspot3.style.fill = lightGreen;    
 
     update();
 }
@@ -2056,202 +2136,15 @@ function update() {
         point5Big.style.opacity = 0;
     }
 
-    const arrowSize = 0.016*container.width.baseVal.value;
-    const arrowOffset = 0.04*container.width.baseVal.value;
-    const arrowSizeD = arrowSize/1.414;
-    const arrow1 = document.getElementById("arrow1");
-    const arrow2 = document.getElementById("arrow2");
-    const arrow3 = document.getElementById("arrow3");
-    const arrow4 = document.getElementById("arrow4");
-    const arrow5 = document.getElementById("arrow5");
-    const arrow6 = document.getElementById("arrow6");
-    const arrow7 = document.getElementById("arrow7");
-    const arrow8 = document.getElementById("arrow8");
-    const arrow9 = document.getElementById("arrow9");
-    const arrow10 = document.getElementById("arrow10");
-    const arrow11 = document.getElementById("arrow11");
-    const arrow12 = document.getElementById("arrow12");
-    
-    if (quad == 2 || quad == 4) {
-        arrow1.x1.baseVal.value = picPadding1 + picWidth/12 - arrowSizeD;
-        arrow1.x2.baseVal.value = picPadding1 + picWidth/12 + arrowSizeD;
-        arrow1.y1.baseVal.value = picPadding2 - arrowOffset - arrowSizeD;
-        arrow1.y2.baseVal.value = picPadding2 - arrowOffset + arrowSizeD;
-        arrow2.x1.baseVal.value = picPadding1 + picWidth*3/12 - arrowSizeD;
-        arrow2.x2.baseVal.value = picPadding1 + picWidth*3/12 + arrowSizeD;
-        arrow2.y1.baseVal.value = picPadding2 - arrowOffset - arrowSizeD;
-        arrow2.y2.baseVal.value = picPadding2 - arrowOffset + arrowSizeD;
-    } else {
-        arrow1.x1.baseVal.value = picPadding1 + picWidth/12 + arrowSizeD;
-        arrow1.x2.baseVal.value = picPadding1 + picWidth/12 - arrowSizeD;
-        arrow1.y1.baseVal.value = picPadding2 - arrowOffset - arrowSizeD;
-        arrow1.y2.baseVal.value = picPadding2 - arrowOffset + arrowSizeD;
-        arrow2.x1.baseVal.value = picPadding1 + picWidth*3/12 + arrowSizeD;
-        arrow2.x2.baseVal.value = picPadding1 + picWidth*3/12 - arrowSizeD;
-        arrow2.y1.baseVal.value = picPadding2 - arrowOffset - arrowSizeD;
-        arrow2.y2.baseVal.value = picPadding2 - arrowOffset + arrowSizeD;
-    }
-    arrow3.x1.baseVal.value = picPadding1 + picWidth*5/12 - arrowSize;
-    arrow3.x2.baseVal.value = picPadding1 + picWidth*5/12 + arrowSize;
-    arrow3.y1.baseVal.value = picPadding2 - arrowOffset;
-    arrow3.y2.baseVal.value = picPadding2 - arrowOffset;
-    arrow4.x1.baseVal.value = picPadding1 + picWidth*7/12 - arrowSize;
-    arrow4.x2.baseVal.value = picPadding1 + picWidth*7/12 + arrowSize;
-    arrow4.y1.baseVal.value = picPadding2 - arrowOffset;
-    arrow4.y2.baseVal.value = picPadding2 - arrowOffset;
-    arrow5.x1.baseVal.value = picPadding1 + picWidth*9/12;
-    arrow5.x2.baseVal.value = picPadding1 + picWidth*9/12;
-    arrow5.y1.baseVal.value = picPadding2 - arrowOffset - arrowSize;
-    arrow5.y2.baseVal.value = picPadding2 - arrowOffset + arrowSize;
-    arrow6.x1.baseVal.value = picPadding1 + picWidth*11/12;
-    arrow6.x2.baseVal.value = picPadding1 + picWidth*11/12;
-    arrow6.y1.baseVal.value = picPadding2 - arrowOffset - arrowSize;
-    arrow6.y2.baseVal.value = picPadding2 - arrowOffset + arrowSize;
-
-    if (quad == 2 || quad == 4) {
-        arrow7.x1.baseVal.value = picPadding1 - arrowSizeD - arrowOffset;
-        arrow7.x2.baseVal.value = picPadding1 + arrowSizeD - arrowOffset;
-        arrow7.y1.baseVal.value = picPadding2 + picHeight*11/12 - arrowSizeD;
-        arrow7.y2.baseVal.value = picPadding2 + picHeight*11/12 + arrowSizeD;
-        arrow8.x1.baseVal.value = picPadding1 - arrowSizeD - arrowOffset;
-        arrow8.x2.baseVal.value = picPadding1 + arrowSizeD - arrowOffset;
-        arrow8.y1.baseVal.value = picPadding2 + picHeight*9/12 - arrowSizeD;
-        arrow8.y2.baseVal.value = picPadding2 + picHeight*9/12 + arrowSizeD;
-    } else {
-        arrow7.x1.baseVal.value = picPadding1 + arrowSizeD - arrowOffset;
-        arrow7.x2.baseVal.value = picPadding1 - arrowSizeD - arrowOffset;
-        arrow7.y1.baseVal.value = picPadding2 + picHeight*11/12 - arrowSizeD;
-        arrow7.y2.baseVal.value = picPadding2 + picHeight*11/12 + arrowSizeD;
-        arrow8.x1.baseVal.value = picPadding1 + arrowSizeD - arrowOffset;
-        arrow8.x2.baseVal.value = picPadding1 - arrowSizeD - arrowOffset;
-        arrow8.y1.baseVal.value = picPadding2 + picHeight*9/12 - arrowSizeD;
-        arrow8.y2.baseVal.value = picPadding2 + picHeight*9/12 + arrowSizeD;
-    }
-    arrow9.x1.baseVal.value = picPadding1 - arrowOffset;
-    arrow9.x2.baseVal.value = picPadding1 - arrowOffset;
-    arrow9.y1.baseVal.value = picPadding2 + picHeight*7/12 - arrowSize;
-    arrow9.y2.baseVal.value = picPadding2 + picHeight*7/12 + arrowSize;
-    arrow10.x1.baseVal.value = picPadding1 - arrowOffset;
-    arrow10.x2.baseVal.value = picPadding1 - arrowOffset;
-    arrow10.y1.baseVal.value = picPadding2 + picHeight*5/12 - arrowSize;
-    arrow10.y2.baseVal.value = picPadding2 + picHeight*5/12 + arrowSize;
-    arrow11.x1.baseVal.value = picPadding1 - arrowSize - arrowOffset;
-    arrow11.x2.baseVal.value = picPadding1 + arrowSize - arrowOffset;
-    arrow11.y1.baseVal.value = picPadding2 + picHeight*3/12;
-    arrow11.y2.baseVal.value = picPadding2 + picHeight*3/12;
-    arrow12.x1.baseVal.value = picPadding1 - arrowSize - arrowOffset;
-    arrow12.x2.baseVal.value = picPadding1 + arrowSize - arrowOffset;
-    arrow12.y1.baseVal.value = picPadding2 + picHeight/12;
-    arrow12.y2.baseVal.value = picPadding2 + picHeight/12;
-
-    let arrowA = "url(#arrow)";
-    let arrowB = "url(#arrow)";
-
-    if (changeQuad1 && (wasPositive1 || (hitZero1 && coords[2] != 0))) {
-        arrow1.style.stroke = "blue";
-        arrow2.style.stroke = "blue";
-        arrow3.style.stroke = "blue";
-        arrow4.style.stroke = "blue";
-        arrow5.style.stroke = "blue";
-        arrow6.style.stroke = "blue";
-        arrowA = "url(#blue-arrow)";
-    } else {
-        arrow1.style.stroke = "black";
-        arrow2.style.stroke = "black";
-        arrow3.style.stroke = "black";
-        arrow4.style.stroke = "black";
-        arrow5.style.stroke = "black";
-        arrow6.style.stroke = "black";
-    } if (changeQuad2 && (wasPositive2 || (hitZero2 && coords[3] != 0))) {
-        arrow7.style.stroke = "blue";
-        arrow8.style.stroke = "blue";
-        arrow9.style.stroke = "blue";
-        arrow10.style.stroke = "blue";
-        arrow11.style.stroke = "blue";
-        arrow12.style.stroke = "blue";
-        arrowB = "url(#blue-arrow)";
-    } else {
-        arrow7.style.stroke = "black";
-        arrow8.style.stroke = "black";
-        arrow9.style.stroke = "black";
-        arrow10.style.stroke = "black";
-        arrow11.style.stroke = "black";
-        arrow12.style.stroke = "black";
-    }
-
-    if (quad == 2 || quad == 3) {
-        arrow3.style.markerEnd = arrowA;
-        arrow4.style.markerEnd = arrowA;
-        arrow3.style.markerStart = "";
-        arrow4.style.markerStart = "";
-        arrow11.style.markerEnd = arrowB;
-        arrow12.style.markerEnd = arrowB;
-        arrow11.style.markerStart = "";
-        arrow12.style.markerStart = "";
-    } else {
-        arrow3.style.markerStart = arrowA;
-        arrow4.style.markerStart = arrowA;
-        arrow3.style.markerEnd = "";
-        arrow4.style.markerEnd = "";
-        arrow11.style.markerStart = arrowB;
-        arrow12.style.markerStart = arrowB;
-        arrow11.style.markerEnd = "";
-        arrow12.style.markerEnd = "";
-    }
-    if (quad == 1 || quad == 2) {
-        arrow5.style.markerEnd = arrowA;
-        arrow6.style.markerEnd = arrowA;
-        arrow5.style.markerStart = "";
-        arrow6.style.markerStart = "";
-        arrow9.style.markerEnd = arrowB;
-        arrow10.style.markerEnd = arrowB;
-        arrow9.style.markerStart = "";
-        arrow10.style.markerStart = "";
-    } else {
-        arrow5.style.markerStart = arrowA;
-        arrow6.style.markerStart = arrowA;
-        arrow5.style.markerEnd = "";
-        arrow6.style.markerEnd = "";
-        arrow9.style.markerStart = arrowB;
-        arrow10.style.markerStart = arrowB;
-        arrow9.style.markerEnd = "";
-        arrow10.style.markerEnd = "";
-    }
-    if (quad == 1 || quad == 2) {
-        arrow1.style.markerEnd = arrowA;
-        arrow2.style.markerEnd = arrowA;
-        arrow1.style.markerStart = "";
-        arrow2.style.markerStart = "";
-        arrow7.style.markerEnd = arrowB;
-        arrow8.style.markerEnd = arrowB;
-        arrow7.style.markerStart = "";
-        arrow8.style.markerStart = "";
-    } else {
-        arrow1.style.markerStart = arrowA;
-        arrow2.style.markerStart = arrowA;
-        arrow1.style.markerEnd = "";
-        arrow2.style.markerEnd = "";
-        arrow7.style.markerStart = arrowB;
-        arrow8.style.markerStart = arrowB;
-        arrow7.style.markerEnd = "";
-        arrow8.style.markerEnd = "";
-    }
-
     const wholeFigure = document.getElementById("whole-figure");
     const edgeFigure = document.getElementById("edge-figure");
-    const arrows1 = document.getElementById("arrows1");
-    const arrows2 = document.getElementById("arrows2");
 
     if (!fixImageSize) {
         if (coords[2] >= 6 && coords[3] >= 6) {
             wholeFigure.style.display = "none";
-            arrows1.style.display = "none";
-            arrows2.style.display = "none";
             edgeFigure.style.display = "none";
         } else if (coords[3] == 6) {
             wholeFigure.style.display = "none";
-            arrows1.style.display = "";
-            arrows2.style.display = "none";
             edgeFigure.style.display = "";
 
             const bar = document.getElementById("bar");
@@ -2346,8 +2239,6 @@ function update() {
             green4.cy.baseVal.value = picPadding2;
         } else if (coords[2] == 6) {
             wholeFigure.style.display = "none";
-            arrows1.style.display = "none";
-            arrows2.style.display = "";
             edgeFigure.style.display = "";
 
             const bar = document.getElementById("bar");
@@ -2442,14 +2333,10 @@ function update() {
             green4.cx.baseVal.value = picPadding1;
         } else {
             wholeFigure.style.display = "";
-            arrows1.style.display = "";
-            arrows2.style.display = "";
             edgeFigure.style.display = "none";
         }
     } else {
         wholeFigure.style.display = "";
-        arrows1.style.display = "";
-        arrows2.style.display = "";
         edgeFigure.style.display = "none";
     }
 
@@ -2498,6 +2385,43 @@ function update() {
     const picCorner2 = document.getElementById("green-corner2");
     const picCorner3 = document.getElementById("green-corner3");
     const picCorner4 = document.getElementById("green-corner4");
+
+    const boundaryLine1 = document.getElementById("boundary-line-1");
+    const boundaryLine2 = document.getElementById("boundary-line-2");
+    const boundaryLine3 = document.getElementById("boundary-line-3");
+    const boundaryLine4 = document.getElementById("boundary-line-4");
+    const boundaryLine5 = document.getElementById("boundary-line-5");
+    const boundaryLine6 = document.getElementById("boundary-line-6");
+    const boundaryLine7 = document.getElementById("boundary-line-7");
+    const boundaryLine8 = document.getElementById("boundary-line-8");
+    const boundaryLine9 = document.getElementById("boundary-line-9");
+    const boundaryLine10 = document.getElementById("boundary-line-10");
+    const boundaryLine11 = document.getElementById("boundary-line-11");
+    const boundaryLine12 = document.getElementById("boundary-line-12");
+    const boundaryLine13 = document.getElementById("boundary-line-13");
+    const boundaryLine14 = document.getElementById("boundary-line-14");
+    const boundaryLine15 = document.getElementById("boundary-line-15");
+    const boundaryLine16 = document.getElementById("boundary-line-16");
+    const boundaryLine17 = document.getElementById("boundary-line-17");
+    const boundaryLine18 = document.getElementById("boundary-line-18");
+    const boundaryLine19 = document.getElementById("boundary-line-19");
+    const boundaryLine20 = document.getElementById("boundary-line-20");
+    const boundaryLine21 = document.getElementById("boundary-line-21");
+    const boundaryLine22 = document.getElementById("boundary-line-22");
+    const boundaryLine23 = document.getElementById("boundary-line-23");
+    const boundaryLine24 = document.getElementById("boundary-line-24");
+    const boundaryPoint1 = document.getElementById("boundary-point-1");
+    const boundaryPoint2 = document.getElementById("boundary-point-2");
+    const boundaryPoint3 = document.getElementById("boundary-point-3");
+    const boundaryPoint4 = document.getElementById("boundary-point-4");
+    const boundaryPoint5 = document.getElementById("boundary-point-5");
+    const boundaryPoint6 = document.getElementById("boundary-point-6");
+    const boundaryPoint7 = document.getElementById("boundary-point-7");
+    const boundaryPoint8 = document.getElementById("boundary-point-8");
+    const boundaryPoint9 = document.getElementById("boundary-point-9");
+    const hotspot1 = document.getElementById("hotspot-1");
+    const hotspot2 = document.getElementById("hotspot-2");
+    const hotspot3 = document.getElementById("hotspot-3");
 
     green1.x1.baseVal.value = picPadding1;
     green1.x2.baseVal.value = picWidth+picPadding1;
@@ -2563,6 +2487,172 @@ function update() {
     picCorner3.cy.baseVal.value = picHeight+picPadding2;
     picCorner4.cx.baseVal.value = picWidth+picPadding1;
     picCorner4.cy.baseVal.value = picHeight+picPadding2;
+
+    if (coords[2] == 0) {
+        boundaryLine1.x1.baseVal.value = picWidth/6+picPadding1;
+        boundaryLine1.y1.baseVal.value = picHeight/12+picPadding2;
+        boundaryLine1.x2.baseVal.value = picWidth/6+picPadding1;
+        boundaryLine1.y2.baseVal.value = picHeight*3/12+picPadding2;
+        boundaryLine2.x1.baseVal.value = picWidth/2+picPadding1;
+        boundaryLine2.y1.baseVal.value = picHeight/12+picPadding2;
+        boundaryLine2.x2.baseVal.value = picWidth/2+picPadding1;
+        boundaryLine2.y2.baseVal.value = picHeight*3/12+picPadding2;
+        boundaryLine3.x1.baseVal.value = picWidth*5/6+picPadding1;
+        boundaryLine3.y1.baseVal.value = picHeight/12+picPadding2;
+        boundaryLine3.x2.baseVal.value = picWidth*5/6+picPadding1;
+        boundaryLine3.y2.baseVal.value = picHeight*3/12+picPadding2;
+        boundaryLine4.x1.baseVal.value = picWidth/6+picPadding1;
+        boundaryLine4.y1.baseVal.value = picHeight*5/12+picPadding2;
+        boundaryLine4.x2.baseVal.value = picWidth/6+picPadding1;
+        boundaryLine4.y2.baseVal.value = picHeight*7/12+picPadding2;
+        boundaryLine5.x1.baseVal.value = picWidth/2+picPadding1;
+        boundaryLine5.y1.baseVal.value = picHeight*5/12+picPadding2;
+        boundaryLine5.x2.baseVal.value = picWidth/2+picPadding1;
+        boundaryLine5.y2.baseVal.value = picHeight*7/12+picPadding2;
+        boundaryLine6.x1.baseVal.value = picWidth*5/6+picPadding1;
+        boundaryLine6.y1.baseVal.value = picHeight*5/12+picPadding2;
+        boundaryLine6.x2.baseVal.value = picWidth*5/6+picPadding1;
+        boundaryLine6.y2.baseVal.value = picHeight*7/12+picPadding2;
+        boundaryLine7.x1.baseVal.value = picWidth/6+picPadding1;
+        boundaryLine7.y1.baseVal.value = picHeight*9/12+picPadding2;
+        boundaryLine7.x2.baseVal.value = picWidth/6+picPadding1;
+        boundaryLine7.y2.baseVal.value = picHeight*11/12+picPadding2;
+        boundaryLine8.x1.baseVal.value = picWidth/2+picPadding1;
+        boundaryLine8.y1.baseVal.value = picHeight*9/12+picPadding2;
+        boundaryLine8.x2.baseVal.value = picWidth/2+picPadding1;
+        boundaryLine8.y2.baseVal.value = picHeight*11/12+picPadding2;
+        boundaryLine9.x1.baseVal.value = picWidth*5/6+picPadding1;
+        boundaryLine9.y1.baseVal.value = picHeight*9/12+picPadding2;
+        boundaryLine9.x2.baseVal.value = picWidth*5/6+picPadding1;
+        boundaryLine9.y2.baseVal.value = picHeight*11/12+picPadding2;
+        boundaryLine1.style.display = "";
+        boundaryLine2.style.display = "";
+        boundaryLine3.style.display = "";
+        boundaryLine4.style.display = "";
+        boundaryLine5.style.display = "";
+        boundaryLine6.style.display = "";
+        boundaryLine7.style.display = "";
+        boundaryLine8.style.display = "";
+        boundaryLine9.style.display = "";
+    } else {
+        boundaryLine1.style.display = "none";
+        boundaryLine2.style.display = "none";
+        boundaryLine3.style.display = "none";
+        boundaryLine4.style.display = "none";
+        boundaryLine5.style.display = "none";
+        boundaryLine6.style.display = "none";
+        boundaryLine7.style.display = "none";
+        boundaryLine8.style.display = "none";
+        boundaryLine9.style.display = "none";
+    }
+    if (coords[3] == 0) {
+        boundaryLine10.x1.baseVal.value = picWidth/12+picPadding1;
+        boundaryLine10.y1.baseVal.value = picHeight/6+picPadding2;
+        boundaryLine10.x2.baseVal.value = picWidth*3/12+picPadding1;
+        boundaryLine10.y2.baseVal.value = picHeight/6+picPadding2;
+        boundaryLine11.x1.baseVal.value = picWidth*5/12+picPadding1;
+        boundaryLine11.y1.baseVal.value = picHeight/6+picPadding2;
+        boundaryLine11.x2.baseVal.value = picWidth*7/12+picPadding1;
+        boundaryLine11.y2.baseVal.value = picHeight/6+picPadding2;
+        boundaryLine12.x1.baseVal.value = picWidth*9/12+picPadding1;
+        boundaryLine12.y1.baseVal.value = picHeight/6+picPadding2;
+        boundaryLine12.x2.baseVal.value = picWidth*11/12+picPadding1;
+        boundaryLine12.y2.baseVal.value = picHeight/6+picPadding2;
+        boundaryLine13.x1.baseVal.value = picWidth/12+picPadding1;
+        boundaryLine13.y1.baseVal.value = picHeight/2+picPadding2;
+        boundaryLine13.x2.baseVal.value = picWidth*3/12+picPadding1;
+        boundaryLine13.y2.baseVal.value = picHeight/2+picPadding2;
+        boundaryLine14.x1.baseVal.value = picWidth*5/12+picPadding1;
+        boundaryLine14.y1.baseVal.value = picHeight/2+picPadding2;
+        boundaryLine14.x2.baseVal.value = picWidth*7/12+picPadding1;
+        boundaryLine14.y2.baseVal.value = picHeight/2+picPadding2;
+        boundaryLine15.x1.baseVal.value = picWidth*9/12+picPadding1;
+        boundaryLine15.y1.baseVal.value = picHeight/2+picPadding2;
+        boundaryLine15.x2.baseVal.value = picWidth*11/12+picPadding1;
+        boundaryLine15.y2.baseVal.value = picHeight/2+picPadding2;
+        boundaryLine16.x1.baseVal.value = picWidth/12+picPadding1;
+        boundaryLine16.y1.baseVal.value = picHeight*5/6+picPadding2;
+        boundaryLine16.x2.baseVal.value = picWidth*3/12+picPadding1;
+        boundaryLine16.y2.baseVal.value = picHeight*5/6+picPadding2;
+        boundaryLine17.x1.baseVal.value = picWidth*5/12+picPadding1;
+        boundaryLine17.y1.baseVal.value = picHeight*5/6+picPadding2;
+        boundaryLine17.x2.baseVal.value = picWidth*7/12+picPadding1;
+        boundaryLine17.y2.baseVal.value = picHeight*5/6+picPadding2;
+        boundaryLine18.x1.baseVal.value = picWidth*9/12+picPadding1;
+        boundaryLine18.y1.baseVal.value = picHeight*5/6+picPadding2;
+        boundaryLine18.x2.baseVal.value = picWidth*11/12+picPadding1;
+        boundaryLine18.y2.baseVal.value = picHeight*5/6+picPadding2;
+        boundaryLine10.style.display = "";
+        boundaryLine11.style.display = "";
+        boundaryLine12.style.display = "";
+        boundaryLine13.style.display = "";
+        boundaryLine14.style.display = "";
+        boundaryLine15.style.display = "";
+        boundaryLine16.style.display = "";
+        boundaryLine17.style.display = "";
+        boundaryLine18.style.display = "";
+    } else {
+        boundaryLine10.style.display = "none";
+        boundaryLine11.style.display = "none";
+        boundaryLine12.style.display = "none";
+        boundaryLine13.style.display = "none";
+        boundaryLine14.style.display = "none";
+        boundaryLine15.style.display = "none";
+        boundaryLine16.style.display = "none";
+        boundaryLine17.style.display = "none";
+        boundaryLine18.style.display = "none";
+    }
+    if (coords[2] == 0 && coords[3] == 0) {
+        boundaryPoint1.cx.baseVal.value = picWidth/6+picPadding1;
+        boundaryPoint1.cy.baseVal.value = picHeight/6+picPadding2;
+        boundaryPoint2.cx.baseVal.value = picWidth/2+picPadding1;
+        boundaryPoint2.cy.baseVal.value = picHeight/6+picPadding2;
+        boundaryPoint3.cx.baseVal.value = picWidth*5/6+picPadding1;
+        boundaryPoint3.cy.baseVal.value = picHeight/6+picPadding2;
+        boundaryPoint4.cx.baseVal.value = picWidth/6+picPadding1;
+        boundaryPoint4.cy.baseVal.value = picHeight/2+picPadding2;
+        boundaryPoint5.cx.baseVal.value = picWidth/2+picPadding1;
+        boundaryPoint5.cy.baseVal.value = picHeight/2+picPadding2;
+        boundaryPoint6.cx.baseVal.value = picWidth*5/6+picPadding1;
+        boundaryPoint6.cy.baseVal.value = picHeight/2+picPadding2;
+        boundaryPoint7.cx.baseVal.value = picWidth/6+picPadding1;
+        boundaryPoint7.cy.baseVal.value = picHeight*5/6+picPadding2;
+        boundaryPoint8.cx.baseVal.value = picWidth/2+picPadding1;
+        boundaryPoint8.cy.baseVal.value = picHeight*5/6+picPadding2;
+        boundaryPoint9.cx.baseVal.value = picWidth*5/6+picPadding1;
+        boundaryPoint9.cy.baseVal.value = picHeight*5/6+picPadding2;
+        boundaryPoint1.style.display = "";
+        boundaryPoint2.style.display = "";
+        boundaryPoint3.style.display = "";
+        boundaryPoint4.style.display = "";
+        boundaryPoint5.style.display = "";
+        boundaryPoint6.style.display = "";
+        boundaryPoint7.style.display = "";
+        boundaryPoint8.style.display = "";
+        boundaryPoint9.style.display = "";
+        hotspot1.style.display = "none";
+        hotspot2.style.display = "none";
+        hotspot3.style.display = "none";
+    } else {
+        hotspot1.cx.baseVal.value = picWidth/2+picPadding1;
+        hotspot1.cy.baseVal.value = picHeight/6+picPadding2;
+        hotspot2.cx.baseVal.value = picWidth*5/6+picPadding1;
+        hotspot2.cy.baseVal.value = picHeight/2+picPadding2;
+        hotspot3.cx.baseVal.value = picWidth/6+picPadding1;
+        hotspot3.cy.baseVal.value = picHeight*5/6+picPadding2;
+        boundaryPoint1.style.display = "none";
+        boundaryPoint2.style.display = "none";
+        boundaryPoint3.style.display = "none";
+        boundaryPoint4.style.display = "none";
+        boundaryPoint5.style.display = "none";
+        boundaryPoint6.style.display = "none";
+        boundaryPoint7.style.display = "none";
+        boundaryPoint8.style.display = "none";
+        boundaryPoint9.style.display = "none";
+        hotspot1.style.display = "";
+        hotspot2.style.display = "";
+        hotspot3.style.display = "";
+    }
 
     updateBlueLines();
 
@@ -2729,19 +2819,20 @@ function update() {
                 }
 
                 // Render discontinuities in higher resolution
-                if ((i < canvas.width/2 && j >= canvas.height/2 && viewMode == 3 && (quad == 1 || quad == 3)) || viewMode == 7) {
-                    const n = Math.floor(i/canvas.width*valuesX);
-                    const m = Math.floor(j/canvas.height*valuesY);
-                    const jumpSize = 0.01;
-                    let boundary = false;
-                    if (n != 0 && Math.abs(values[m][n-1] - values[m][n]) > jumpSize) boundary = true;
-                    if (n != 0 && m != 0 && Math.abs(values[m-1][n-1] - values[m][n]) > jumpSize) boundary = true;
-                    if (m != 0 && Math.abs(values[m-1][n] - values[m][n]) > jumpSize) boundary = true;
-                    if (n != valuesX-1 && m != 0 && Math.abs(values[m-1][n+1] - values[m][n]) > jumpSize) boundary = true;
-                    if (n != valuesX-1 && Math.abs(values[m][n+1] - values[m][n]) > jumpSize) boundary = true;
-                    if (n != valuesX-1 && m != valuesY-1 && Math.abs(values[m+1][n+1] - values[m][n]) > jumpSize) boundary = true;
-                    if (m != valuesY-1 && Math.abs(values[m][n+1] - values[m][n]) > jumpSize) boundary = true;
-                    if (n != 0 && m != valuesY-1 && Math.abs(values[m+1][n-1] - values[m][n]) > jumpSize) boundary = true;
+                // if ((i < canvas.width/2 && j >= canvas.height/2 && viewMode == 3 && (quad == 1 || quad == 3)) || viewMode == 7) {
+                if (!draggingB1 && !draggingB2) {
+                    // const n = Math.floor(i/canvas.width*valuesX);
+                    // const m = Math.floor(j/canvas.height*valuesY);
+                    // const jumpSize = 0.01;
+                    let boundary = true; // false
+                    // if (n != 0 && Math.abs(values[m][n-1] - values[m][n]) > jumpSize) boundary = true;
+                    // if (n != 0 && m != 0 && Math.abs(values[m-1][n-1] - values[m][n]) > jumpSize) boundary = true;
+                    // if (m != 0 && Math.abs(values[m-1][n] - values[m][n]) > jumpSize) boundary = true;
+                    // if (n != valuesX-1 && m != 0 && Math.abs(values[m-1][n+1] - values[m][n]) > jumpSize) boundary = true;
+                    // if (n != valuesX-1 && Math.abs(values[m][n+1] - values[m][n]) > jumpSize) boundary = true;
+                    // if (n != valuesX-1 && m != valuesY-1 && Math.abs(values[m+1][n+1] - values[m][n]) > jumpSize) boundary = true;
+                    // if (m != valuesY-1 && Math.abs(values[m][n+1] - values[m][n]) > jumpSize) boundary = true;
+                    // if (n != 0 && m != valuesY-1 && Math.abs(values[m+1][n-1] - values[m][n]) > jumpSize) boundary = true;
 
                     if (boundary) {
                         let [rowM, colM] = (!useAltSchema) ? 
@@ -2801,7 +2892,6 @@ function update() {
         nearestCentroid[1] = Math.round(coords[1]-0.5)+0.5;
     }
 
-    coordination(matrixA,matrixB);
     time++;
 }
 
@@ -2989,6 +3079,43 @@ function updateBackground() {
     const region3 = document.getElementById("region3");
     const region4 = document.getElementById("region4");
     const header = document.getElementById("quad-header");
+    const boundaryLine1 = document.getElementById("boundary-line-1");
+    const boundaryLine2 = document.getElementById("boundary-line-2");
+    const boundaryLine3 = document.getElementById("boundary-line-3");
+    const boundaryLine4 = document.getElementById("boundary-line-4");
+    const boundaryLine5 = document.getElementById("boundary-line-5");
+    const boundaryLine6 = document.getElementById("boundary-line-6");
+    const boundaryLine7 = document.getElementById("boundary-line-7");
+    const boundaryLine8 = document.getElementById("boundary-line-8");
+    const boundaryLine9 = document.getElementById("boundary-line-9");
+    const boundaryLine10 = document.getElementById("boundary-line-10");
+    const boundaryLine11 = document.getElementById("boundary-line-11");
+    const boundaryLine12 = document.getElementById("boundary-line-12");
+    const boundaryLine13 = document.getElementById("boundary-line-13");
+    const boundaryLine14 = document.getElementById("boundary-line-14");
+    const boundaryLine15 = document.getElementById("boundary-line-15");
+    const boundaryLine16 = document.getElementById("boundary-line-16");
+    const boundaryLine17 = document.getElementById("boundary-line-17");
+    const boundaryLine18 = document.getElementById("boundary-line-18");
+    const boundaryLine19 = document.getElementById("boundary-line-19");
+    const boundaryLine20 = document.getElementById("boundary-line-20");
+    const boundaryLine21 = document.getElementById("boundary-line-21");
+    const boundaryLine22 = document.getElementById("boundary-line-22");
+    const boundaryLine23 = document.getElementById("boundary-line-23");
+    const boundaryLine24 = document.getElementById("boundary-line-24");
+    const boundaryPoint1 = document.getElementById("boundary-point-1");
+    const boundaryPoint2 = document.getElementById("boundary-point-2");
+    const boundaryPoint3 = document.getElementById("boundary-point-3");
+    const boundaryPoint4 = document.getElementById("boundary-point-4");
+    const boundaryPoint5 = document.getElementById("boundary-point-5");
+    const boundaryPoint6 = document.getElementById("boundary-point-6");
+    const boundaryPoint7 = document.getElementById("boundary-point-7");
+    const boundaryPoint8 = document.getElementById("boundary-point-8");
+    const boundaryPoint9 = document.getElementById("boundary-point-9");
+    const hotspot1 = document.getElementById("hotspot-1");
+    const hotspot2 = document.getElementById("hotspot-2");
+    const hotspot3 = document.getElementById("hotspot-3");
+
     switch (quad) {
         case 1:
             region1.style.fill = greenBackground;
@@ -2996,6 +3123,37 @@ function updateBackground() {
             region3.style.fill = "url('#gradient1')";
             region4.style.fill = greenBackground;
             header.innerHTML = "Good Quadrant";
+
+            boundaryLine1.style.stroke = bad;
+            boundaryLine2.style.stroke = gold;
+            boundaryLine3.style.stroke = cerulean;
+            boundaryLine4.style.stroke = bad;
+            boundaryLine5.style.stroke = gold;
+            boundaryLine6.style.stroke = cerulean;
+            boundaryLine7.style.stroke = bad;
+            boundaryLine8.style.stroke = gold;
+            boundaryLine9.style.stroke = cerulean;
+            boundaryLine10.style.stroke = gold;
+            boundaryLine11.style.stroke = gold;
+            boundaryLine12.style.stroke = gold;
+            boundaryLine13.style.stroke = cerulean;
+            boundaryLine14.style.stroke = cerulean;
+            boundaryLine15.style.stroke = cerulean;
+            boundaryLine16.style.stroke = bad;
+            boundaryLine17.style.stroke = bad;
+            boundaryLine18.style.stroke = bad;
+            boundaryPoint1.style.fill = cerulean;
+            boundaryPoint2.style.fill = lightGreen;
+            boundaryPoint3.style.fill = bad;
+            boundaryPoint4.style.fill = gold;
+            boundaryPoint5.style.fill = bad;
+            boundaryPoint6.style.fill = lightGreen;
+            boundaryPoint7.style.fill = lightGreen;
+            boundaryPoint8.style.fill = cerulean;
+            boundaryPoint9.style.fill = gold;
+            hotspot1.style.fill = gold;
+            hotspot2.style.fill = cerulean;
+            hotspot3.style.fill = bad;
             break;
         case 2:
             region1.style.fill = goldBackground;
@@ -3003,6 +3161,37 @@ function updateBackground() {
             region3.style.fill = "white";
             region4.style.fill = grayBackground;
             header.innerHTML = "Row Quadrant";
+            
+            boundaryLine1.style.stroke = cerulean;
+            boundaryLine2.style.stroke = lightGreen;
+            boundaryLine3.style.stroke = bad;
+            boundaryLine4.style.stroke = cerulean;
+            boundaryLine5.style.stroke = lightGreen;
+            boundaryLine6.style.stroke = bad;
+            boundaryLine7.style.stroke = cerulean;
+            boundaryLine8.style.stroke = lightGreen;
+            boundaryLine9.style.stroke = bad;
+            boundaryLine10.style.stroke = lightGreen;
+            boundaryLine11.style.stroke = lightGreen;
+            boundaryLine12.style.stroke = lightGreen;
+            boundaryLine13.style.stroke = bad;
+            boundaryLine14.style.stroke = bad;
+            boundaryLine15.style.stroke = bad;
+            boundaryLine16.style.stroke = cerulean;
+            boundaryLine17.style.stroke = cerulean;
+            boundaryLine18.style.stroke = cerulean;
+            boundaryPoint1.style.fill = bad;
+            boundaryPoint2.style.fill = gold;
+            boundaryPoint3.style.fill = cerulean;
+            boundaryPoint4.style.fill = lightGreen;
+            boundaryPoint5.style.fill = cerulean;
+            boundaryPoint6.style.fill = gold;
+            boundaryPoint7.style.fill = gold;
+            boundaryPoint8.style.fill = bad;
+            boundaryPoint9.style.fill = lightGreen;
+            hotspot1.style.fill = lightGreen;
+            hotspot2.style.fill = bad;
+            hotspot3.style.fill = cerulean;
             break;
         case 3:
             region1.style.fill = ceruleanBackground;
@@ -3010,6 +3199,37 @@ function updateBackground() {
             region3.style.fill = "url('#gradient2')";
             region4.style.fill = goldBackground;
             header.innerHTML = "Bad Quadrant";
+            
+            boundaryLine1.style.stroke = lightGreen;
+            boundaryLine2.style.stroke = cerulean;
+            boundaryLine3.style.stroke = gold;
+            boundaryLine4.style.stroke = lightGreen;
+            boundaryLine5.style.stroke = cerulean;
+            boundaryLine6.style.stroke = gold;
+            boundaryLine7.style.stroke = lightGreen;
+            boundaryLine8.style.stroke = cerulean;
+            boundaryLine9.style.stroke = gold;
+            boundaryLine10.style.stroke = cerulean;
+            boundaryLine11.style.stroke = cerulean;
+            boundaryLine12.style.stroke = cerulean;
+            boundaryLine13.style.stroke = gold;
+            boundaryLine14.style.stroke = gold;
+            boundaryLine15.style.stroke = gold;
+            boundaryLine16.style.stroke = lightGreen;
+            boundaryLine17.style.stroke = lightGreen;
+            boundaryLine18.style.stroke = lightGreen;
+            boundaryPoint1.style.fill = gold;
+            boundaryPoint2.style.fill = bad;
+            boundaryPoint3.style.fill = lightGreen;
+            boundaryPoint4.style.fill = cerulean;
+            boundaryPoint5.style.fill = lightGreen;
+            boundaryPoint6.style.fill = bad;
+            boundaryPoint7.style.fill = bad;
+            boundaryPoint8.style.fill = gold;
+            boundaryPoint9.style.fill = cerulean;
+            hotspot1.style.fill = cerulean;
+            hotspot2.style.fill = gold;
+            hotspot3.style.fill = lightGreen;
             break;
         case 4:
             region1.style.fill = grayBackground;
@@ -3017,6 +3237,37 @@ function updateBackground() {
             region3.style.fill = "white";
             region4.style.fill = ceruleanBackground;
             header.innerHTML = "Column Quadrant";
+            
+            boundaryLine1.style.stroke = gold;
+            boundaryLine2.style.stroke = bad;
+            boundaryLine3.style.stroke = lightGreen;
+            boundaryLine4.style.stroke = gold;
+            boundaryLine5.style.stroke = bad;
+            boundaryLine6.style.stroke = lightGreen;
+            boundaryLine7.style.stroke = gold;
+            boundaryLine8.style.stroke = bad;
+            boundaryLine9.style.stroke = lightGreen;
+            boundaryLine10.style.stroke = bad;
+            boundaryLine11.style.stroke = bad;
+            boundaryLine12.style.stroke = bad;
+            boundaryLine13.style.stroke = lightGreen;
+            boundaryLine14.style.stroke = lightGreen;
+            boundaryLine15.style.stroke = lightGreen;
+            boundaryLine16.style.stroke = gold;
+            boundaryLine17.style.stroke = gold;
+            boundaryLine18.style.stroke = gold;
+            boundaryPoint1.style.fill = lightGreen;
+            boundaryPoint2.style.fill = cerulean;
+            boundaryPoint3.style.fill = gold;
+            boundaryPoint4.style.fill = bad;
+            boundaryPoint5.style.fill = gold;
+            boundaryPoint6.style.fill = cerulean;
+            boundaryPoint7.style.fill = cerulean;
+            boundaryPoint8.style.fill = lightGreen;
+            boundaryPoint9.style.fill = bad;
+            hotspot1.style.fill = bad;
+            hotspot2.style.fill = lightGreen;
+            hotspot3.style.fill = gold;
             break;
     }
     if (diagramGrid) {
@@ -3149,15 +3400,15 @@ function XBtoMatrix([x,b]) {
     return UVtoMatrix(XBtoUV([x0,b]));
 }
 
-function coordsToMatrices(x1,x2,b1,b2) {
+function coordsToMatrices(x1,x2,b1,b2,q=quad) {
     let x1new = x1;
     let x2new = x2;
-    if (quad == 2 || quad == 3) {
+    if (q == 2 || q == 3) {
         x1new -= 6;
     } else if (x1 == 0) {
         x1new += 6;
     }
-    if (quad == 3 || quad == 4) {
+    if (q == 3 || q == 4) {
         x2new -= 6;
     } else if (x2 == 0) {
         x2new += 6;
@@ -3250,10 +3501,10 @@ function changeCoords(e) {
         const newX2 = (1 - relativeY1 / rect.height) * 6;
         if (-0.1 <= newX1 && newX1 <= 6.1 && -0.1 <= newX2 && newX2 <= 6.1) {
             if (isMouseDown) {
-                if (coords[2] == 0 && integerBetween((coords[0]+1)/2,(newX1+1)/2) && coords[1] % 1 > 0.25 && coords[1] % 1 < 0.75) {
+                if (coords[2] == 0 && integerBetween((coords[0]+1)/2,(newX1+1)/2) && coords[1] % 2 > 0.5 && coords[1] % 2 < 1.5) {
                     crossBlue(true);
                 }
-                if (coords[3] == 0 && integerBetween((coords[1]+1)/2,(newX2+1)/2) && coords[0] % 1 > 0.25 && coords[0] % 1 < 0.75) {
+                if (coords[3] == 0 && integerBetween((coords[1]+1)/2,(newX2+1)/2) && coords[0] % 2 > 0.5 && coords[0] % 2 < 1.5) {
                     crossBlue(false);
                 }
                 coords[0] = newX1;
@@ -3827,11 +4078,11 @@ function colorFunction(value,vMode) {
         colors = [[0,0,0],[0,0,86],[111,118,172],[255,255,255],[184,114,116],[86,0,0],[0,0,0]];
         cutoffs = [0,0.25,0.375,0.5,0.625,0.75,1];
     } else if (vMode == 8) {
-        colors = [[0,0,86],[111,118,172],[255,255,255],[184,114,116],[86,0,0]];
-        cutoffs = [0,0.25,0.5,0.75,1];
+        colors = [[0,0,10],[0,0,86],[111,118,172],[255,255,255],[184,114,116],[86,0,0],[10,0,0]];
+        cutoffs = [0,0.1,0.3,0.5,0.7,0.9,1];
     } else {
-        colors = [[0,7,105],[0,98,162],[48,175,149],[94,190,64],[195,167,48],[199,111,8],[198,34,41],[255,255,255]];
-        cutoffs = [0,0.11,0.22,0.33,0.44,0.55,0.67,1];
+        colors = [[0,7,105],[0,98,162],[48,175,149],[94,190,64],[195,167,48],[199,111,8],[198,34,41],[243,178,188],[255,222,226]];
+        cutoffs = [0,0.11,0.22,0.33,0.44,0.55,0.67,0.85,1];
     }
     const result = [0,0,0];
     for (let i = 1; i <= cutoffs.length; i++) {
@@ -3865,6 +4116,8 @@ function changeViewMode(mode, p1=true) {
 
     const curButton = document.getElementsByClassName("selected")[1];
     curButton.classList.remove("selected");
+
+    let func = ()=>(null);
     if (p1) {
         switch (mode) {
             case 0:
@@ -3872,30 +4125,39 @@ function changeViewMode(mode, p1=true) {
                 break;
             case 1:
                 document.getElementById("return-mode-1").classList.add("selected");
+                func = (a,b)=>payoff(a,b)/9;
                 break;
             case 2:
                 document.getElementById("transferable-mode").classList.add("selected");
+                func = (a,b)=>payoffTransferable(a,b)/9;
                 break;
             case 3:
                 document.getElementById("return-mode-2").classList.add("selected");
+                func = (a,b)=>payoffModified(a,b)/9;
                 break;
             case 4:
                 document.getElementById("coco-mode").classList.add("selected");
+                func = (a,b)=>payoffCoco(a,b)[0]/9;
                 break;
             case 5:
                 document.getElementById("bargaining-mode-1").classList.add("selected");
+                func = (a,b)=>payoffBargainingBackstop(a,b)[0]/9;
                 break;
             case 6:
                 document.getElementById("bargaining-mode-2").classList.add("selected");
+                func = (a,b)=>payoffBargainingDisagreement(a,b)[0]/9;
                 break;
             case 7:
                 document.getElementById("custom-mode").classList.add("selected");
+                func = (a,b)=>payoffCustom(a,b);
                 break;
             case 8:
                 document.getElementById("coordination-mode").classList.add("selected");
+                func = (a,b)=>coordination(a,b);
                 break;
             case 9:
                 document.getElementById("shapley-mode").classList.add("selected");
+                func = (a,b)=>payoffShapley(a,b)[0]/9;
                 break;
         }
     } else {
@@ -3905,30 +4167,39 @@ function changeViewMode(mode, p1=true) {
                 break;
             case 1:
                 document.getElementById("return-mode-1-col").classList.add("selected");
+                func = (a,b)=>payoff(flip(b),flip(a))/9;
                 break;
             case 2:
                 document.getElementById("transferable-mode-col").classList.add("selected");
+                func = (a,b)=>payoffTransferable(flip(b),flip(a))/9;
                 break;
             case 3:
                 document.getElementById("return-mode-2-col").classList.add("selected");
+                func = (a,b)=>payoffModified(flip(b),flip(a))/9;
                 break;
             case 4:
                 document.getElementById("coco-mode-col").classList.add("selected");
+                func = (a,b)=>payoffCoco(flip(b),flip(a))[0]/9;
                 break;
             case 5:
                 document.getElementById("bargaining-mode-1-col").classList.add("selected");
+                func = (a,b)=>payoffBargainingBackstop(flip(b),flip(a))[0]/9;
                 break;
             case 6:
                 document.getElementById("bargaining-mode-2-col").classList.add("selected");
+                func = (a,b)=>payoffBargainingDisagreement(flip(b),flip(a))[0]/9;
                 break;
             case 7:
                 document.getElementById("custom-mode-col").classList.add("selected");
+                func = (a,b)=>payoffCustom(flip(b),flip(a));
                 break;
             case 8:
                 document.getElementById("coordination-mode-col").classList.add("selected");
+                func = (a,b)=>coordination(flip(b),flip(a));
                 break;
             case 9:
                 document.getElementById("shapley-mode-col").classList.add("selected");
+                func = (a,b)=>payoffShapley(flip(b),flip(a))[0]/9;
                 break;
         }
     }
@@ -3937,6 +4208,73 @@ function changeViewMode(mode, p1=true) {
     // } else {
     //     viewModeVolatile = false;
     // }
+    updateBigPicCanvas(func);
+}
+
+function updateBigPicCanvas(func) {
+    // update big pic canvas
+    const canvasBigPic = document.getElementById("big-pic-canvas");
+    const foreignObject = document.getElementById("canvasForeignObject-big-pic");
+    const bigPicture = document.getElementById("big-picture");
+    canvasBigPic.width = bigPicture.width.baseVal.value;
+    canvasBigPic.height = bigPicture.height.baseVal.value;
+    foreignObject.width.baseVal.value = bigPicture.width.baseVal.value;
+    foreignObject.height.baseVal.value = bigPicture.height.baseVal.value;
+    const ctx = canvasBigPic.getContext("2d");
+    const imageData = ctx.getImageData(0, 0, canvasBigPic.width, canvasBigPic.height);
+    const data = imageData.data;
+    for (let j = 0; j < canvasBigPic.height; j++) {
+        for (let i = 0; i < canvasBigPic.width; i++) {
+            data[(i+j*canvasBigPic.width)*4+3] = 0;
+        }
+    }
+    const quadrantWidth = canvasBigPic.width*0.42;
+    for (let j = 0; j < quadrantWidth; j++) {
+        for (let i = 0; i < quadrantWidth; i++) {
+            let color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,1)),viewMode);
+            const x = i + Math.round(canvasBigPic.width*0.54);
+            const y = j + Math.round(canvasBigPic.height*0.04);
+            data[(x+y*canvasBigPic.width)*4] = color[0];
+            data[(x+y*canvasBigPic.width)*4+1] = color[1];
+            data[(x+y*canvasBigPic.width)*4+2] = color[2];
+            data[(x+y*canvasBigPic.width)*4+3] = 255;
+        }
+    }
+    for (let j = 0; j < quadrantWidth; j++) {
+        for (let i = 0; i < quadrantWidth; i++) {
+            let color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,2)),viewMode);
+            const x = i + Math.round(canvasBigPic.width*0.04);
+            const y = j + Math.round(canvasBigPic.height*0.04);
+            data[(x+y*canvasBigPic.width)*4] = color[0];
+            data[(x+y*canvasBigPic.width)*4+1] = color[1];
+            data[(x+y*canvasBigPic.width)*4+2] = color[2];
+            data[(x+y*canvasBigPic.width)*4+3] = 255;
+        }
+    }
+    for (let j = 0; j < quadrantWidth; j++) {
+        for (let i = 0; i < quadrantWidth; i++) {
+            let color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,3)),viewMode);
+            const x = i + Math.round(canvasBigPic.width*0.04);
+            const y = j + Math.round(canvasBigPic.height*0.54);
+            data[(x+y*canvasBigPic.width)*4] = color[0];
+            data[(x+y*canvasBigPic.width)*4+1] = color[1];
+            data[(x+y*canvasBigPic.width)*4+2] = color[2];
+            data[(x+y*canvasBigPic.width)*4+3] = 255;
+        }
+    }
+    for (let j = 0; j < quadrantWidth; j++) {
+        for (let i = 0; i < quadrantWidth; i++) {
+            let color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,4)),viewMode);
+            const x = i + Math.round(canvasBigPic.width*0.54);
+            const y = j + Math.round(canvasBigPic.height*0.54);
+            data[(x+y*canvasBigPic.width)*4] = color[0];
+            data[(x+y*canvasBigPic.width)*4+1] = color[1];
+            data[(x+y*canvasBigPic.width)*4+2] = color[2];
+            data[(x+y*canvasBigPic.width)*4+3] = 255;
+        }
+    }
+    // console.log(data);
+    ctx.putImageData(imageData,0,0);
 }
 
 function fixImage(alt) {
@@ -4661,10 +4999,18 @@ function integerBetween(a,b) {
     return a != b && (Math.floor(a) == Math.ceil(b) || Math.ceil(a) == Math.floor(b));
 }
 
+function exportPNG() {
+    const canvas = document.getElementById('canvas');
+    const dataURL = canvas.toDataURL('image/png');
+    const downloadLink = document.createElement('a');
+    downloadLink.href = dataURL;
+    downloadLink.download = 'canvas-image-'+viewMode.toString()+'-'+quad.toString()+'.png';
+    downloadLink.click();
+}
+
 
 // add parameter for transferable utility
-// replace arrows with three large lines
 // improve colors
-// DONE improve game info
 // color global picture
-// DONE add column player backgrounds
+// add means
+// boost performance

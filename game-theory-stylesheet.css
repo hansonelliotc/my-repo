@@ -8,7 +8,11 @@ html, body {
     margin: 0;
 }
 
-.red-line, .green-line, .edge-line, .blue-line {
+.red-line, .green-line, .edge-line {
+    stroke-width: 0.6%;
+}
+
+.boundary-line, .blue-line {
     stroke-width: 0.8%;
 }
 
@@ -177,4 +181,12 @@ h2 {
     top: calc(80vh / 7 * 3 - 20px);
     width: 5vw;
     height: calc(40vh + 40px);
+}
+
+#view-custom-1 {
+    color: rgb(150,0,0);
+}
+
+#view-custom-2 {
+    color: rgb(0,0,150);
 }
