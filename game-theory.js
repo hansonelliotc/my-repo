@@ -3121,7 +3121,7 @@ function updateBackground() {
     const region2 = document.getElementById("region2");
     const region3 = document.getElementById("region3");
     const region4 = document.getElementById("region4");
-    const header = document.getElementById("quad-header");
+    // const header = document.getElementById("quad-header");
     const boundaryLine1 = document.getElementById("boundary-line-1");
     const boundaryLine2 = document.getElementById("boundary-line-2");
     const boundaryLine3 = document.getElementById("boundary-line-3");
@@ -3165,7 +3165,7 @@ function updateBackground() {
             region2.style.fill = greenBackground;
             region3.style.fill = "url('#gradient1')";
             region4.style.fill = greenBackground;
-            header.innerHTML = "Good Quadrant";
+            // header.innerHTML = "Good Quadrant";
 
             boundaryLine1.style.stroke = bad;
             boundaryLine2.style.stroke = gold;
@@ -3203,7 +3203,7 @@ function updateBackground() {
             region2.style.fill = goldBackground;
             region3.style.fill = "white";
             region4.style.fill = grayBackground;
-            header.innerHTML = "Row Quadrant";
+            // header.innerHTML = "Row Quadrant";
             
             boundaryLine1.style.stroke = cerulean;
             boundaryLine2.style.stroke = lightGreen;
@@ -3241,7 +3241,7 @@ function updateBackground() {
             region2.style.fill = grayBackground;
             region3.style.fill = "url('#gradient2')";
             region4.style.fill = goldBackground;
-            header.innerHTML = "Bad Quadrant";
+            // header.innerHTML = "Bad Quadrant";
             
             boundaryLine1.style.stroke = lightGreen;
             boundaryLine2.style.stroke = cerulean;
@@ -3279,7 +3279,7 @@ function updateBackground() {
             region2.style.fill = ceruleanBackground;
             region3.style.fill = "white";
             region4.style.fill = ceruleanBackground;
-            header.innerHTML = "Column Quadrant";
+            // header.innerHTML = "Column Quadrant";
             
             boundaryLine1.style.stroke = gold;
             boundaryLine2.style.stroke = bad;

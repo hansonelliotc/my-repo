@@ -82,7 +82,7 @@ button {
 }
 
 button:hover, .selected {
-    background-color: #ddd;
+    background-color: #bbb;
 }
 
 /* #fix-image-button {

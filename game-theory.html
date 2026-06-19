@@ -49,7 +49,7 @@
 		</table>
 		<table id="game-info">
 			<tr><td><b>Row Player</b></td><td><b>Column Player</b></td></tr>
-			<tr><td class="info-header" colspan="2">x,b</td></tr>
+			<tr><td class="info-header" colspan="2">x,b coordinates</td></tr>
 			<tr><td><span id="x-row"></span>, <span id="b-row"></span></td><td><span id="x-col"></span>, <span id="b-col"></span></td></tr>
 			<tr><td class="info-header" colspan="2">Equilibrium returns</td></tr>
 			<tr>
@@ -180,10 +180,32 @@
 			<p>4. Click in the large diagram (bottom right) to go to a nearby extremal game.</p>
 		</div>
 		<table id="notable-games">
-			<tr><td colspan="2"><h2>Notable Games</h2></td></tr>
+			<tr><td colspan="2"><h2>Notable cells</h2></td></tr>
 			<tr>
-				<td><button onclick="goTo(3.5,3.5,2,2,3)">Prisoners' Dilemma</button></td>
+				<td><button onclick="goTo(3.5,3.5,2,2,3)">Prisoners' dilemma</button></td>
 				<td><button onclick="goTo(2.5,2.5,2,2,3)">Chicken</button></td>
+			</tr>
+			<tr><td colspan="2"><h2>Hotspots</h2></td></tr>
+			<tr>
+				<td><button onclick="goTo(5,3,0,0,1)">Benevolent dictator (row)</button></td>
+				<td><button onclick="goTo(5,3,0,0,3)">Malevolent dictator (row)</button></td>
+			</tr>
+			<tr>
+				<td><button onclick="goTo(3,5,0,0,1)">Benevolent dictator (col)</button></td>
+				<td><button onclick="goTo(3,5,0,0,3)">Malevolent dictator (col)</button></td>
+			</tr>
+			<tr>
+				<td><button onclick="goTo(1,1,0,0,1)">Pure Coordination</button></td>
+				<td><button onclick="goTo(1,1,0,0,2)">Odds and evens</button></td>
+			</tr>
+			<tr><td colspan="2"><h2>Poles</h2></td></tr>
+			<tr>
+				<td><button onclick="goTo(3,3,6,6,1)">Good pole</button></td>
+				<td><button onclick="goTo(3,3,6,6,2)">Row pole</button></td>
+			</tr>
+			<tr>
+				<td><button onclick="goTo(3,3,6,6,4)">Column pole</button></td>
+				<td><button onclick="goTo(3,3,6,6,3)">Bad pole</button></td>
 			</tr>
 		</table>
 	</div>
