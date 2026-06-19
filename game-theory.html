@@ -10,13 +10,20 @@
 </head>
 <body>
 	<div id="nav-bar">
-		<button id="game-info-button" class="nav-button selected">Game info</button>
-		<button id="navigation-button" class="nav-button">Navigation</button>
-		<button id="view-modes-button" class="nav-button">Background</button>
-		<button id="controls-button" class="nav-button">Controls</button>
+		<div>
+			<button id="game-info-button" class="nav-button selected">Game info</button>
+			<button id="navigation-button" class="nav-button">Navigation</button>
+			<button id="view-modes-button" class="nav-button">Background</button>
+		</div>
+		<div>
+			<button id="controls-button" class="nav-button">Controls</button>
+			<button id="notable-games-button" class="nav-button">Notable Games</button>
+		</div>
 	</div>
+	</body>
 	<div id="content">
-		<h1 id="quad-header">Bad Quadrant</h1>
+		<!-- <h1 id="quad-header">Bad Quadrant</h1> -->
+		<span id="cell-name" style="position:absolute;top:4vh;transform:translateX(-50%)">0,0</span>
 		<table id="matrices">
 			<tr>
 				<td style="text-align:center">
@@ -162,7 +169,9 @@
 				The WASD keys change b<sub>1</sub> and b<sub>2</sub>.<br>
 				Hold SHIFT while doing the above to apply velocity.<br>
 				Press SPACE to reset all velocities to zero.<br>
-				Press R to go to a random game.
+				Press R to go to a random game.<br>
+				Press C to go to the nearest centroidal game.<br>
+				Press V to view all bargaining returns in the large game diagram.
 			</p>
 			<p>There are four other ways to change the current game:</p>
 			<p>1. Click or drag in the main figure (left).</p>
@@ -170,6 +179,13 @@
 			<p>3. Use the buttons in the Navigation tab.</p>
 			<p>4. Click in the large diagram (bottom right) to go to a nearby extremal game.</p>
 		</div>
+		<table id="notable-games">
+			<tr><td colspan="2"><h2>Notable Games</h2></td></tr>
+			<tr>
+				<td><button onclick="goTo(3.5,3.5,2,2,3)">Prisoners' Dilemma</button></td>
+				<td><button onclick="goTo(2.5,2.5,2,2,3)">Chicken</button></td>
+			</tr>
+		</table>
 	</div>
 	<div id="pictures">
 		<svg id="big-picture" width="35vh" height="35vh">
@@ -439,15 +455,15 @@
 				<line class="boundary-line" id="boundary-line-16" />
 				<line class="boundary-line" id="boundary-line-17" />
 				<line class="boundary-line" id="boundary-line-18" />
-				<circle class="boundary-point" id="boundary-point-1" r="1%" />
-				<circle class="boundary-point" id="boundary-point-2" r="1%" />
-				<circle class="boundary-point" id="boundary-point-3" r="1%" />
-				<circle class="boundary-point" id="boundary-point-4" r="1%" />
-				<circle class="boundary-point" id="boundary-point-5" r="1%" />
-				<circle class="boundary-point" id="boundary-point-6" r="1%" />
-				<circle class="boundary-point" id="boundary-point-7" r="1%" />
-				<circle class="boundary-point" id="boundary-point-8" r="1%" />
-				<circle class="boundary-point" id="boundary-point-9" r="1%" />
+				<circle class="boundary-point" id="boundary-point-1" r="0.6%" />
+				<!-- <circle class="boundary-point" id="boundary-point-2" r="0.6%" /> -->
+				<circle class="boundary-point" id="boundary-point-3" r="0.6%" />
+				<circle class="boundary-point" id="boundary-point-4" r="0.6%" />
+				<circle class="boundary-point" id="boundary-point-5" r="0.6%" />
+				<!-- <circle class="boundary-point" id="boundary-point-6" r="0.6%" />
+				<circle class="boundary-point" id="boundary-point-7" r="0.6%" /> -->
+				<circle class="boundary-point" id="boundary-point-8" r="0.6%" />
+				<circle class="boundary-point" id="boundary-point-9" r="0.6%" />
 				<circle class="hotspot" id="hotspot-1" r="1.5%" />
 				<circle class="hotspot" id="hotspot-2" r="1.5%" />
 				<circle class="hotspot" id="hotspot-3" r="1.5%" />
@@ -460,10 +476,10 @@
 
 			<svg id="edge-figure">
 				<line id="bar" class="edge-line" />
-				<line id="bar1" class="edge-line" />
+				<!-- <line id="bar1" class="edge-line" />
 				<line id="bar2" class="edge-line" />
 				<line id="bar3" class="edge-line" />
-				<line id="bar4" class="edge-line" />
+				<line id="bar4" class="edge-line" /> -->
 				<circle id="green-point1" fill="green" r="1%" />
 				<circle id="green-point2" fill="green" r="1%" />
 				<circle id="green-point3" fill="green" r="1%" />
@@ -507,6 +523,13 @@
 			<text id="legend-label-4" dominant-baseline="middle">6</text>
 			<text id="legend-label-5" dominant-baseline="middle">9</text>
 			<text id="legend-label-6" dominant-baseline="middle">0</text>
+			<text id="legend-label-7" dominant-baseline="middle">1</text>
+			<text id="legend-label-8" dominant-baseline="middle">3</text>
+			<text id="legend-label-9" dominant-baseline="middle">5</text>
+			<text id="legend-label-10" dominant-baseline="middle">4</text>
+			<text id="legend-label-11" dominant-baseline="middle">2</text>
+			<text id="legend-label-12" dominant-baseline="middle">-2</text>
+			<text id="legend-label-13" dominant-baseline="middle">-4</text>
 		</svg>
 	</div>
 	<!-- <div style="display:flex"><div id="x1-label">x<sub>1</sub></div>
@@ -517,10 +540,12 @@
 		<tr>
 			<td><button id="fix-image-button-0" onclick="hideGame()">Hide game</button></td>
 			<td><button id="alt-image-button-1" onclick="altImage(false)" class="selected">All games</button></td>
+			<td><button id="hide-lines-button" onclick="hideLines(true)">Hide Lines</button></td>
 		</tr>
 		<tr>
 			<td><button id="fix-image-button-1" onclick="fixImage(false)" class="selected">Show one game</button></td>
 			<td><button id="alt-image-button-2" onclick="altImage(true)">Balanced games only</button></td>
+			<td><button id="show-lines-button" onclick="hideLines(false)" class="selected">Show Lines</button></td>
 		</tr>
 		<tr>
 			<td><button id="fix-image-button-2" onclick="fixImage(true)">Show 36 games</button></td>

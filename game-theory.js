@@ -71,6 +71,7 @@ const goldBackground = "#fff3d0"; // "#e6d3b0"
 const grayBackground = "#ddd" // "#bbb"
 const noLine = "#ddd";
 const brown = "#7c4700";
+const lightBrown = "#ac7020";
 const dashedStroke = "10,10";
 const animationFrames = 70;
 const points = [];
@@ -120,10 +121,10 @@ function init() {
     const blueLine2 = document.getElementById("blue-line-2");
     const blueCorner1 = document.getElementById("blue-corner-1");
     const blueCorner2 = document.getElementById("blue-corner-2");
-    blueLine1.style.stroke = "blue";
-    blueLine2.style.stroke = "blue";
-    blueCorner1.style.fill = "blue";
-    blueCorner2.style.fill = "blue";
+    blueLine1.style.stroke = "black";
+    blueLine2.style.stroke = "black";
+    blueCorner1.style.fill = "black";
+    blueCorner2.style.fill = "black";
     blueCorner2.style.display = "none";
 
     // Initialize big-diagram
@@ -339,26 +340,38 @@ function init() {
     bargainingPoint1.r.baseVal.value = lineWidthBig*widthBig*0.7;
     bargainingPoint1.style.fill = brown;
     bargainingPoint2.r.baseVal.value = lineWidthBig*widthBig*0.7;
-    bargainingPoint2.style.fill = brown;
+    bargainingPoint2.style.fill = lightBrown;
     bargainingPoint3.style.fill = brown;
-    bargainingPoint4.style.fill = brown;
+    bargainingPoint4.style.fill = lightBrown;
     bargainingLine.style.stroke = brown;
     bargainingLine.style.strokeWidth = lineWidthBig*widthBig*0.6;
 
-    xWidth = lineWidthBig*widthBig*1.7;
+    xWidth = lineWidthBig*widthBig*2;
     const xParameter = 4;
-    const str = (xWidth) + "," + (xWidth-xParameter) + " " + 
-        (xWidth/2+xParameter) + "," + (xWidth/2) + " " + 
-        (xWidth) + "," + (xParameter) + " " + 
-        (xWidth-xParameter) + "," + (0) + " " + 
-        (xWidth/2) + "," + (xWidth/2-xParameter) + " " + 
-        (xParameter) + "," + (0) + " " + 
-        (0) + "," + (xParameter) + " " + 
-        (xWidth/2-xParameter) + "," + (xWidth/2) + " " + 
-        (0) + "," + (xWidth-xParameter) + " " + 
-        (xParameter) + "," + (xWidth) + " " + 
-        (xWidth/2) + "," + (xWidth/2+xParameter) + " " + 
-        (xWidth-xParameter) + "," + (xWidth);
+    // const str = (xWidth) + "," + (xWidth-xParameter) + " " + 
+    //     (xWidth/2+xParameter) + "," + (xWidth/2) + " " + 
+    //     (xWidth) + "," + (xParameter) + " " + 
+    //     (xWidth-xParameter) + "," + (0) + " " + 
+    //     (xWidth/2) + "," + (xWidth/2-xParameter) + " " + 
+    //     (xParameter) + "," + (0) + " " + 
+    //     (0) + "," + (xParameter) + " " + 
+    //     (xWidth/2-xParameter) + "," + (xWidth/2) + " " + 
+    //     (0) + "," + (xWidth-xParameter) + " " + 
+    //     (xParameter) + "," + (xWidth) + " " + 
+    //     (xWidth/2) + "," + (xWidth/2+xParameter) + " " + 
+    //     (xWidth-xParameter) + "," + (xWidth);
+    const str = (xWidth/2-xParameter/2) + "," + (0) + " " + 
+        (xWidth/2+xParameter/2) + "," + (0) + " " + 
+        (xWidth/2+xParameter/2) + "," + (xWidth/2-xParameter/2) + " " + 
+        (xWidth) + "," + (xWidth/2-xParameter/2) + " " + 
+        (xWidth) + "," + (xWidth/2+xParameter/2) + " " + 
+        (xWidth/2+xParameter/2) + "," + (xWidth/2+xParameter/2) + " " + 
+        (xWidth/2+xParameter/2) + "," + (xWidth) + " " + 
+        (xWidth/2-xParameter/2) + "," + (xWidth) + " " + 
+        (xWidth/2-xParameter/2) + "," + (xWidth/2+xParameter/2) + " " + 
+        (0) + "," + (xWidth/2+xParameter/2) + " " + 
+        (0) + "," + (xWidth/2-xParameter/2) + " " + 
+        (xWidth/2-xParameter/2) + "," + (xWidth/2-xParameter/2);
     bargainingPoint3poly.setAttribute("points",str);
     bargainingPoint4poly.setAttribute("points",str);
 
@@ -416,11 +429,11 @@ function init() {
         if (isMouseDown) {
             changeCoords(e);
         }
-        if (!showAllReturnsAlways && document.elementsFromPoint(e.clientX, e.clientY).includes(document.getElementById("big-diagram"))) {
-            showAllReturns = true;
-        } else if (!showAllReturnsAlways) {
-            showAllReturns = false;
-        }
+        // if (!showAllReturnsAlways && document.elementsFromPoint(e.clientX, e.clientY).includes(document.getElementById("big-diagram"))) {
+        //     showAllReturns = true;
+        // } else if (!showAllReturnsAlways) {
+        //     showAllReturns = false;
+        // }
     });
     brRowPlayerPoly.addEventListener("mousedown", (e) => {
         draggingRhombus1 = true;
@@ -922,12 +935,14 @@ function init() {
             document.getElementById("navigation").style.display = "none";
             document.getElementById("view-modes").style.display = "none";
             document.getElementById("controls").style.display = "none";
+            document.getElementById("notable-games").style.display = "none";
             document.getElementById(button.id.slice(0,-7)).style.display = "";
         });
     }
     document.getElementById("navigation").style.display = "none";
     document.getElementById("view-modes").style.display = "none";
     document.getElementById("controls").style.display = "none";
+    document.getElementById("notable-games").style.display = "none";
 
     const legendContainer = document.getElementById("legend-container");
     const legend = document.getElementById("legend-canvas");
@@ -937,6 +952,13 @@ function init() {
     const legendLabel4 = document.getElementById("legend-label-4");
     const legendLabel5 = document.getElementById("legend-label-5");
     const legendLabel6 = document.getElementById("legend-label-6");
+    const legendLabel7 = document.getElementById("legend-label-7");
+    const legendLabel8 = document.getElementById("legend-label-8");
+    const legendLabel9 = document.getElementById("legend-label-9");
+    const legendLabel10 = document.getElementById("legend-label-10");
+    const legendLabel11 = document.getElementById("legend-label-11");
+    const legendLabel12 = document.getElementById("legend-label-12");
+    const legendLabel13 = document.getElementById("legend-label-13");
     legend.getContext("2d", { willReadFrequently: true});
     legend.width = legendContainer.width.baseVal.value;
     legend.height = legendContainer.height.baseVal.value;
@@ -953,6 +975,20 @@ function init() {
     legendLabel6.setAttribute("x",legend.width+10);
     legendLabel6.setAttribute("y",legend.height*0.5+20);
     legendLabel6.style.display = "none";
+    legendLabel7.setAttribute("x",legend.width+10);
+    legendLabel7.setAttribute("y",legend.height*0.89+20);
+    legendLabel8.setAttribute("x",legend.width+10);
+    legendLabel8.setAttribute("y",legend.height*0.67+20);
+    legendLabel9.setAttribute("x",legend.width+10);
+    legendLabel9.setAttribute("y",legend.height*0.44+20);
+    legendLabel10.setAttribute("x",legend.width+10);
+    legendLabel10.setAttribute("y",legend.height*0.17+20);
+    legendLabel11.setAttribute("x",legend.width+10);
+    legendLabel11.setAttribute("y",legend.height*0.33+20);
+    legendLabel12.setAttribute("x",legend.width+10);
+    legendLabel12.setAttribute("y",legend.height*0.67+20);
+    legendLabel13.setAttribute("x",legend.width+10);
+    legendLabel13.setAttribute("y",legend.height*0.83+20);
     updateLegend();
 
     // initialize hotspots and boundaries
@@ -981,12 +1017,12 @@ function init() {
     const boundaryLine23 = document.getElementById("boundary-line-23");
     const boundaryLine24 = document.getElementById("boundary-line-24");
     const boundaryPoint1 = document.getElementById("boundary-point-1");
-    const boundaryPoint2 = document.getElementById("boundary-point-2");
+    // const boundaryPoint2 = document.getElementById("boundary-point-2");
     const boundaryPoint3 = document.getElementById("boundary-point-3");
     const boundaryPoint4 = document.getElementById("boundary-point-4");
     const boundaryPoint5 = document.getElementById("boundary-point-5");
-    const boundaryPoint6 = document.getElementById("boundary-point-6");
-    const boundaryPoint7 = document.getElementById("boundary-point-7");
+    // const boundaryPoint6 = document.getElementById("boundary-point-6");
+    // const boundaryPoint7 = document.getElementById("boundary-point-7");
     const boundaryPoint8 = document.getElementById("boundary-point-8");
     const boundaryPoint9 = document.getElementById("boundary-point-9");
     const hotspot1 = document.getElementById("hotspot-1");
@@ -1010,15 +1046,15 @@ function init() {
     boundaryLine16.style.stroke = lightGreen;
     boundaryLine17.style.stroke = lightGreen;
     boundaryLine18.style.stroke = lightGreen;
-    boundaryPoint1.style.fill = gold;
-    boundaryPoint2.style.fill = bad;
-    boundaryPoint3.style.fill = lightGreen;
-    boundaryPoint4.style.fill = cerulean;
-    boundaryPoint5.style.fill = lightGreen;
-    boundaryPoint6.style.fill = bad;
-    boundaryPoint7.style.fill = bad;
-    boundaryPoint8.style.fill = gold;
-    boundaryPoint9.style.fill = cerulean;
+    boundaryPoint1.style.fill = red; //gold;
+    // boundaryPoint2.style.fill = red; //bad;
+    boundaryPoint3.style.fill = red; //lightGreen;
+    boundaryPoint4.style.fill = red; //cerulean;
+    boundaryPoint5.style.fill = red; //lightGreen;
+    // boundaryPoint6.style.fill = red; //bad;
+    // boundaryPoint7.style.fill = red; //bad;
+    boundaryPoint8.style.fill = red; //gold;
+    boundaryPoint9.style.fill = red; //cerulean;
     hotspot1.style.fill = cerulean;
     hotspot2.style.fill = gold;
     hotspot3.style.fill = lightGreen;    
@@ -1046,39 +1082,40 @@ function update() {
         updateRequired = true;
     }
 
+    const movementSpeed = 0.03;
     if (x1up) {
-        coords[0] = (coords[0] + 0.05) % 6;
+        coords[0] = (coords[0] + movementSpeed) % 6;
         updateRequired = true;
     }
     if (x1down) {
-        coords[0] = (coords[0] - 0.05 + 6) % 6;
+        coords[0] = (coords[0] - movementSpeed + 6) % 6;
         updateRequired = true;
     }
     if (x2up) {
-        coords[1] = (coords[1] + 0.05) % 6;
+        coords[1] = (coords[1] + movementSpeed) % 6;
         updateRequired = true;
     }
     if (x2down) {
-        coords[1] = (coords[1] - 0.05 + 6) % 6;
+        coords[1] = (coords[1] - movementSpeed + 6) % 6;
         updateRequired = true;
     }
     if (b1up) {
-        coords[2] = coords[2] + 0.1;
+        coords[2] = coords[2] + movementSpeed*2;
         backgroundOutOfDate = true;
         updateRequired = true;
     }
     if (b1down) {
-        coords[2] = coords[2] - 0.1;
+        coords[2] = coords[2] - movementSpeed*2;
         backgroundOutOfDate = true;
         updateRequired = true;
     }
     if (b2up) {
-        coords[3] = coords[3] + 0.1;
+        coords[3] = coords[3] + movementSpeed*2;
         backgroundOutOfDate = true;
         updateRequired = true;
     }
     if (b2down) {
-        coords[3] = coords[3] - 0.1;
+        coords[3] = coords[3] - movementSpeed*2;
         updateRequired = true;
         backgroundOutOfDate = true;
     }
@@ -2148,10 +2185,10 @@ function update() {
             edgeFigure.style.display = "";
 
             const bar = document.getElementById("bar");
-            const bar1 = document.getElementById("bar1");
-            const bar2 = document.getElementById("bar2");
-            const bar3 = document.getElementById("bar3");
-            const bar4 = document.getElementById("bar4");
+            // const bar1 = document.getElementById("bar1");
+            // const bar2 = document.getElementById("bar2");
+            // const bar3 = document.getElementById("bar3");
+            // const bar4 = document.getElementById("bar4");
             const red1 = document.getElementById("red-point1");
             const red2 = document.getElementById("red-point2");
             const red3 = document.getElementById("red-point3");
@@ -2160,44 +2197,44 @@ function update() {
             const green3 = document.getElementById("green-point3");
             const green4 = document.getElementById("green-point4");
             
-            switch (quad) {
-                case 1:
-                    bar1.style.display = "";
-                    bar2.style.display = "";
-                    bar3.style.display = "";
-                    bar4.style.display = "none";
-                    bar1.style.stroke = lightGreen;
-                    bar2.style.stroke = bad;
-                    bar3.style.stroke = lightGreen;
-                    break;
-                case 2:
-                    bar1.style.display = "";
-                    bar2.style.display = "none";
-                    bar3.style.display = "";
-                    bar4.style.display = "";
-                    bar1.style.stroke = gold;
-                    bar3.style.stroke = gold;
-                    bar4.style.stroke = bad;
-                    break;
-                case 3:
-                    bar1.style.display = "";
-                    bar2.style.display = "";
-                    bar3.style.display = "";
-                    bar4.style.display = "";
-                    bar1.style.stroke = cerulean;
-                    bar2.style.stroke = gold;
-                    bar3.style.stroke = bad;
-                    bar4.style.stroke = gold;
-                    break;
-                case 4:
-                    bar1.style.display = "";
-                    bar2.style.display = "none";
-                    bar3.style.display = "";
-                    bar4.style.display = "none";
-                    bar1.style.stroke = bad;
-                    bar3.style.stroke = cerulean;
-                    break;
-            }
+            // switch (quad) {
+            //     case 1:
+            //         bar1.style.display = "";
+            //         bar2.style.display = "";
+            //         bar3.style.display = "";
+            //         bar4.style.display = "none";
+            //         bar1.style.stroke = lightGreen;
+            //         bar2.style.stroke = bad;
+            //         bar3.style.stroke = lightGreen;
+            //         break;
+            //     case 2:
+            //         bar1.style.display = "";
+            //         bar2.style.display = "none";
+            //         bar3.style.display = "";
+            //         bar4.style.display = "";
+            //         bar1.style.stroke = gold;
+            //         bar3.style.stroke = gold;
+            //         bar4.style.stroke = bad;
+            //         break;
+            //     case 3:
+            //         bar1.style.display = "";
+            //         bar2.style.display = "";
+            //         bar3.style.display = "";
+            //         bar4.style.display = "";
+            //         bar1.style.stroke = cerulean;
+            //         bar2.style.stroke = gold;
+            //         bar3.style.stroke = bad;
+            //         bar4.style.stroke = gold;
+            //         break;
+            //     case 4:
+            //         bar1.style.display = "";
+            //         bar2.style.display = "none";
+            //         bar3.style.display = "";
+            //         bar4.style.display = "none";
+            //         bar1.style.stroke = bad;
+            //         bar3.style.stroke = cerulean;
+            //         break;
+            // }
 
             const barOffset = 0.1*container.width.baseVal.value;
             const barSeparation = 0.03*container.width.baseVal.value;
@@ -2206,22 +2243,22 @@ function update() {
             bar.y1.baseVal.value = picPadding2;
             bar.y2.baseVal.value = picPadding2;
             bar.style.stroke = "#d3d3d3";
-            bar1.x1.baseVal.value = picPadding1;
-            bar1.x2.baseVal.value = picPadding1 + picWidth/2 + 1;
-            bar1.y1.baseVal.value = picPadding2 + barOffset;
-            bar1.y2.baseVal.value = picPadding2 + barOffset;
-            bar2.x1.baseVal.value = picPadding1;
-            bar2.x2.baseVal.value = picPadding1 + picWidth/2;
-            bar2.y1.baseVal.value = picPadding2 + barOffset + barSeparation;
-            bar2.y2.baseVal.value = picPadding2 + barOffset + barSeparation;
-            bar3.x1.baseVal.value = picPadding1 + picWidth;
-            bar3.x2.baseVal.value = picPadding1 + picWidth/2;
-            bar3.y1.baseVal.value = picPadding2 + barOffset;
-            bar3.y2.baseVal.value = picPadding2 + barOffset;
-            bar4.x1.baseVal.value = picPadding1 + picWidth;
-            bar4.x2.baseVal.value = picPadding1 + picWidth/2;
-            bar4.y1.baseVal.value = picPadding2 + barOffset + barSeparation;
-            bar4.y2.baseVal.value = picPadding2 + barOffset + barSeparation;
+            // bar1.x1.baseVal.value = picPadding1;
+            // bar1.x2.baseVal.value = picPadding1 + picWidth/2 + 1;
+            // bar1.y1.baseVal.value = picPadding2 + barOffset;
+            // bar1.y2.baseVal.value = picPadding2 + barOffset;
+            // bar2.x1.baseVal.value = picPadding1;
+            // bar2.x2.baseVal.value = picPadding1 + picWidth/2;
+            // bar2.y1.baseVal.value = picPadding2 + barOffset + barSeparation;
+            // bar2.y2.baseVal.value = picPadding2 + barOffset + barSeparation;
+            // bar3.x1.baseVal.value = picPadding1 + picWidth;
+            // bar3.x2.baseVal.value = picPadding1 + picWidth/2;
+            // bar3.y1.baseVal.value = picPadding2 + barOffset;
+            // bar3.y2.baseVal.value = picPadding2 + barOffset;
+            // bar4.x1.baseVal.value = picPadding1 + picWidth;
+            // bar4.x2.baseVal.value = picPadding1 + picWidth/2;
+            // bar4.y1.baseVal.value = picPadding2 + barOffset + barSeparation;
+            // bar4.y2.baseVal.value = picPadding2 + barOffset + barSeparation;
 
             green1.cx.baseVal.value = picPadding1;
             red1.cx.baseVal.value = picPadding1 + picWidth/6;
@@ -2242,10 +2279,10 @@ function update() {
             edgeFigure.style.display = "";
 
             const bar = document.getElementById("bar");
-            const bar1 = document.getElementById("bar1");
-            const bar2 = document.getElementById("bar2");
-            const bar3 = document.getElementById("bar3");
-            const bar4 = document.getElementById("bar4");
+            // const bar1 = document.getElementById("bar1");
+            // const bar2 = document.getElementById("bar2");
+            // const bar3 = document.getElementById("bar3");
+            // const bar4 = document.getElementById("bar4");
             const red1 = document.getElementById("red-point1");
             const red2 = document.getElementById("red-point2");
             const red3 = document.getElementById("red-point3");
@@ -2254,44 +2291,44 @@ function update() {
             const green3 = document.getElementById("green-point3");
             const green4 = document.getElementById("green-point4");
             
-            switch (quad) {
-                case 1:
-                    bar1.style.display = "none";
-                    bar2.style.display = "";
-                    bar3.style.display = "";
-                    bar4.style.display = "";
-                    bar2.style.stroke = lightGreen;
-                    bar3.style.stroke = bad;
-                    bar4.style.stroke = lightGreen;
-                    break;
-                case 2:
-                    bar1.style.display = "";
-                    bar2.style.display = "none";
-                    bar3.style.display = "";
-                    bar4.style.display = "none";
-                    bar1.style.stroke = gold;
-                    bar3.style.stroke = bad;
-                    break;
-                case 3:
-                    bar1.style.display = "";
-                    bar2.style.display = "";
-                    bar3.style.display = "";
-                    bar4.style.display = "";
-                    bar1.style.stroke = cerulean;
-                    bar2.style.stroke = bad;
-                    bar3.style.stroke = cerulean;
-                    bar4.style.stroke = gold;
-                    break;
-                case 4:
-                    bar1.style.display = "";
-                    bar2.style.display = "";
-                    bar3.style.display = "none";
-                    bar4.style.display = "";
-                    bar1.style.stroke = bad;
-                    bar2.style.stroke = cerulean;
-                    bar4.style.stroke = cerulean;
-                    break;
-            }
+            // switch (quad) {
+            //     case 1:
+            //         bar1.style.display = "none";
+            //         bar2.style.display = "";
+            //         bar3.style.display = "";
+            //         bar4.style.display = "";
+            //         bar2.style.stroke = lightGreen;
+            //         bar3.style.stroke = bad;
+            //         bar4.style.stroke = lightGreen;
+            //         break;
+            //     case 2:
+            //         bar1.style.display = "";
+            //         bar2.style.display = "none";
+            //         bar3.style.display = "";
+            //         bar4.style.display = "none";
+            //         bar1.style.stroke = gold;
+            //         bar3.style.stroke = bad;
+            //         break;
+            //     case 3:
+            //         bar1.style.display = "";
+            //         bar2.style.display = "";
+            //         bar3.style.display = "";
+            //         bar4.style.display = "";
+            //         bar1.style.stroke = cerulean;
+            //         bar2.style.stroke = bad;
+            //         bar3.style.stroke = cerulean;
+            //         bar4.style.stroke = gold;
+            //         break;
+            //     case 4:
+            //         bar1.style.display = "";
+            //         bar2.style.display = "";
+            //         bar3.style.display = "none";
+            //         bar4.style.display = "";
+            //         bar1.style.stroke = bad;
+            //         bar2.style.stroke = cerulean;
+            //         bar4.style.stroke = cerulean;
+            //         break;
+            // }
 
             const barOffset = 0.1*container.width.baseVal.value;
             const barSeparation = 0.03*container.width.baseVal.value;
@@ -2300,22 +2337,22 @@ function update() {
             bar.x1.baseVal.value = picPadding1;
             bar.x2.baseVal.value = picPadding1;
             bar.style.stroke = "#d3d3d3";
-            bar1.y1.baseVal.value = picPadding2;
-            bar1.y2.baseVal.value = picPadding2 + picHeight/2 + 1;
-            bar1.x1.baseVal.value = picPadding1 + barOffset;
-            bar1.x2.baseVal.value = picPadding1 + barOffset;
-            bar2.y1.baseVal.value = picPadding2;
-            bar2.y2.baseVal.value = picPadding2 + picHeight/2;
-            bar2.x1.baseVal.value = picPadding1 + barOffset + barSeparation;
-            bar2.x2.baseVal.value = picPadding1 + barOffset + barSeparation;
-            bar3.y1.baseVal.value = picPadding2 + picHeight;
-            bar3.y2.baseVal.value = picPadding2 + picHeight/2;
-            bar3.x1.baseVal.value = picPadding1 + barOffset;
-            bar3.x2.baseVal.value = picPadding1 + barOffset;
-            bar4.y1.baseVal.value = picPadding2 + picHeight;
-            bar4.y2.baseVal.value = picPadding2 + picHeight/2;
-            bar4.x1.baseVal.value = picPadding1 + barOffset + barSeparation;
-            bar4.x2.baseVal.value = picPadding1 + barOffset + barSeparation;
+            // bar1.y1.baseVal.value = picPadding2;
+            // bar1.y2.baseVal.value = picPadding2 + picHeight/2 + 1;
+            // bar1.x1.baseVal.value = picPadding1 + barOffset;
+            // bar1.x2.baseVal.value = picPadding1 + barOffset;
+            // bar2.y1.baseVal.value = picPadding2;
+            // bar2.y2.baseVal.value = picPadding2 + picHeight/2;
+            // bar2.x1.baseVal.value = picPadding1 + barOffset + barSeparation;
+            // bar2.x2.baseVal.value = picPadding1 + barOffset + barSeparation;
+            // bar3.y1.baseVal.value = picPadding2 + picHeight;
+            // bar3.y2.baseVal.value = picPadding2 + picHeight/2;
+            // bar3.x1.baseVal.value = picPadding1 + barOffset;
+            // bar3.x2.baseVal.value = picPadding1 + barOffset;
+            // bar4.y1.baseVal.value = picPadding2 + picHeight;
+            // bar4.y2.baseVal.value = picPadding2 + picHeight/2;
+            // bar4.x1.baseVal.value = picPadding1 + barOffset + barSeparation;
+            // bar4.x2.baseVal.value = picPadding1 + barOffset + barSeparation;
 
             green1.cy.baseVal.value = picPadding2;
             red1.cy.baseVal.value = picPadding2 + picHeight/6;
@@ -2411,12 +2448,12 @@ function update() {
     const boundaryLine23 = document.getElementById("boundary-line-23");
     const boundaryLine24 = document.getElementById("boundary-line-24");
     const boundaryPoint1 = document.getElementById("boundary-point-1");
-    const boundaryPoint2 = document.getElementById("boundary-point-2");
+    // const boundaryPoint2 = document.getElementById("boundary-point-2");
     const boundaryPoint3 = document.getElementById("boundary-point-3");
     const boundaryPoint4 = document.getElementById("boundary-point-4");
     const boundaryPoint5 = document.getElementById("boundary-point-5");
-    const boundaryPoint6 = document.getElementById("boundary-point-6");
-    const boundaryPoint7 = document.getElementById("boundary-point-7");
+    // const boundaryPoint6 = document.getElementById("boundary-point-6");
+    // const boundaryPoint7 = document.getElementById("boundary-point-7");
     const boundaryPoint8 = document.getElementById("boundary-point-8");
     const boundaryPoint9 = document.getElementById("boundary-point-9");
     const hotspot1 = document.getElementById("hotspot-1");
@@ -2605,54 +2642,54 @@ function update() {
     if (coords[2] == 0 && coords[3] == 0) {
         boundaryPoint1.cx.baseVal.value = picWidth/6+picPadding1;
         boundaryPoint1.cy.baseVal.value = picHeight/6+picPadding2;
-        boundaryPoint2.cx.baseVal.value = picWidth/2+picPadding1;
-        boundaryPoint2.cy.baseVal.value = picHeight/6+picPadding2;
+        // boundaryPoint2.cx.baseVal.value = picWidth/2+picPadding1;
+        // boundaryPoint2.cy.baseVal.value = picHeight/6+picPadding2;
         boundaryPoint3.cx.baseVal.value = picWidth*5/6+picPadding1;
         boundaryPoint3.cy.baseVal.value = picHeight/6+picPadding2;
         boundaryPoint4.cx.baseVal.value = picWidth/6+picPadding1;
         boundaryPoint4.cy.baseVal.value = picHeight/2+picPadding2;
         boundaryPoint5.cx.baseVal.value = picWidth/2+picPadding1;
         boundaryPoint5.cy.baseVal.value = picHeight/2+picPadding2;
-        boundaryPoint6.cx.baseVal.value = picWidth*5/6+picPadding1;
-        boundaryPoint6.cy.baseVal.value = picHeight/2+picPadding2;
-        boundaryPoint7.cx.baseVal.value = picWidth/6+picPadding1;
-        boundaryPoint7.cy.baseVal.value = picHeight*5/6+picPadding2;
+        // boundaryPoint6.cx.baseVal.value = picWidth*5/6+picPadding1;
+        // boundaryPoint6.cy.baseVal.value = picHeight/2+picPadding2;
+        // boundaryPoint7.cx.baseVal.value = picWidth/6+picPadding1;
+        // boundaryPoint7.cy.baseVal.value = picHeight*5/6+picPadding2;
         boundaryPoint8.cx.baseVal.value = picWidth/2+picPadding1;
         boundaryPoint8.cy.baseVal.value = picHeight*5/6+picPadding2;
         boundaryPoint9.cx.baseVal.value = picWidth*5/6+picPadding1;
         boundaryPoint9.cy.baseVal.value = picHeight*5/6+picPadding2;
         boundaryPoint1.style.display = "";
-        boundaryPoint2.style.display = "";
+        // boundaryPoint2.style.display = "";
         boundaryPoint3.style.display = "";
         boundaryPoint4.style.display = "";
         boundaryPoint5.style.display = "";
-        boundaryPoint6.style.display = "";
-        boundaryPoint7.style.display = "";
+        // boundaryPoint6.style.display = "";
+        // boundaryPoint7.style.display = "";
         boundaryPoint8.style.display = "";
         boundaryPoint9.style.display = "";
-        hotspot1.style.display = "none";
-        hotspot2.style.display = "none";
-        hotspot3.style.display = "none";
+        // hotspot1.style.display = "none";
+        // hotspot2.style.display = "none";
+        // hotspot3.style.display = "none";
     } else {
-        hotspot1.cx.baseVal.value = picWidth/2+picPadding1;
-        hotspot1.cy.baseVal.value = picHeight/6+picPadding2;
-        hotspot2.cx.baseVal.value = picWidth*5/6+picPadding1;
-        hotspot2.cy.baseVal.value = picHeight/2+picPadding2;
-        hotspot3.cx.baseVal.value = picWidth/6+picPadding1;
-        hotspot3.cy.baseVal.value = picHeight*5/6+picPadding2;
         boundaryPoint1.style.display = "none";
-        boundaryPoint2.style.display = "none";
+        // boundaryPoint2.style.display = "none";
         boundaryPoint3.style.display = "none";
         boundaryPoint4.style.display = "none";
         boundaryPoint5.style.display = "none";
-        boundaryPoint6.style.display = "none";
-        boundaryPoint7.style.display = "none";
+        // boundaryPoint6.style.display = "none";
+        // boundaryPoint7.style.display = "none";
         boundaryPoint8.style.display = "none";
         boundaryPoint9.style.display = "none";
-        hotspot1.style.display = "";
-        hotspot2.style.display = "";
-        hotspot3.style.display = "";
+        // hotspot1.style.display = "";
+        // hotspot2.style.display = "";
+        // hotspot3.style.display = "";
     }
+    hotspot1.cx.baseVal.value = picWidth/2+picPadding1;
+    hotspot1.cy.baseVal.value = picHeight/6+picPadding2;
+    hotspot2.cx.baseVal.value = picWidth*5/6+picPadding1;
+    hotspot2.cy.baseVal.value = picHeight/2+picPadding2;
+    hotspot3.cx.baseVal.value = picWidth/6+picPadding1;
+    hotspot3.cy.baseVal.value = picHeight*5/6+picPadding2;
 
     updateBlueLines();
 
@@ -2892,6 +2929,12 @@ function update() {
         nearestCentroid[1] = Math.round(coords[1]-0.5)+0.5;
     }
 
+    // update cell name
+    const cellName = document.getElementById("cell-name");
+    let cellCol = 6 - (Math.floor(coords[0])+2) % 6;
+    let cellRow = 6 - (Math.floor(coords[1])+2) % 6;
+    cellName.innerHTML = cellCol.toString() + "," + cellRow.toString();
+
     time++;
 }
 
@@ -3104,12 +3147,12 @@ function updateBackground() {
     const boundaryLine23 = document.getElementById("boundary-line-23");
     const boundaryLine24 = document.getElementById("boundary-line-24");
     const boundaryPoint1 = document.getElementById("boundary-point-1");
-    const boundaryPoint2 = document.getElementById("boundary-point-2");
+    // const boundaryPoint2 = document.getElementById("boundary-point-2");
     const boundaryPoint3 = document.getElementById("boundary-point-3");
     const boundaryPoint4 = document.getElementById("boundary-point-4");
     const boundaryPoint5 = document.getElementById("boundary-point-5");
-    const boundaryPoint6 = document.getElementById("boundary-point-6");
-    const boundaryPoint7 = document.getElementById("boundary-point-7");
+    // const boundaryPoint6 = document.getElementById("boundary-point-6");
+    // const boundaryPoint7 = document.getElementById("boundary-point-7");
     const boundaryPoint8 = document.getElementById("boundary-point-8");
     const boundaryPoint9 = document.getElementById("boundary-point-9");
     const hotspot1 = document.getElementById("hotspot-1");
@@ -3142,15 +3185,15 @@ function updateBackground() {
             boundaryLine16.style.stroke = bad;
             boundaryLine17.style.stroke = bad;
             boundaryLine18.style.stroke = bad;
-            boundaryPoint1.style.fill = cerulean;
-            boundaryPoint2.style.fill = lightGreen;
-            boundaryPoint3.style.fill = bad;
-            boundaryPoint4.style.fill = gold;
-            boundaryPoint5.style.fill = bad;
-            boundaryPoint6.style.fill = lightGreen;
-            boundaryPoint7.style.fill = lightGreen;
-            boundaryPoint8.style.fill = cerulean;
-            boundaryPoint9.style.fill = gold;
+            // boundaryPoint1.style.fill = cerulean;
+            // boundaryPoint2.style.fill = lightGreen;
+            // boundaryPoint3.style.fill = bad;
+            // boundaryPoint4.style.fill = gold;
+            // boundaryPoint5.style.fill = bad;
+            // boundaryPoint6.style.fill = lightGreen;
+            // boundaryPoint7.style.fill = lightGreen;
+            // boundaryPoint8.style.fill = cerulean;
+            // boundaryPoint9.style.fill = gold;
             hotspot1.style.fill = gold;
             hotspot2.style.fill = cerulean;
             hotspot3.style.fill = bad;
@@ -3180,15 +3223,15 @@ function updateBackground() {
             boundaryLine16.style.stroke = cerulean;
             boundaryLine17.style.stroke = cerulean;
             boundaryLine18.style.stroke = cerulean;
-            boundaryPoint1.style.fill = bad;
-            boundaryPoint2.style.fill = gold;
-            boundaryPoint3.style.fill = cerulean;
-            boundaryPoint4.style.fill = lightGreen;
-            boundaryPoint5.style.fill = cerulean;
-            boundaryPoint6.style.fill = gold;
-            boundaryPoint7.style.fill = gold;
-            boundaryPoint8.style.fill = bad;
-            boundaryPoint9.style.fill = lightGreen;
+            // boundaryPoint1.style.fill = bad;
+            // boundaryPoint2.style.fill = gold;
+            // boundaryPoint3.style.fill = cerulean;
+            // boundaryPoint4.style.fill = lightGreen;
+            // boundaryPoint5.style.fill = cerulean;
+            // boundaryPoint6.style.fill = gold;
+            // boundaryPoint7.style.fill = gold;
+            // boundaryPoint8.style.fill = bad;
+            // boundaryPoint9.style.fill = lightGreen;
             hotspot1.style.fill = lightGreen;
             hotspot2.style.fill = bad;
             hotspot3.style.fill = cerulean;
@@ -3218,15 +3261,15 @@ function updateBackground() {
             boundaryLine16.style.stroke = lightGreen;
             boundaryLine17.style.stroke = lightGreen;
             boundaryLine18.style.stroke = lightGreen;
-            boundaryPoint1.style.fill = gold;
-            boundaryPoint2.style.fill = bad;
-            boundaryPoint3.style.fill = lightGreen;
-            boundaryPoint4.style.fill = cerulean;
-            boundaryPoint5.style.fill = lightGreen;
-            boundaryPoint6.style.fill = bad;
-            boundaryPoint7.style.fill = bad;
-            boundaryPoint8.style.fill = gold;
-            boundaryPoint9.style.fill = cerulean;
+            // boundaryPoint1.style.fill = gold;
+            // boundaryPoint2.style.fill = bad;
+            // boundaryPoint3.style.fill = lightGreen;
+            // boundaryPoint4.style.fill = cerulean;
+            // boundaryPoint5.style.fill = lightGreen;
+            // boundaryPoint6.style.fill = bad;
+            // boundaryPoint7.style.fill = bad;
+            // boundaryPoint8.style.fill = gold;
+            // boundaryPoint9.style.fill = cerulean;
             hotspot1.style.fill = cerulean;
             hotspot2.style.fill = gold;
             hotspot3.style.fill = lightGreen;
@@ -3256,15 +3299,15 @@ function updateBackground() {
             boundaryLine16.style.stroke = gold;
             boundaryLine17.style.stroke = gold;
             boundaryLine18.style.stroke = gold;
-            boundaryPoint1.style.fill = lightGreen;
-            boundaryPoint2.style.fill = cerulean;
-            boundaryPoint3.style.fill = gold;
-            boundaryPoint4.style.fill = bad;
-            boundaryPoint5.style.fill = gold;
-            boundaryPoint6.style.fill = cerulean;
-            boundaryPoint7.style.fill = cerulean;
-            boundaryPoint8.style.fill = lightGreen;
-            boundaryPoint9.style.fill = bad;
+            // boundaryPoint1.style.fill = lightGreen;
+            // boundaryPoint2.style.fill = cerulean;
+            // boundaryPoint3.style.fill = gold;
+            // boundaryPoint4.style.fill = bad;
+            // boundaryPoint5.style.fill = gold;
+            // boundaryPoint6.style.fill = cerulean;
+            // boundaryPoint7.style.fill = cerulean;
+            // boundaryPoint8.style.fill = lightGreen;
+            // boundaryPoint9.style.fill = bad;
             hotspot1.style.fill = bad;
             hotspot2.style.fill = lightGreen;
             hotspot3.style.fill = gold;
@@ -4102,14 +4145,17 @@ function changeViewMode(mode, p1=true) {
         viewMode = mode;
     }
     const canvas = document.getElementById("canvas");
+    const canvasBig = document.getElementById("big-pic-canvas");
     if (mode == 0) {
         canvas.style.display = "none";
+        canvasBig.style.display = "none";
         canvas.width = 0;
         canvas.height = 0;
         canvas.x = 0;
         canvas.y = 0;
     } else {
         canvas.style.display = "";
+        canvasBig.style.display = "";
         switchMode = true;
         backgroundOutOfDate = true;
     }
@@ -4231,7 +4277,9 @@ function updateBigPicCanvas(func) {
     const quadrantWidth = canvasBigPic.width*0.42;
     for (let j = 0; j < quadrantWidth; j++) {
         for (let i = 0; i < quadrantWidth; i++) {
-            let color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,1)),viewMode);
+            let color = [];
+            if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,1)),viewMode);
+            else color = colorFunction(func(...coordsToMatricesAlt(i*6/quadrantWidth,(1-j/quadrantWidth)*6,1)),viewMode);
             const x = i + Math.round(canvasBigPic.width*0.54);
             const y = j + Math.round(canvasBigPic.height*0.04);
             data[(x+y*canvasBigPic.width)*4] = color[0];
@@ -4242,7 +4290,9 @@ function updateBigPicCanvas(func) {
     }
     for (let j = 0; j < quadrantWidth; j++) {
         for (let i = 0; i < quadrantWidth; i++) {
-            let color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,2)),viewMode);
+            let color = [];
+            if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,2)),viewMode);
+            else color = colorFunction(func(...coordsToMatricesAlt(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2)),viewMode);
             const x = i + Math.round(canvasBigPic.width*0.04);
             const y = j + Math.round(canvasBigPic.height*0.04);
             data[(x+y*canvasBigPic.width)*4] = color[0];
@@ -4253,7 +4303,9 @@ function updateBigPicCanvas(func) {
     }
     for (let j = 0; j < quadrantWidth; j++) {
         for (let i = 0; i < quadrantWidth; i++) {
-            let color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,3)),viewMode);
+            let color = [];
+            if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,3)),viewMode);
+            else color = colorFunction(func(...coordsToMatricesAlt(i*6/quadrantWidth,(1-j/quadrantWidth)*6,3)),viewMode);
             const x = i + Math.round(canvasBigPic.width*0.04);
             const y = j + Math.round(canvasBigPic.height*0.54);
             data[(x+y*canvasBigPic.width)*4] = color[0];
@@ -4264,7 +4316,9 @@ function updateBigPicCanvas(func) {
     }
     for (let j = 0; j < quadrantWidth; j++) {
         for (let i = 0; i < quadrantWidth; i++) {
-            let color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,4)),viewMode);
+            let color = [];
+            if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,4)),viewMode);
+            else color = colorFunction(func(...coordsToMatricesAlt(i*6/quadrantWidth,(1-j/quadrantWidth)*6,4)),viewMode);
             const x = i + Math.round(canvasBigPic.width*0.54);
             const y = j + Math.round(canvasBigPic.height*0.54);
             data[(x+y*canvasBigPic.width)*4] = color[0];
@@ -4914,6 +4968,7 @@ function altImage(alt) {
         number14.style.opacity = 1;
     }
     if (diagramGrid) updateDiagramGrid();
+    changeViewMode(viewMode,viewModeP1);
 }
 
 function hideGame() {
@@ -4940,14 +4995,6 @@ function hideGame() {
 }
 
 function updateLegend() {
-    const legend = document.getElementById("legend");
-    if (viewMode == 0) {
-        legend.style.display = "none";
-        return;
-    } else {
-        legend.style.display = "";
-    }
-
     const legendContainer = document.getElementById("legend-container");
     const legendCanvas = document.getElementById("legend-canvas");
     const legendLabel1 = document.getElementById("legend-label-1");
@@ -4956,6 +5003,13 @@ function updateLegend() {
     const legendLabel4 = document.getElementById("legend-label-4");
     const legendLabel5 = document.getElementById("legend-label-5");
     const legendLabel6 = document.getElementById("legend-label-6");
+    const legendLabel7 = document.getElementById("legend-label-7");
+    const legendLabel8 = document.getElementById("legend-label-8");
+    const legendLabel9 = document.getElementById("legend-label-9");
+    const legendLabel10 = document.getElementById("legend-label-10");
+    const legendLabel11 = document.getElementById("legend-label-11");
+    const legendLabel12 = document.getElementById("legend-label-12");
+    const legendLabel13 = document.getElementById("legend-label-13");
 
     const ctx = legendCanvas.getContext("2d");
     const imageData = ctx.getImageData(0, 0, legendCanvas.width, legendCanvas.height);
@@ -4976,20 +5030,49 @@ function updateLegend() {
         legendLabel3.style.display = "none";
         legendLabel4.style.display = "none";
         legendLabel6.style.display = "";
+        legendLabel7.style.display = "none";
+        legendLabel8.style.display = "none";
+        legendLabel9.style.display = "none";
+        legendLabel10.style.display = "";
+        legendLabel11.style.display = "";
+        legendLabel12.style.display = "";
+        legendLabel13.style.display = "";
         legendLabel1.innerHTML = "-6";
         legendLabel5.innerHTML = "6";
+        legendLabel10.innerHTML = "4";
+        legendLabel11.innerHTML = "2";
+        legendLabel12.innerHTML = "-2";
+        legendLabel13.innerHTML = "-4";
     } else if (viewMode == 8) {
         legendLabel2.style.display = "none";
         legendLabel3.style.display = "none";
         legendLabel4.style.display = "none";
-        legendLabel6.style.display = "none";
+        legendLabel6.style.display = "";
+        legendLabel7.style.display = "none";
+        legendLabel8.style.display = "none";
+        legendLabel9.style.display = "none";
+        legendLabel10.style.display = "";
+        legendLabel11.style.display = "";
+        legendLabel12.style.display = "";
+        legendLabel13.style.display = "";
         legendLabel1.innerHTML = "-1";
         legendLabel5.innerHTML = "1";
+        legendLabel10.innerHTML = "2/3";
+        legendLabel11.innerHTML = "1/3";
+        legendLabel12.innerHTML = "-1/3";
+        legendLabel13.innerHTML = "-2/3";
     } else {
         legendLabel2.style.display = "";
         legendLabel3.style.display = "";
         legendLabel4.style.display = "";
         legendLabel6.style.display = "none";
+        legendLabel7.style.display = "";
+        legendLabel8.style.display = "";
+        legendLabel9.style.display = "";
+        legendLabel10.style.display = "none";
+        legendLabel11.style.display = "none";
+        legendLabel12.style.display = "none";
+        legendLabel13.style.display = "none";
         legendLabel1.innerHTML = "0";
         legendLabel5.innerHTML = "9";
     }
@@ -5008,9 +5091,94 @@ function exportPNG() {
     downloadLink.click();
 }
 
+function goTo(x1,x2,b1,b2,q) {
+    coords = [x1,x2,b1,b2];
+    quad = q;
+    updateBackground();
+}
+
+function hideLines(hide) {
+    const showLinesButton = document.getElementById("show-lines-button");
+    const hideLinesButton = document.getElementById("hide-lines-button");
+    if (hide) {
+        showLinesButton.classList.remove("selected");
+        hideLinesButton.classList.add("selected");
+    } else {
+        showLinesButton.classList.add("selected");
+        hideLinesButton.classList.remove("selected");
+    }
+    const red1 = document.getElementById("red1");
+    const red2 = document.getElementById("red2");
+    const red3 = document.getElementById("red3");
+    const red4 = document.getElementById("red4");
+    const red5 = document.getElementById("red5");
+    const red6 = document.getElementById("red6");
+    const green1 = document.getElementById("green1");
+    const green2 = document.getElementById("green2");
+    const green3 = document.getElementById("green3");
+    const green4 = document.getElementById("green4");
+    const green5 = document.getElementById("green5");
+    const green6 = document.getElementById("green6");
+    const green7 = document.getElementById("green7");
+    const green8 = document.getElementById("green8");
+    const picCorner1 = document.getElementById("green-corner1");
+    const picCorner2 = document.getElementById("green-corner2");
+    const picCorner3 = document.getElementById("green-corner3");
+    const picCorner4 = document.getElementById("green-corner4");
+
+    if (hide) {
+        red1.style.display = "none";
+        red2.style.display = "none";
+        red3.style.display = "none";
+        red4.style.display = "none";
+        red5.style.display = "none";
+        red6.style.display = "none";
+        green1.style.display = "none";
+        green2.style.display = "none";
+        green3.style.display = "none";
+        green4.style.display = "none";
+        green5.style.display = "none";
+        green6.style.display = "none";
+        green7.style.display = "none";
+        green8.style.display = "none";
+        picCorner1.style.display = "none";
+        picCorner2.style.display = "none";
+        picCorner3.style.display = "none";
+        picCorner4.style.display = "none";
+    } else {
+        red1.style.display = "";
+        red2.style.display = "";
+        red3.style.display = "";
+        red4.style.display = "";
+        red5.style.display = "";
+        red6.style.display = "";
+        green1.style.display = "";
+        green2.style.display = "";
+        green3.style.display = "";
+        green4.style.display = "";
+        green5.style.display = "";
+        green6.style.display = "";
+        green7.style.display = "";
+        green8.style.display = "";
+        picCorner1.style.display = "";
+        picCorner2.style.display = "";
+        picCorner3.style.display = "";
+        picCorner4.style.display = "";
+    }
+}
+
 
 // add parameter for transferable utility
-// improve colors
-// color global picture
 // add means
 // boost performance
+
+// going through corners
+// showing the view mode
+// big pic gets updated
+// clicking on the big diagram in the balanced games
+// add lines in big diagram for TU
+// boost performance when animating or using keyboard
+// add extreme games
+// show discontinuities?
+// formatting
+// update growbox() (bugged)

@@ -95,15 +95,18 @@ span {
 }
 
 #nav-bar {
-    display: flex;
     position: absolute;
     bottom: 1vh;
-    left: calc(80vh + 1vw);
+    left: calc(80vh + 4.5vw);
+}
+
+#nav-bar div {
+    display: flex;
 }
 
 #nav-bar button {
-    width: 8vw;
-    height: 8vh;
+    width: 9vw;
+    height: 6vh;
     font-size: 12pt;
 }
 
@@ -129,7 +132,7 @@ span {
     width: 25vw;
 }
 
-#navigation {
+#navigation, #notable-games {
     width: 26vw;
 }
 
@@ -168,7 +171,11 @@ h2 {
 
 #display-options {
     border-collapse: separate;
-    border-spacing: 10px 0;
+    border-spacing: 5px 0;
+}
+
+#display-options tr td button {
+    width: 10vw;
 }
 
 .row-header {
