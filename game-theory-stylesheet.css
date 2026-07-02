@@ -45,6 +45,11 @@ p, td {
     font-size: 11pt;
 }
 
+p {
+    padding-top: 10px;
+    margin:0;
+}
+
 button {
     background-color: #eee;
     border: none;
@@ -82,7 +87,7 @@ button {
 }
 
 button:hover, .selected {
-    background-color: #bbb;
+    background-color: #ccc;
 }
 
 /* #fix-image-button {
@@ -95,9 +100,11 @@ span {
 }
 
 #nav-bar {
-    position: absolute;
-    bottom: 1vh;
+    position: fixed;
+    bottom: 0vh;
     left: calc(80vh + 4.5vw);
+    background: white;
+    padding-bottom: 1vh;
 }
 
 #nav-bar div {
@@ -115,13 +122,25 @@ span {
     top:2vh;
     left: calc(80vh + 5vw);
     width:26vw;
-    height:85vh;
-    text-align: center
+    /* height:85vh; */
+    text-align: center;
+}
+
+#matrices {
+    height: 15vh;
+}
+
+.scrollable {
+    height: 70vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 #pictures {
     display: flex-col;
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     width: 25vw;
@@ -172,6 +191,8 @@ h2 {
 #display-options {
     border-collapse: separate;
     border-spacing: 5px 0;
+    position: fixed;
+    bottom: 5vh;
 }
 
 #display-options tr td button {

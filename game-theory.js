@@ -2714,7 +2714,7 @@ function update() {
             points.push([ qOverBlue(true, points[1][0], points[1][1], points[1][2]), (redLine - (points[1][1] - redLine) + 6) % 6, points[1][2] ]);
         }
     }
-    if (coords[2] == 0) {
+    if (coords[3] == 0) {
         const length = points.length;
         for (let i = 0; i < length; i++) {
             let redLine = Math.round((points[i][2]+1)/2)*2-1;
@@ -2767,7 +2767,15 @@ function update() {
     brColPlayer.y.baseVal.value = brColY;
 
     // update canvas
-    if (backgroundOutOfDate && (coords[2] != 6 && coords[3] != 6 || fixImageSize) && viewMode != 0) {
+    if (backgroundOutOfDate && viewMode != 0) {
+        if (!draggingB1 && !draggingB2 && !b1up && !b1down && !b2up && !b2down && b1V == 0 && b2V == 0) {
+            updateCanvas(false);
+        } else {
+            updateCanvas(true);
+        }
+    }
+
+    if (backgroundOutOfDate && (coords[2] < 6-error && coords[3] < 6-error || fixImageSize) && viewMode != 0) {
         const foreignObject = document.getElementById("canvasForeignObject");
         const canvas = document.getElementById("canvas");
 
@@ -2779,55 +2787,56 @@ function update() {
         canvas.width = picWidth;
         canvas.height = picHeight;
 
-        if (time % 3 == 0 || switchMode) {
-            valuesX = 6*Math.round(picWidth/30);
-            valuesY = 6*Math.round(picHeight/30);
-            values = [];
-            for (let j = 0; j < valuesY; j++) {
-                values.push([]);
-                for (let i = 0; i < valuesX; i++) {
-                    let [rowM, colM] = (!useAltSchema) ? 
-                                            coordsToMatrices((i+0.5)/valuesX*6, (valuesY-j-0.5)/valuesY*6,
-                                                            coords[2] != 0 ? coords[2] : coords[2] + error*2,
-                                                            coords[3] != 0 ? coords[3] : coords[3] + error*2) :
-                                            coordsToMatricesAlt((i+0.5)/valuesX*6, (valuesY-j-0.5)/valuesY*6, quad);
-                    if (!viewModeP1) {
-                        [rowM, colM] = [flip(rowM), flip(colM)].toReversed();
-                    }
-                    switch (viewMode) {
-                        case 1:
-                            values[j].push(payoff(rowM, colM)/9);
-                            break;
-                        case 2:
-                            values[j].push(payoffTransferable(rowM, colM)/9);
-                            break;
-                        case 3:
-                            values[j].push(payoffModified(rowM, colM)/9);
-                            break;
-                        case 4:
-                            values[j].push(payoffCoco(rowM, colM)[0]/9);
-                            break;
-                        case 5:
-                            values[j].push(payoffBargainingBackstop(rowM, colM)[0]/9);
-                            break;
-                        case 6:
-                            values[j].push(payoffBargainingDisagreement(rowM, colM)[0]/9);
-                            break;
-                        case 7:
-                            values[j].push(payoffCustom(rowM, colM));
-                            break;
-                        case 8:
-                            values[j].push(coordination(rowM, colM));
-                            break;
-                        case 9:
-                            values[j].push(payoffShapley(rowM, colM)[0]/9);
-                            break;
-                    }
+        // if (time % 3 == 0 || switchMode) {
+        valuesX = 6*Math.round(picWidth/30);
+        valuesY = 6*Math.round(picHeight/30);
+        // if (valuesX == 0 || valuesY == 0) {
+        values = [];
+        for (let j = 0; j < valuesY; j++) {
+            values.push([]);
+            for (let i = 0; i < valuesX; i++) {
+                let [rowM, colM] = (!useAltSchema) ? 
+                                        coordsToMatrices((i+0.5)/valuesX*6, (valuesY-j-0.5)/valuesY*6,
+                                                        coords[2] != 0 ? coords[2] : coords[2] + error*2,
+                                                        coords[3] != 0 ? coords[3] : coords[3] + error*2) :
+                                        coordsToMatricesAlt((i+0.5)/valuesX*6, (valuesY-j-0.5)/valuesY*6, quad);
+                if (!viewModeP1) {
+                    [rowM, colM] = [flip(rowM), flip(colM)].toReversed();
+                }
+                switch (viewMode) {
+                    case 1:
+                        values[j].push(payoff(rowM, colM)/9);
+                        break;
+                    case 2:
+                        values[j].push(payoffTransferable(rowM, colM)/9);
+                        break;
+                    case 3:
+                        values[j].push(payoffModified(rowM, colM)/9);
+                        break;
+                    case 4:
+                        values[j].push(payoffCoco(rowM, colM)[0]/9);
+                        break;
+                    case 5:
+                        values[j].push(payoffBargainingBackstop(rowM, colM)[0]/9);
+                        break;
+                    case 6:
+                        values[j].push(payoffBargainingDisagreement(rowM, colM)[0]/9);
+                        break;
+                    case 7:
+                        values[j].push(payoffCustom(rowM, colM));
+                        break;
+                    case 8:
+                        values[j].push(coordination(rowM, colM));
+                        break;
+                    case 9:
+                        values[j].push(payoffShapley(rowM, colM)[0]/9);
+                        break;
                 }
             }
-            switchMode = false;
-            backgroundOutOfDate = false;
         }
+        switchMode = false;
+        backgroundOutOfDate = false;
+        // }
 
         const ctx = canvas.getContext("2d");
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -2857,7 +2866,7 @@ function update() {
 
                 // Render discontinuities in higher resolution
                 // if ((i < canvas.width/2 && j >= canvas.height/2 && viewMode == 3 && (quad == 1 || quad == 3)) || viewMode == 7) {
-                if (!draggingB1 && !draggingB2) {
+                if (!draggingB1 && !draggingB2 && !b1up && !b1down && !b2up && !b2down && b1V == 0 && b2V == 0) {
                     // const n = Math.floor(i/canvas.width*valuesX);
                     // const m = Math.floor(j/canvas.height*valuesY);
                     // const jumpSize = 0.01;
@@ -4160,7 +4169,7 @@ function changeViewMode(mode, p1=true) {
         backgroundOutOfDate = true;
     }
 
-    const curButton = document.getElementsByClassName("selected")[1];
+    const curButton = document.getElementsByClassName("selected")[0];
     curButton.classList.remove("selected");
 
     let func = ()=>(null);
@@ -4254,10 +4263,10 @@ function changeViewMode(mode, p1=true) {
     // } else {
     //     viewModeVolatile = false;
     // }
-    updateBigPicCanvas(func);
+    // updateBigPicCanvas(func);
 }
 
-function updateBigPicCanvas(func) {
+function updateBigPicCanvas(func, lowRes = false) {
     // update big pic canvas
     const canvasBigPic = document.getElementById("big-pic-canvas");
     const foreignObject = document.getElementById("canvasForeignObject-big-pic");
@@ -4274,61 +4283,199 @@ function updateBigPicCanvas(func) {
             data[(i+j*canvasBigPic.width)*4+3] = 0;
         }
     }
-    const quadrantWidth = canvasBigPic.width*0.42;
-    for (let j = 0; j < quadrantWidth; j++) {
-        for (let i = 0; i < quadrantWidth; i++) {
-            let color = [];
-            if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,1)),viewMode);
-            else color = colorFunction(func(...coordsToMatricesAlt(i*6/quadrantWidth,(1-j/quadrantWidth)*6,1)),viewMode);
-            const x = i + Math.round(canvasBigPic.width*0.54);
-            const y = j + Math.round(canvasBigPic.height*0.04);
-            data[(x+y*canvasBigPic.width)*4] = color[0];
-            data[(x+y*canvasBigPic.width)*4+1] = color[1];
-            data[(x+y*canvasBigPic.width)*4+2] = color[2];
-            data[(x+y*canvasBigPic.width)*4+3] = 255;
+    const error = 0.00001;
+    const b1 = coords[2] != 0 ? coords[2] : error;
+    const b2 = coords[3] != 0 ? coords[3] : error;
+    if (!lowRes) {
+        const quadrantWidth = canvasBigPic.width*0.42;
+        for (let j = 0; j < quadrantWidth; j++) {
+            for (let i = 0; i < quadrantWidth; i++) {
+                let color = [];
+                if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,1)),viewMode);
+                else color = colorFunction(func(...coordsToMatricesAlt(i*6/quadrantWidth,(1-j/quadrantWidth)*6,1)),viewMode);
+                const x = i + Math.round(canvasBigPic.width*0.54);
+                const y = j + Math.round(canvasBigPic.height*0.04);
+                data[(x+y*canvasBigPic.width)*4] = color[0];
+                data[(x+y*canvasBigPic.width)*4+1] = color[1];
+                data[(x+y*canvasBigPic.width)*4+2] = color[2];
+                data[(x+y*canvasBigPic.width)*4+3] = 255;
+            }
         }
-    }
-    for (let j = 0; j < quadrantWidth; j++) {
-        for (let i = 0; i < quadrantWidth; i++) {
-            let color = [];
-            if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,2)),viewMode);
-            else color = colorFunction(func(...coordsToMatricesAlt(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2)),viewMode);
-            const x = i + Math.round(canvasBigPic.width*0.04);
-            const y = j + Math.round(canvasBigPic.height*0.04);
-            data[(x+y*canvasBigPic.width)*4] = color[0];
-            data[(x+y*canvasBigPic.width)*4+1] = color[1];
-            data[(x+y*canvasBigPic.width)*4+2] = color[2];
-            data[(x+y*canvasBigPic.width)*4+3] = 255;
+        for (let j = 0; j < quadrantWidth; j++) {
+            for (let i = 0; i < quadrantWidth; i++) {
+                let color = [];
+                if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,2)),viewMode);
+                else color = colorFunction(func(...coordsToMatricesAlt(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2)),viewMode);
+                const x = i + Math.round(canvasBigPic.width*0.04);
+                const y = j + Math.round(canvasBigPic.height*0.04);
+                data[(x+y*canvasBigPic.width)*4] = color[0];
+                data[(x+y*canvasBigPic.width)*4+1] = color[1];
+                data[(x+y*canvasBigPic.width)*4+2] = color[2];
+                data[(x+y*canvasBigPic.width)*4+3] = 255;
+            }
         }
-    }
-    for (let j = 0; j < quadrantWidth; j++) {
-        for (let i = 0; i < quadrantWidth; i++) {
-            let color = [];
-            if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,3)),viewMode);
-            else color = colorFunction(func(...coordsToMatricesAlt(i*6/quadrantWidth,(1-j/quadrantWidth)*6,3)),viewMode);
-            const x = i + Math.round(canvasBigPic.width*0.04);
-            const y = j + Math.round(canvasBigPic.height*0.54);
-            data[(x+y*canvasBigPic.width)*4] = color[0];
-            data[(x+y*canvasBigPic.width)*4+1] = color[1];
-            data[(x+y*canvasBigPic.width)*4+2] = color[2];
-            data[(x+y*canvasBigPic.width)*4+3] = 255;
+        for (let j = 0; j < quadrantWidth; j++) {
+            for (let i = 0; i < quadrantWidth; i++) {
+                let color = [];
+                if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,3)),viewMode);
+                else color = colorFunction(func(...coordsToMatricesAlt(i*6/quadrantWidth,(1-j/quadrantWidth)*6,3)),viewMode);
+                const x = i + Math.round(canvasBigPic.width*0.04);
+                const y = j + Math.round(canvasBigPic.height*0.54);
+                data[(x+y*canvasBigPic.width)*4] = color[0];
+                data[(x+y*canvasBigPic.width)*4+1] = color[1];
+                data[(x+y*canvasBigPic.width)*4+2] = color[2];
+                data[(x+y*canvasBigPic.width)*4+3] = 255;
+            }
         }
-    }
-    for (let j = 0; j < quadrantWidth; j++) {
-        for (let i = 0; i < quadrantWidth; i++) {
-            let color = [];
-            if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,2,2,4)),viewMode);
-            else color = colorFunction(func(...coordsToMatricesAlt(i*6/quadrantWidth,(1-j/quadrantWidth)*6,4)),viewMode);
-            const x = i + Math.round(canvasBigPic.width*0.54);
-            const y = j + Math.round(canvasBigPic.height*0.54);
-            data[(x+y*canvasBigPic.width)*4] = color[0];
-            data[(x+y*canvasBigPic.width)*4+1] = color[1];
-            data[(x+y*canvasBigPic.width)*4+2] = color[2];
-            data[(x+y*canvasBigPic.width)*4+3] = 255;
+        for (let j = 0; j < quadrantWidth; j++) {
+            for (let i = 0; i < quadrantWidth; i++) {
+                let color = [];
+                if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,4)),viewMode);
+                else color = colorFunction(func(...coordsToMatricesAlt(i*6/quadrantWidth,(1-j/quadrantWidth)*6,4)),viewMode);
+                const x = i + Math.round(canvasBigPic.width*0.54);
+                const y = j + Math.round(canvasBigPic.height*0.54);
+                data[(x+y*canvasBigPic.width)*4] = color[0];
+                data[(x+y*canvasBigPic.width)*4+1] = color[1];
+                data[(x+y*canvasBigPic.width)*4+2] = color[2];
+                data[(x+y*canvasBigPic.width)*4+3] = 255;
+            }
+        }
+    } else {
+        const resolution = 24;
+        const quadrantWidth = canvasBigPic.width*0.42;
+        for (let j = 0; j < resolution; j++) {
+            for (let i = 0; i < resolution; i++) {
+                let color = [];
+                if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i/resolution*6+3/resolution,6-j/resolution*6-3/resolution,b1,b2,1)),viewMode);
+                else color = colorFunction(func(...coordsToMatricesAlt(i/resolution*6+3/resolution,6-j/resolution*6+3/resolution,1)),viewMode);
+                for (let x = Math.round(i/resolution*quadrantWidth + canvasBigPic.width*0.54); x < (i+1)/resolution*quadrantWidth + canvasBigPic.width*0.54; x++) {
+                    for (let y = Math.round(j/resolution*quadrantWidth + canvasBigPic.height*0.04); y < (j+1)/resolution*quadrantWidth + canvasBigPic.height*0.04; y++) {
+                        data[(x+y*canvasBigPic.width)*4] = color[0];
+                        data[(x+y*canvasBigPic.width)*4+1] = color[1];
+                        data[(x+y*canvasBigPic.width)*4+2] = color[2];
+                        data[(x+y*canvasBigPic.width)*4+3] = 255;
+                    }
+                }
+            }
+        }
+        for (let j = 0; j < resolution; j++) {
+            for (let i = 0; i < resolution; i++) {
+                let color = [];
+                if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i/resolution*6+3/resolution,6-j/resolution*6-3/resolution,b1,b2,2)),viewMode);
+                else color = colorFunction(func(...coordsToMatricesAlt(i/resolution*6+3/resolution,6-j/resolution*6+3/resolution,2)),viewMode);
+                for (let x = Math.round(i/resolution*quadrantWidth + canvasBigPic.width*0.04); x < (i+1)/resolution*quadrantWidth + canvasBigPic.width*0.04; x++) {
+                    for (let y = Math.round(j/resolution*quadrantWidth + canvasBigPic.height*0.04); y < (j+1)/resolution*quadrantWidth + canvasBigPic.height*0.04; y++) {
+                        data[(x+y*canvasBigPic.width)*4] = color[0];
+                        data[(x+y*canvasBigPic.width)*4+1] = color[1];
+                        data[(x+y*canvasBigPic.width)*4+2] = color[2];
+                        data[(x+y*canvasBigPic.width)*4+3] = 255;
+                    }
+                }
+            }
+        }
+        for (let j = 0; j < resolution; j++) {
+            for (let i = 0; i < resolution; i++) {
+                let color = [];
+                if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i/resolution*6+3/resolution,6-j/resolution*6-3/resolution,b1,b2,3)),viewMode);
+                else color = colorFunction(func(...coordsToMatricesAlt(i/resolution*6+3/resolution,6-j/resolution*6+3/resolution,3)),viewMode);
+                for (let x = Math.round(i/resolution*quadrantWidth + canvasBigPic.width*0.04); x < (i+1)/resolution*quadrantWidth + canvasBigPic.width*0.04; x++) {
+                    for (let y = Math.round(j/resolution*quadrantWidth + canvasBigPic.height*0.54); y < (j+1)/resolution*quadrantWidth + canvasBigPic.height*0.54; y++) {
+                        data[(x+y*canvasBigPic.width)*4] = color[0];
+                        data[(x+y*canvasBigPic.width)*4+1] = color[1];
+                        data[(x+y*canvasBigPic.width)*4+2] = color[2];
+                        data[(x+y*canvasBigPic.width)*4+3] = 255;
+                    }
+                }
+            }
+        }
+        for (let j = 0; j < resolution; j++) {
+            for (let i = 0; i < resolution; i++) {
+                let color = [];
+                if (!useAltSchema) color = colorFunction(func(...coordsToMatrices(i/resolution*6+3/resolution,6-j/resolution*6-3/resolution,b1,b2,4)),viewMode);
+                else color = colorFunction(func(...coordsToMatricesAlt(i/resolution*6+3/resolution,6-j/resolution*6+3/resolution,4)),viewMode);
+                for (let x = Math.round(i/resolution*quadrantWidth + canvasBigPic.width*0.54); x < (i+1)/resolution*quadrantWidth + canvasBigPic.width*0.54; x++) {
+                    for (let y = Math.round(j/resolution*quadrantWidth + canvasBigPic.height*0.54); y < (j+1)/resolution*quadrantWidth + canvasBigPic.height*0.54; y++) {
+                        data[(x+y*canvasBigPic.width)*4] = color[0];
+                        data[(x+y*canvasBigPic.width)*4+1] = color[1];
+                        data[(x+y*canvasBigPic.width)*4+2] = color[2];
+                        data[(x+y*canvasBigPic.width)*4+3] = 255;
+                    }
+                }
+            }
         }
     }
     // console.log(data);
     ctx.putImageData(imageData,0,0);
+}
+
+function updateCanvas(lowRes = false) {
+    let func = ()=>(null);
+    if (viewModeP1) {
+        switch (viewMode) {
+            case 0:
+                break;
+            case 1:
+                func = (a,b)=>payoff(a,b)/9;
+                break;
+            case 2:
+                func = (a,b)=>payoffTransferable(a,b)/9;
+                break;
+            case 3:
+                func = (a,b)=>payoffModified(a,b)/9;
+                break;
+            case 4:
+                func = (a,b)=>payoffCoco(a,b)[0]/9;
+                break;
+            case 5:
+                func = (a,b)=>payoffBargainingBackstop(a,b)[0]/9;
+                break;
+            case 6:
+                func = (a,b)=>payoffBargainingDisagreement(a,b)[0]/9;
+                break;
+            case 7:
+                func = (a,b)=>payoffCustom(a,b);
+                break;
+            case 8:
+                func = (a,b)=>coordination(a,b);
+                break;
+            case 9:
+                func = (a,b)=>payoffShapley(a,b)[0]/9;
+                break;
+        }
+    } else {
+        switch (viewMode) {
+            case 0:
+                break;
+            case 1:
+                func = (a,b)=>payoff(flip(b),flip(a))/9;
+                break;
+            case 2:
+                func = (a,b)=>payoffTransferable(flip(b),flip(a))/9;
+                break;
+            case 3:
+                func = (a,b)=>payoffModified(flip(b),flip(a))/9;
+                break;
+            case 4:
+                func = (a,b)=>payoffCoco(flip(b),flip(a))[0]/9;
+                break;
+            case 5:
+                func = (a,b)=>payoffBargainingBackstop(flip(b),flip(a))[0]/9;
+                break;
+            case 6:
+                func = (a,b)=>payoffBargainingDisagreement(flip(b),flip(a))[0]/9;
+                break;
+            case 7:
+                func = (a,b)=>payoffCustom(flip(b),flip(a));
+                break;
+            case 8:
+                func = (a,b)=>coordination(flip(b),flip(a));
+                break;
+            case 9:
+                func = (a,b)=>payoffShapley(flip(b),flip(a))[0]/9;
+                break;
+        }
+    }
+    updateBigPicCanvas(func,lowRes);
 }
 
 function fixImage(alt) {
@@ -4400,6 +4547,32 @@ function matrixToCoords(m) {
     return [x,blue];
 }
 
+// function matricesToQuad(m1,m2) {
+//     let maxIndex1 = -1;
+//     let maxIndex2 = -1;
+//     for (let i = 0; i < 4; i++) {
+//         if (m1[i] == 6) {
+//             maxIndex1 = i;
+//             break;
+//         }
+//     }
+//     for (let i = 0; i < 4; i++) {
+//         if (m2[i] == 6) {
+//             maxIndex2 = i;
+//             break;
+//         }
+//     }
+//     if (maxIndex1 == maxIndex2) {
+//         return 1;
+//     } else if (maxIndex1 % 2 != maxIndex2 % 2 && Math.floor(maxIndex1/2) != Math.floor(maxIndex2/2)) {
+//         return 3;
+//     } else if (maxIndex1 % 2 != maxIndex2 % 2) {
+//         return 4;
+//     } else {
+//         return 2;
+//     }
+// }
+
 function updateCoords() {
     if (!useAltSchema) {
         const coords1 = matrixToCoords(matrixA);
@@ -4415,8 +4588,16 @@ function updateCoords() {
     let max2 = -1;
     const error = 0.00001;
     for (let i = 0; i < 4; i++) {
-        if (Math.abs(matrixA[i] - 6) < error) max1 = i;
-        if (Math.abs(matrixB[i] - 6) < error) max2 = i;
+        if (Math.abs(matrixA[i] - 6) < error) {
+            max1 = i;
+            break;
+        }
+    }
+    for (let i of [3,1,2,0]) {
+        if (Math.abs(matrixB[i] - 6) < error) {
+            max2 = i;
+            break;
+        }
     }
     if (max1 == max2) quad = 1;
     else if (max1 == 0 && max2 == 2 || max1 == 2 && max2 == 0 || max1 == 1 && max2 == 3 || max1 == 3 && max2 == 1) quad = 2;
@@ -5095,6 +5276,55 @@ function goTo(x1,x2,b1,b2,q) {
     coords = [x1,x2,b1,b2];
     quad = q;
     updateBackground();
+}
+
+function goToZeroSum(q,i) {
+    if (coords[2] > 3 && coords[3] > 3) {
+        alert("There are no zero sum games such that b1=" + coords[2].toFixed(1) + " or b2=" + coords[3].toFixed(1) + ".");
+        return;
+    } else if (coords[2] > 3) {
+        alert("There are no zero sum games such that b1=" + coords[2].toFixed(1) + ".");
+        return;
+    } else if (coords[3] > 3) {
+        alert("There are no zero sum games such that b2=" + coords[3].toFixed(1) + ".");
+        return;
+    }
+    let matrixRow = [0,0,0,6];
+    let matrixCol = [0,0,0,0];
+    let p1 = 0; // will either be r1 or s1-r1
+    let p2 = 0; // will either be r1 or s1-r1
+    let b1 = coords[2];
+    let b2 = coords[3];
+    if (i == 1) {
+        p1 = 6-b2;
+        p2 = 6-b1;
+    } else {
+        p1 = b1;
+        p2 = b2;
+    }
+
+    switch (q) {
+        case 2:
+            matrixA = [6,p2,0,6-p1];
+            matrixB = [0,6-p2,6,p1];
+            break;
+        case 3:
+            matrixA = [6,p2,6-p1,0];
+            matrixB = [0,6-p2,p1,6];
+            break;
+        case 4:
+            matrixA = [6,0,p2,6-p1];
+            matrixB = [0,6,6-p2,p1];
+            break;
+    }
+    updateCoords();
+    if (quad != q) {
+        if (q == 2 || quad == 2) {
+            crossBlue(false);
+        } else if (q == 4 || quad == 4) {
+            crossBlue(false);
+        }
+    }
 }
 
 function hideLines(hide) {

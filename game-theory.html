@@ -9,18 +9,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-	<div id="nav-bar">
-		<div>
-			<button id="game-info-button" class="nav-button selected">Game info</button>
-			<button id="navigation-button" class="nav-button">Navigation</button>
-			<button id="view-modes-button" class="nav-button">Background</button>
-		</div>
-		<div>
-			<button id="controls-button" class="nav-button">Controls</button>
-			<button id="notable-games-button" class="nav-button">Notable Games</button>
-		</div>
-	</div>
-	</body>
 	<div id="content">
 		<!-- <h1 id="quad-header">Bad Quadrant</h1> -->
 		<span id="cell-name" style="position:absolute;top:4vh;transform:translateX(-50%)">0,0</span>
@@ -47,181 +35,239 @@
 			</tr>
 			<tr height="5vh" />
 		</table>
-		<table id="game-info">
-			<tr><td><b>Row Player</b></td><td><b>Column Player</b></td></tr>
-			<tr><td class="info-header" colspan="2">x,b coordinates</td></tr>
-			<tr><td><span id="x-row"></span>, <span id="b-row"></span></td><td><span id="x-col"></span>, <span id="b-col"></span></td></tr>
-			<tr><td class="info-header" colspan="2">Equilibrium returns</td></tr>
-			<tr>
-				<td><span id="row-return"></span>
-					<!-- <span id="row-return-mixed"></span></td> -->
-				<td><span id="col-return"></span>
-					<!-- <span id="col-return-mixed"></span></td> -->
-			</tr>
-			<tr><td class="info-header" colspan="2">Bargaining returns<br>(backstop & threat point)</td></tr>
-			<tr><td>bs, tp</td> <td>bs, tp</td> </tr>
-			<tr>
-				<td><span class="row-header">NTU</span><span id="row-return-bargaining-1"></span>, <span id="row-return-bargaining-2"></span></td>
-				<td><span class="row-header">NTU</span><span id="col-return-bargaining-1"></span>, <span id="col-return-bargaining-2"></span></td>
-			</tr>
-			<tr>
-				<td><span class="row-header">TU</span><span id="row-return-transferable"></span>, <span id="row-return-coco"></span></td>
-				<td><span class="row-header">TU</span><span id="col-return-transferable"></span>, <span id="col-return-coco"></span></td>
-			</tr>
-		</table>
-		<table id="navigation">
-			<tr><td colspan="2"><h2>Discontinuous Operations</h2></td></tr>
-			<tr>
-				<td><button id="cross-blue-1" onclick="crossBlue(true)" title="Flip the row player's biggest entries">Cross Row's blue</button></td>
-				<td><button id="cross-blue-2" onclick="crossBlue(false)" title="Flip the column player's biggest entries">Cross Column's blue</button></td>
-			</tr>
-			<tr>
-				<td><button id="cross-green-1" onclick="crossGreen(true)" title="Flip the row player's middle entries">Cross Row's green</button></td>
-				<td><button id="cross-green-2" onclick="crossGreen(false)" title="Flip the column player's middle entries">Cross Column's green</button></td>
-			</tr>
-			<tr>
-				<td><button id="cross-red-1" onclick="crossRed(true)" title="Flip the row player's smallest entries">Cross Row's red</button></td>
-				<td><button id="cross-red-2" onclick="crossRed(false)" title="Flip the column player's smallest entries">Cross Column's red</button></td>
-			</tr>
-			<!-- <tr>
-				<td colspan="2"><button id="switch-players" onclick="wiggle(true)" title="Exchanges each player's matrix with the transpose of the other player's matrix">Switch the players</button></td>
-			</tr> -->
-			<!-- <tr>
-				<td><button id="wiggle-1" onclick="wiggle(true)" title="Flip both the row player's smallest and their biggest entries">Wiggle player one</button></td>
-				<td><button id="wiggle-2" onclick="wiggle(false)" title="Flip both the column player's smallest and their biggest entries">Wiggle player two</button></td>
-			</tr> -->
-			<tr><td colspan="2"><h2>D<sub>4</sub> Operations</h2></td></tr>
-			<tr>
-				<td><button id="negate-1" onclick="negate(true)" title="Each entry in the row player's matrix is subtracted from 6.">Negate Row's matrix</button></td>
-				<td><button id="negate-2" onclick="negate(false)" title="Each entry in the column player's matrix is subtracted from 6.">Negate Column's matrix</button></td>
-			</tr>
-			<tr>
-				<td><button id="switch-matrices" onclick="switchMatrices()" title="Exchange the players' matrices">Switch matrices</button></td>
-			</tr>
-			<tr><td colspan="2"><h2>S<sub>4</sub> Operations</h2></td></tr>
-			<tr>
-				<td><button id="switch-rows" onclick="switchRows()" title="The rows in the row player's matrix are switched.">Switch Row's rows</button></td>
-				<td><button id="switch-cols" onclick="switchColumns(false)" title="The columns in the column player's matrix are switched.">Switch Column's columns</button></td>
-			</tr>
-			<tr>
-				<td><button id="flip-matrices" onclick="flipMatrices()" title="Each player's matrix is flipped">Flip both matrices</button></td>
-				<td><button id="rotate" onclick="rotate()" title="Rotates each matrix's first, third, and fourth entries.">Rotate both matrices</button></td>
-			</tr>
-			<!-- <tr height="10vh" />
-			<tr>
-				<td><button id="random-1" onclick="randomize(true)" title="Randomize the row player's matrix">Randomize player one</button></td>
-				<td><button id="random-2" onclick="randomize(false)" title="Randomize the column player's matrix">Randomize player two</button></td>
-			</tr> -->
-		</table>
-		<div id="view-modes">
-			<button class="mode-button selected" id="regular-mode" onclick="changeViewMode(0)">Equilibria</button>
-			<button class="mode-button" id="coordination-mode" onclick="changeViewMode(8)">Correlation</button>
-			<!-- <div style="padding:1vh"></div> -->
-			<h2>Row Player</h2>
-			<span><button class="mode-button" id="return-mode-2" onclick="changeViewMode(3)">Equilibrium returns</button></span></span>
-			<span><button class="half-mode-button" id="bargaining-mode-1" onclick="changeViewMode(5)">Backstop NTU</button></span><span><button class="half-mode-button" id="bargaining-mode-2" onclick="changeViewMode(6)">Threat point NTU</button></span>
-			<span><button class="half-mode-button" id="shapley-mode" onclick="changeViewMode(9)">Backstop TU</button></span><span><button class="half-mode-button" id="coco-mode" onclick="changeViewMode(4)">Threat point TU</button></span>
-			<!-- <div style="padding:1vh"></div> -->
-			<h2>Column Player</h2>
-			<span><button class="mode-button" id="return-mode-2-col" onclick="changeViewMode(3, false)">Equilibrium returns</button></span></span>
-			<span><button class="half-mode-button" id="bargaining-mode-1-col" onclick="changeViewMode(5,false)">Backstop NTU</button></span><span><button class="half-mode-button" id="bargaining-mode-2-col" onclick="changeViewMode(6,false)">Threat point NTU</button></span>
-			<span><button class="half-mode-button" id="shapley-mode-col" onclick="changeViewMode(9,false)">Backstop TU</button></span><span><button class="half-mode-button" id="coco-mode-col" onclick="changeViewMode(4,false)">Threat point TU</button></span>
-			<div style="padding:1vh"></div>
-			<button class="mode-button" id="transferable-mode" onclick="changeViewMode(2)">Max total</button>
-			<div style="padding:1vh"></div>
-			<button class="mode-button" id="custom-mode" onclick="changeViewMode(7)">Difference</button>
-			<p id="custom-options">
-				<select name="Choice 1" id="view-custom-1">
-					<option value="returns">Row's equilibrium returns</option>
-					<!-- <option value="returns-mixed">Returns with mixed</option> -->
-					<option value="returns-bargaining-bs">Row's backstop NTU</option>
-					<option value="returns-bargaining-tp">Row's threat point NTU</option>
-					<option value="returns-shapley">Row's backstop TU</option>
-					<option value="returns-coco">Row's threat point TU</option>
-					<option value="returns-col">Column's equilibrium returns</option>
-					<option value="returns-bargaining-bs-col">Column's backstop NTU</option>
-					<option value="returns-bargaining-tp-col">Column's threat point NTU</option>
-					<option value="returns-shapley-col">Column's backstop TU</option>
-					<option value="returns-coco-col">Column's threat point TU</option>
-					<option value="returns-max-total">Max total</option>
-				</select>
-				minus
-				<select name="Choice 2" id="view-custom-2">
-					<option value="returns">Row's equilibrium returns</option>
-					<!-- <option value="returns-mixed">Returns with mixed</option> -->
-					<option value="returns-bargaining-bs">Row's backstop NTU</option>
-					<option value="returns-bargaining-tp">Row's threat point NTU</option>
-					<option value="returns-shapley">Row's backstop TU</option>
-					<option value="returns-coco">Row's threat point TU</option>
-					<option value="returns-col">Column's equilibrium returns</option>
-					<option value="returns-bargaining-bs-col">Column's backstop NTU</option>
-					<option value="returns-bargaining-tp-col">Column's threat point NTU</option>
-					<option value="returns-shapley-col">Column's backstop TU</option>
-					<option value="returns-coco-col">Column's threat point TU</option>
-					<option value="returns-max-total">Max total</option>
-				</select>
-			</p>
+		<div class="scrollable">
+			<table id="game-info">
+				<tr><td><b>Row Player</b></td><td><b>Column Player</b></td></tr>
+				<tr><td class="info-header" colspan="2">x,b coordinates</td></tr>
+				<tr><td><span id="x-row"></span>, <span id="b-row"></span></td><td><span id="x-col"></span>, <span id="b-col"></span></td></tr>
+				<tr><td class="info-header" colspan="2">Equilibrium returns</td></tr>
+				<tr>
+					<td><span id="row-return"></span>
+						<!-- <span id="row-return-mixed"></span></td> -->
+					<td><span id="col-return"></span>
+						<!-- <span id="col-return-mixed"></span></td> -->
+				</tr>
+				<tr><td class="info-header" colspan="2">Bargaining returns<br>(backstop & threat point)</td></tr>
+				<tr><td>bs, tp</td> <td>bs, tp</td> </tr>
+				<tr>
+					<td><span class="row-header">NTU</span><span id="row-return-bargaining-1"></span>, <span id="row-return-bargaining-2"></span></td>
+					<td><span class="row-header">NTU</span><span id="col-return-bargaining-1"></span>, <span id="col-return-bargaining-2"></span></td>
+				</tr>
+				<tr>
+					<td><span class="row-header">TU</span><span id="row-return-transferable"></span>, <span id="row-return-coco"></span></td>
+					<td><span class="row-header">TU</span><span id="col-return-transferable"></span>, <span id="col-return-coco"></span></td>
+				</tr>
+			</table>
+			<table id="navigation">
+				<tr><td colspan="2"><h2>Discontinuous Operations</h2></td></tr>
+				<tr>
+					<td><button id="cross-blue-1" onclick="crossBlue(true)" title="Flip the row player's biggest entries">Cross Row's blue</button></td>
+					<td><button id="cross-blue-2" onclick="crossBlue(false)" title="Flip the column player's biggest entries">Cross Column's blue</button></td>
+				</tr>
+				<tr>
+					<td><button id="cross-green-1" onclick="crossGreen(true)" title="Flip the row player's middle entries">Cross Row's green</button></td>
+					<td><button id="cross-green-2" onclick="crossGreen(false)" title="Flip the column player's middle entries">Cross Column's green</button></td>
+				</tr>
+				<tr>
+					<td><button id="cross-red-1" onclick="crossRed(true)" title="Flip the row player's smallest entries">Cross Row's red</button></td>
+					<td><button id="cross-red-2" onclick="crossRed(false)" title="Flip the column player's smallest entries">Cross Column's red</button></td>
+				</tr>
+				<!-- <tr>
+					<td colspan="2"><button id="switch-players" onclick="wiggle(true)" title="Exchanges each player's matrix with the transpose of the other player's matrix">Switch the players</button></td>
+				</tr> -->
+				<!-- <tr>
+					<td><button id="wiggle-1" onclick="wiggle(true)" title="Flip both the row player's smallest and their biggest entries">Wiggle player one</button></td>
+					<td><button id="wiggle-2" onclick="wiggle(false)" title="Flip both the column player's smallest and their biggest entries">Wiggle player two</button></td>
+				</tr> -->
+				<tr><td colspan="2"><h2>D<sub>4</sub> Operations</h2></td></tr>
+				<tr>
+					<td><button id="negate-1" onclick="negate(true)" title="Each entry in the row player's matrix is subtracted from 6.">Negate Row's matrix</button></td>
+					<td><button id="negate-2" onclick="negate(false)" title="Each entry in the column player's matrix is subtracted from 6.">Negate Column's matrix</button></td>
+				</tr>
+				<tr>
+					<td><button id="switch-matrices" onclick="switchMatrices()" title="Exchange the players' matrices">Switch matrices</button></td>
+				</tr>
+				<tr><td colspan="2"><h2>S<sub>4</sub> Operations</h2></td></tr>
+				<tr>
+					<td><button id="switch-rows" onclick="switchRows()" title="The rows in the row player's matrix are switched.">Switch Row's rows</button></td>
+					<td><button id="switch-cols" onclick="switchColumns(false)" title="The columns in the column player's matrix are switched.">Switch Column's columns</button></td>
+				</tr>
+				<tr>
+					<td><button id="flip-matrices" onclick="flipMatrices()" title="Each player's matrix is flipped">Flip both matrices</button></td>
+					<td><button id="rotate" onclick="rotate()" title="Rotates each matrix's first, third, and fourth entries.">Rotate both matrices</button></td>
+				</tr>
+				<!-- <tr height="10vh" />
+				<tr>
+					<td><button id="random-1" onclick="randomize(true)" title="Randomize the row player's matrix">Randomize player one</button></td>
+					<td><button id="random-2" onclick="randomize(false)" title="Randomize the column player's matrix">Randomize player two</button></td>
+				</tr> -->
+			</table>
+			<div id="view-modes">
+				<button class="mode-button selected" id="regular-mode" onclick="changeViewMode(0)">Equilibria</button>
+				<button class="mode-button" id="coordination-mode" onclick="changeViewMode(8)">Correlation</button>
+				<!-- <div style="padding:1vh"></div> -->
+				<h2>Row Player</h2>
+				<span><button class="mode-button" id="return-mode-2" onclick="changeViewMode(3)">Equilibrium returns</button></span></span>
+				<span><button class="half-mode-button" id="bargaining-mode-1" onclick="changeViewMode(5)">Backstop NTU</button></span><span><button class="half-mode-button" id="bargaining-mode-2" onclick="changeViewMode(6)">Threat point NTU</button></span>
+				<span><button class="half-mode-button" id="shapley-mode" onclick="changeViewMode(9)">Backstop TU</button></span><span><button class="half-mode-button" id="coco-mode" onclick="changeViewMode(4)">Threat point TU</button></span>
+				<!-- <div style="padding:1vh"></div> -->
+				<h2>Column Player</h2>
+				<span><button class="mode-button" id="return-mode-2-col" onclick="changeViewMode(3, false)">Equilibrium returns</button></span></span>
+				<span><button class="half-mode-button" id="bargaining-mode-1-col" onclick="changeViewMode(5,false)">Backstop NTU</button></span><span><button class="half-mode-button" id="bargaining-mode-2-col" onclick="changeViewMode(6,false)">Threat point NTU</button></span>
+				<span><button class="half-mode-button" id="shapley-mode-col" onclick="changeViewMode(9,false)">Backstop TU</button></span><span><button class="half-mode-button" id="coco-mode-col" onclick="changeViewMode(4,false)">Threat point TU</button></span>
+				<div style="padding:1vh"></div>
+				<button class="mode-button" id="transferable-mode" onclick="changeViewMode(2)">Max total</button>
+				<div style="padding:1vh"></div>
+				<button class="mode-button" id="custom-mode" onclick="changeViewMode(7)">Difference</button>
+				<p id="custom-options">
+					<select name="Choice 1" id="view-custom-1">
+						<option value="returns">Row's equilibrium returns</option>
+						<!-- <option value="returns-mixed">Returns with mixed</option> -->
+						<option value="returns-bargaining-bs">Row's backstop NTU</option>
+						<option value="returns-bargaining-tp">Row's threat point NTU</option>
+						<option value="returns-shapley">Row's backstop TU</option>
+						<option value="returns-coco">Row's threat point TU</option>
+						<option value="returns-col">Column's equilibrium returns</option>
+						<option value="returns-bargaining-bs-col">Column's backstop NTU</option>
+						<option value="returns-bargaining-tp-col">Column's threat point NTU</option>
+						<option value="returns-shapley-col">Column's backstop TU</option>
+						<option value="returns-coco-col">Column's threat point TU</option>
+						<option value="returns-max-total">Max total</option>
+					</select>
+					minus
+					<select name="Choice 2" id="view-custom-2">
+						<option value="returns">Row's equilibrium returns</option>
+						<!-- <option value="returns-mixed">Returns with mixed</option> -->
+						<option value="returns-bargaining-bs">Row's backstop NTU</option>
+						<option value="returns-bargaining-tp">Row's threat point NTU</option>
+						<option value="returns-shapley">Row's backstop TU</option>
+						<option value="returns-coco">Row's threat point TU</option>
+						<option value="returns-col">Column's equilibrium returns</option>
+						<option value="returns-bargaining-bs-col">Column's backstop NTU</option>
+						<option value="returns-bargaining-tp-col">Column's threat point NTU</option>
+						<option value="returns-shapley-col">Column's backstop TU</option>
+						<option value="returns-coco-col">Column's threat point TU</option>
+						<option value="returns-max-total">Max total</option>
+					</select>
+				</p>
+			</div>
+			<div id="controls">
+				<p>
+					<strong>Using the keyboard</strong><br>
+					The arrow keys change x<sub>1</sub> and x<sub>2</sub>.<br>
+					The WASD keys change b<sub>1</sub> and b<sub>2</sub>.<br>
+					Hold SHIFT while doing the above to apply velocity.<br>
+					Press SPACE to reset all velocities to zero.<br>
+					Press R to go to a random game.<br>
+					Press C to go to the nearest centroidal game.<br>
+					Press V to view all bargaining returns in the large game diagram.
+				</p>
+				<p>There are four other ways to change the current game:</p>
+				<p>1. Click or drag in the main figure (left).</p>
+				<p>2. Click or drag in the global figure (top right).</p>
+				<p>3. Use the buttons in the Navigation tab.</p>
+				<p>4. Click in the large diagram (bottom right) to go to a nearby extremal game.</p>
+			</div>
+			<table id="notable-games">
+				<tr><td colspan="2"><h2>Notable centroids</h2></td></tr>
+				<tr>
+					<td><button onclick="goTo(3.5,3.5,2,2,3)">Prisoners' dilemma</button></td>
+					<td><button onclick="goTo(2.5,2.5,2,2,3)">Chicken</button></td>
+				</tr>
+				<tr>
+					<td><button onclick="goTo(0.5,0.5,2,2,3)">Battle of the sexes</button></td>
+					<td><button onclick="goTo(2.5,2.5,2,2,1)">Stag hunt</button></td>
+				</tr>
+				<tr><td colspan="2"><h2>Hotspots</h2></td></tr>
+				<tr>
+					<td><button onclick="goTo(5,3,0,0,1)">Confident-lucky</button></td>
+					<td><button onclick="goTo(5,3,0,0,3)">Confident-unlucky</button></td>
+				</tr>
+				<tr>
+					<td><button onclick="goTo(3,5,0,0,1)">Lucky-confident</button></td>
+					<td><button onclick="goTo(3,5,0,0,3)">Unlucky-confident</button></td>
+				</tr>
+				<tr>
+					<td><button onclick="goTo(1,1,0,0,1)">Pure coordination</button></td>
+					<td><button onclick="goTo(1,1,0,0,2)">Odds and evens</button></td>
+				</tr>
+				<tr><td colspan="2"><h2>Squarespots</h2></td></tr>
+				<tr>
+					<td><button onclick="goTo(5,5,0,0,3)">Confident-confident</button></td>
+					<td><button onclick="goTo(3,3,0,0,3)">Helpless-helpless</button></td>
+				</tr>
+				<tr>
+					<td><button onclick="goTo(5,1,0,0,3)">Confident-anxious</button></td>
+					<td><button onclick="goTo(1,5,0,0,3)">Anxious-confident</button></td>
+				</tr>
+				<tr>
+					<td><button onclick="goTo(1,3,0,0,3)">Anxious-helpless</button></td>
+					<td><button onclick="goTo(3,1,0,0,3)">Helpless-anxious</button></td>
+				</tr>
+				<tr><td colspan="2"><h2>Poles</h2></td></tr>
+				<tr>
+					<td><button onclick="goTo(3,3,6,6,2)">Row pole</button></td>
+					<td><button onclick="goTo(3,3,6,6,1)">Good pole</button></td>
+				</tr>
+				<tr>
+					<td><button onclick="goTo(3,3,6,6,3)">Bad pole</button></td>
+					<td><button onclick="goTo(3,3,6,6,4)">Column pole</button></td>
+				</tr>
+				<tr><td colspan="2"><h2>Zero sum</h2></td></tr>
+				<tr>
+					<td><button onclick="goToZeroSum(3,1)">Bad (row advantage)</button></td>
+					<td><button onclick="goToZeroSum(3,2)">Bad (column advantage)</button></td>
+				</tr>
+				<tr>
+					<td><button onclick="goToZeroSum(2,1)">Row (pure)</button></td>
+					<td><button onclick="goToZeroSum(2,2)">Row (mixed)</button></td>
+				</tr>
+				<tr>
+					<td><button onclick="goToZeroSum(4,1)">Column (pure)</button></td>
+					<td><button onclick="goToZeroSum(4,2)">Column (mixed)</button></td>
+				</tr>
+				<tr><td colspan="2"><h2>Alibi centroids</h2></td></tr>
+				<tr>
+					<td><button onclick="goTo(3.5,2.5,2,2,2)">Row 1</button></td>
+					<td><button onclick="goTo(2.5,3.5,2,2,4)">Column 1</button></td>
+				</tr>
+				<tr>
+					<td><button onclick="goTo(3.5,1.5,2,2,2)">Row 2</button></td>
+					<td><button onclick="goTo(1.5,3.5,2,2,4)">Column 2</button></td>
+				</tr>
+				<tr>
+					<td><button onclick="goTo(3.5,0.5,2,2,2)">Row 3</button></td>
+					<td><button onclick="goTo(0.5,3.5,2,2,4)">Column 3</button></td>
+				</tr>
+				<tr><td colspan="2"><p>
+					<em>Notable centroids</em> are the standard examples from a few of the most famous cells.
+				</p></td></tr>
+				<tr><td colspan="2"><p>
+					<em>Hotspots</em> are points where crossing each player's blue boundary results in returning to the same point.
+					Along with the <em>squarespots</em>, they are the only games whose matrices contain two zeros and two sixes.
+				</p></td></tr>
+				<tr><td colspan="2"><p>
+					<em>Squarespots</em> are named for the shape of their diagrams.
+					Incidentally, they are the only games such that each of them appears in all four quadrants at the same coordinates.
+				</p></td></tr>
+				<tr><td colspan="2"><p>
+					<em>Poles</em> are the only games whose matrices contain three zeros and one six.
+				</p></td></tr>
+				<tr><td colspan="2"><p>
+					<em>Zero sum</em> games (also called constant sum) are games where the players' total returns are constant.
+					Given coordinates b<sub>1</sub> and b<sub>2</sub>, there are either six or zero nondegenerate constant sum games in our space.
+					The buttons above navigate to these six games using the currents values b<sub>1</sub> and b<sub>2</sub>.
+					When either b<sub>1</sub> or b<sub>2</sub> becomes zero, the six constant sum games become three, degenerate constant sum games.
+				</p></td></tr>
+				<tr><td colspan="2"><p>
+					<em>Alibi centroids</em> are the standard examples from the six "alibi cells" of the prisoners' dilemma.
+					"Row 1" and "Column 1" are exceptionally similar to the prisoners' dilemma.
+				</p></td></tr>
+				<!-- add alibi games, zero sum -->
+			</table>
+			<div style="height:2vh;width:inherit;"></div>
+		<!-- <div id="content-padding"></div> -->
 		</div>
-		<div id="controls">
-			<p>
-				<strong>Using the keyboard</strong><br>
-				The arrow keys change x<sub>1</sub> and x<sub>2</sub>.<br>
-				The WASD keys change b<sub>1</sub> and b<sub>2</sub>.<br>
-				Hold SHIFT while doing the above to apply velocity.<br>
-				Press SPACE to reset all velocities to zero.<br>
-				Press R to go to a random game.<br>
-				Press C to go to the nearest centroidal game.<br>
-				Press V to view all bargaining returns in the large game diagram.
-			</p>
-			<p>There are four other ways to change the current game:</p>
-			<p>1. Click or drag in the main figure (left).</p>
-			<p>2. Click or drag in the global figure (top right).</p>
-			<p>3. Use the buttons in the Navigation tab.</p>
-			<p>4. Click in the large diagram (bottom right) to go to a nearby extremal game.</p>
-		</div>
-		<table id="notable-games">
-			<tr><td colspan="2"><h2>Notable cells</h2></td></tr>
-			<tr>
-				<td><button onclick="goTo(3.5,3.5,2,2,3)">Prisoners' dilemma</button></td>
-				<td><button onclick="goTo(2.5,2.5,2,2,3)">Chicken</button></td>
-			</tr>
-			<tr><td colspan="2"><h2>Hotspots</h2></td></tr>
-			<tr>
-				<td><button onclick="goTo(5,3,0,0,1)">Confident-lucky</button></td>
-				<td><button onclick="goTo(5,3,0,0,3)">Confident-unlucky</button></td>
-			</tr>
-			<tr>
-				<td><button onclick="goTo(3,5,0,0,1)">Lucky-confident</button></td>
-				<td><button onclick="goTo(3,5,0,0,3)">Unlucky-confident</button></td>
-			</tr>
-			<tr>
-				<td><button onclick="goTo(1,1,0,0,1)">Pure coordination</button></td>
-				<td><button onclick="goTo(1,1,0,0,2)">Odds and evens</button></td>
-			</tr>
-			<tr><td colspan="2"><h2>Squarespots</h2></td></tr>
-			<tr>
-				<td><button onclick="goTo(5,5,0,0,3)">Confident-confident</button></td>
-				<td><button onclick="goTo(3,3,0,0,3)">Helpless-helpless</button></td>
-			</tr>
-			<tr>
-				<td><button onclick="goTo(5,1,0,0,3)">Confident-anxious</button></td>
-				<td><button onclick="goTo(1,5,0,0,3)">Anxious-confident</button></td>
-			</tr>
-			<tr>
-				<td><button onclick="goTo(1,3,0,0,3)">Anxious-helpless</button></td>
-				<td><button onclick="goTo(3,1,0,0,3)">Helpless-anxious</button></td>
-			</tr>
-			<tr><td colspan="2"><h2>Poles</h2></td></tr>
-			<tr>
-				<td><button onclick="goTo(3,3,6,6,2)">Row pole</button></td>
-				<td><button onclick="goTo(3,3,6,6,1)">Good pole</button></td>
-			</tr>
-			<tr>
-				<td><button onclick="goTo(3,3,6,6,3)">Bad pole</button></td>
-				<td><button onclick="goTo(3,3,6,6,4)">Column pole</button></td>
-			</tr>
-			<!-- add alibi games, zero sum -->
-		</table>
 	</div>
 	<div id="pictures">
 		<svg id="big-picture" width="35vh" height="35vh">
@@ -356,7 +402,7 @@
 			</svg>
 		</svg>
 	</div>
-	<svg id="big-diagram" width="45vh" height="45vh" style="position:absolute;right:0;bottom:0;">
+	<svg id="big-diagram" width="45vh" height="45vh" style="position:fixed;right:0;bottom:0;">
 		<rect id="red-box"/>
 		<rect id="green-box"/>
 		<rect id="blue-box"/>
@@ -423,7 +469,7 @@
 		<line id="bottom-3-big"/> -->
 	</svg>
 
-	<div style="display: flex;">
+	<div style="display:flex; position:fixed">
 		<svg id="container" width="80vh" height="80vh">
 			<defs>
 				<linearGradient id="gradient1" x1="0" x2="0.2" y1="0" y2="0.2" spreadMethod="repeat">
@@ -567,6 +613,17 @@
 			<text id="legend-label-12" dominant-baseline="middle">-2</text>
 			<text id="legend-label-13" dominant-baseline="middle">-4</text>
 		</svg>
+	</div>
+	<div id="nav-bar">
+		<div>
+			<button id="game-info-button" class="nav-button selected">Game info</button>
+			<button id="navigation-button" class="nav-button">Navigation</button>
+			<button id="view-modes-button" class="nav-button">Background</button>
+		</div>
+		<div>
+			<button id="controls-button" class="nav-button">Controls</button>
+			<button id="notable-games-button" class="nav-button">Notable Games</button>
+		</div>
 	</div>
 	<!-- <div style="display:flex"><div id="x1-label">x<sub>1</sub></div>
 	<input id="x1coord" type="range" min="0" max="6" step="0.01" value="3.5"></div>
