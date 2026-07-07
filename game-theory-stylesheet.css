@@ -192,7 +192,7 @@ h2 {
     border-collapse: separate;
     border-spacing: 5px 0;
     position: fixed;
-    bottom: 5vh;
+    bottom: 1vh;
 }
 
 #display-options tr td button {

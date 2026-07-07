@@ -447,12 +447,20 @@ function init() {
         if (viewMode == 7) {
             backgroundOutOfDate = true;
             updateBigPicCanvas(payoffCustom);
+            const select1 = document.getElementById("view-custom-1");
+            const select2 = document.getElementById("view-custom-2");
+            document.getElementById("view-mode-label").innerHTML = "<span style=\"color:rgb(150,0,0)\">" + select1.getElementsByTagName("option")[select1.selectedIndex].innerHTML
+                                                    + "</span> minus <span style=\"color:rgb(0,0,150)\">" + select2.getElementsByTagName("option")[select2.selectedIndex].innerHTML + "</span>";
         }
     });
     document.getElementById("view-custom-2").addEventListener('change', (event) => {
         if (viewMode == 7) {
             backgroundOutOfDate = true;
             updateBigPicCanvas((a,b)=>payoffCustom(flip(b),flip(a)));
+            const select1 = document.getElementById("view-custom-1");
+            const select2 = document.getElementById("view-custom-2");
+            document.getElementById("view-mode-label").innerHTML = "<span style=\"color:rgb(150,0,0)\">" + select1.getElementsByTagName("option")[select1.selectedIndex].innerHTML
+                                                    + "</span> minus <span style=\"color:rgb(0,0,150)\">" + select2.getElementsByTagName("option")[select2.selectedIndex].innerHTML + "</span>";
         }
     });
 
@@ -3167,6 +3175,7 @@ function updateBackground() {
     const hotspot1 = document.getElementById("hotspot-1");
     const hotspot2 = document.getElementById("hotspot-2");
     const hotspot3 = document.getElementById("hotspot-3");
+    const header = document.getElementById("quadrant-label")
 
     switch (quad) {
         case 1:
@@ -3175,6 +3184,8 @@ function updateBackground() {
             region3.style.fill = "url('#gradient1')";
             region4.style.fill = greenBackground;
             // header.innerHTML = "Good Quadrant";
+            header.innerHTML = "Good quadrant";
+            header.style.color = lightGreen;
 
             boundaryLine1.style.stroke = bad;
             boundaryLine2.style.stroke = gold;
@@ -3213,6 +3224,8 @@ function updateBackground() {
             region3.style.fill = "white";
             region4.style.fill = grayBackground;
             // header.innerHTML = "Row Quadrant";
+            header.innerHTML = "Row quadrant";
+            header.style.color = gold;
             
             boundaryLine1.style.stroke = cerulean;
             boundaryLine2.style.stroke = lightGreen;
@@ -3251,6 +3264,8 @@ function updateBackground() {
             region3.style.fill = "url('#gradient2')";
             region4.style.fill = goldBackground;
             // header.innerHTML = "Bad Quadrant";
+            header.innerHTML = "Bad quadrant";
+            header.style.color = bad;
             
             boundaryLine1.style.stroke = lightGreen;
             boundaryLine2.style.stroke = cerulean;
@@ -3289,6 +3304,8 @@ function updateBackground() {
             region3.style.fill = "white";
             region4.style.fill = ceruleanBackground;
             // header.innerHTML = "Column Quadrant";
+            header.innerHTML = "Column quadrant";
+            header.style.color = cerulean;
             
             boundaryLine1.style.stroke = gold;
             boundaryLine2.style.stroke = bad;
@@ -4121,6 +4138,7 @@ function colorFunctionOld(value) {
 }
 
 function colorFunction(value,vMode) {
+    if (value > 1) value = 1;
     let colors = [];
     let cutoffs = [];
     // const colors = [[38,84,138],[70,102,168],[110,116,144],[150,130,121],[190,144,97],[229,158,74],
@@ -4177,83 +4195,77 @@ function changeViewMode(mode, p1=true) {
         switch (mode) {
             case 0:
                 document.getElementById("regular-mode").classList.add("selected");
-                break;
-            case 1:
-                document.getElementById("return-mode-1").classList.add("selected");
-                func = (a,b)=>payoff(a,b)/9;
+                document.getElementById("view-mode-label").innerHTML = "Equilibrium view";
                 break;
             case 2:
                 document.getElementById("transferable-mode").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Max total";
                 func = (a,b)=>payoffTransferable(a,b)/9;
                 break;
             case 3:
                 document.getElementById("return-mode-2").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's equilibrium returns";
                 func = (a,b)=>payoffModified(a,b)/9;
                 break;
             case 4:
                 document.getElementById("coco-mode").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's threat point TU";
                 func = (a,b)=>payoffCoco(a,b)[0]/9;
                 break;
             case 5:
                 document.getElementById("bargaining-mode-1").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's backstop NTU";
                 func = (a,b)=>payoffBargainingBackstop(a,b)[0]/9;
                 break;
             case 6:
                 document.getElementById("bargaining-mode-2").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's threat point NTU";
                 func = (a,b)=>payoffBargainingDisagreement(a,b)[0]/9;
                 break;
             case 7:
                 document.getElementById("custom-mode").classList.add("selected");
+                const select1 = document.getElementById("view-custom-1");
+                const select2 = document.getElementById("view-custom-2");
+                document.getElementById("view-mode-label").innerHTML = "<span style=\"color:rgb(150,0,0)\">" + select1.getElementsByTagName("option")[select1.selectedIndex].innerHTML
+                                                       + "</span> minus <span style=\"color:rgb(0,0,150)\">" + select2.getElementsByTagName("option")[select2.selectedIndex].innerHTML + "</span>";
                 func = (a,b)=>payoffCustom(a,b);
                 break;
             case 8:
                 document.getElementById("coordination-mode").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Correlation";
                 func = (a,b)=>coordination(a,b);
                 break;
             case 9:
                 document.getElementById("shapley-mode").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's backstop TU";
                 func = (a,b)=>payoffShapley(a,b)[0]/9;
                 break;
         }
     } else {
         switch (mode) {
-            case 0:
-                document.getElementById("regular-mode-col").classList.add("selected");
-                break;
-            case 1:
-                document.getElementById("return-mode-1-col").classList.add("selected");
-                func = (a,b)=>payoff(flip(b),flip(a))/9;
-                break;
-            case 2:
-                document.getElementById("transferable-mode-col").classList.add("selected");
-                func = (a,b)=>payoffTransferable(flip(b),flip(a))/9;
-                break;
             case 3:
                 document.getElementById("return-mode-2-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Column's equilibrium returns";
                 func = (a,b)=>payoffModified(flip(b),flip(a))/9;
                 break;
             case 4:
                 document.getElementById("coco-mode-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Column's threat point TU";
                 func = (a,b)=>payoffCoco(flip(b),flip(a))[0]/9;
                 break;
             case 5:
                 document.getElementById("bargaining-mode-1-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Column's backstop NTU";
                 func = (a,b)=>payoffBargainingBackstop(flip(b),flip(a))[0]/9;
                 break;
             case 6:
                 document.getElementById("bargaining-mode-2-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Column's threat point NTU";
                 func = (a,b)=>payoffBargainingDisagreement(flip(b),flip(a))[0]/9;
-                break;
-            case 7:
-                document.getElementById("custom-mode-col").classList.add("selected");
-                func = (a,b)=>payoffCustom(flip(b),flip(a));
-                break;
-            case 8:
-                document.getElementById("coordination-mode-col").classList.add("selected");
-                func = (a,b)=>coordination(flip(b),flip(a));
                 break;
             case 9:
                 document.getElementById("shapley-mode-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Column's backstop TU";
                 func = (a,b)=>payoffShapley(flip(b),flip(a))[0]/9;
                 break;
         }
@@ -5404,11 +5416,8 @@ function hideLines(hide) {
 
 // going through corners
 // showing the view mode
-// big pic gets updated
 // clicking on the big diagram in the balanced games
 // add lines in big diagram for TU
-// boost performance when animating or using keyboard
-// add extreme games
 // show discontinuities?
 // formatting
 // update growbox() (bugged)

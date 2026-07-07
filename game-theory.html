@@ -263,7 +263,6 @@
 					<em>Alibi centroids</em> are the standard examples from the six "alibi cells" of the prisoners' dilemma.
 					"Row 1" and "Column 1" are exceptionally similar to the prisoners' dilemma.
 				</p></td></tr>
-				<!-- add alibi games, zero sum -->
 			</table>
 			<div style="height:2vh;width:inherit;"></div>
 		<!-- <div id="content-padding"></div> -->
@@ -629,21 +628,24 @@
 	<input id="x1coord" type="range" min="0" max="6" step="0.01" value="3.5"></div>
 	<div style="display:flex"><div id="b1-label">b<sub>1</sub></div>
 	<input id="b1coord" type="range" min="0" max="6" step="0.01" value="2"></div> -->
-	<table id="display-options" cellspacing="0" cellpadding="0">
-		<tr>
-			<td><button id="fix-image-button-0" onclick="hideGame()">Hide game</button></td>
-			<td><button id="alt-image-button-1" onclick="altImage(false)" class="selected">All games</button></td>
-			<td><button id="hide-lines-button" onclick="hideLines(true)">Hide Lines</button></td>
-		</tr>
-		<tr>
-			<td><button id="fix-image-button-1" onclick="fixImage(false)" class="selected">Show one game</button></td>
-			<td><button id="alt-image-button-2" onclick="altImage(true)">Balanced games only</button></td>
-			<td><button id="show-lines-button" onclick="hideLines(false)" class="selected">Show Lines</button></td>
-		</tr>
-		<tr>
-			<td><button id="fix-image-button-2" onclick="fixImage(true)">Show 36 games</button></td>
-		</tr>
-	</table>
+	<div id="display-options">
+		<h2 style="padding:1vh 1vw"><span id="quadrant-label">Bad quadrant</span><br><span id="view-mode-label">Equilibrium view</span></h2>
+		<table cellspacing="0" cellpadding="0" style="border-collapse: separate;border-spacing: 5px 0;">
+			<tr>
+				<td><button id="fix-image-button-0" onclick="hideGame()">Hide game</button></td>
+				<td><button id="alt-image-button-1" onclick="altImage(false)" class="selected">All games</button></td>
+				<td><button id="hide-lines-button" onclick="hideLines(true)">Hide Lines</button></td>
+			</tr>
+			<tr>
+				<td><button id="fix-image-button-1" onclick="fixImage(false)" class="selected">Show one game</button></td>
+				<td><button id="alt-image-button-2" onclick="altImage(true)">Balanced games only</button></td>
+				<td><button id="show-lines-button" onclick="hideLines(false)" class="selected">Show Lines</button></td>
+			</tr>
+			<tr>
+				<td><button id="fix-image-button-2" onclick="fixImage(true)">Show 36 games</button></td>
+			</tr>
+		</table>
+	</div>
 
 	<script src="game-theory.js"></script>
 </body>
