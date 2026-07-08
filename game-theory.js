@@ -1,3 +1,4 @@
+// import { Game } from 'game.js';
 const PI = 3.1415926535897932385;
 
 let matrixA = [0,0,0,0];
@@ -80,6 +81,73 @@ const birhombicPadding = 20;
 let xWidth = 0;
 
 window.ondragstart = function() { return false; };
+
+class Game {
+    #row_matrix;
+    #col_matrix;
+    #quadrant;
+    #x1; #b1; #x2; #b2;
+
+    constructor(x1,x2,b1,b2,q) {
+        this.#x1 = x1;
+        this.#x2 = x2;
+        this.#b1 = b1;
+        this.#b2 = b2;
+        this.#quadrant = q;
+    }
+
+    get matrices() {
+        if (this.#row_matrix === undefined && this.#col_matrix === undefined) {
+            var a = Math.max(this.#x1 % 2 - 1,0);
+            var aa = Math.max(1 - (this.#x1 % 2),0);
+            var b = Math.max(this.#x2 % 2 - 1,0);
+            var bb = Math.max(1 - (this.#x2 % 2),0);
+            this.#row_matrix = [0,6,0,0];
+            this.#col_matrix = [0,6,0,0];
+            switch (Math.floor(this.#x1/2)%3) {
+                case 0:
+                    this.#row_matrix[2] = 6 - this.#b1;
+                    this.#row_matrix[3] = (6 - this.#b1) * a;
+                    this.#row_matrix[0] = (6 - this.#b1) * aa;
+                    break;
+                case 1:
+                    this.#row_matrix[3] = 6 - this.#b1;
+                    this.#row_matrix[0] = (6 - this.#b1) * a;
+                    this.#row_matrix[2] = (6 - this.#b1) * aa;
+                    break;
+                case 2:
+                    this.#row_matrix[0] = 6 - this.#b1;
+                    this.#row_matrix[2] = (6 - this.#b1) * a;
+                    this.#row_matrix[3] = (6 - this.#b1) * aa;
+                    break;
+            }
+            switch (Math.floor(this.#x2/2)%3) {
+                case 0:
+                    this.#col_matrix[2] = 6 - this.#b2;
+                    this.#col_matrix[0] = (6 - this.#b2) * b;
+                    this.#col_matrix[3] = (6 - this.#b2) * bb;
+                    break;
+                case 1:
+                    this.#col_matrix[0] = 6 - this.#b2;
+                    this.#col_matrix[3] = (6 - this.#b2) * b;
+                    this.#col_matrix[2] = (6 - this.#b2) * bb;
+                    break;
+                case 2:
+                    this.#col_matrix[3] = 6 - this.#b2;
+                    this.#col_matrix[2] = (6 - this.#b2) * b;
+                    this.#col_matrix[0] = (6 - this.#b2) * bb;
+                    break;
+            }
+        }
+        if (this.#quadrant == 2 || this.#quadrant == 3) {
+            this.#row_matrix = [this.#row_matrix[2],this.#row_matrix[3],this.#row_matrix[0],this.#row_matrix[1]];
+        }
+        if (this.#quadrant == 4 || this.#quadrant == 3) {
+            this.#col_matrix = [this.#col_matrix[1],this.#col_matrix[0],this.#col_matrix[3],this.#col_matrix[2]];
+        }
+        return [this.#row_matrix, this.#col_matrix];
+    }
+}
 
 init();
 setInterval('update()', 50);
@@ -561,15 +629,19 @@ function init() {
                 break;
             case "a":
                 b1up = false;
+                updateCanvas();
                 break;
             case "d":
                 b1down = false;
+                updateCanvas();
                 break;
             case "w":
                 b2up = false;
+                updateCanvas();
                 break;
             case "s":
                 b2down = false;
+                updateCanvas();
                 break;
         }
     });
@@ -1436,13 +1508,26 @@ function update() {
     number4.setAttribute('x',matrixA[3]*widthBig/6+paddingBig2);
     number4.setAttribute('y',(1-matrixB[3]/6)*widthBig+paddingBig1);
 
-    if (viewMode == 5 || viewMode == 6) {
+    if (viewMode == 5 || viewMode == 6 || viewMode == 9 || viewMode == 4) {
         if (viewMode == 5) {
             bargainingLine.x2.baseVal.value = bargainingReturns[0][0]*widthBig/6+paddingBig2;
             bargainingLine.y2.baseVal.value = (6-bargainingReturns[0][1])*widthBig/6+paddingBig1;
-        } else {
+        } else if (viewMode == 6) {
             bargainingLine.x2.baseVal.value = bargainingReturns[1][0]*widthBig/6+paddingBig2;
             bargainingLine.y2.baseVal.value = (6-bargainingReturns[1][1])*widthBig/6+paddingBig1;
+        } else if (viewMode == 9) {
+            bargainingLine.x2.baseVal.value = bargainingReturns[2][0]*widthBig/6+paddingBig2;
+            bargainingLine.y2.baseVal.value = (6-bargainingReturns[2][1])*widthBig/6+paddingBig1;
+        } else {
+            bargainingLine.x2.baseVal.value = bargainingReturns[3][0]*widthBig/6+paddingBig2;
+            bargainingLine.y2.baseVal.value = (6-bargainingReturns[3][1])*widthBig/6+paddingBig1;
+        }
+        if (viewMode == 5 || viewMode == 6) {
+            disagreementPoint.style.fill = brown;
+            bargainingLine.style.stroke = brown;
+        } else {
+            disagreementPoint.style.fill = lightBrown;
+            bargainingLine.style.stroke = lightBrown;
         }
         disagreementPoint.cx.baseVal.value = disagree[0]*widthBig/6+paddingBig2;
         disagreementPoint.cy.baseVal.value = (6-disagree[1])*widthBig/6+paddingBig1;
@@ -3131,6 +3216,21 @@ function randomGame() {
 }
 
 function updateBackground() {
+    if (window.Worker) {
+        console.log("check");
+        const myWorker = new Worker('game-theory-worker.js');
+        myWorker.postMessage(10);
+        myWorker.onmessage = function(event) {
+            console.log('Result from worker:', event.data);
+        };
+        
+        myWorker.onerror = function(error) {
+            console.error('Worker error:', error.message);
+        };
+    } else {
+        console.log("check");
+    }
+
     backgroundOutOfDate = true;
     updateRequired = true;
 
@@ -3469,26 +3569,31 @@ function XBtoMatrix([x,b]) {
     return UVtoMatrix(XBtoUV([x0,b]));
 }
 
+// function coordsToMatrices(x1,x2,b1,b2,q=quad) {
+//     let x1new = x1;
+//     let x2new = x2;
+//     if (q == 2 || q == 3) {
+//         x1new -= 6;
+//     } else if (x1 == 0) {
+//         x1new += 6;
+//     }
+//     if (q == 3 || q == 4) {
+//         x2new -= 6;
+//     } else if (x2 == 0) {
+//         x2new += 6;
+//     }
+//     if (-6 <= x1new && x1new <= 6 && -6 <= x2new && x2new <= 6 && 
+//          0 <= b1 && b1 <= 6 && 0 <= b2 && b2 <= 6) {
+//         return [XBtoMatrix([-x1new,b1]), flip(XBtoMatrix([-x2new,b2]))];
+//     }
+//     else {
+//         return [[6, 6, 6, 6],[6,6,6,6]];
+//     }
+// }
+
 function coordsToMatrices(x1,x2,b1,b2,q=quad) {
-    let x1new = x1;
-    let x2new = x2;
-    if (q == 2 || q == 3) {
-        x1new -= 6;
-    } else if (x1 == 0) {
-        x1new += 6;
-    }
-    if (q == 3 || q == 4) {
-        x2new -= 6;
-    } else if (x2 == 0) {
-        x2new += 6;
-    }
-    if (-6 <= x1new && x1new <= 6 && -6 <= x2new && x2new <= 6 && 
-         0 <= b1 && b1 <= 6 && 0 <= b2 && b2 <= 6) {
-        return [XBtoMatrix([-x1new,b1]), flip(XBtoMatrix([-x2new,b2]))];
-    }
-    else {
-        return [[6, 6, 6, 6],[6,6,6,6]];
-    }
+    var game = new Game(x1,x2,b1,b2,q);
+    return game.matrices;
 }
 
 function changeCoords(e) {
@@ -3894,7 +3999,11 @@ function payoffShapley(m1, m2) {
 function payoffCoco(m1, m2) {
     const newM1 = [m1[0]-m2[0], m1[1]-m2[1], m1[2]-m2[2], m1[3]-m2[3]];
     const newM2 = [m2[0]-m1[0], m2[1]-m1[1], m2[2]-m1[2], m2[3]-m1[3]];
-    const zeroSumPayoff = payoff(newM1, newM2);
+    const rowEquilibrium = equilibrium(newM1, newM2);
+    const colEquilibrium = 1-equilibrium(flip(newM2), flip(newM1));
+    const rowDisagreement = rowEquilibrium*colEquilibrium*m1[0] + rowEquilibrium*(1-colEquilibrium)*m1[1] + (1-rowEquilibrium)*colEquilibrium*m1[2] + (1-rowEquilibrium)*(1-colEquilibrium)*m1[3];
+    const colDisagreement = rowEquilibrium*colEquilibrium*m2[0] + rowEquilibrium*(1-colEquilibrium)*m2[1] + (1-rowEquilibrium)*colEquilibrium*m2[2] + (1-rowEquilibrium)*(1-colEquilibrium)*m2[3];
+
     const error = 0.00001;
     let biggestEntry = 0;
     let max = m1[0]+m2[0];
@@ -3905,11 +4014,11 @@ function payoffCoco(m1, m2) {
         }
     }
     
-    bargainingReturns[3] = [(max + zeroSumPayoff)/2, (max - zeroSumPayoff)/2];
+    bargainingReturns[3] = [(max + rowDisagreement - colDisagreement)/2, (max + colDisagreement - rowDisagreement)/2];
     if (viewMode == 4) {
-        disagree = [zeroSumPayoff, 6-zeroSumPayoff];
+        disagree = [rowDisagreement, colDisagreement];
     }
-    return [(max + zeroSumPayoff)/2, (max - zeroSumPayoff)/2];
+    return [(max + rowDisagreement - colDisagreement)/2, (max + colDisagreement - rowDisagreement)/2];
 }
 
 function payoffBargainingBackstop(m1, m2) {
@@ -3982,21 +4091,16 @@ function payoffBargainingDisagreement(m1, m2) {
     const rowDisagreement = rowEquilibrium*colEquilibrium*m1[0] + rowEquilibrium*(1-colEquilibrium)*m1[1] + (1-rowEquilibrium)*colEquilibrium*m1[2] + (1-rowEquilibrium)*(1-colEquilibrium)*m1[3];
     const colDisagreement = rowEquilibrium*colEquilibrium*m2[0] + rowEquilibrium*(1-colEquilibrium)*m2[1] + (1-rowEquilibrium)*colEquilibrium*m2[2] + (1-rowEquilibrium)*(1-colEquilibrium)*m2[3];
 
-    if (viewMode == 6) {
-        disagree[0] = rowDisagreement;
-        disagree[1] = colDisagreement;
-    }
-
-    let equilibriumPoint = -1;
-    if (rowEquilibrium == 1 && colEquilibrium == 1) {
-        equilibriumPoint = 0;
-    } else if (rowEquilibrium == 1 && colEquilibrium == 0) {
-        equilibriumPoint = 1;
-    } else if (rowEquilibrium == 0 && colEquilibrium == 1) {
-        equilibriumPoint = 2;
-    } else if (rowEquilibrium == 0 && colEquilibrium == 0) {
-        equilibriumPoint = 3;
-    }
+    // let equilibriumPoint = -1;
+    // if (rowEquilibrium == 1 && colEquilibrium == 1) {
+    //     equilibriumPoint = 0;
+    // } else if (rowEquilibrium == 1 && colEquilibrium == 0) {
+    //     equilibriumPoint = 1;
+    // } else if (rowEquilibrium == 0 && colEquilibrium == 1) {
+    //     equilibriumPoint = 2;
+    // } else if (rowEquilibrium == 0 && colEquilibrium == 0) {
+    //     equilibriumPoint = 3;
+    // }
 
     let vertices = [];
     for (let i = 0; i < 4; i++) {
@@ -5412,12 +5516,9 @@ function hideLines(hide) {
 
 // add parameter for transferable utility
 // add means
-// boost performance
 
 // going through corners
-// showing the view mode
-// clicking on the big diagram in the balanced games
-// add lines in big diagram for TU
 // show discontinuities?
 // formatting
-// update growbox() (bugged)
+// update growbox() (bugged) (including for balanced games)
+// dragging lines in balanced games
