@@ -149,9 +149,6 @@ window.ondragstart = function() { return false; };
 //     }
 // }
 
-init();
-setInterval('update()', 50);
-
 function init() {
     const diagram = document.getElementById("diagram");
     const line1 = document.getElementById("line1");
@@ -5532,6 +5529,8 @@ function updateCanvasBackground(width, height) {
     }
 }
 
+init();
+setInterval('update()', 50);
 
 // add parameter for transferable utility
 // add means
