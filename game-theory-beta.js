@@ -3964,7 +3964,7 @@ function payoffShapley(m1, m2) {
     let max = m1[0]+m2[0];
     for (let i = 1; i < 4; i++) {
         if (max < m1[i]+m2[i] - error) {
-            biggestEntry = i;
+            // biggestEntry = i;
             max = m1[i]+m2[i];
         }
     }
