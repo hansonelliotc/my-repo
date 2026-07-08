@@ -1,4 +1,4 @@
-import { Game } from 'game.js';
+import { Game } from './game.js';
 const PI = 3.1415926535897932385;
 
 let matrixA = [0,0,0,0];
