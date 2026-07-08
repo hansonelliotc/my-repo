@@ -1,12 +1,15 @@
-self.onmessage = function(event) {
-    const number = event.data;
+import { Game } from 'game.js';
 
-    // Perform your heavy calculation here
-    let result = 0;
-    for (let i = 0; i < number; i++) {
-        result += i;
+self.onmessage = function(event) {
+    const dimensions = event.data;
+
+    let data = new Array(dimensions[0]*dimensions[1]*4);
+    for (let i = 0; i < dimensions[0]*dimensions[1]; i++) {
+        data[4*i] = 0;
+        data[4*i+1] = 0;
+        data[4*i+2] = 0;
+        data[4*i+3] = 255;
     }
 
-    // Send the final result back to the main thread
-    self.postMessage(result);
+    self.postMessage(data);
 };

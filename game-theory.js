@@ -1,4 +1,3 @@
-// import { Game } from 'game.js';
 const PI = 3.1415926535897932385;
 
 let matrixA = [0,0,0,0];
@@ -3216,21 +3215,6 @@ function randomGame() {
 }
 
 function updateBackground() {
-    if (window.Worker) {
-        console.log("check");
-        const myWorker = new Worker('game-theory-worker.js');
-        myWorker.postMessage(10);
-        myWorker.onmessage = function(event) {
-            console.log('Result from worker:', event.data);
-        };
-        
-        myWorker.onerror = function(error) {
-            console.error('Worker error:', error.message);
-        };
-    } else {
-        console.log("check");
-    }
-
     backgroundOutOfDate = true;
     updateRequired = true;
 
