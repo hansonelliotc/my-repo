@@ -149,6 +149,9 @@ window.ondragstart = function() { return false; };
 //     }
 // }
 
+init();
+setInterval('update()', 50);
+
 function init() {
     const diagram = document.getElementById("diagram");
     const line1 = document.getElementById("line1");
@@ -5497,40 +5500,38 @@ function hideLines(hide) {
 }
 
 function updateCanvasBackground(width, height) {
-    if (window.Worker) {
-        const myWorker = new Worker('game-theory-worker.js');
-        myWorker.postMessage([width, height, "backstop-ntu"]);
-        myWorker.onmessage = function(event) {
-            const foreignObject = document.getElementById("canvasForeignObject");
-            const canvas = document.getElementById("canvas");
+    // if (window.Worker) {
+    //     const myWorker = new Worker('game-theory-worker.js');
+    //     myWorker.postMessage([width, height, "backstop-ntu"]);
+    //     myWorker.onmessage = function(event) {
+    //         const foreignObject = document.getElementById("canvasForeignObject");
+    //         const canvas = document.getElementById("canvas");
 
-            // update the size of the canvas
-            const diagram = document.getElementById("diagram");
-            const diagramWidth = diagram.width.baseVal.value;
-            const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*(6 - coords[2])/6;
-            const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*(6 - coords[3])/6;
-            const picPadding1 = (container.width.baseVal.value-picWidth)/2;
-            const picPadding2 = (container.height.baseVal.value-picHeight)/2;
-            foreignObject.x.baseVal.value = picPadding1;
-            foreignObject.y.baseVal.value = picPadding2;
-            foreignObject.width.baseVal.value = picWidth;
-            foreignObject.height.baseVal.value = picHeight;
-            canvas.width = picWidth;
-            canvas.height = picHeight;
-            const ctx = canvas.getContext("2d");
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            imageData.data = event.data;
-            ctx.putImageData(imageData,0,0);
-        };
+    //         // update the size of the canvas
+    //         const diagram = document.getElementById("diagram");
+    //         const diagramWidth = diagram.width.baseVal.value;
+    //         const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*(6 - coords[2])/6;
+    //         const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*(6 - coords[3])/6;
+    //         const picPadding1 = (container.width.baseVal.value-picWidth)/2;
+    //         const picPadding2 = (container.height.baseVal.value-picHeight)/2;
+    //         foreignObject.x.baseVal.value = picPadding1;
+    //         foreignObject.y.baseVal.value = picPadding2;
+    //         foreignObject.width.baseVal.value = picWidth;
+    //         foreignObject.height.baseVal.value = picHeight;
+    //         canvas.width = picWidth;
+    //         canvas.height = picHeight;
+    //         const ctx = canvas.getContext("2d");
+    //         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    //         imageData.data = event.data;
+    //         ctx.putImageData(imageData,0,0);
+    //     };
         
-        myWorker.onerror = function(error) {
-            console.error('Worker error:', error.message);
-        };
-    }
+    //     myWorker.onerror = function(error) {
+    //         console.error('Worker error:', error.message);
+    //     };
+    // }
 }
 
-init();
-setInterval('update()', 50);
 
 // add parameter for transferable utility
 // add means
