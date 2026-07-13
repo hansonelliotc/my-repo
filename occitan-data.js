@@ -42,7 +42,9 @@ function sigmoid(x) {
     return 1/(1+Math.exp(-x));
 }
 
-function colorFunction(value,vMode) {
+function colorFunction(value) {
+    if (value > 1) value = 1;
+    if (value < 0) value = 0;
     let colors = [[0,0,255],[255,0,255],[255,0,0]];
     let cutoffs = [0,0.5,1];
     const result = [0,0,0];
@@ -57,7 +59,10 @@ function colorFunction(value,vMode) {
 
 function init() {
     // 30
-    // const dataNorms = json.data.map(poem => norm(poem));
+    const dataNorms = json.data.map(poem => Math.log(norm(poem)));
+    const dataNormsSorted = [...dataNorms].sort((a, b) => a - b);
+    const maxNorm = dataNormsSorted[Math.floor(dataNorms.length-1)];
+    const minNorm = dataNormsSorted[Math.floor(dataNorms.length*0.005)];
 
     const dataX = json.data.map(poem => poem.UMAP1);
     const dataY = json.data.map(poem => poem.UMAP2);
@@ -76,9 +81,10 @@ function init() {
         const newPoint = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         newPoint.setAttribute("r",3);
         newPoint.setAttribute("fill",defaultColor);
-        // const color = colorFunction(sigmoid(dataNorms[i])*2-1);
+        // const color = colorFunction(sigmoid(dataNorms[i]));
+        const color = colorFunction((dataNorms[i]-minNorm)/(maxNorm-minNorm));
         // const color = colorFunction(dataE[i]);
-        // newPoint.setAttribute("fill",`rgb(${color[0]},${color[1]},${color[2]})`);
+        newPoint.setAttribute("fill",`rgb(${color[0]},${color[1]},${color[2]})`);
         newPoint.setAttribute("cx",picWidth*(dataX[i]-minX)/(maxX-minX)+picPadding);
         newPoint.setAttribute("cy",picWidth*(dataY[i]-minY)/(maxY-minY)+picPadding);
         newPoint.setAttribute("id","point"+i);
