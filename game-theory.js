@@ -4165,7 +4165,7 @@ function payoffCustom(m1, m2) {
         value1 = payoff(flip(m2),flip(m1));
     } else if (choice1 == "returns-shapley-col") {
         value1 = payoffShapley(m1,m2)[1];
-    } else if (choice1 == "returns-coco") {
+    } else if (choice1 == "returns-coco-col") {
         value1 = payoffCoco(m1,m2)[1];
     } else if (choice1 == "returns-bargaining-bs-col") {
         value1 = payoffBargainingBackstop(m1,m2)[1];
@@ -4193,7 +4193,7 @@ function payoffCustom(m1, m2) {
         value2 = payoff(flip(m2),flip(m1));
     } else if (choice2 == "returns-shapley-col") {
         value2 = payoffShapley(m1,m2)[1];
-    } else if (choice2 == "returns-coco") {
+    } else if (choice2 == "returns-coco-col") {
         value2 = payoffCoco(m1,m2)[1];
     } else if (choice2 == "returns-bargaining-bs-col") {
         value2 = payoffBargainingBackstop(m1,m2)[1];
