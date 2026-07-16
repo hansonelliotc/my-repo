@@ -572,11 +572,11 @@ class Game {
                 const value1 = x1*y1;
                 const value2 = x2*y2;
                 const value3 = (t < 1 && t > 0 && (x1*t+x2*(1-t))>0 && (y1*t+y2*(1-t))>0) ? (x1*t+x2*(1-t))*(y1*t+y2*(1-t)) : -1;
-                if (value1 >= max && value1 >= value2 && value1 >= value3) {
+                if (value1 >= max && value1 >= value2 && value1 >= value3 && x1 >= 0 && y1 >= 0) {
                     max = value1;
                     return1 = this.#row_matrix[i];
                     return2 = this.#col_matrix[i];
-                } else if (value2 >= max && value2 >= value3) {
+                } else if (value2 >= max && value2 >= value3 && x2 >= 0 && y2 >= 0) {
                     max = value2;
                     return1 = this.#row_matrix[j];
                     return2 = this.#col_matrix[j];
@@ -4836,7 +4836,6 @@ function payoffCustom(game) {
     } else if (choice1 == "returns-bargaining-tp-col") {
         value1 = returns(game,3,false);
     } else if (choice1 == "backstop-row") {
-        // console.log("check");
         value1 = returns(game,9,true);
     } else if (choice1 == "threat-point-row") {
         value1 = returns(game,10,true);
