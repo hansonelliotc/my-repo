@@ -4763,9 +4763,15 @@ function payoffCustom(game) {
     } else if (choice1 == "returns-col") {
         value1 = returns(game,1,false);
     } else if (choice1 == "returns-shapley-col") {
+<<<<<<< HEAD
         value1 = returns(game,4,false);
     } else if (choice1 == "returns-coco-col") {
         value1 = returns(game,5,false);
+=======
+        value1 = payoffShapley(m1,m2)[1];
+    } else if (choice1 == "returns-coco-col") {
+        value1 = payoffCoco(m1,m2)[1];
+>>>>>>> 8a57268e909aca67f1011efe68a4241bbe16d1ff
     } else if (choice1 == "returns-bargaining-bs-col") {
         value1 = returns(game,2,false);
     } else if (choice1 == "returns-bargaining-tp-col") {
@@ -6200,7 +6206,10 @@ function returns(game, mode, row_player) {
 // formatting
 // update growbox() (bugged) (including for balanced games)
 // dragging lines in balanced games
+<<<<<<< HEAD
 
 // update balanced games
 // when asdw released, update render
 // remove constant rendering
+=======
+>>>>>>> 8a57268e909aca67f1011efe68a4241bbe16d1ff
