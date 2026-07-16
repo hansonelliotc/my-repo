@@ -86,6 +86,11 @@ button {
     margin: 0;
 }
 
+.third-mode-button {
+    width: 6.66vw;
+    margin: 0;
+}
+
 button:hover, .selected {
     background-color: #ccc;
 }

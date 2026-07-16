@@ -4307,10 +4307,10 @@ function changeCoords(e) {
         const newX2 = (1 - relativeY1 / rect.height) * 6;
         if (-0.1 <= newX1 && newX1 <= 6.1 && -0.1 <= newX2 && newX2 <= 6.1) {
             if (isMouseDown) {
-                if (game.b1 == 0 && !useAltSchema && integerBetween((game.x1+1)/2,(newX1+1)/2) && game.x2 % 2 > 0.5 && game.x2 % 2 < 1.5) {
+                if (game.b1 == 0 && !useAltSchema && !hiddenLines && integerBetween((game.x1+1)/2,(newX1+1)/2) && game.x2 % 2 > 0.5 && game.x2 % 2 < 1.5) {
                     crossBlue(true);
                 }
-                if (game.b2 == 0 && !useAltSchema && integerBetween((game.x2+1)/2,(newX2+1)/2) && game.x1 % 2 > 0.5 && game.x1 % 2 < 1.5) {
+                if (game.b2 == 0 && !useAltSchema && !hiddenLines && integerBetween((game.x2+1)/2,(newX2+1)/2) && game.x1 % 2 > 0.5 && game.x1 % 2 < 1.5) {
                     crossBlue(false);
                 }
                 game.x1 = newX1;
@@ -4835,6 +4835,15 @@ function payoffCustom(game) {
         value1 = returns(game,2,false);
     } else if (choice1 == "returns-bargaining-tp-col") {
         value1 = returns(game,3,false);
+    } else if (choice1 == "backstop-row") {
+        // console.log("check");
+        value1 = returns(game,9,true);
+    } else if (choice1 == "threat-point-row") {
+        value1 = returns(game,10,true);
+    } else if (choice1 == "backstop-col") {
+        value1 = returns(game,9,false);
+    } else if (choice1 == "threat-point-col") {
+        value1 = returns(game,10,false);
     }
 
     if (choice2 == "returns") {
@@ -4859,6 +4868,14 @@ function payoffCustom(game) {
         value2 = returns(game,2,false);
     } else if (choice2 == "returns-bargaining-tp-col") {
         value2 = returns(game,3,false);
+    } else if (choice2 == "backstop-row") {
+        value2 = returns(game,9,true);
+    } else if (choice2 == "threat-point-row") {
+        value2 = returns(game,10,true);
+    } else if (choice2 == "backstop-col") {
+        value2 = returns(game,9,false);
+    } else if (choice2 == "threat-point-col") {
+        value2 = returns(game,10,false);
     }
     return (value1 - value2)/12+1/2;
 }
@@ -4980,6 +4997,14 @@ function changeViewMode(mode, player1=true) {
                 document.getElementById("view-mode-label").innerHTML = "Row's backstop TU";
                 func = (a,b)=>payoffShapley(a,b)[0]/9;
                 break;
+            case 9:
+                document.getElementById("backstop-row").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's backstop";
+                break;
+            case 10:
+                document.getElementById("threat-point-row").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's threat point";
+                break;
         }
     } else {
         switch (mode) {
@@ -5007,6 +5032,14 @@ function changeViewMode(mode, player1=true) {
                 document.getElementById("shapley-mode-col").classList.add("selected");
                 document.getElementById("view-mode-label").innerHTML = "Column's backstop TU";
                 func = (a,b)=>payoffShapley(flip(b),flip(a))[0]/9;
+                break;
+            case 9:
+                document.getElementById("backstop-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's backstop";
+                break;
+            case 10:
+                document.getElementById("threat-point-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's threat point";
                 break;
         }
     }
@@ -6277,6 +6310,16 @@ function returns(game, mode, row_player) {
             return game.correlation;
         case 8: // custom difference
             return payoffCustom(game);
+        case 9: // backstop
+            if (row_player)
+                return game.backstop[0];
+            else
+                return game.backstop[1];
+        case 10: // threat points
+            if (row_player)
+                return game.threat_point[0];
+            else
+                return game.threat_point[1];
     }
 }
 
@@ -6293,3 +6336,4 @@ function returns(game, mode, row_player) {
 // update balanced games
 // when asdw released, update render
 // remove constant rendering
+// change the condition for rendering mixed equilibria

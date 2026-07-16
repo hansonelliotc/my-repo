@@ -106,13 +106,13 @@
 				<button class="mode-button selected" id="regular-mode" onclick="changeViewMode(0)">Equilibria</button>
 				<button class="mode-button" id="coordination-mode" onclick="changeViewMode(7)">Correlation</button>
 				<!-- <div style="padding:1vh"></div> -->
-				<h2>Row Player</h2>
-				<span><button class="mode-button" id="return-mode-2" onclick="changeViewMode(1)">Equilibrium returns</button></span></span>
+				<h2>Returns to Row Player</h2>
+				<span><button class="third-mode-button" id="return-mode-2" onclick="changeViewMode(1)">Equilibrium</button></span><span><button class="third-mode-button" id="backstop-row" onclick="changeViewMode(9)">Backstop</button></span><span><button class="third-mode-button" id="threat-point-row" onclick="changeViewMode(10)">Threat point</button></span>
 				<span><button class="half-mode-button" id="bargaining-mode-1" onclick="changeViewMode(2)">Backstop NTU</button></span><span><button class="half-mode-button" id="bargaining-mode-2" onclick="changeViewMode(3)">Threat point NTU</button></span>
 				<span><button class="half-mode-button" id="shapley-mode" onclick="changeViewMode(4)">Backstop TU</button></span><span><button class="half-mode-button" id="coco-mode" onclick="changeViewMode(5)">Threat point TU</button></span>
 				<!-- <div style="padding:1vh"></div> -->
-				<h2>Column Player</h2>
-				<span><button class="mode-button" id="return-mode-2-col" onclick="changeViewMode(1, false)">Equilibrium returns</button></span></span>
+				<h2>Returns to Column Player</h2>
+				<span><button class="third-mode-button" id="return-mode-2-col" onclick="changeViewMode(1,false)">Equilibrium</button></span><span><button class="third-mode-button" id="backstop-col" onclick="changeViewMode(9,false)">Backstop</button></span><span><button class="third-mode-button" id="threat-point-col" onclick="changeViewMode(10,false)">Threat point</button></span>
 				<span><button class="half-mode-button" id="bargaining-mode-1-col" onclick="changeViewMode(2,false)">Backstop NTU</button></span><span><button class="half-mode-button" id="bargaining-mode-2-col" onclick="changeViewMode(3,false)">Threat point NTU</button></span>
 				<span><button class="half-mode-button" id="shapley-mode-col" onclick="changeViewMode(4,false)">Backstop TU</button></span><span><button class="half-mode-button" id="coco-mode-col" onclick="changeViewMode(5,false)">Threat point TU</button></span>
 				<div style="padding:1vh"></div>
@@ -133,6 +133,10 @@
 						<option value="returns-shapley-col">Column's backstop TU</option>
 						<option value="returns-coco-col">Column's threat point TU</option>
 						<option value="returns-max-total">Max total</option>
+						<option value="backstop-row">Row's backstop</option>
+						<option value="threat-point-row">Row's threat point</option>
+						<option value="backstop-col">Column's backstop</option>
+						<option value="threat-point-col">Column's threat point</option>
 					</select>
 					<br>minus<br>
 					<select name="Choice 2" id="view-custom-2">
@@ -148,6 +152,10 @@
 						<option value="returns-shapley-col">Column's backstop TU</option>
 						<option value="returns-coco-col">Column's threat point TU</option>
 						<option value="returns-max-total">Max total</option>
+						<option value="backstop-row">Row's backstop</option>
+						<option value="threat-point-row">Row's threat point</option>
+						<option value="backstop-col">Column's backstop</option>
+						<option value="threat-point-col">Column's threat point</option>
 					</select>
 				</p>
 			</div>
