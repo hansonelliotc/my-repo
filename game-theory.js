@@ -83,6 +83,7 @@ class Game {
     #backstop; #threat_point; #pareto;
     #rhombic_x1; #rhombic_y1; #rhombic_x2; #rhombic_y2;
     #row_equilibrium_return; #col_equilibrium_return;
+    #row_equilibrium_return_2; #col_equilibrium_return_2;
     #row_ntu_bs_return; #col_ntu_bs_return;
     #row_ntu_tp_return; #col_ntu_tp_return;
     #row_tu_bs_return; #col_tu_bs_return;
@@ -109,6 +110,7 @@ class Game {
         this.#backstop = undefined; this.#threat_point = undefined; this.#pareto = undefined;
         this.#rhombic_x1 = undefined; this.#rhombic_y1 = undefined; this.#rhombic_x2 = undefined; this.#rhombic_y2 = undefined;
         this.#row_equilibrium_return = undefined; this.#col_equilibrium_return = undefined;
+        this.#row_equilibrium_return_2 = undefined; this.#col_equilibrium_return_2 = undefined;
         this.#row_ntu_bs_return = undefined; this.#col_ntu_bs_return = undefined;
         this.#row_ntu_tp_return = undefined; this.#col_ntu_tp_return = undefined;
         this.#row_tu_bs_return = undefined; this.#col_tu_bs_return = undefined;
@@ -348,13 +350,8 @@ class Game {
                 const product1 = (this.#row_matrix[0]-this.#row_matrix[2])*(this.#col_matrix[0]-this.#col_matrix[1]);
                 const product2 = (this.#row_matrix[3]-this.#row_matrix[1])*(this.#col_matrix[3]-this.#col_matrix[2]);
                 if (Math.abs(product1-product2) < 0.0001) {
-                    const checker_size = 0.25;
-                    const diagonal1 = (this.#x1+this.#x2) % checker_size < checker_size/2;
-                    const diagonal2 = (this.#x1-this.#x2+6) % checker_size < checker_size/2;
-                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
-                        return this.#row_matrix[0];
-                    else
-                        return this.#row_matrix[3];
+                    this.#row_equilibrium_return_2 = this.#row_matrix[3];
+                    return this.#row_matrix[0];
                 }
                 if (product1 > product2) return this.#row_matrix[0];
                 else return this.#row_matrix[3];
@@ -362,13 +359,15 @@ class Game {
                 const product1 = (this.#row_matrix[1]-this.#row_matrix[3])*(this.#col_matrix[1]-this.#col_matrix[0]);
                 const product2 = (this.#row_matrix[2]-this.#row_matrix[0])*(this.#col_matrix[2]-this.#col_matrix[3]);
                 if (Math.abs(product1-product2) < 0.0001) {
-                    const checker_size = 0.25;
-                    const diagonal1 = (this.#x1+this.#x2) % checker_size < checker_size/2;
-                    const diagonal2 = (this.#x1-this.#x2+6) % checker_size < checker_size/2;
-                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
-                        return this.#row_matrix[1];
-                    else
-                        return this.#row_matrix[2];
+                    this.#row_equilibrium_return_2 = this.#row_matrix[2];
+                    return this.#row_matrix[1];
+                    // const checker_size = 0.25;
+                    // const diagonal1 = (this.#x1+this.#x2) % checker_size < checker_size/2;
+                    // const diagonal2 = (this.#x1-this.#x2+6) % checker_size < checker_size/2;
+                    // if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
+                    //     return this.#row_matrix[1];
+                    // else
+                    //     return this.#row_matrix[2];
                 }
                 if (product1 > product2) return this.#row_matrix[1];
                 else return this.#row_matrix[2];
@@ -403,13 +402,8 @@ class Game {
                 const product1 = (this.#row_matrix[0]-this.#row_matrix[2])*(this.#col_matrix[0]-this.#col_matrix[1]);
                 const product2 = (this.#row_matrix[3]-this.#row_matrix[1])*(this.#col_matrix[3]-this.#col_matrix[2]);
                 if (Math.abs(product1-product2) < 0.0001) {
-                    const checker_size = 0.25;
-                    const diagonal1 = (this.#x1+this.#x2) % checker_size < checker_size/2;
-                    const diagonal2 = (this.#x1-this.#x2+6) % checker_size < checker_size/2;
-                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
-                        return this.#col_matrix[0];
-                    else
-                        return this.#col_matrix[3];
+                    this.#col_equilibrium_return_2 = this.#col_matrix[3];
+                    return this.#col_matrix[0];
                 }
                 if (product1 > product2) return this.#col_matrix[0];
                 else return this.#col_matrix[3];
@@ -417,13 +411,8 @@ class Game {
                 const product1 = (this.#row_matrix[1]-this.#row_matrix[3])*(this.#col_matrix[1]-this.#col_matrix[0]);
                 const product2 = (this.#row_matrix[2]-this.#row_matrix[0])*(this.#col_matrix[2]-this.#col_matrix[3]);
                 if (Math.abs(product1-product2) < 0.0001) {
-                    const checker_size = 0.25;
-                    const diagonal1 = (this.#x1+this.#x2) % checker_size < checker_size/2;
-                    const diagonal2 = (this.#x1-this.#x2+6) % checker_size < checker_size/2;
-                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
-                        return this.#col_matrix[1];
-                    else
-                        return this.#col_matrix[2];
+                    this.#col_equilibrium_return_2 = this.#col_matrix[2];
+                    return this.#col_matrix[1];
                 }
                 if (product1 > product2) return this.#col_matrix[1];
                 else return this.#col_matrix[2];
@@ -436,6 +425,24 @@ class Game {
             }
         }
         return this.#col_equilibrium_return;
+    }
+
+    get row_equilibrium_return_2() {
+        this.row_equilibrium_return;
+        if (this.#row_equilibrium_return_2 === undefined) {
+            return null;
+        } else {
+            return this.#row_equilibrium_return_2;
+        }
+    }
+
+    get col_equilibrium_return_2() {
+        this.col_equilibrium_return;
+        if (this.#col_equilibrium_return_2 === undefined) {
+            return null;
+        } else {
+            return this.#col_equilibrium_return_2;
+        }
     }
 
     get max_total() {
@@ -1994,14 +2001,28 @@ function update() {
     colB.innerHTML = game.b2.toFixed(1);
 
     // row's equilibrium return
-    rowReturns.innerHTML = game.row_equilibrium_return.toFixed(1);
-    rowReturns.style.color = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.row_equilibrium_return, 1));
-    // console.log(colorFunction(game.row_equilibrium_return, 1));
+    if (game.row_equilibrium_return_2 == null) {
+        rowReturns.innerHTML = game.row_equilibrium_return.toFixed(1);
+        rowReturns.style.color = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.row_equilibrium_return, 1));
+    } else {
+        rowReturns.innerHTML = "<span style='color:" + (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.row_equilibrium_return, 1))
+                             + "'>" + game.row_equilibrium_return.toFixed(1) + "</span> / "
+                             + "<span style='color:" + (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.row_equilibrium_return_2, 1))
+                             + "'>" + game.row_equilibrium_return_2.toFixed(1) + "</span>";
+        rowReturns.style.color = "black";
+    }
 
     // column's equilibrium return
-    colReturns.innerHTML = game.col_equilibrium_return.toFixed(1);
-    colReturns.style.color = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.col_equilibrium_return, 1));
-
+    if (game.col_equilibrium_return_2 == null) {
+        colReturns.innerHTML = game.col_equilibrium_return.toFixed(1);
+        colReturns.style.color = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.col_equilibrium_return, 1));
+    } else {
+        colReturns.innerHTML = "<span style='color:" + (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.col_equilibrium_return, 1))
+                             + "'>" + game.col_equilibrium_return.toFixed(1) + "</span> / "
+                             + "<span style='color:" + (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.col_equilibrium_return_2, 1))
+                             + "'>" + game.col_equilibrium_return_2.toFixed(1) + "</span>";
+        colReturns.style.color = "black";
+    }
     // row's backstop bargaining returns w/o transferable utility
     rowReturnsBargaining1.innerHTML = game.row_ntu_bs_return.toFixed(1);
     rowReturnsBargaining1.style.color = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.row_ntu_bs_return, 1));
@@ -6212,8 +6233,32 @@ function hideLines(hide) {
 function returns(game, mode, row_player) {
     switch (mode) {
         case 1: // equilibrium returns
-            if (row_player) return game.row_equilibrium_return;
-            else return game.col_equilibrium_return;
+            if (row_player) {
+                if (game.row_equilibrium_return_2 == null)
+                    return game.row_equilibrium_return;
+                else {
+                    const checker_size = 0.25;
+                    const diagonal1 = (game.x1+game.x2) % checker_size < checker_size/2;
+                    const diagonal2 = (game.x1-game.x2+6) % checker_size < checker_size/2;
+                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
+                        return game.row_equilibrium_return;
+                    else
+                        return game.row_equilibrium_return_2;
+                }
+            }
+            else {
+                if (game.col_equilibrium_return_2 == null)
+                    return game.col_equilibrium_return;
+                else {
+                    const checker_size = 0.25;
+                    const diagonal1 = (game.x1+game.x2) % checker_size < checker_size/2;
+                    const diagonal2 = (game.x1-game.x2+6) % checker_size < checker_size/2;
+                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
+                        return game.col_equilibrium_return;
+                    else
+                        return game.col_equilibrium_return_2;
+                }
+            }
         case 2: // non-transferable utility backstop
             if (row_player) return game.row_ntu_bs_return;
             else return game.col_ntu_bs_return;
