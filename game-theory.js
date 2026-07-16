@@ -345,10 +345,32 @@ class Game {
                 else
                     this.#row_equilibrium_return = this.#row_matrix[3];
             } else if (this.#row_ranks[0] > this.#row_ranks[2] && this.#col_ranks[0] > this.#col_ranks[1] && this.#row_ranks[3] > this.#row_ranks[1] && this.#col_ranks[3] > this.#col_ranks[2]) {
-                if ((this.#row_matrix[0]-this.#row_matrix[2])*(this.#col_matrix[0]-this.#col_matrix[1]) > (this.#row_matrix[3]-this.#row_matrix[1])*(this.#col_matrix[3]-this.#col_matrix[2])) return this.#row_matrix[0];
+                const product1 = (this.#row_matrix[0]-this.#row_matrix[2])*(this.#col_matrix[0]-this.#col_matrix[1]);
+                const product2 = (this.#row_matrix[3]-this.#row_matrix[1])*(this.#col_matrix[3]-this.#col_matrix[2]);
+                if (Math.abs(product1-product2) < 0.0001) {
+                    const checker_size = 0.25;
+                    const diagonal1 = (this.#x1+this.#x2) % checker_size < checker_size/2;
+                    const diagonal2 = (this.#x1-this.#x2+6) % checker_size < checker_size/2;
+                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
+                        return this.#row_matrix[0];
+                    else
+                        return this.#row_matrix[3];
+                }
+                if (product1 > product2) return this.#row_matrix[0];
                 else return this.#row_matrix[3];
             } else if (this.#row_ranks[1] > this.#row_ranks[3] && this.#col_ranks[1] > this.#col_ranks[0] && this.#row_ranks[2] > this.#row_ranks[0] && this.#col_ranks[2] > this.#col_ranks[3]) {
-                if ((this.#row_matrix[1]-this.#row_matrix[3])*(this.#col_matrix[1]-this.#col_matrix[0]) > (this.#row_matrix[2]-this.#row_matrix[0])*(this.#col_matrix[2]-this.#col_matrix[3])) return this.#row_matrix[1];
+                const product1 = (this.#row_matrix[1]-this.#row_matrix[3])*(this.#col_matrix[1]-this.#col_matrix[0]);
+                const product2 = (this.#row_matrix[2]-this.#row_matrix[0])*(this.#col_matrix[2]-this.#col_matrix[3]);
+                if (Math.abs(product1-product2) < 0.0001) {
+                    const checker_size = 0.25;
+                    const diagonal1 = (this.#x1+this.#x2) % checker_size < checker_size/2;
+                    const diagonal2 = (this.#x1-this.#x2+6) % checker_size < checker_size/2;
+                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
+                        return this.#row_matrix[1];
+                    else
+                        return this.#row_matrix[2];
+                }
+                if (product1 > product2) return this.#row_matrix[1];
                 else return this.#row_matrix[2];
             } else {
                 let denom = this.#row_matrix[0] - this.#row_matrix[1] - this.#row_matrix[2] + this.#row_matrix[3];
@@ -378,10 +400,32 @@ class Game {
                 else
                     this.#col_equilibrium_return = this.#col_matrix[0];
             } else if (this.#row_ranks[0] > this.#row_ranks[2] && this.#col_ranks[0] > this.#col_ranks[1] && this.#row_ranks[3] > this.#row_ranks[1] && this.#col_ranks[3] > this.#col_ranks[2]) {
-                if ((this.#row_matrix[0]-this.#row_matrix[2])*(this.#col_matrix[0]-this.#col_matrix[1]) > (this.#row_matrix[3]-this.#row_matrix[1])*(this.#col_matrix[3]-this.#col_matrix[2])) return this.#col_matrix[0];
+                const product1 = (this.#row_matrix[0]-this.#row_matrix[2])*(this.#col_matrix[0]-this.#col_matrix[1]);
+                const product2 = (this.#row_matrix[3]-this.#row_matrix[1])*(this.#col_matrix[3]-this.#col_matrix[2]);
+                if (Math.abs(product1-product2) < 0.0001) {
+                    const checker_size = 0.25;
+                    const diagonal1 = (this.#x1+this.#x2) % checker_size < checker_size/2;
+                    const diagonal2 = (this.#x1-this.#x2+6) % checker_size < checker_size/2;
+                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
+                        return this.#col_matrix[0];
+                    else
+                        return this.#col_matrix[3];
+                }
+                if (product1 > product2) return this.#col_matrix[0];
                 else return this.#col_matrix[3];
             } else if (this.#row_ranks[1] > this.#row_ranks[3] && this.#col_ranks[1] > this.#col_ranks[0] && this.#row_ranks[2] > this.#row_ranks[0] && this.#col_ranks[2] > this.#col_ranks[3]) {
-                if ((this.#row_matrix[1]-this.#row_matrix[3])*(this.#col_matrix[1]-this.#col_matrix[0]) > (this.#row_matrix[2]-this.#row_matrix[0])*(this.#col_matrix[2]-this.#col_matrix[3])) return this.#col_matrix[1];
+                const product1 = (this.#row_matrix[1]-this.#row_matrix[3])*(this.#col_matrix[1]-this.#col_matrix[0]);
+                const product2 = (this.#row_matrix[2]-this.#row_matrix[0])*(this.#col_matrix[2]-this.#col_matrix[3]);
+                if (Math.abs(product1-product2) < 0.0001) {
+                    const checker_size = 0.25;
+                    const diagonal1 = (this.#x1+this.#x2) % checker_size < checker_size/2;
+                    const diagonal2 = (this.#x1-this.#x2+6) % checker_size < checker_size/2;
+                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
+                        return this.#col_matrix[1];
+                    else
+                        return this.#col_matrix[2];
+                }
+                if (product1 > product2) return this.#col_matrix[1];
                 else return this.#col_matrix[2];
             } else {
                 let denom = this.#col_matrix[0] - this.#col_matrix[1] - this.#col_matrix[2] + this.#col_matrix[3];
