@@ -80,12 +80,13 @@ class Game {
     #col_matrix; #col_ranks;
     #quadrant;
     #x1; #b1; #x2; #b2;
-    #backstop; #threat_point; #pareto;
+    #backstop; #threat_point; #threat_point_2; #pareto;
     #rhombic_x1; #rhombic_y1; #rhombic_x2; #rhombic_y2;
     #row_equilibrium_return; #col_equilibrium_return;
     #row_equilibrium_return_2; #col_equilibrium_return_2;
     #row_ntu_bs_return; #col_ntu_bs_return;
     #row_ntu_tp_return; #col_ntu_tp_return;
+    #row_ntu_tp_return_2; #col_ntu_tp_return_2;
     #row_tu_bs_return; #col_tu_bs_return;
     #row_tu_tp_return; #col_tu_tp_return;
     #max_total; #correlation;
@@ -107,12 +108,13 @@ class Game {
     #clear() {
         this.#row_matrix = undefined; this.#row_ranks = undefined;
         this.#col_matrix = undefined; this.#col_ranks = undefined;
-        this.#backstop = undefined; this.#threat_point = undefined; this.#pareto = undefined;
+        this.#backstop = undefined; this.#threat_point = undefined; this.#threat_point_2 = undefined; this.#pareto = undefined;
         this.#rhombic_x1 = undefined; this.#rhombic_y1 = undefined; this.#rhombic_x2 = undefined; this.#rhombic_y2 = undefined;
         this.#row_equilibrium_return = undefined; this.#col_equilibrium_return = undefined;
         this.#row_equilibrium_return_2 = undefined; this.#col_equilibrium_return_2 = undefined;
         this.#row_ntu_bs_return = undefined; this.#col_ntu_bs_return = undefined;
         this.#row_ntu_tp_return = undefined; this.#col_ntu_tp_return = undefined;
+        this.#row_ntu_tp_return_2 = undefined; this.#col_ntu_tp_return_2 = undefined;
         this.#row_tu_bs_return = undefined; this.#col_tu_bs_return = undefined;
         this.#row_tu_tp_return = undefined; this.#col_tu_tp_return = undefined;
         this.#max_total = undefined; this.#correlation = undefined;
@@ -491,6 +493,7 @@ class Game {
 
             // compute the equilibrium of the zero-sum game
             let equilibrium = [0,0];
+            let mixed = false;
             if (B[0] >= B[1] && B[2] >= B[3]) {
                 if (A[0] >= A[2]) {
                     equilibrium[0] = 1;
@@ -521,6 +524,7 @@ class Game {
                 equilibrium[1] = 1;
             } else {
                 equilibrium[1] = (A[3] - A[1])/(A[0] - A[1] - A[2] + A[3]);
+                mixed = true;
             }
 
             // apply that equilibrium to the original matrices
@@ -529,8 +533,28 @@ class Game {
             const colDisagree = equilibrium[0]*equilibrium[1]*this.#col_matrix[0] + equilibrium[0]*(1-equilibrium[1])*this.#col_matrix[1]
                             + (1-equilibrium[0])*equilibrium[1]*this.#col_matrix[2] + (1-equilibrium[0])*(1-equilibrium[1])*this.#col_matrix[3];
             this.#threat_point = [rowDisagree,colDisagree];
+
+            // if there are two equally valid threat points, compute the second one
+            if (!mixed && (A[3] <= A[1] || A[2] <= A[0]) && (A[1] <= A[3] || A[0] <= A[2]) && (B[3] <= B[2] || B[1] <= B[0]) && (B[2] <= B[3] || B[0] <= B[1])) {
+                let equilibrium2 = [(B[3] - B[2])/(B[0] - B[1] - B[2] + B[3]), (A[3] - A[1])/(A[0] - A[1] - A[2] + A[3])];
+                const rowDisagree2 = equilibrium2[0]*equilibrium2[1]*this.#row_matrix[0] + equilibrium2[0]*(1-equilibrium2[1])*this.#row_matrix[1]
+                                + (1-equilibrium2[0])*equilibrium2[1]*this.#row_matrix[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*this.#row_matrix[3];
+                const colDisagree2 = equilibrium2[0]*equilibrium2[1]*this.#col_matrix[0] + equilibrium2[0]*(1-equilibrium2[1])*this.#col_matrix[1]
+                                + (1-equilibrium2[0])*equilibrium2[1]*this.#col_matrix[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*this.#col_matrix[3];
+                if (Math.abs(this.#threat_point[0]-rowDisagree2) > 0.001 && Math.abs(this.#threat_point[1]-colDisagree2) > 0.001)
+                    this.#threat_point_2 = [rowDisagree2,colDisagree2];
+            }
         }
         return this.#threat_point;
+    }
+
+    get threat_point_2() {
+        this.threat_point;
+        if (this.#threat_point_2 !== undefined) {
+            return this.#threat_point_2;
+        } else {
+            return null;
+        }
     }
 
     get pareto() {
@@ -612,15 +636,35 @@ class Game {
     get row_ntu_tp_return() {
         if (this.#row_ntu_tp_return === undefined) {
             [this.#row_ntu_tp_return,this.#col_ntu_tp_return] = this.#bargaining(this.threat_point);
+            if (this.threat_point_2 != null) {
+                [this.#row_ntu_tp_return_2,this.#col_ntu_tp_return_2] = this.#bargaining(this.threat_point_2);
+            }
         }
         return this.#row_ntu_tp_return;
+    }
+
+    get row_ntu_tp_return_2() {
+        this.row_ntu_tp_return;
+        if (this.#row_ntu_tp_return_2 !== undefined)
+            return this.#row_ntu_tp_return_2;
+        else return null;
     }
 
     get col_ntu_tp_return() {
         if (this.#col_ntu_tp_return === undefined) {
             [this.#row_ntu_tp_return,this.#col_ntu_tp_return] = this.#bargaining(this.threat_point);
+            if (this.threat_point_2 != null) {
+                [this.#row_ntu_tp_return_2,this.#col_ntu_tp_return_2] = this.#bargaining(this.threat_point_2);
+            }
         }
         return this.#col_ntu_tp_return;
+    }
+
+    get col_ntu_tp_return_2() {
+        this.col_ntu_tp_return;
+        if (this.#col_ntu_tp_return_2 !== undefined)
+            return this.#col_ntu_tp_return_2;
+        else return null;
     }
 
     get row_tu_bs_return() {
@@ -2032,12 +2076,32 @@ function update() {
     colReturnsBargaining1.style.color = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.col_ntu_bs_return, 1));
 
     // row's threat point bargaining returns w/o transferable utility
-    rowReturnsBargaining2.innerHTML = game.row_ntu_tp_return.toFixed(1);
-    rowReturnsBargaining2.style.color = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.row_ntu_tp_return, 1));
+    // rowReturnsBargaining2.innerHTML = game.row_ntu_tp_return.toFixed(1);
+    // rowReturnsBargaining2.style.color = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.row_ntu_tp_return, 1));
+    if (game.row_ntu_tp_return_2 == null) {
+        rowReturnsBargaining2.innerHTML = game.row_ntu_tp_return.toFixed(1);
+        rowReturnsBargaining2.style.color = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.row_ntu_tp_return, 1));
+    } else {
+        rowReturnsBargaining2.innerHTML = "<span style='color:" + (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.row_ntu_tp_return, 1))
+                                        + "'>" + game.row_ntu_tp_return.toFixed(1) + "</span> / "
+                                        + "<span style='color:" + (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.row_ntu_tp_return_2, 1))
+                                        + "'>" + game.row_ntu_tp_return_2.toFixed(1) + "</span>";
+        rowReturnsBargaining2.style.color = "black";
+    }
 
     // column's threat point bargaining returns w/o transferable utility
-    colReturnsBargaining2.innerHTML = game.col_ntu_tp_return.toFixed(1);
-    colReturnsBargaining2.style.color = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.col_ntu_tp_return, 1));
+    // colReturnsBargaining2.innerHTML = game.col_ntu_tp_return.toFixed(1);
+    // colReturnsBargaining2.style.color = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.col_ntu_tp_return, 1));
+    if (game.row_ntu_tp_return_2 == null) {
+        colReturnsBargaining2.innerHTML = game.col_ntu_tp_return.toFixed(1);
+        colReturnsBargaining2.style.color = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.col_ntu_tp_return, 1));
+    } else {
+        colReturnsBargaining2.innerHTML = "<span style='color:" + (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.col_ntu_tp_return, 1))
+                                        + "'>" + game.col_ntu_tp_return.toFixed(1) + "</span> / "
+                                        + "<span style='color:" + (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.col_ntu_tp_return_2, 1))
+                                        + "'>" + game.col_ntu_tp_return_2.toFixed(1) + "</span>";
+        colReturnsBargaining2.style.color = "black";
+    }
 
     // row's backstop bargaining returns w/ transferable utility
     rowReturnsTrans.innerHTML = game.row_tu_bs_return.toFixed(1);
@@ -6295,8 +6359,32 @@ function returns(game, mode, row_player) {
             if (row_player) return game.row_ntu_bs_return;
             else return game.col_ntu_bs_return;
         case 3: // non-transferable utility threat point
-            if (row_player) return game.row_ntu_tp_return;
-            else return game.col_ntu_tp_return;
+            if (row_player) {
+                if (game.row_ntu_tp_return_2 == null)
+                    return game.row_ntu_tp_return;
+                else {
+                    const checker_size = 0.25;
+                    const diagonal1 = (game.x1+game.x2) % checker_size < checker_size/2;
+                    const diagonal2 = (game.x1-game.x2+6) % checker_size < checker_size/2;
+                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
+                        return game.row_ntu_tp_return;
+                    else
+                        return game.row_ntu_tp_return_2;
+                }
+            }
+            else {
+                if (game.col_ntu_tp_return_2 == null)
+                    return game.col_ntu_tp_return;
+                else {
+                    const checker_size = 0.25;
+                    const diagonal1 = (game.x1+game.x2) % checker_size < checker_size/2;
+                    const diagonal2 = (game.x1-game.x2+6) % checker_size < checker_size/2;
+                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
+                        return game.col_ntu_tp_return;
+                    else
+                        return game.col_ntu_tp_return_2;
+                }
+            }
         case 4: // transferable utility backstop
             if (row_player) return game.row_tu_bs_return;
             else return game.col_tu_bs_return;
@@ -6315,10 +6403,32 @@ function returns(game, mode, row_player) {
             else
                 return game.backstop[1];
         case 10: // threat points
-            if (row_player)
-                return game.threat_point[0];
-            else
-                return game.threat_point[1];
+            if (row_player) {
+                if (game.threat_point_2 == null)
+                    return game.threat_point[0];
+                else {
+                    const checker_size = 0.25;
+                    const diagonal1 = (game.x1+game.x2) % checker_size < checker_size/2;
+                    const diagonal2 = (game.x1-game.x2+6) % checker_size < checker_size/2;
+                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
+                        return game.threat_point[0];
+                    else
+                        return game.threat_point_2[0];
+                }
+            }
+            else {
+                if (game.threat_point_2 == null)
+                    return game.threat_point[1];
+                else {
+                    const checker_size = 0.25;
+                    const diagonal1 = (game.x1+game.x2) % checker_size < checker_size/2;
+                    const diagonal2 = (game.x1-game.x2+6) % checker_size < checker_size/2;
+                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
+                        return game.threat_point[1];
+                    else
+                        return game.threat_point_2[1];
+                }
+            }
     }
 }
 
