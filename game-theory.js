@@ -322,6 +322,8 @@ class Game {
         this.#b2 = coords2[1];
         this.#row_matrix = val[0];
         this.#col_matrix = val[1];
+        this.#row_ranks = this.#ranks(this.#row_matrix);
+        this.#col_ranks = this.#ranks(this.#col_matrix);
         this.#update_quadrant();
         this.#clear();
     }
