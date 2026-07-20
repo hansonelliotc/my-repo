@@ -4062,25 +4062,25 @@ function crossBlue(p1) {
     // }
 }
 
-// function crossRed(p1) {
-//     if (p1) {
-//         let redLine = Math.round((game.x1+1)/2)*2-1;
-//         game.x1 = (redLine - (game.x1 - redLine) + 6) % 6;
-//     } else {
-//         let redLine = Math.round((game.x2+1)/2)*2-1;
-//         game.x2 = (redLine - (game.x2 - redLine) + 6) % 6;
-//     }
-// }
+function crossRed(p1) {
+    if (p1) {
+        let redLine = Math.round((game.x1+1)/2)*2-1;
+        game.x1 = (redLine - (game.x1 - redLine) + 6) % 6;
+    } else {
+        let redLine = Math.round((game.x2+1)/2)*2-1;
+        game.x2 = (redLine - (game.x2 - redLine) + 6) % 6;
+    }
+}
 
-// function crossGreen(p1) {
-//     if (p1) {
-//         let greenLine = Math.round(game.x1/2)*2;
-//         game.x1 = (greenLine - (game.x1 - greenLine) + 6) % 6;
-//     } else {
-//         let greenLine = Math.round(game.x2/2)*2;
-//         game.x2 = (greenLine - (game.x2 - greenLine) + 6) % 6;
-//     }
-// }
+function crossGreen(p1) {
+    if (p1) {
+        let greenLine = Math.round(game.x1/2)*2;
+        game.x1 = (greenLine - (game.x1 - greenLine) + 6) % 6;
+    } else {
+        let greenLine = Math.round(game.x2/2)*2;
+        game.x2 = (greenLine - (game.x2 - greenLine) + 6) % 6;
+    }
+}
 
 // function wiggle(p1) {
 //     if (p1) {
