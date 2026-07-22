@@ -93,7 +93,7 @@ class Game {
     #max_total; #correlation;
     #offset1 = 2; #offset2 = 2;
     #flip1 = -1; #flip2 = -1;
-    #negate_row = false; #negate_col = false;
+    #negate_row = true; #negate_col = true;
 
     constructor(x1,x2,b1,b2,q) {
         this.#x1 = x1;
@@ -798,8 +798,8 @@ class Game {
     }
 
     get rhombic_x1() {
-        // const q = this.#antiquadrant();
-        const q = this.#quadrant;
+        const q = this.#antiquadrant();
+        // const q = this.#quadrant;
         if (this.#rhombic_x1 === undefined) {
             let rhombic = this.#xb_to_rhombic((this.#x1*this.#flip1 - this.#offset1 + 12) % 6, this.#b1, q == 1 || q == 2);
             this.#rhombic_x1 = rhombic[0];
@@ -809,8 +809,8 @@ class Game {
     }
 
     get rhombic_y1() {
-        // const q = this.#antiquadrant();
-        const q = this.#quadrant;
+        const q = this.#antiquadrant();
+        // const q = this.#quadrant;
         if (this.#rhombic_y1 === undefined) {
             let rhombic = this.#xb_to_rhombic((this.#x1*this.#flip1 - this.#offset1 + 12) % 6, this.#b1, q == 1 || q == 2);
             this.#rhombic_x1 = rhombic[0];
@@ -820,8 +820,8 @@ class Game {
     }
 
     get rhombic_x2() {
-        // const q = this.#antiquadrant();
-        const q = this.#quadrant;
+        const q = this.#antiquadrant();
+        // const q = this.#quadrant;
         if (this.#rhombic_x2 === undefined) {
             let rhombic = this.#xb_to_rhombic((this.#x2*this.#flip2 - this.#offset2 + 12) % 6, this.#b2, q == 1 || q == 4);
             this.#rhombic_x2 = -rhombic[0];
@@ -831,8 +831,8 @@ class Game {
     }
 
     get rhombic_y2() {
-        // const q = this.#antiquadrant();
-        const q = this.#quadrant;
+        const q = this.#antiquadrant();
+        // const q = this.#quadrant;
         if (this.#rhombic_y2 === undefined) {
             let rhombic = this.#xb_to_rhombic((this.#x2*this.#flip2 - this.#offset2 + 12) % 6, this.#b2, q == 1 || q == 4);
             this.#rhombic_x2 = -rhombic[0];
@@ -1057,22 +1057,22 @@ class Game {
         const ceruleanBackground = [196, 224, 235];
         const goldBackground = [255, 243, 208];
         const grayBackground = [208, 208, 208];
-        const max1 = this.row_ranks.indexOf(3);
-        const max2 = this.col_ranks.indexOf(3);
-        if (max1 == max2) return greenBackground;
-        else if (max1 == 0 && max2 == 2 || max1 == 2 && max2 == 0 || max1 == 1 && max2 == 3 || max1 == 3 && max2 == 1) return goldBackground;
-        else if (max1 == 0 && max2 == 1 || max1 == 1 && max2 == 0 || max1 == 2 && max2 == 3 || max1 == 3 && max2 == 2) return ceruleanBackground;
-        else return grayBackground;
-        // switch (this.#antiquadrant()) {
-        //     case 1:
-        //         return greenBackground;
-        //     case 2:
-        //         return goldBackground;
-        //     case 3:
-        //         return grayBackground;
-        //     case 4:
-        //         return ceruleanBackground;
-        // }
+        // const max1 = this.row_ranks.indexOf(3);
+        // const max2 = this.col_ranks.indexOf(3);
+        // if (max1 == max2) return greenBackground;
+        // else if (max1 == 0 && max2 == 2 || max1 == 2 && max2 == 0 || max1 == 1 && max2 == 3 || max1 == 3 && max2 == 1) return goldBackground;
+        // else if (max1 == 0 && max2 == 1 || max1 == 1 && max2 == 0 || max1 == 2 && max2 == 3 || max1 == 3 && max2 == 2) return ceruleanBackground;
+        // else return grayBackground;
+        switch (this.#antiquadrant()) {
+            case 1:
+                return greenBackground;
+            case 2:
+                return goldBackground;
+            case 3:
+                return grayBackground;
+            case 4:
+                return ceruleanBackground;
+        }
     }
 }
 
@@ -6430,8 +6430,8 @@ function exportPNG() {
 }
 
 function goTo(x1,x2,b1,b2,q) {
-    game.x1 = ((x1 + game.conventions[0])*game.conventions[1] + 6) % 6;
-    game.x2 = ((x2 + game.conventions[0])*game.conventions[1] + 6) % 6;
+    game.x1 = ((x1 + game.conventions[0])*game.conventions[1] + 12) % 6;
+    game.x2 = ((x2 + game.conventions[0])*game.conventions[1] + 12) % 6;
     game.b1 = b1;
     game.b2 = b2;
     game.quadrant = q;
