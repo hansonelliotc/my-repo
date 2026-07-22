@@ -5655,7 +5655,7 @@ function updateCanvas(lowRes = false) {
 
 function fixImage(alt) {
     if (!useAltSchema) {
-        fixImageSize = alt;
+        // fixImageSize = alt;
         backgroundOutOfDate = true;
     }
     const fixImageButton0 = document.getElementById("fix-image-button-0");
@@ -5668,7 +5668,7 @@ function fixImage(alt) {
         diagramGrid = true;
         fixImageButton1.classList.remove("selected");
         fixImageButton2.classList.add("selected");
-        diagram.style.opacity = 0;
+        // diagram.style.opacity = 0;
         // updateDiagramGrid();
     } else {
         diagramGrid = false;
@@ -6007,13 +6007,18 @@ function updateDiagramGrid() {
     while (element = document.querySelector(".clone")) {
         element.remove();
     }
+    function num_games(x) {
+        if (x < 2) return 6
+        if (x < 4) return 3;
+        return 1;
+    }
     let new_game = game.use_conventions(game.x1,game.x2,game.b1,game.b2,game.quadrant);
-    for (let i = 0; i < (new_game.b1 > 1 ? 1 : 6); i++) {
-        for (let j = 0; j < (new_game.b2 > 1 ? 1 : 6); j++) {
+    for (let i = 0; i < 6; i += 6/num_games(new_game.b2)) {
+        for (let j = 0; j < 6; j += 6/num_games(new_game.b1)) {
             updateDiagram(new_game);
             createDiagram();
-            if (new_game.b2 <= 1) {
-                if (j % 2 == 0) {
+            for (let k = 0; k < 6/num_games(new_game.b1); k++) {
+                if ((j+k) % 2 == 0) {
                     let redLine = Math.round((new_game.x1+1)/2)*2-1;
                     if (new_game.x1 != 4)
                         new_game.x1 = (redLine - (new_game.x1 - redLine) + 6) % 6;
@@ -6022,8 +6027,8 @@ function updateDiagramGrid() {
                 } else new_game.crossGreen(true);
             }
         }
-        if (new_game.b1 <= 1) {
-            if (i % 2 == 0) {
+        for (let k = 0; k < 6/num_games(new_game.b2); k++) {
+            if ((i+k) % 2 == 0) {
                 let redLine = Math.round((new_game.x2+1)/2)*2-1;
                 if (new_game.x2 != 4)
                     new_game.x2 = (redLine - (new_game.x2 - redLine) + 6) % 6;
