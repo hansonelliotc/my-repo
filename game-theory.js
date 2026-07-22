@@ -4870,6 +4870,10 @@ function take(array, rank) {
 // }
 
 function growBox(e) {
+    if (enRoute) {
+        enRoute = false;
+        return;
+    }
     const bigDiagram = document.getElementById("big-diagram");
     const rect = bigDiagram.getBoundingClientRect();
     if (rect.width == 0) {
@@ -6008,8 +6012,8 @@ function updateDiagramGrid() {
         element.remove();
     }
     function num_games(x) {
-        if (x < 2) return 6
-        if (x < 4) return 3;
+        // if (x < 2) return 6;
+        if (x < 3.5) return 3;
         return 1;
     }
     let new_game = game.use_conventions(game.x1,game.x2,game.b1,game.b2,game.quadrant);
@@ -6610,6 +6614,11 @@ function hideLines(hide) {
         hotspot1.style.display = "none";
         hotspot2.style.display = "none";
         hotspot3.style.display = "none";
+        const bigPicLines = document.getElementsByClassName("big-pic-line");
+        for (let line of bigPicLines) {
+            line.style.display = "none";
+        }
+
     } else {
         red1.style.display = "";
         red2.style.display = "";
@@ -6656,6 +6665,10 @@ function hideLines(hide) {
         hotspot1.style.display = "";
         hotspot2.style.display = "";
         hotspot3.style.display = "";
+        const bigPicLines = document.getElementsByClassName("big-pic-line");
+        for (let line of bigPicLines) {
+            line.style.display = "";
+        }
     }
 }
 
@@ -6775,6 +6788,7 @@ function change_conventions(offset, inversion) {
 
     const redLines = document.getElementsByClassName("red-line");
     const greenLines = document.getElementsByClassName("green-line");
+    const bigPicLines = document.getElementsByClassName("big-pic-line");
     if (offset % 2 == 0) {
         for (let line of redLines) {
             line.style.stroke = "red";
@@ -6782,11 +6796,17 @@ function change_conventions(offset, inversion) {
         for (let line of greenLines) {
             line.style.stroke = "green";
         }
+        for (let line of bigPicLines) {
+            line.style.stroke = "green";
+        }
     } else {
         for (let line of redLines) {
             line.style.stroke = "green";
         }
         for (let line of greenLines) {
+            line.style.stroke = "red";
+        }
+        for (let line of bigPicLines) {
             line.style.stroke = "red";
         }
     }
