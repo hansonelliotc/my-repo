@@ -92,7 +92,7 @@ class Game {
     #row_tu_tp_return; #col_tu_tp_return;
     #max_total; #correlation;
     #offset1 = 2; #offset2 = 2;
-    #flip1 = 1; #flip2 = 1;
+    #flip1 = -1; #flip2 = -1;
     #negate_row = false; #negate_col = false;
 
     constructor(x1,x2,b1,b2,q) {
@@ -1077,7 +1077,7 @@ class Game {
     }
 }
 
-let game = new Game(5.5,5.5,2,2,3);
+let game = new Game(0.5,0.5,2,2,3);
 
 init();
 setInterval('update()', 50);
@@ -6430,8 +6430,8 @@ function exportPNG() {
 }
 
 function goTo(x1,x2,b1,b2,q) {
-    game.x1 = x1;
-    game.x2 = x2;
+    game.x1 = ((x1 + game.conventions[0])*game.conventions[1] + 6) % 6;
+    game.x2 = ((x2 + game.conventions[0])*game.conventions[1] + 6) % 6;
     game.b1 = b1;
     game.b2 = b2;
     game.quadrant = q;
