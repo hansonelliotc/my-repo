@@ -6742,6 +6742,24 @@ function change_conventions(offset, inversion) {
     }
     const selected_button = document.getElementById("convention-" + offset.toString() + (inversion == -1 ? "-inverted" : ""));
     selected_button.classList.add("selected");
+
+    const redLines = document.getElementsByClassName("red-line");
+    const greenLines = document.getElementsByClassName("green-line");
+    if (offset % 2 == 0) {
+        for (let line of redLines) {
+            line.style.stroke = "red";
+        }
+        for (let line of greenLines) {
+            line.style.stroke = "green";
+        }
+    } else {
+        for (let line of redLines) {
+            line.style.stroke = "green";
+        }
+        for (let line of greenLines) {
+            line.style.stroke = "red";
+        }
+    }
 }
 
 
