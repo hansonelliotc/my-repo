@@ -93,7 +93,7 @@ class Game {
     #max_total; #correlation;
     #offset1 = 2; #offset2 = 2;
     #flip1 = -1; #flip2 = -1;
-    #negate_row = true; #negate_col = true;
+    #negate_row = false; #negate_col = false;
 
     constructor(x1,x2,b1,b2,q) {
         this.#x1 = x1;
@@ -798,8 +798,8 @@ class Game {
     }
 
     get rhombic_x1() {
-        const q = this.#antiquadrant();
-        // const q = this.#quadrant;
+        // const q = this.#antiquadrant();
+        const q = this.#quadrant;
         if (this.#rhombic_x1 === undefined) {
             let rhombic = this.#xb_to_rhombic((this.#x1*this.#flip1 - this.#offset1 + 12) % 6, this.#b1, q == 1 || q == 2);
             this.#rhombic_x1 = rhombic[0];
@@ -809,8 +809,8 @@ class Game {
     }
 
     get rhombic_y1() {
-        const q = this.#antiquadrant();
-        // const q = this.#quadrant;
+        // const q = this.#antiquadrant();
+        const q = this.#quadrant;
         if (this.#rhombic_y1 === undefined) {
             let rhombic = this.#xb_to_rhombic((this.#x1*this.#flip1 - this.#offset1 + 12) % 6, this.#b1, q == 1 || q == 2);
             this.#rhombic_x1 = rhombic[0];
@@ -820,8 +820,8 @@ class Game {
     }
 
     get rhombic_x2() {
-        const q = this.#antiquadrant();
-        // const q = this.#quadrant;
+        // const q = this.#antiquadrant();
+        const q = this.#quadrant;
         if (this.#rhombic_x2 === undefined) {
             let rhombic = this.#xb_to_rhombic((this.#x2*this.#flip2 - this.#offset2 + 12) % 6, this.#b2, q == 1 || q == 4);
             this.#rhombic_x2 = -rhombic[0];
@@ -831,8 +831,8 @@ class Game {
     }
 
     get rhombic_y2() {
-        const q = this.#antiquadrant();
-        // const q = this.#quadrant;
+        // const q = this.#antiquadrant();
+        const q = this.#quadrant;
         if (this.#rhombic_y2 === undefined) {
             let rhombic = this.#xb_to_rhombic((this.#x2*this.#flip2 - this.#offset2 + 12) % 6, this.#b2, q == 1 || q == 4);
             this.#rhombic_x2 = -rhombic[0];
@@ -1001,6 +1001,26 @@ class Game {
         return game.use_conventions(x1,x2,this.b1,this.b2,this.qOverBlue(p1));
     }
 
+    crossGreen(p1) {
+        if (p1) {
+            let greenLine = Math.round(this.x1/2)*2;
+            this.x1 = (greenLine - (this.x1 - greenLine) + 6) % 6;
+        } else {
+            let greenLine = Math.round(this.x2/2)*2;
+            this.x2 = (greenLine - (this.x2 - greenLine) + 6) % 6;
+        }
+    }
+
+    crossRed(p1) {
+        if (p1) {
+            let redLine = Math.round((this.x1+1)/2)*2-1;
+            this.x1 = (redLine - (this.x1 - redLine) + 6) % 6;
+        } else {
+            let redLine = Math.round((this.x2+1)/2)*2-1;
+            this.x2 = (redLine - (this.x2 - redLine) + 6) % 6;
+        }
+    }
+
     get equilibrium_color() {
         const greenBackground = [217, 255, 217];
         const ceruleanBackground = [196, 224, 235];
@@ -1057,22 +1077,22 @@ class Game {
         const ceruleanBackground = [196, 224, 235];
         const goldBackground = [255, 243, 208];
         const grayBackground = [208, 208, 208];
-        // const max1 = this.row_ranks.indexOf(3);
-        // const max2 = this.col_ranks.indexOf(3);
-        // if (max1 == max2) return greenBackground;
-        // else if (max1 == 0 && max2 == 2 || max1 == 2 && max2 == 0 || max1 == 1 && max2 == 3 || max1 == 3 && max2 == 1) return goldBackground;
-        // else if (max1 == 0 && max2 == 1 || max1 == 1 && max2 == 0 || max1 == 2 && max2 == 3 || max1 == 3 && max2 == 2) return ceruleanBackground;
-        // else return grayBackground;
-        switch (this.#antiquadrant()) {
-            case 1:
-                return greenBackground;
-            case 2:
-                return goldBackground;
-            case 3:
-                return grayBackground;
-            case 4:
-                return ceruleanBackground;
-        }
+        const max1 = this.row_ranks.indexOf(3);
+        const max2 = this.col_ranks.indexOf(3);
+        if (max1 == max2) return greenBackground;
+        else if (max1 == 0 && max2 == 2 || max1 == 2 && max2 == 0 || max1 == 1 && max2 == 3 || max1 == 3 && max2 == 1) return goldBackground;
+        else if (max1 == 0 && max2 == 1 || max1 == 1 && max2 == 0 || max1 == 2 && max2 == 3 || max1 == 3 && max2 == 2) return ceruleanBackground;
+        else return grayBackground;
+        // switch (this.#antiquadrant()) {
+        //     case 1:
+        //         return greenBackground;
+        //     case 2:
+        //         return goldBackground;
+        //     case 3:
+        //         return grayBackground;
+        //     case 4:
+        //         return ceruleanBackground;
+        // }
     }
 }
 
@@ -2361,7 +2381,7 @@ function update() {
 
     if (viewModeVolatile) backgroundOutOfDate = true;
 
-    updateDiagram();
+    updateDiagram(game);
 
     // Update big-diagram elements
     const bigDiagram = document.getElementById("big-diagram");
@@ -5771,7 +5791,7 @@ function createDiagram() {
     container.appendChild(clone);
 }
 
-function updateDiagram() {
+function updateDiagram(game) {
     const error = 0.00001;
 
     const container = document.getElementById("container");
@@ -5987,25 +6007,30 @@ function updateDiagramGrid() {
     while (element = document.querySelector(".clone")) {
         element.remove();
     }
-    for (let i = 0; i < 6; i++) {
-        for (let j = 0; j < 6; j++) {
-            if (j % 2 == 0) {
-                let redLine = Math.round((game.x1+1)/2)*2-1;
-                if (game.x1 != 4)
-                    game.x1 = (redLine - (game.x1 - redLine) + 6) % 6;
-                else
-                    game.x1 = 6;
-            } else crossGreen(true);
-            updateDiagram();
+    let new_game = game.use_conventions(game.x1,game.x2,game.b1,game.b2,game.quadrant);
+    for (let i = 0; i < (new_game.b1 > 1 ? 1 : 6); i++) {
+        for (let j = 0; j < (new_game.b2 > 1 ? 1 : 6); j++) {
+            updateDiagram(new_game);
             createDiagram();
+            if (new_game.b2 <= 1) {
+                if (j % 2 == 0) {
+                    let redLine = Math.round((new_game.x1+1)/2)*2-1;
+                    if (new_game.x1 != 4)
+                        new_game.x1 = (redLine - (new_game.x1 - redLine) + 6) % 6;
+                    else
+                        new_game.x1 = 6;
+                } else new_game.crossGreen(true);
+            }
         }
-        if (i % 2 == 0) {
-            let redLine = Math.round((game.x2+1)/2)*2-1;
-            if (game.x2 != 4)
-                game.x2 = (redLine - (game.x2 - redLine) + 6) % 6;
-            else
-                game.x2 = 6;
-        } else crossGreen(false);
+        if (new_game.b1 <= 1) {
+            if (i % 2 == 0) {
+                let redLine = Math.round((new_game.x2+1)/2)*2-1;
+                if (new_game.x2 != 4)
+                    new_game.x2 = (redLine - (new_game.x2 - redLine) + 6) % 6;
+                else
+                    new_game.x2 = 6;
+            } else new_game.crossGreen(false);
+        }
     }
 }
 
