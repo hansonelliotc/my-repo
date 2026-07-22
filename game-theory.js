@@ -24,8 +24,8 @@ let b1V   = 0;
 let b2V   = 0;
 let draggingB1 = false;
 let draggingB2 = false;
-let startPoint = [0,0,0,0,0,0]; // r1,r2,b1,b2,x1,x2
-let destination = [0,0,0,0]; // r1,r2,b1,b2
+let startPoint = [[0,0,0,0],[0,0,0,0]];
+let destination = [[0,0,0,0],[0,0,0,0]];
 let animTime = 0;
 let enRoute = false;
 let draggingInBigPic = false;
@@ -164,20 +164,10 @@ class Game {
 
     #matrix_to_xb(matrix,ranks) {
         const sorted_matrix = matrix.toSorted();
-        const redModified = sorted_matrix[1]/sorted_matrix[2];
+        const redModified = sorted_matrix[2] != 0 ? sorted_matrix[1]/sorted_matrix[2] : 0;
         const blue = 6 - sorted_matrix[2];
 
         let cell = -1;
-        if (ranks[0] == 2 && ranks[1] == 3 || ranks[1] == 2 && ranks[0] == 3 || ranks[2] == 2 && ranks[3] == 3 || ranks[3] == 2 && ranks[2] == 3) {
-            if (ranks[0] == 0 && ranks[2] == 3 || ranks[2] == 0 && ranks[0] == 3 || ranks[1] == 0 && ranks[3] == 3 || ranks[3] == 0 && ranks[1] == 3) cell = 5;
-            else cell = 4;
-        } else if (ranks[0] == 2 && ranks[2] == 3 || ranks[2] == 2 && ranks[0] == 3 || ranks[1] == 2 && ranks[3] == 3 || ranks[3] == 2 && ranks[1] == 3) {
-            if (ranks[0] == 0 && ranks[1] == 3 || ranks[1] == 0 && ranks[0] == 3 || ranks[2] == 0 && ranks[3] == 3 || ranks[3] == 0 && ranks[2] == 3) cell = 2;
-            else cell = 3;
-        } else {
-            if (ranks[0] == 0 && ranks[2] == 3 || ranks[2] == 0 && ranks[0] == 3 || ranks[1] == 0 && ranks[3] == 3 || ranks[3] == 0 && ranks[1] == 3) cell = 0;
-            else cell = 1;
-        }
         if (ranks[0] == 2 && ranks[1] == 3 || ranks[1] == 2 && ranks[0] == 3 || ranks[2] == 2 && ranks[3] == 3 || ranks[3] == 2 && ranks[2] == 3) {
             if (ranks[0] == 0 && ranks[2] == 3 || ranks[2] == 0 && ranks[0] == 3 || ranks[1] == 0 && ranks[3] == 3 || ranks[3] == 0 && ranks[1] == 3) cell = 5;
             else cell = 4;
@@ -314,6 +304,8 @@ class Game {
     }
 
     set matrices(val) {
+        val[0] = val[0].map(x => Math.max(Math.min(x,6)),0);
+        val[1] = val[1].map(x => Math.max(Math.min(x,6)),0);
         const coords1 = this.#matrix_to_xb(val[0],this.#ranks(val[0]));
         this.#x1 = ((coords1[0] + this.#offset1)*this.#flip1 + 12) % 6;
         this.#b1 = coords1[1];
@@ -2193,10 +2185,15 @@ function update() {
 
     if (enRoute) {
         animTime++;
-        game.b1 = animTime/animationFrames*destination[2] + (1 - animTime/animationFrames)*startPoint[2];
-        game.b2 = animTime/animationFrames*destination[3] + (1 - animTime/animationFrames)*startPoint[3];
-        game.x1 = fromNearestRed(startPoint[4], (animTime/animationFrames*destination[0] + (1 - animTime/animationFrames)*startPoint[0])/(6 - game.b1));
-        game.x2 = fromNearestRed(startPoint[5], (animTime/animationFrames*destination[1] + (1 - animTime/animationFrames)*startPoint[1])/(6 - game.b2));
+        // game.b1 = animTime/animationFrames*destination[2] + (1 - animTime/animationFrames)*startPoint[2];
+        // game.b2 = animTime/animationFrames*destination[3] + (1 - animTime/animationFrames)*startPoint[3];
+        // game.x1 = fromNearestRed(startPoint[4], (animTime/animationFrames*destination[0] + (1 - animTime/animationFrames)*startPoint[0])/(6 - game.b1));
+        // game.x2 = fromNearestRed(startPoint[5], (animTime/animationFrames*destination[1] + (1 - animTime/animationFrames)*startPoint[1])/(6 - game.b2));
+        const ratio = animTime/animationFrames;
+        game.matrices = [
+            destination[0].map((x,i) => x*ratio + startPoint[0][i]*(1-ratio)),
+            destination[1].map((x,i) => x*ratio + startPoint[1][i]*(1-ratio))
+        ];
         backgroundOutOfDate = true;
         updateRequired = true;
         if (animTime == animationFrames) {
@@ -4860,10 +4857,13 @@ function growBox(e) {
         return;
     }
     const fullWidth = bigDiagram.getBoundingClientRect().width;
-    const padding = 0.1*fullWidth;
-    const width = fullWidth - 2*padding;
-    const relativeX = e.offsetX - padding;
-    const relativeY = e.offsetY - padding;
+    const padding1 = 0.04*fullWidth;
+    const padding2 = 0.32*fullWidth;
+    const width = fullWidth - padding1 - padding2;
+    // const padding = 0.1*fullWidth;
+    // const width = fullWidth - 2*padding;
+    const relativeX = e.offsetX - padding1;
+    const relativeY = e.offsetY - padding2;
     const x = relativeX / width * 6;
     const y = (1 - relativeY / width) * 6;
 
@@ -4878,21 +4878,20 @@ function growBox(e) {
         const ver2 = take(game.row_matrix, 2);
         const hor1 = take(game.col_matrix, 1);
         const hor2 = take(game.col_matrix, 2);
-        if (x > ver2) destination[2] = 6;
-        else destination[2] = 0;
-        if (x > ver1) destination[0] = 0;
-        else destination[0] = 6;
-        if (y > hor2) destination[3] = 6;
-        else destination[3] = 0;
-        if (y > hor1) destination[1] = 0;
-        else destination[1] = 6;
+        destination[0][game.row_ranks.indexOf(0)] = 0;
+        destination[0][game.row_ranks.indexOf(3)] = 6;
+        destination[1][game.col_ranks.indexOf(0)] = 0;
+        destination[1][game.col_ranks.indexOf(3)] = 6;
+        if (x > ver2) destination[0][game.row_ranks.indexOf(2)] = 0;
+        else destination[0][game.row_ranks.indexOf(2)] = 6;
+        if (x > ver1) destination[0][game.row_ranks.indexOf(1)] = 0;
+        else destination[0][game.row_ranks.indexOf(1)] = 6;
+        if (y > hor2) destination[1][game.col_ranks.indexOf(2)] = 0;
+        else destination[1][game.col_ranks.indexOf(2)] = 6;
+        if (y > hor1) destination[1][game.col_ranks.indexOf(1)] = 0;
+        else destination[1][game.col_ranks.indexOf(1)] = 6;
 
-        startPoint[0] = take(game.row_matrix,1);
-        startPoint[1] = take(game.col_matrix,1);
-        startPoint[2] = game.b1;
-        startPoint[3] = game.b2;
-        startPoint[4] = game.x1;
-        startPoint[5] = game.x2;
+        startPoint = [[...game.row_matrix],[...game.col_matrix]];
         animTime = 0;
     }
 }
