@@ -3997,8 +3997,8 @@ function update() {
 
     // update cell name
     const cellName = document.getElementById("cell-name");
-    let cellCol = 6 - (Math.floor(game.x1)+2) % 6;
-    let cellRow = 6 - (Math.floor(game.x2)+2) % 6;
+    let cellCol = ((Math.floor(game.x1*game.conventions[1])-game.conventions[0]) + 16) % 6;
+    let cellRow = ((Math.floor(game.x2*game.conventions[1])-game.conventions[0]) + 16) % 6;
     cellName.innerHTML = cellCol.toString() + "," + cellRow.toString();
 
     time++;
