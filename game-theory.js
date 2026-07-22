@@ -776,7 +776,6 @@ class Game {
         const sorted_col_matrix = this.col_matrix.toSorted();
         this.b1 = 6*sorted_row_matrix[1]/sorted_row_matrix[2]/(1+sorted_row_matrix[1]/sorted_row_matrix[2]);
         this.b2 = 6*sorted_col_matrix[1]/sorted_col_matrix[2]/(1+sorted_col_matrix[1]/sorted_col_matrix[2]);
-        // (6-x)*sorted_row_matrix[1]/sorted_row_matrix[2] == x
     }
 
     #xb_to_rhombic(x,b,good_quadrant) {
@@ -3997,8 +3996,8 @@ function update() {
 
     // update cell name
     const cellName = document.getElementById("cell-name");
-    let cellCol = ((Math.floor(game.x1*game.conventions[1])-game.conventions[0]) + 16) % 6;
-    let cellRow = ((Math.floor(game.x2*game.conventions[1])-game.conventions[0]) + 16) % 6;
+    let cellCol = (-1*(Math.floor(game.x1*game.conventions[1])-game.conventions[0]) + 15) % 6 + 1;
+    let cellRow = (-1*(Math.floor(game.x2*game.conventions[1])-game.conventions[0]) + 15) % 6 + 1;
     cellName.innerHTML = cellCol.toString() + "," + cellRow.toString();
 
     time++;
@@ -4882,6 +4881,7 @@ function growBox(e) {
         destination[0][game.row_ranks.indexOf(3)] = 6;
         destination[1][game.col_ranks.indexOf(0)] = 0;
         destination[1][game.col_ranks.indexOf(3)] = 6;
+        destination[2] = game.quadrant;
         if (x > ver2) destination[0][game.row_ranks.indexOf(2)] = 0;
         else destination[0][game.row_ranks.indexOf(2)] = 6;
         if (x > ver1) destination[0][game.row_ranks.indexOf(1)] = 0;
