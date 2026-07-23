@@ -670,17 +670,20 @@
 		<h2 style="padding:1vh 1vw"><span id="quadrant-label">Bad quadrant</span><br><span id="view-mode-label">Equilibrium view</span></h2>
 		<table cellspacing="0" cellpadding="0" style="border-collapse: separate;border-spacing: 5px 0;">
 			<tr>
-				<td><button id="fix-image-button-0" onclick="hideGame()">Hide game</button></td>
+				<td><button class="show-diagrams" id="fix-image-button-0" onclick="hideGame()">Hide game</button></td>
 				<td><button id="alt-image-button-1" onclick="altImage(false)" class="selected">All games</button></td>
-				<td><button id="hide-lines-button" onclick="hideLines(true)">Hide Lines</button></td>
+				<td><button id="hide-lines-button" onclick="hideLines(true)">Hide lines</button></td>
 			</tr>
 			<tr>
-				<td><button id="fix-image-button-1" onclick="fixImage(false)" class="selected">Show one game</button></td>
+				<td><button class="show-diagrams selected" id="fix-image-button-1" onclick="fixImage(false)" class="selected">Show one game</button></td>
 				<td><button id="alt-image-button-2" onclick="altImage(true)">Balanced games only</button></td>
-				<td><button id="show-lines-button" onclick="hideLines(false)" class="selected">Show Lines</button></td>
+				<td><button id="show-lines-button" onclick="hideLines(false)" class="selected">Show lines</button></td>
 			</tr>
 			<tr>
-				<td><button id="fix-image-button-2" onclick="fixImage(true)">Show 36 games</button></td>
+				<td><button class="show-diagrams" id="fix-image-button-2" onclick="more_games()">Show more games</button></td>
+			</tr>
+			<tr>
+				<td><button class="show-diagrams" id="fix-image-button-3" onclick="fixImage(true)">Show 36 games</button></td>
 			</tr>
 		</table>
 	</div>

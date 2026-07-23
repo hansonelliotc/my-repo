@@ -5659,25 +5659,24 @@ function updateCanvas(lowRes = false) {
 
 function fixImage(alt) {
     if (!useAltSchema) {
-        // fixImageSize = alt;
+        fixImageSize = alt;
         backgroundOutOfDate = true;
     }
-    const fixImageButton0 = document.getElementById("fix-image-button-0");
-    const fixImageButton1 = document.getElementById("fix-image-button-1");
-    const fixImageButton2 = document.getElementById("fix-image-button-2");
-    const diagram = document.getElementById("diagram");
-    fixImageButton0.classList.remove("selected");
+    for (let elt of document.getElementsByClassName("show-diagrams")) {
+        elt.classList.remove("selected");
+    }
+    document.getElementById("fix-image-button-1").classList.add("selected");
+
+    num_games = x => 6;
 
     if (alt) {
         diagramGrid = true;
-        fixImageButton1.classList.remove("selected");
-        fixImageButton2.classList.add("selected");
+        document.getElementById("fix-image-button-3").classList.add("selected");
         // diagram.style.opacity = 0;
         // updateDiagramGrid();
     } else {
         diagramGrid = false;
-        fixImageButton2.classList.remove("selected");
-        fixImageButton1.classList.add("selected");
+        document.getElementById("fix-image-button-1").classList.add("selected");
         let element;
         while (element = document.querySelector(".clone")) {
             element.remove();
@@ -6005,22 +6004,28 @@ function updateDiagram(game) {
     }
 }
 
+
+let num_games = x => 6;
+
 function updateDiagramGrid() {
     updateRequired = false;
     let element;
     while (element = document.querySelector(".clone")) {
         element.remove();
     }
-    function num_games(x) {
-        // if (x < 2) return 6;
-        if (x < 3.5) return 3;
-        return 1;
-    }
     let new_game = game.use_conventions(game.x1,game.x2,game.b1,game.b2,game.quadrant);
     for (let i = 0; i < 6; i += 6/num_games(new_game.b2)) {
+        for (let k = 0; k < 6/num_games(new_game.b2); k++) {
+            if ((i+k) % 2 == 0) {
+                let redLine = Math.round((new_game.x2+1)/2)*2-1;
+                if (new_game.x2 != 4)
+                    new_game.x2 = (redLine - (new_game.x2 - redLine) + 6) % 6;
+                else
+                    new_game.x2 = 6;
+            } else new_game.crossGreen(false);
+        }
         for (let j = 0; j < 6; j += 6/num_games(new_game.b1)) {
-            updateDiagram(new_game);
-            createDiagram();
+            if (i == 6 - 6/num_games(new_game.b2) && j == 6 - 6/num_games(new_game.b1)) break;
             for (let k = 0; k < 6/num_games(new_game.b1); k++) {
                 if ((j+k) % 2 == 0) {
                     let redLine = Math.round((new_game.x1+1)/2)*2-1;
@@ -6030,15 +6035,8 @@ function updateDiagramGrid() {
                         new_game.x1 = 6;
                 } else new_game.crossGreen(true);
             }
-        }
-        for (let k = 0; k < 6/num_games(new_game.b2); k++) {
-            if ((i+k) % 2 == 0) {
-                let redLine = Math.round((new_game.x2+1)/2)*2-1;
-                if (new_game.x2 != 4)
-                    new_game.x2 = (redLine - (new_game.x2 - redLine) + 6) % 6;
-                else
-                    new_game.x2 = 6;
-            } else new_game.crossGreen(false);
+            updateDiagram(new_game);
+            createDiagram();
         }
     }
 }
@@ -6293,7 +6291,7 @@ function altImage(alt) {
     const hex3 = document.getElementById("br-hex-3");
 
     // useAltSchema = alt;
-    fixImageSize = alt;
+    if (!diagramGrid) fixImageSize = alt;
     backgroundOutOfDate = true;
     if (useAltSchema && !alt) {
         useAltSchema = false;
@@ -6342,12 +6340,10 @@ function altImage(alt) {
 
 function hideGame() {
     diagramGrid = false;
-    const fixImageButton0 = document.getElementById("fix-image-button-0");
-    const fixImageButton1 = document.getElementById("fix-image-button-1");
-    const fixImageButton2 = document.getElementById("fix-image-button-2");
-    fixImageButton0.classList.add("selected");
-    fixImageButton1.classList.remove("selected");
-    fixImageButton2.classList.remove("selected");
+    for (let elt of document.getElementsByClassName("show-diagrams")) {
+        elt.classList.remove("selected");
+    }
+    document.getElementById("fix-image-button-0").classList.add("selected");
 
     let element;
     while (element = document.querySelector(".clone")) {
@@ -6361,6 +6357,33 @@ function hideGame() {
 
     const diagram = document.getElementById("diagram");
     diagram.style.opacity = 0;
+}
+
+function more_games() {
+    diagramGrid = true;
+    for (let elt of document.getElementsByClassName("show-diagrams")) {
+        elt.classList.remove("selected");
+    }
+    document.getElementById("fix-image-button-2").classList.add("selected");
+
+    function func(x) {
+        if (x < 3.5) return 3;
+        return 1;
+    }
+    num_games = func;
+
+    let element;
+    while (element = document.querySelector(".clone")) {
+        element.remove();
+    }
+
+    if (fixImageSize && !useAltSchema) {
+        fixImageSize = false;
+        backgroundOutOfDate = true;
+    }
+
+    const diagram = document.getElementById("diagram");
+    diagram.style.opacity = 1;
 }
 
 function updateLegend() {
