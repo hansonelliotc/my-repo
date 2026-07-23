@@ -1029,7 +1029,7 @@ class Game {
         switch (this.#quadrant) {
             case 1:
                 if ((this.#x1*this.#flip1 - this.#offset1 + 12) % 6 < 3 && (this.#x2*this.#flip2 - this.#offset2 + 12) % 6 < 3) {
-                    const weight = (Math.sin((this.#x1 + this.#x2)*6)+1)/2;
+                    const weight = (Math.sin((this.#x1 - this.#x2)*6)+1)/2;
                     return [greenBackground[0]*weight+(1-weight)*grayBackground[0],
                             greenBackground[1]*weight+(1-weight)*grayBackground[1],
                             greenBackground[2]*weight+(1-weight)*grayBackground[2]];
@@ -6293,10 +6293,8 @@ function altImage(alt) {
     const hex3 = document.getElementById("br-hex-3");
 
     // useAltSchema = alt;
-    if (!diagramGrid) {
-        fixImageSize = alt;
-        backgroundOutOfDate = true;
-    }
+    fixImageSize = alt;
+    backgroundOutOfDate = true;
     if (useAltSchema && !alt) {
         useAltSchema = false;
         button2.classList.remove("selected");
