@@ -295,7 +295,7 @@ class Game {
         this.#update_quadrant();
         this.#clear();
         const coords = this.#matrix_to_xb(Game.flip(val),Game.flip(ranks));
-        this.#x2 = ((coords[0] + this.#offset2)*this.#flip2 + 6) % 6;
+        this.#x2 = ((coords[0] + this.#offset2)*this.#flip2 + 12) % 6;
         this.#b2 = coords[1];
     }
     get col_ranks() {
@@ -4153,7 +4153,9 @@ function negate(player1) {
     if (player1) {
         game.row_matrix = [...game.row_matrix].map(x => 6 - x);
     } else {
-        game.col_matrix = game.col_matrix.map(x => 6 - x);
+        game.col_matrix = [...game.col_matrix].map(x => 6 - x);
+        console.log(game.col_matrix);
+        console.log(game.x2,game.b2,game.quadrant);
     }
     updateCoords();
 }
