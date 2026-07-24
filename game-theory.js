@@ -1491,15 +1491,19 @@ function init() {
         if (!e.shiftKey) {
             switch (e.key) {
                 case "ArrowRight":
+                    e.preventDefault();
                     x1up = true;
                     break;
                 case "ArrowLeft":
+                    e.preventDefault();
                     x1down = true;
                     break;
                 case "ArrowUp":
+                    e.preventDefault();
                     x2up = true;
                     break;
                 case "ArrowDown":
+                    e.preventDefault();
                     x2down = true;
                     break;
                 case "a":
@@ -1515,6 +1519,7 @@ function init() {
                     b2down = true;
                     break;
                 case " ":
+                    e.preventDefault();
                     x1V = 0;
                     x2V = 0;
                     b1V = 0;
@@ -1538,15 +1543,19 @@ function init() {
         } else {
             switch (e.key) {
                 case "ArrowRight":
+                    e.preventDefault();
                     if (x1V < 0.3) x1V += acc;
                     break;
                 case "ArrowLeft":
+                    e.preventDefault();
                     if (-x1V < 0.3) x1V -= acc;
                     break;
                 case "ArrowUp":
+                    e.preventDefault();
                     if (x2V < 0.3) x2V += acc;
                     break;
                 case "ArrowDown":
+                    e.preventDefault();
                     if (-x2V < 0.3) x2V -= acc;
                     break;
                 case "D":
@@ -2156,7 +2165,7 @@ function update() {
         game.x2 = (game.x2 + x2V + 6) % 6;
         updateRequired = true;
     }
-    game.b1 += b1V;
+    game.b1 -= b1V;
     if (b1V != 0) {
         backgroundOutOfDate = true;
         updateRequired = true;
@@ -2168,7 +2177,7 @@ function update() {
         b1V = -b1V;
         game.b1 = game.b1 + b1V;
     }
-    game.b2 = game.b2 + b2V;
+    game.b2 = game.b2 - b2V;
     if (b2V != 0) {
         backgroundOutOfDate = true;
         updateRequired = true;
@@ -4020,6 +4029,8 @@ function update() {
     let cellRow = (-1*(Math.floor(game.x2*game.conventions[1])-game.conventions[0]) + 15) % 6 + 1;
     cellName.innerHTML = cellCol.toString() + "," + cellRow.toString();
 
+    updateDegenerateGames();
+
     time++;
 }
 
@@ -4154,8 +4165,6 @@ function negate(player1) {
         game.row_matrix = [...game.row_matrix].map(x => 6 - x);
     } else {
         game.col_matrix = [...game.col_matrix].map(x => 6 - x);
-        console.log(game.col_matrix);
-        console.log(game.x2,game.b2,game.quadrant);
     }
     updateCoords();
 }
@@ -6834,6 +6843,60 @@ function change_conventions(offset, inversion) {
         }
     }
 }
+
+function updateDegenerateGames() {
+    // update degenerate games
+    for (let elt of document.getElementsByClassName("degen-game")) {
+        elt.style.color = "black";
+    }
+    const x1base = (game.x1*game.conventions[1] - game.conventions[0] + 12) % 6;
+    const x2base = (game.x2*game.conventions[1] - game.conventions[0] + 12) % 6;
+    // type 11
+    const degen_game_11 = document.getElementById("degen-game-11-" + game.quadrant.toString());
+    degen_game_11.style.color = "red";
+    // type X1
+    const red1 = Math.floor(x1base/2) % 3;
+    const green1 = Math.round(x1base/2) % 3;
+    let sign_X1;
+    switch (red1) {
+        case 0:
+            if (game.quadrant == 1 || game.quadrant == 3) sign_X1 = "+";
+            else sign_X1 = "-";
+            break;
+        case 1:
+            if (game.quadrant == 1 || game.quadrant == 2) sign_X1 = "+";
+            else sign_X1 = "-";
+            break;
+        case 2:
+            if (game.quadrant == 1 || game.quadrant == 4) sign_X1 = "+";
+            else sign_X1 = "-";
+            break;
+    }
+    const degen_game_X1 = document.getElementById("degen-game-" + ["D","C","R"][red1] + "1" + sign_X1);
+    degen_game_X1.style.color = "red";
+    // type 1X
+    const red2 = Math.floor(x2base/2) % 3;
+    const green2 = Math.round(x2base/2) % 3;
+    let sign_1X;
+    switch (red2) {
+        case 0:
+            if (game.quadrant == 1 || game.quadrant == 3) sign_1X = "+";
+            else sign_1X = "-";
+            break;
+        case 2:
+            if (game.quadrant == 1 || game.quadrant == 2) sign_1X = "+";
+            else sign_1X = "-";
+            break;
+        case 1:
+            if (game.quadrant == 1 || game.quadrant == 4) sign_1X = "+";
+            else sign_1X = "-";
+            break;
+    }
+    const degen_game_1X = document.getElementById("degen-game-1" + ["D","R","C"][red2] + sign_1X);
+    degen_game_1X.style.color = "red";
+}
+
+
 
 
 // add parameter for transferable utility

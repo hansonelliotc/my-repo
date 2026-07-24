@@ -238,9 +238,9 @@ h2 {
 }
 
 #degenerate-games :nth-child(2), #degenerate-games :nth-child(5) {
-    border-right: 3px solid;
+    border-right: 3px solid black;
 }
 
 #degenerate-games tr:nth-child(2) td, #degenerate-games tr:nth-child(5) td {
-    border-bottom: 3px solid;
+    border-bottom: 3px solid black;
 }
