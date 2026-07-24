@@ -223,3 +223,24 @@ h2 {
 #view-custom-2 {
     color: rgb(0,0,150);
 }
+
+.degen-game {
+    cursor: pointer;
+}
+
+#degenerate-games {
+    border: 3px solid;
+    margin: 3vh 0;
+}
+
+.degen-game:hover {
+    text-decoration: underline;
+}
+
+#degenerate-games :nth-child(2), #degenerate-games :nth-child(5) {
+    border-right: 3px solid;
+}
+
+#degenerate-games tr:nth-child(2) td, #degenerate-games tr:nth-child(5) td {
+    border-bottom: 3px solid;
+}

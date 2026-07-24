@@ -177,102 +177,178 @@
 				<p>3. Use the buttons in the Navigation tab.</p>
 				<p>4. Click in the large diagram (bottom right) to go to a nearby extremal game.</p>
 			</div>
-			<table id="notable-games">
-				<tr><td colspan="2"><h2>Notable centroids</h2></td></tr>
-				<tr>
-					<td><button onclick="goTo(3.5,3.5,2,2,3)">Prisoners' dilemma</button></td>
-					<td><button onclick="goTo(2.5,2.5,2,2,3)">Chicken</button></td>
-				</tr>
-				<tr>
-					<td><button onclick="goTo(0.5,0.5,2,2,3)">Battle of the sexes</button></td>
-					<td><button onclick="goTo(2.5,2.5,2,2,1)">Stag hunt</button></td>
-				</tr>
-				<tr><td colspan="2"><h2>Hotspots</h2></td></tr>
-				<tr>
-					<td><button onclick="goTo(5,3,0,0,1)">Confident-lucky</button></td>
-					<td><button onclick="goTo(5,3,0,0,3)">Confident-unlucky</button></td>
-				</tr>
-				<tr>
-					<td><button onclick="goTo(3,5,0,0,1)">Lucky-confident</button></td>
-					<td><button onclick="goTo(3,5,0,0,3)">Unlucky-confident</button></td>
-				</tr>
-				<tr>
-					<td><button onclick="goTo(1,1,0,0,1)">Pure coordination</button></td>
-					<td><button onclick="goTo(1,1,0,0,2)">Odds and evens</button></td>
-				</tr>
-				<tr><td colspan="2"><h2>Squarespots</h2></td></tr>
-				<tr>
-					<td><button onclick="goTo(5,5,0,0,3)">Confident-confident</button></td>
-					<td><button onclick="goTo(3,3,0,0,3)">Helpless-helpless</button></td>
-				</tr>
-				<tr>
-					<td><button onclick="goTo(5,1,0,0,3)">Confident-anxious</button></td>
-					<td><button onclick="goTo(1,5,0,0,3)">Anxious-confident</button></td>
-				</tr>
-				<tr>
-					<td><button onclick="goTo(1,3,0,0,3)">Anxious-helpless</button></td>
-					<td><button onclick="goTo(3,1,0,0,3)">Helpless-anxious</button></td>
-				</tr>
-				<tr><td colspan="2"><h2>Poles</h2></td></tr>
-				<tr>
-					<td><button onclick="goTo(3,3,6,6,2)">Row pole</button></td>
-					<td><button onclick="goTo(3,3,6,6,1)">Good pole</button></td>
-				</tr>
-				<tr>
-					<td><button onclick="goTo(3,3,6,6,3)">Bad pole</button></td>
-					<td><button onclick="goTo(3,3,6,6,4)">Column pole</button></td>
-				</tr>
-				<tr><td colspan="2"><h2>Zero sum</h2></td></tr>
-				<tr>
-					<td><button onclick="goToZeroSum(3,1)">Bad (row advantage)</button></td>
-					<td><button onclick="goToZeroSum(3,2)">Bad (column advantage)</button></td>
-				</tr>
-				<tr>
-					<td><button onclick="goToZeroSum(2,1)">Row (pure)</button></td>
-					<td><button onclick="goToZeroSum(2,2)">Row (mixed)</button></td>
-				</tr>
-				<tr>
-					<td><button onclick="goToZeroSum(4,1)">Column (pure)</button></td>
-					<td><button onclick="goToZeroSum(4,2)">Column (mixed)</button></td>
-				</tr>
-				<tr><td colspan="2"><h2>Alibi centroids</h2></td></tr>
-				<tr>
-					<td><button onclick="goTo(3.5,2.5,2,2,2)">Row 1</button></td>
-					<td><button onclick="goTo(2.5,3.5,2,2,4)">Column 1</button></td>
-				</tr>
-				<tr>
-					<td><button onclick="goTo(3.5,1.5,2,2,2)">Row 2</button></td>
-					<td><button onclick="goTo(1.5,3.5,2,2,4)">Column 2</button></td>
-				</tr>
-				<tr>
-					<td><button onclick="goTo(3.5,0.5,2,2,2)">Row 3</button></td>
-					<td><button onclick="goTo(0.5,3.5,2,2,4)">Column 3</button></td>
-				</tr>
-				<tr><td colspan="2"><p>
+			<div id="notable-games">
+				<table style="width:inherit">
+					<tr><td colspan="2"><h2>Notable centroids</h2></td></tr>
+					<tr>
+						<td><button onclick="goTo(3.5,3.5,2,2,3)">Prisoners' dilemma</button></td>
+						<td><button onclick="goTo(2.5,2.5,2,2,3)">Chicken</button></td>
+					</tr>
+					<tr>
+						<td><button onclick="goTo(0.5,0.5,2,2,3)">Battle of the sexes</button></td>
+						<td><button onclick="goTo(2.5,2.5,2,2,1)">Stag hunt</button></td>
+					</tr>
+					<!-- <tr><td colspan="2"><h2>Hotspots</h2></td></tr>
+					<tr>
+						<td><button onclick="goTo(5,3,0,0,1)">Confident-lucky</button></td>
+						<td><button onclick="goTo(5,3,0,0,3)">Confident-unlucky</button></td>
+					</tr>
+					<tr>
+						<td><button onclick="goTo(3,5,0,0,1)">Lucky-confident</button></td>
+						<td><button onclick="goTo(3,5,0,0,3)">Unlucky-confident</button></td>
+					</tr>
+					<tr>
+						<td><button onclick="goTo(1,1,0,0,1)">Pure coordination</button></td>
+						<td><button onclick="goTo(1,1,0,0,2)">Odds and evens</button></td>
+					</tr>
+					<tr><td colspan="2"><h2>Squarespots</h2></td></tr>
+					<tr>
+						<td><button onclick="goTo(5,5,0,0,3)">Confident-confident</button></td>
+						<td><button onclick="goTo(3,3,0,0,3)">Helpless-helpless</button></td>
+					</tr>
+					<tr>
+						<td><button onclick="goTo(5,1,0,0,3)">Confident-anxious</button></td>
+						<td><button onclick="goTo(1,5,0,0,3)">Anxious-confident</button></td>
+					</tr>
+					<tr>
+						<td><button onclick="goTo(1,3,0,0,3)">Anxious-helpless</button></td>
+						<td><button onclick="goTo(3,1,0,0,3)">Helpless-anxious</button></td>
+					</tr>
+					<tr><td colspan="2"><h2>Poles</h2></td></tr>
+					<tr>
+						<td><button onclick="goTo(3,3,6,6,2)">Row pole</button></td>
+						<td><button onclick="goTo(3,3,6,6,1)">Good pole</button></td>
+					</tr>
+					<tr>
+						<td><button onclick="goTo(3,3,6,6,3)">Bad pole</button></td>
+						<td><button onclick="goTo(3,3,6,6,4)">Column pole</button></td>
+					</tr> -->
+					<tr><td colspan="2"><h2>Zero sum</h2></td></tr>
+					<tr>
+						<td><button onclick="goToZeroSum(3,1)">Bad (row advantage)</button></td>
+						<td><button onclick="goToZeroSum(3,2)">Bad (column advantage)</button></td>
+					</tr>
+					<tr>
+						<td><button onclick="goToZeroSum(2,1)">Row (pure)</button></td>
+						<td><button onclick="goToZeroSum(2,2)">Row (mixed)</button></td>
+					</tr>
+					<tr>
+						<td><button onclick="goToZeroSum(4,1)">Column (pure)</button></td>
+						<td><button onclick="goToZeroSum(4,2)">Column (mixed)</button></td>
+					</tr>
+					<tr><td colspan="2"><h2>Alibi centroids</h2></td></tr>
+					<tr>
+						<td><button onclick="goTo(3.5,2.5,2,2,2)">Row 1</button></td>
+						<td><button onclick="goTo(2.5,3.5,2,2,4)">Column 1</button></td>
+					</tr>
+					<tr>
+						<td><button onclick="goTo(3.5,1.5,2,2,2)">Row 2</button></td>
+						<td><button onclick="goTo(1.5,3.5,2,2,4)">Column 2</button></td>
+					</tr>
+					<tr>
+						<td><button onclick="goTo(3.5,0.5,2,2,2)">Row 3</button></td>
+						<td><button onclick="goTo(0.5,3.5,2,2,4)">Column 3</button></td>
+					</tr>
+				</table>
+				<table cellspacing="0" id="degenerate-games" style="width:inherit">
+					<tr>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,0,6,0,2)">13d</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,2,6,0,3)">13r</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(3,0,0,0,3)">C3-</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(1,4,0,0,3)">D3-</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(5,2,0,0,3)">R3-</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(2,4,0,0,3)">33r</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(2,0,0,0,3)">33d</td>
+					</tr>
+					<tr>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,0,6,0,3)">13c</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,4,6,0,3)">13s</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(3,2,0,0,3)">C3+</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(1,0,0,0,3)">D3+</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(5,0,0,0,3)">R3+</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,0,0,0,3)">33s</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(4,2,0,0,3)">33c</td>
+					</tr>
+					<tr>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,5,6,0,3)">1C-</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,5,6,0,2)">1C+</td>
+						<td>
+							<span id="degen-game-13d" class="degen-game" onclick="goTo(3,5,0,0,1)">CC+</span><br>
+							<span id="degen-game-13d" class="degen-game" onclick="goTo(3,5,0,0,3)">CC-</span>
+						</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(1,5,0,0,3)">DC</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(5,5,0,0,3)">RC</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,5,0,0,3)">3C+</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(2,5,0,0,3)">3C-</td>
+					</tr>
+					<tr>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,1,6,0,4)">1D-</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,1,6,0,3)">1D+</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(3,1,0,0,3)">CD</td>
+						<td>
+							<span id="degen-game-13d" class="degen-game" onclick="goTo(1,1,0,0,1)">DD+</span><br>
+							<span id="degen-game-13d" class="degen-game" onclick="goTo(1,1,0,0,2)">DD-</span>
+						</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(5,1,0,0,3)">RD</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,1,0,0,3)">3D+</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(4,1,0,0,3)">3D-</td>
+					</tr>
+					<tr>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,3,6,0,3)">1R-</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,3,6,0,4)">1R+</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(3,3,0,0,3)">CR</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(1,3,0,0,3)">DR</td>
+						<td>
+							<span id="degen-game-13d" class="degen-game" onclick="goTo(5,3,0,0,1)">RR+</span><br>
+							<span id="degen-game-13d" class="degen-game" onclick="goTo(5,3,0,0,3)">RR-</span>
+						</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(2,3,0,0,3)">3R+</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(4,3,0,0,3)">3R-</td>
+					</tr>
+					<tr>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,0,6,6,2)">11c</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,0,6,6,1)">11s</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(3,0,0,6,2)">C1+</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(1,0,0,6,3)">D1+</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(5,0,0,6,4)">R1+</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(4,0,0,6,3)">31s</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(2,0,0,6,3)">31c</td>
+					</tr>
+					<tr>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,0,6,6,3)">11d</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,0,6,6,4)">11r</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(3,0,0,6,3)">C1-</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(1,0,0,6,2)">D1-</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(5,0,0,6,3)">R1-</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(0,0,0,6,3)">31r</td>
+						<td id="degen-game-13d" class="degen-game" onclick="goTo(4,0,0,6,1)">31d</td>
+					</tr>
+				</table>
+				<p>
 					<em>Notable centroids</em> are the standard examples from a few of the most famous cells.
-				</p></td></tr>
-				<tr><td colspan="2"><p>
+				</p>
+				<p>
 					<em>Hotspots</em> are points where crossing each player's blue boundary results in returning to the same point.
 					Along with the <em>squarespots</em>, they are the only games whose matrices contain two zeros and two sixes.
-				</p></td></tr>
-				<tr><td colspan="2"><p>
+				</p>
+				<p>
 					<em>Squarespots</em> are named for the shape of their diagrams.
 					Incidentally, they are the only games such that each of them appears in all four quadrants at the same coordinates.
-				</p></td></tr>
-				<tr><td colspan="2"><p>
+				</p>
+				<p>
 					<em>Poles</em> are the only games whose matrices contain three zeros and one six.
-				</p></td></tr>
-				<tr><td colspan="2"><p>
+				</p>
+				<p>
 					<em>Zero sum</em> games (also called constant sum games) are games where the players' total returns are constant.
 					Given coordinates b<sub>1</sub> and b<sub>2</sub>, there are either six or zero nondegenerate constant sum games in our space.
 					The buttons above navigate to these six games using the currents values b<sub>1</sub> and b<sub>2</sub>.
 					When either b<sub>1</sub> or b<sub>2</sub> becomes zero, the six constant sum games become three degenerate constant sum games.
-				</p></td></tr>
-				<tr><td colspan="2"><p>
+				</p>
+				<p>
 					<em>Alibi centroids</em> are the standard examples from the six "alibi cells" of the prisoners' dilemma.
 					"Row 1" and "Column 1" are exceptionally similar to the prisoners' dilemma.
-				</p></td></tr>
-			</table>
+				</p>
+			</div>
 			<table id="advanced-settings">
 				<tr><td colspan="2"><h2>Layout Convention</h2></td></tr>
 				<tr>
@@ -436,7 +512,7 @@
 			</svg>
 		</svg>
 	</div>
-	<svg id="big-diagram" width="45vh" height="45vh" style="position:fixed;right:0;bottom:0;">
+	<svg id="big-diagram" width="45vh" height="45vh" style="position:fixed;right:0;bottom:0;display:none">
 		<rect id="red-box"/>
 		<rect id="green-box"/>
 		<rect id="blue-box"/>
@@ -666,7 +742,7 @@
 	<input id="x1coord" type="range" min="0" max="6" step="0.01" value="3.5"></div>
 	<div style="display:flex"><div id="b1-label">b<sub>1</sub></div>
 	<input id="b1coord" type="range" min="0" max="6" step="0.01" value="2"></div> -->
-	<div id="display-options">
+	<div id="display-options" style="display:none">
 		<h2 style="padding:1vh 1vw"><span id="quadrant-label">Bad quadrant</span><br><span id="view-mode-label">Equilibrium view</span></h2>
 		<table cellspacing="0" cellpadding="0" style="border-collapse: separate;border-spacing: 5px 0;">
 			<tr>

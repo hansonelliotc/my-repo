@@ -952,7 +952,7 @@ class Game {
         else {
             x = (14 - this.x2*this.#flip2 + this.#offset2) % 6;
         }
-        if (0 < x && x < 2 || x == 0 && p1 || x == 6 && p1 || x == 2 && !p1) {
+        if (0 < x && x < 2 || x == 0 && p1 && this.#flip1 == 1 || x == 0 && !p1 && this.#flip1 == -1 || x == 2 && !p1 && this.#flip1 == 1 || x == 2 && p1 && this.#flip1 == -1) {
             switch (this.quadrant) {
                 case 1:
                     return 3;
@@ -963,7 +963,7 @@ class Game {
                 case 4:
                     return 2;
             }
-        } else if (2 < x && x < 4 || x == 2 && p1 || x == 4 && !p1) {
+        } else if (2 < x && x < 4 || x == 2 && p1 && this.#flip1 == 1 || x == 2 && !p1 && this.#flip1 == -1 || x == 4 && !p1 && this.#flip1 == 1 || x == 4 && p1 && this.#flip1 == -1) {
             switch (this.quadrant) {
                 case 1:
                     return 2;
