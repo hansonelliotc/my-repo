@@ -1993,10 +1993,10 @@ function init() {
                     if (b1V < 0.3) b1V += acc;
                     break;
                 case "W":
-                    if (b2V < 0.3) b2V += acc;
+                    if (-b2V < 0.3) b2V -= acc;
                     break;
                 case "S":
-                    if (-b2V < 0.3) b2V -= acc;
+                    if (b2V < 0.3) b2V += acc;
                     break;
             }
         }
