@@ -1913,7 +1913,7 @@ function init() {
         }
     });
 
-    const acc = 0.05;
+    const acc = 0.02;
     document.addEventListener('keydown', (e) => {
         // e.preventDefault();
         if (!e.shiftKey) {
