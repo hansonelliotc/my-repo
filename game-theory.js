@@ -6513,9 +6513,11 @@ function updateDiagramGrid() {
             // else
             //     new_game.coord_2 = 6;
         }
-        for (let j = 0; j < 6; j += 6/num_games(new_game.coord_3)) {
-            if (i == 6 - 6/num_games(new_game.coord_4) && j == 6 - 6/num_games(new_game.coord_3)) break;
-            for (let k = 0; k < 6/num_games(new_game.coord_3); k++) {
+        const gap_i = 6/num_games(6-dimensions()[0]*6);
+        const gap_j = 6/num_games(6-dimensions()[1]*6);
+        for (let j = 0; j < 6; j += gap_i) {
+            if (i == 6 - gap_j && j == 6 - gap_i) break;
+            for (let k = 0; k < gap_i; k++) {
                 // if ((j+k) % 2 == 0) {
                 //     let redLine = Math.round((new_game.coord_1+1)/2)*2-1;
                 //     if (new_game.coord_1 != 4)
@@ -6934,7 +6936,7 @@ function more_games() {
         element.remove();
     }
 
-    if (fixImageSize && !useAltSchema) {
+    if (fixImageSize) {
         fixImageSize = false;
         backgroundOutOfDate = true;
     }
