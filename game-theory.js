@@ -155,8 +155,8 @@ class Game {
 
     get row_matrix() { return this.#row_matrix; }
     get col_matrix() { return this.#col_matrix; }
-    set row_matrix(val) { this.#clear(); this.#row_matrix = val; this.#row_ranks = this.#ranks(val); }
-    set col_matrix(val) { this.#clear(); this.#col_matrix = val; this.#col_ranks = this.#ranks(val); }
+    set row_matrix(val) { this.#clear(); this.#row_matrix = val; this.#row_ranks = this.#ranks(val); this.#update_zone(); }
+    set col_matrix(val) { this.#clear(); this.#col_matrix = val; this.#col_ranks = this.#ranks(val); this.#update_zone(); }
     get row_ranks() {
         if (this.#row_ranks === undefined) this.#row_ranks = this.#ranks(this.row_matrix);
         return this.#row_ranks;
@@ -185,6 +185,13 @@ class Game {
         else if (max1 == 0 && max2 == 1 || max1 == 1 && max2 == 0 || max1 == 2 && max2 == 3 || max1 == 3 && max2 == 2)
             this.#quad_temp = 4;
         else this.#quad_temp = 3;
+    }
+    #update_zone() {
+        const error = 0.0000001;
+        if (this.t1 < 3 - error) this.zone_row = 0;
+        else if (this.t1 > 3 + error) this.zone_row = 1;
+        if (this.t2 < 3 - error) this.zone_col = 0;
+        else if (this.t2 > 3 + error) this.zone_col = 1;
     }
 
     #matrix_to_xb(matrix,ranks) {
@@ -7037,9 +7044,9 @@ function exportPNG() {
 function goTo(x1,x2,b1,b2,q) {
     game.x1 = ((x1 + game.conventions[0])*game.conventions[1] + 12) % 6;
     game.x2 = ((x2 + game.conventions[0])*game.conventions[1] + 12) % 6;
-    game.coord_3 = b1;
-    game.coord_4 = b2;
-    game.quad = q;
+    game.b1 = b1;
+    game.b2 = b2;
+    game.quadrant = q;
     updateBackground();
 }
 
