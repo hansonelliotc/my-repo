@@ -6498,8 +6498,10 @@ function updateDiagramGrid() {
     let new_game = game.use_conventions(game.coord_1,game.coord_2,game.coord_3,game.coord_4,game.quad);
     const j0 = Math.floor(game.coord_1);
     const i0 = Math.floor(game.coord_2);
-    for (let i = 0; i < 6; i += 6/num_games(new_game.coord_4)) {
-        for (let k = 0; k < 6/num_games(new_game.coord_4); k++) {
+    const gap1 = 6/num_games(6-dimensions()[0]*6);
+    const gap2 = 6/num_games(6-dimensions()[1]*6);
+    for (let i = 0; i < 6; i += gap2) {
+        for (let k = 0; k < gap2; k++) {
             // if ((i+k) % 2 == 0) {
             //     let redLine = Math.round((new_game.coord_2+1)/2)*2-1;
             //     if (new_game.coord_2 != 4)
@@ -6513,11 +6515,9 @@ function updateDiagramGrid() {
             // else
             //     new_game.coord_2 = 6;
         }
-        const gap_i = 6/num_games(6-dimensions()[0]*6);
-        const gap_j = 6/num_games(6-dimensions()[1]*6);
-        for (let j = 0; j < 6; j += gap_i) {
-            if (i == 6 - gap_j && j == 6 - gap_i) break;
-            for (let k = 0; k < gap_i; k++) {
+        for (let j = 0; j < 6; j += gap1) {
+            if (i == 6 - gap2 && j == 6 - gap1) break;
+            for (let k = 0; k < gap1; k++) {
                 // if ((j+k) % 2 == 0) {
                 //     let redLine = Math.round((new_game.coord_1+1)/2)*2-1;
                 //     if (new_game.coord_1 != 4)
