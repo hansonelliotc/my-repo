@@ -80,7 +80,7 @@ class Game {
     #col_matrix; #col_ranks;
     #quadrant; #x1; #b1; #x2; #b2;
     #quad_temp; #y1; #y2; #t1; #t2;
-    #mode; #zone;
+    #mode; #zone_row; #zone_col;
     #backstop; #threat_point; #threat_point_2; #pareto;
     #rhombic_x1; #rhombic_y1; #rhombic_x2; #rhombic_y2;
     #row_equilibrium_return; #col_equilibrium_return;
@@ -110,12 +110,12 @@ class Game {
 
     static temp(y1,y2,t1,t2,q,zone) {
         const new_game = new Game();
+        new_game.mode = 1;
         new_game.y1 = y1;
         new_game.y2 = y2;
         new_game.t1 = t1;
         new_game.t2 = t2;
         new_game.quad_temp = q;
-        new_game.mode = 1;
         new_game.zone = zone;
         return new_game;
     }
@@ -129,6 +129,7 @@ class Game {
         // this.#col_matrix = undefined; this.#col_ranks = undefined;
         this.#x1 = undefined; this.#x2 = undefined; this.#b1 = undefined; this.#b2 = undefined; this.#quadrant = undefined;
         this.#y1 = undefined; this.#y2 = undefined; this.#t1 = undefined; this.#t2 = undefined; this.#quad_temp = undefined;
+        // this.#zone_row = undefined; this.#zone_col = undefined;
         this.#backstop = undefined; this.#threat_point = undefined; this.#threat_point_2 = undefined; this.#pareto = undefined;
         this.#rhombic_x1 = undefined; this.#rhombic_y1 = undefined; this.#rhombic_x2 = undefined; this.#rhombic_y2 = undefined;
         this.#row_equilibrium_return = undefined; this.#col_equilibrium_return = undefined;
@@ -156,16 +157,34 @@ class Game {
     get col_matrix() { return this.#col_matrix; }
     set row_matrix(val) { this.#clear(); this.#row_matrix = val; this.#row_ranks = this.#ranks(val); }
     set col_matrix(val) { this.#clear(); this.#col_matrix = val; this.#col_ranks = this.#ranks(val); }
-    get row_ranks() { return this.#row_ranks; }
-    get col_ranks() { return this.#col_ranks; }
+    get row_ranks() {
+        if (this.#row_ranks === undefined) this.#row_ranks = this.#ranks(this.row_matrix);
+        return this.#row_ranks;
+    }
+    get col_ranks() {
+        if (this.#col_ranks === undefined) this.#col_ranks = this.#ranks(this.col_matrix);
+        return this.#col_ranks;
+    }
 
     #update_quadrant() {
         const max1 = this.row_ranks.indexOf(3);
         const max2 = this.col_ranks.indexOf(3);
         if (max1 == max2) this.#quadrant = 1;
-        else if (max1 == 0 && max2 == 2 || max1 == 2 && max2 == 0 || max1 == 1 && max2 == 3 || max1 == 3 && max2 == 1) this.#quadrant = 2;
-        else if (max1 == 0 && max2 == 1 || max1 == 1 && max2 == 0 || max1 == 2 && max2 == 3 || max1 == 3 && max2 == 2) this.#quadrant = 4;
+        else if (max1 == 0 && max2 == 2 || max1 == 2 && max2 == 0 || max1 == 1 && max2 == 3 || max1 == 3 && max2 == 1)
+            this.#quadrant = 2;
+        else if (max1 == 0 && max2 == 1 || max1 == 1 && max2 == 0 || max1 == 2 && max2 == 3 || max1 == 3 && max2 == 2)
+            this.#quadrant = 4;
         else this.#quadrant = 3;
+    }
+    #update_quad_temp() {
+        const max1 = this.zone_row == 1 ? this.row_ranks.indexOf(0) : this.row_ranks.indexOf(3);
+        const max2 = this.zone_col == 1 ? this.col_ranks.indexOf(0) : this.col_ranks.indexOf(3);
+        if (max1 == max2) this.#quad_temp = 1;
+        else if (max1 == 0 && max2 == 2 || max1 == 2 && max2 == 0 || max1 == 1 && max2 == 3 || max1 == 3 && max2 == 1)
+            this.#quad_temp = 2;
+        else if (max1 == 0 && max2 == 1 || max1 == 1 && max2 == 0 || max1 == 2 && max2 == 3 || max1 == 3 && max2 == 2)
+            this.#quad_temp = 4;
+        else this.#quad_temp = 3;
     }
 
     #matrix_to_xb(matrix,ranks) {
@@ -333,6 +352,41 @@ class Game {
             this.#x2b2_to_matrix();
     }
 
+    #matrix_to_yt(matrix,ranks) {
+        const sorted_matrix = matrix.toSorted();
+        const temp = (sorted_matrix[1] + sorted_matrix[2]) / 2;
+        const y0 = (sorted_matrix[2] - temp) / (temp == 0 || temp == 6 ? 1 : Math.min(temp,6-temp));
+
+        let cell = -1;
+        if (ranks[0] == 2 && ranks[1] == 3 || ranks[1] == 2 && ranks[0] == 3 || ranks[2] == 2 && ranks[3] == 3 || ranks[3] == 2 && ranks[2] == 3) {
+            if (ranks[0] == 0 && ranks[2] == 3 || ranks[2] == 0 && ranks[0] == 3 || ranks[1] == 0 && ranks[3] == 3 || ranks[3] == 0 && ranks[1] == 3) cell = 5;
+            else cell = 4;
+        } else if (ranks[0] == 2 && ranks[2] == 3 || ranks[2] == 2 && ranks[0] == 3 || ranks[1] == 2 && ranks[3] == 3 || ranks[3] == 2 && ranks[1] == 3) {
+            if (ranks[0] == 0 && ranks[1] == 3 || ranks[1] == 0 && ranks[0] == 3 || ranks[2] == 0 && ranks[3] == 3 || ranks[3] == 0 && ranks[2] == 3) cell = 2;
+            else cell = 3;
+        } else {
+            if (ranks[0] == 0 && ranks[2] == 3 || ranks[2] == 0 && ranks[0] == 3 || ranks[1] == 0 && ranks[3] == 3 || ranks[3] == 0 && ranks[1] == 3) cell = 0;
+            else cell = 1;
+        }
+
+        let y = -1;
+        if (cell % 2 == 1) y = cell + 1 - y0;
+        else y = cell + y0;
+        return [y,temp];
+    }
+    #update_y1() {
+        const coords = this.zone_row == 0 ? 
+                       this.#matrix_to_yt(this.row_matrix,this.row_ranks) :
+                       this.#matrix_to_yt(this.row_matrix.map(x => 6 - x),this.row_ranks.map(x => 3 - x));
+        this.#y1 = ((coords[0] + this.#offset1)*this.#flip1 + 12) % 6;
+    }
+    #update_y2() {
+        const coords = this.zone_col == 0 ? 
+                       this.#matrix_to_yt(Game.flip(this.col_matrix),Game.flip(this.col_ranks)) :
+                       this.#matrix_to_yt(Game.flip(this.col_matrix.map(x => 6 - x)),Game.flip(this.col_ranks.map(x => 3 - x)));
+        this.#y2 = ((coords[0] + this.#offset1)*this.#flip1 + 12) % 6;
+    }
+
     #y1t1_to_matrix() {
         const y1 = (this.#y1*this.#flip1 - this.#offset1 + 12) % 6;
         const middle_interval = (1-Math.abs(y1 % 2 - 1))*(3-Math.abs(this.t1-3))*2; // the difference between the two middle values in row's matrix
@@ -372,14 +426,13 @@ class Game {
             this.#row_matrix = [this.#row_matrix[2],this.#row_matrix[3],this.#row_matrix[0],this.#row_matrix[1]];
             this.#row_ranks = [this.#row_ranks[2],this.#row_ranks[3],this.#row_ranks[0],this.#row_ranks[1]];
         }
-        if (this.zone == 2 || this.zone == 3) {
+        if (this.zone_row == 1) {
             const new_matrix = [0,1,2,3];
             for (let i = 0; i < 4; i++) {
                 new_matrix[i] = this.row_matrix[this.row_ranks.indexOf(3-this.row_ranks[i])];
             }
             this.#row_matrix = new_matrix;
             this.#row_ranks = this.#row_ranks.map(x => 3 - x);
-            // console.log(this.#row_matrix);
         }
         return this.#row_matrix;
     }
@@ -422,7 +475,7 @@ class Game {
             this.#col_matrix = [this.#col_matrix[1],this.#col_matrix[0],this.#col_matrix[3],this.#col_matrix[2]];
             this.#col_ranks = [this.#col_ranks[1],this.#col_ranks[0],this.#col_ranks[3],this.#col_ranks[2]];
         }
-        if (this.zone == 3 || this.zone == 4) {
+        if (this.zone_col == 1) {
             const new_matrix = [0,1,2,3];
             for (let i = 0; i < 4; i++) {
                 new_matrix[i] = this.col_matrix[this.col_ranks.indexOf(3-this.col_ranks[i])];
@@ -434,44 +487,77 @@ class Game {
     }
 
     get y1() {
-        if (this.#y1 === undefined) this.#y1 = 0;
+        if (this.#y1 === undefined) this.#update_y1();
         return this.#y1;
     }
     get y2() {
-        if (this.#y2 === undefined) this.#y2 = 0;
+        if (this.#y2 === undefined) this.#update_y2();
         return this.#y2;
     }
     get t1() {
-        if (this.#t1 === undefined) this.#t1 = 3;
+        if (this.#t1 === undefined) {
+            this.#t1 = (this.row_matrix[0]+this.row_matrix[1]+this.row_matrix[2]+this.row_matrix[3]-6) / 2;
+        }
         return this.#t1;
     }
     get t2() {
-        if (this.#t2 === undefined) this.#t2 = 3;
+        if (this.#t2 === undefined) {
+            this.#t2 = (this.col_matrix[0]+this.col_matrix[1]+this.col_matrix[2]+this.col_matrix[3]-6) / 2;
+        }
         return this.#t2;
     }
     get quad_temp() {
-        if (this.#quad_temp === undefined) this.#quad_temp = 3;
+        if (this.#quad_temp === undefined) this.#update_quad_temp();
         return this.#quad_temp;
     }
     get zone() {
-        if (this.#zone === undefined) this.#zone = 1;
-        return this.#zone;
+        if (this.zone_row == 0 && this.zone_col == 0) {
+            return 1;
+        } else if (this.zone_row == 1 && this.zone_col == 0) {
+            return 2;
+        } else if (this.zone_row == 0 && this.zone_col == 1) {
+            return 4;
+        } else {
+            return 3;
+        }
+    }
+    get zone_row() {
+        if (this.#zone_row === undefined) {
+            if (this.t1 <= 3) {
+                this.zone_row = 0;
+            } else {
+                this.zone_row = 1;
+            }
+        }
+        return this.#zone_row;
+    }
+    get zone_col() {
+        if (this.#zone_col === undefined) {
+            if (this.#t2 !== undefined && this.#t2 <= 3) {
+                this.zone_col = 0;
+            } else {
+                this.zone_col = 1;
+            }
+        }
+        return this.#zone_col;
     }
     set y1(val) {
         this.#y1 = val;
-        if (this.#t1 !== undefined) this.#y1t1_to_matrix();
+        if (this.#t1 !== undefined && this.#quad_temp !== undefined) this.#y1t1_to_matrix();
     }
     set y2(val) {
         this.#y2 = val;
-        if (this.#t2 !== undefined) this.#y2t2_to_matrix();
+        if (this.#t2 !== undefined && this.#quad_temp !== undefined) this.#y2t2_to_matrix();
     }
     set t1(val) {
+        if (val != 3) this.#zone_row = undefined;
         this.#t1 = val;
-        if (this.#y1 !== undefined) this.#y1t1_to_matrix();
+        if (this.#y1 !== undefined && this.#quad_temp !== undefined) this.#y1t1_to_matrix();
     }
     set t2(val) {
+        if (val != 3) this.#zone_col = undefined;
         this.#t2 = val;
-        if (this.#y2 !== undefined) this.#y2t2_to_matrix();
+        if (this.#y2 !== undefined && this.#quad_temp !== undefined) this.#y2t2_to_matrix();
     }
     set quad_temp(val) {
         this.#quad_temp = val;
@@ -481,7 +567,37 @@ class Game {
             this.#y2t2_to_matrix();
     }
     set zone(val) {
-        this.#zone = val;
+        const save_matrices = this.#t1 !== undefined && this.#t2 !== undefined && this.#b1 !== undefined && this.#b2 !== undefined;
+        const row_matrix = save_matrices ? [...this.row_matrix] : null;
+        const col_matrix = save_matrices ? [...this.col_matrix] : null;
+        switch (val) {
+            case 1:
+                this.zone_row = 0;
+                this.zone_col = 0;
+                break;
+            case 2:
+                this.zone_row = 1;
+                this.zone_col = 0;
+                break;
+            case 3:
+                this.zone_row = 1;
+                this.zone_col = 1;
+                break;
+            case 4:
+                this.zone_row = 0;
+                this.zone_col = 1;
+                break;
+        }
+        if (save_matrices) {
+            this.row_matrix = row_matrix;
+            this.col_matrix = col_matrix;
+        }
+    }
+    set zone_row(val) {
+        this.#zone_row = val;
+    }
+    set zone_col(val) {
+        this.#zone_col = val;
     }
 
     get mode() { return this.#mode; }
@@ -1142,8 +1258,8 @@ class Game {
         } else {
             this.y1 = Math.round(this.y1+0.5)-0.5;
             this.y2 = Math.round(this.y2+0.5)-0.5;
-            this.t1 = (this.zone == 1 || this.zone == 4) ? 2 : 4;
-            this.t2 = (this.zone == 1 || this.zone == 2) ? 2 : 4;
+            this.t1 = this.zone_row == 0 ? 2 : 4;
+            this.t2 = this.zone_col == 0 ? 2 : 4;
         }
     }
 
@@ -1250,6 +1366,24 @@ class Game {
     }
 
     crossBlue(p1) {
+        if (p1) {
+            const matrix = [...this.row_matrix];
+            const a = this.row_ranks.indexOf(2);
+            const b = this.row_ranks.indexOf(3);
+            matrix[a] = this.row_matrix[b];
+            matrix[b] = this.row_matrix[a];
+            this.row_matrix = matrix;
+        } else {
+            const matrix = [...this.col_matrix];
+            const a = this.col_ranks.indexOf(2);
+            const b = this.col_ranks.indexOf(3);
+            matrix[a] = this.col_matrix[b];
+            matrix[b] = this.col_matrix[a];
+            this.col_matrix = matrix;
+        }
+    }
+
+    acrossBlue(p1) {
         let x1 = this.x1;
         let x2 = this.x2;
         if (p1) {
@@ -1264,21 +1398,37 @@ class Game {
 
     crossGreen(p1) {
         if (p1) {
-            let greenLine = Math.round(this.x1/2)*2;
-            this.x1 = (greenLine - (this.x1 - greenLine) + 6) % 6;
+            const matrix = [...this.row_matrix];
+            const a = this.row_ranks.indexOf(1);
+            const b = this.row_ranks.indexOf(2);
+            matrix[a] = this.row_matrix[b];
+            matrix[b] = this.row_matrix[a];
+            this.row_matrix = matrix;
         } else {
-            let greenLine = Math.round(this.x2/2)*2;
-            this.x2 = (greenLine - (this.x2 - greenLine) + 6) % 6;
+            const matrix = [...this.col_matrix];
+            const a = this.col_ranks.indexOf(1);
+            const b = this.col_ranks.indexOf(2);
+            matrix[a] = this.col_matrix[b];
+            matrix[b] = this.col_matrix[a];
+            this.col_matrix = matrix;
         }
     }
 
     crossRed(p1) {
         if (p1) {
-            let redLine = Math.round((this.x1+1)/2)*2-1;
-            this.x1 = (redLine - (this.x1 - redLine) + 6) % 6;
+            const matrix = [...this.row_matrix];
+            const a = this.row_ranks.indexOf(0);
+            const b = this.row_ranks.indexOf(1);
+            matrix[a] = this.row_matrix[b];
+            matrix[b] = this.row_matrix[a];
+            this.row_matrix = matrix;
         } else {
-            let redLine = Math.round((this.x2+1)/2)*2-1;
-            this.x2 = (redLine - (this.x2 - redLine) + 6) % 6;
+            const matrix = [...this.col_matrix];
+            const a = this.col_ranks.indexOf(0);
+            const b = this.col_ranks.indexOf(1);
+            matrix[a] = this.col_matrix[b];
+            matrix[b] = this.col_matrix[a];
+            this.col_matrix = matrix;
         }
     }
 
@@ -4087,38 +4237,38 @@ function update() {
     if (!useAltSchema) {
         if (dimensions()[0] == 1) {
             let redLine = Math.round((games[0].x1+1)/2)*2-1;
-            games.push(games[0].crossBlue(true));
+            games.push(games[0].acrossBlue(true));
             if (Number.isInteger(game.coord_1/2)) {
                 let redLine = Math.round((games[1].x1+1)/2)*2-1;
-                games.push(games[1].crossBlue(true));
+                games.push(games[1].acrossBlue(true));
             }
         }
         if (dimensions()[1] == 1) {
             const length = games.length;
             for (let i = 0; i < length; i++) {
                 let redLine = Math.round((games[i].x2+1)/2)*2-1;
-                games.push(games[i].crossBlue(false));
+                games.push(games[i].acrossBlue(false));
             }
             if (Number.isInteger(game.coord_2/2)) {
                 for (let i = length; i < 2*length; i++) {
                     let redLine = Math.round((games[i].x2+1)/2)*2-1;
-                    games.push(games[i].crossBlue(false));
+                    games.push(games[i].acrossBlue(false));
                 }
             }
         }
-        if (draggingInBigPic && isMouseDown) {
-            placePoint(bigPicPoint1, game.quad, game.coord_1, game.coord_2);
+    }
+    if (draggingInBigPic && isMouseDown) {
+        placePoint(bigPicPoint1, game.quad, game.coord_1, game.coord_2);
+    } else {
+        placePoint(pointObjects[0], games[0].quad, games[0].coord_1, games[0].coord_2);
+        draggingInBigPic = false;
+    }
+    for (let i = 1; i < 9; i++) {
+        if (i < games.length) {
+            pointObjects[i].style.display = "";
+            placePoint(pointObjects[i], games[i].quad, games[i].coord_1, games[i].coord_2);
         } else {
-            placePoint(pointObjects[0], games[0].quad, games[0].coord_1, games[0].coord_2);
-            draggingInBigPic = false;
-        }
-        for (let i = 1; i < 9; i++) {
-            if (i < games.length) {
-                pointObjects[i].style.display = "";
-                placePoint(pointObjects[i], games[i].quad, games[i].coord_1, games[i].coord_2);
-            } else {
-                pointObjects[i].style.display = "none";
-            }
+            pointObjects[i].style.display = "none";
         }
     }
 
@@ -4135,16 +4285,16 @@ function update() {
     const birhombicDiagramPadding = (birhombicHeight - birhombicDiagramHeight)/2;
     const starWidth = brRowRect.width.baseVal.value;
 
-    let [brRowX, brRowY] = [game.rhombic_x1,game.rhombic_y1];
-    brRowX = brRowX*birhombicDiagramWidth/4 + birhombicDiagramWidth/2 + birhombicPadding - starWidth/2;
-    brRowY = birhombicDiagramHeight - brRowY*birhombicDiagramHeight/Math.sqrt(3) + birhombicDiagramPadding - starWidth/2;
-    brRowPlayer.x.baseVal.value = brRowX;
-    brRowPlayer.y.baseVal.value = brRowY;
-    let [brColX, brColY] = [game.rhombic_x2,game.rhombic_y2];
-    brColX = brColX*birhombicDiagramWidth/4 + birhombicDiagramWidth/2 + birhombicPadding - starWidth/2;
-    brColY = birhombicDiagramHeight - brColY*birhombicDiagramHeight/Math.sqrt(3) + birhombicDiagramPadding - starWidth/2;
-    brColPlayer.x.baseVal.value = brColX;
-    brColPlayer.y.baseVal.value = brColY;
+    // let [brRowX, brRowY] = [game.rhombic_x1,game.rhombic_y1];
+    // brRowX = brRowX*birhombicDiagramWidth/4 + birhombicDiagramWidth/2 + birhombicPadding - starWidth/2;
+    // brRowY = birhombicDiagramHeight - brRowY*birhombicDiagramHeight/Math.sqrt(3) + birhombicDiagramPadding - starWidth/2;
+    // brRowPlayer.x.baseVal.value = brRowX;
+    // brRowPlayer.y.baseVal.value = brRowY;
+    // let [brColX, brColY] = [game.rhombic_x2,game.rhombic_y2];
+    // brColX = brColX*birhombicDiagramWidth/4 + birhombicDiagramWidth/2 + birhombicPadding - starWidth/2;
+    // brColY = birhombicDiagramHeight - brColY*birhombicDiagramHeight/Math.sqrt(3) + birhombicDiagramPadding - starWidth/2;
+    // brColPlayer.x.baseVal.value = brColX;
+    // brColPlayer.y.baseVal.value = brColY;
     
     times.push(performance.now() - cur_time);
     cur_time = performance.now();
@@ -4389,7 +4539,7 @@ function update() {
 // }
 
 function crossBlue(p1) {
-    game = game.crossBlue(p1);
+    game.crossBlue(p1);
     // game.quad = qOverBlue(p1, game.quad, game.coord_1, game.coord_2);
     updateBackground();
     // if (p1) {
@@ -4402,36 +4552,38 @@ function crossBlue(p1) {
 }
 
 function crossRed(p1) {
-    if (p1) {
-        let redLine = Math.round((game.coord_1+1)/2)*2-1;
-        game.coord_1 = (redLine - (game.coord_1 - redLine) + 6) % 6;
-    } else {
-        let redLine = Math.round((game.coord_2+1)/2)*2-1;
-        game.coord_2 = (redLine - (game.coord_2 - redLine) + 6) % 6;
-    }
+    game.crossRed(p1);
+    updateBackground();
+    // if (p1) {
+    //     let redLine = Math.round((game.coord_1+1)/2)*2-1;
+    //     game.coord_1 = (redLine - (game.coord_1 - redLine) + 6) % 6;
+    // } else {
+    //     let redLine = Math.round((game.coord_2+1)/2)*2-1;
+    //     game.coord_2 = (redLine - (game.coord_2 - redLine) + 6) % 6;
+    // }
 }
 
 function crossGreen(p1) {
-    if (p1) {
-        let greenLine = Math.round(game.coord_1/2)*2;
-        game.coord_1 = (greenLine - (game.coord_1 - greenLine) + 6) % 6;
-    } else {
-        let greenLine = Math.round(game.coord_2/2)*2;
-        game.coord_2 = (greenLine - (game.coord_2 - greenLine) + 6) % 6;
-    }
+    game.crossGreen(p1);
+    // if (p1) {
+    //     let greenLine = Math.round(game.coord_1/2)*2;
+    //     game.coord_1 = (greenLine - (game.coord_1 - greenLine) + 6) % 6;
+    // } else {
+    //     let greenLine = Math.round(game.coord_2/2)*2;
+    //     game.coord_2 = (greenLine - (game.coord_2 - greenLine) + 6) % 6;
+    // }
 }
 
 function switchMatrices() {
-    for (let i = 0; i < 4; i++) {
-        let temp = game.row_matrix[i];
-        game.row_matrix[i] = game.col_matrix[i];
-        game.col_matrix[i] = temp;
-    }
+    const temp = [...game.row_matrix];
+    game.row_matrix = [...game.col_matrix];
+    game.col_matrix = temp;
     updateCoords();
 }
 
 function flipMatrices() {
-    game.matrices = [Game.flip(game.row_matrix),Game.flip(game.col_matrix)];
+    game.row_matrix = Game.flip(game.row_matrix);
+    game.col_matrix = Game.flip(game.col_matrix);
     updateCoords();
 }
 
@@ -4459,12 +4611,14 @@ function switchColumns() {
 function rotate() {
     const tempA = [...game.row_matrix];
     const tempB = [...game.col_matrix];
-    game.matrices = [[tempA[3], tempA[1], tempA[0], tempA[2]],[tempB[3], tempB[1], tempB[0], tempB[2]]];
+    game.row_matrix = [tempA[3], tempA[1], tempA[0], tempA[2]];
+    game.col_matrix = [tempB[3], tempB[1], tempB[0], tempB[2]];
     updateCoords();
 }
 
 function randomGame() {
-    game.matrices = [normalize([Math.random(),Math.random(),Math.random(),Math.random()]),normalize([Math.random(),Math.random(),Math.random(),Math.random()])];
+    game.row_matrix = normalize([Math.random(),Math.random(),Math.random(),Math.random()]);
+    game.col_matrix = normalize([Math.random(),Math.random(),Math.random(),Math.random()]);
 
     updateCoords();
 }
@@ -4948,11 +5102,11 @@ function changeCoords(e) {
                 game.coord_3 = 6 - 2*(x - containerWidth/2 - blueLinePadding) / diagramWidth;
             else {
                 if (game.zone == 1 || game.zone == 4) {
-                    game.coord_3 = (x - containerWidth/2 - blueLinePadding) / diagramWidth;
-                    if (game.coord_3 > 3) game.coord_3 = 3;
+                    game.coord_3 = Math.min((x - containerWidth/2 - blueLinePadding) / diagramWidth,3);
+                    // if (game.coord_3 > 3) game.coord_3 = 3;
                 }
                 else {
-                    game.coord_3 = 3 + (x - blueLinePadding) / diagramWidth;
+                    game.coord_3 = Math.max(3 + (x - blueLinePadding) / diagramWidth,3);
                     if (game.coord_3 < 3) game.coord_3 = 3;
                 }
             }
@@ -4965,12 +5119,12 @@ function changeCoords(e) {
                 game.coord_4 = 6 - 2*(y - containerHeight/2 - blueLinePadding) / diagramHeight;
             else {
                 if (game.zone == 1 || game.zone == 2) {
-                    game.coord_4 = 3 - (y - blueLinePadding) / diagramHeight;
-                    if (game.coord_4 > 3) game.coord_4 = 3;
+                    game.coord_4 = Math.min(3 - (y - blueLinePadding) / diagramHeight,3);
+                    // if (game.coord_4 > 3) game.coord_4 = 3;
                 }
                 else {
-                    game.coord_4 = 6 - (y - containerHeight/2 - blueLinePadding) / diagramHeight;
-                    if (game.coord_4 < 3) game.coord_4 = 3;
+                    game.coord_4 = Math.max(6 - (y - containerHeight/2 - blueLinePadding) / diagramHeight,3);
+                    // if (game.coord_4 < 3) game.coord_4 = 3;
                 }
             }
         }
@@ -5785,7 +5939,6 @@ function updateBigPicCanvas(lowRes = false) {
         for (let j = 0; j < quadrantWidth; j++) {
             for (let i = 0; i < quadrantWidth; i++) {
                 let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,1);
-                // if (useAltSchema) new_game.to_balanced();
                 let color = [];
                 if (viewMode == 0) color = new_game.equilibrium_color;
                 else if (viewMode == 11) color = new_game.quadrant_color;
@@ -5801,7 +5954,6 @@ function updateBigPicCanvas(lowRes = false) {
         for (let j = 0; j < quadrantWidth; j++) {
             for (let i = 0; i < quadrantWidth; i++) {
                 let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,2);
-                // if (useAltSchema) new_game.to_balanced();
                 let color = [];
                 if (viewMode == 0) color = new_game.equilibrium_color;
                 else if (viewMode == 11) color = new_game.quadrant_color;
@@ -5817,7 +5969,6 @@ function updateBigPicCanvas(lowRes = false) {
         for (let j = 0; j < quadrantWidth; j++) {
             for (let i = 0; i < quadrantWidth; i++) {
                 let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,3);
-                // if (useAltSchema) new_game.to_balanced();
                 let color = [];
                 if (viewMode == 0) color = new_game.equilibrium_color;
                 else if (viewMode == 11) color = new_game.quadrant_color;
@@ -5833,7 +5984,6 @@ function updateBigPicCanvas(lowRes = false) {
         for (let j = 0; j < quadrantWidth; j++) {
             for (let i = 0; i < quadrantWidth; i++) {
                 let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,4);
-                // if (useAltSchema) new_game.to_balanced();
                 let color = [];
                 if (viewMode == 0) color = new_game.equilibrium_color;
                 else if (viewMode == 11) color = new_game.quadrant_color;
@@ -5991,7 +6141,6 @@ function fixImage(alt) {
     for (let elt of document.getElementsByClassName("show-diagrams")) {
         elt.classList.remove("selected");
     }
-    document.getElementById("fix-image-button-1").classList.add("selected");
 
     num_games = x => 6;
 
@@ -6340,27 +6489,40 @@ function updateDiagramGrid() {
         element.remove();
     }
     let new_game = game.use_conventions(game.coord_1,game.coord_2,game.coord_3,game.coord_4,game.quad);
+    const j0 = Math.floor(game.coord_1);
+    const i0 = Math.floor(game.coord_2);
     for (let i = 0; i < 6; i += 6/num_games(new_game.coord_4)) {
         for (let k = 0; k < 6/num_games(new_game.coord_4); k++) {
-            if ((i+k) % 2 == 0) {
-                let redLine = Math.round((new_game.coord_2+1)/2)*2-1;
-                if (new_game.coord_2 != 4)
-                    new_game.coord_2 = (redLine - (new_game.coord_2 - redLine) + 6) % 6;
-                else
-                    new_game.coord_2 = 6;
-            } else new_game.crossGreen(false);
+            // if ((i+k) % 2 == 0) {
+            //     let redLine = Math.round((new_game.coord_2+1)/2)*2-1;
+            //     if (new_game.coord_2 != 4)
+            //         new_game.coord_2 = (redLine - (new_game.coord_2 - redLine) + 6) % 6;
+            //     else
+            //         new_game.coord_2 = 6;
+            // } else new_game.crossGreen(false);
+            // console.log((i0+i+k % 6) - new_game.coord_2);
+            // if (new_game.coord_2 != 4)
+            new_game.coord_2 = (new_game.coord_2 + 2*((i0+i+k % 6)+1 - new_game.coord_2)) % 6;
+            // else
+            //     new_game.coord_2 = 6;
         }
         for (let j = 0; j < 6; j += 6/num_games(new_game.coord_3)) {
             if (i == 6 - 6/num_games(new_game.coord_4) && j == 6 - 6/num_games(new_game.coord_3)) break;
             for (let k = 0; k < 6/num_games(new_game.coord_3); k++) {
-                if ((j+k) % 2 == 0) {
-                    let redLine = Math.round((new_game.coord_1+1)/2)*2-1;
-                    if (new_game.coord_1 != 4)
-                        new_game.coord_1 = (redLine - (new_game.coord_1 - redLine) + 6) % 6;
-                    else
-                        new_game.coord_1 = 6;
-                } else new_game.crossGreen(true);
+                // if ((j+k) % 2 == 0) {
+                //     let redLine = Math.round((new_game.coord_1+1)/2)*2-1;
+                //     if (new_game.coord_1 != 4)
+                //         new_game.coord_1 = (redLine - (new_game.coord_1 - redLine) + 6) % 6;
+                //     else
+                //         new_game.coord_1 = 6;
+                // } else new_game.crossGreen(true);
+                // if (new_game.coord_1 != 4)
+                    // new_game.coord_1 = (j0+j+k - (new_game.coord_1 - j0-j-k) + 6) % 6;
+                new_game.coord_1 = (new_game.coord_1 + 2*((j0+j+k % 6)+1 - new_game.coord_1)) % 6;
+                // else
+                //     new_game.coord_1 = 6;
             }
+            // console.log(i,j);
             updateDiagram(new_game);
             createDiagram();
         }
@@ -6873,8 +7035,8 @@ function exportPNG() {
 }
 
 function goTo(x1,x2,b1,b2,q) {
-    game.coord_1 = ((x1 + game.conventions[0])*game.conventions[1] + 12) % 6;
-    game.coord_2 = ((x2 + game.conventions[0])*game.conventions[1] + 12) % 6;
+    game.x1 = ((x1 + game.conventions[0])*game.conventions[1] + 12) % 6;
+    game.x2 = ((x2 + game.conventions[0])*game.conventions[1] + 12) % 6;
     game.coord_3 = b1;
     game.coord_4 = b2;
     game.quad = q;
@@ -7466,7 +7628,6 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
                 }
             }
 
-            // console.log(i,j);
             data[(j*canvas.width+i)*4]   = color[0];
             data[(j*canvas.width+i)*4+1] = color[1];
             data[(j*canvas.width+i)*4+2] = color[2];
