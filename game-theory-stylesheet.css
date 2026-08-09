@@ -8,7 +8,7 @@ html, body {
     margin: 0;
 }
 
-.red-line, .green-line, .edge-line {
+.red-line-hor, .red-line-ver, .green-line-hor, .green-line-ver, .edge-line {
     stroke-width: 0.6%;
 }
 
@@ -16,10 +16,16 @@ html, body {
     stroke-width: 0.8%;
 }
 
-.red-line {
+.red-line-hor {
     stroke: red;
 }
-.green-line {
+.red-line-ver {
+    stroke: red;
+}
+.green-line-hor {
+    stroke: green;
+}
+.green-line-ver {
     stroke: green;
 }
 

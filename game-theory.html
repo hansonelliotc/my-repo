@@ -40,6 +40,8 @@
 				<tr><td><b>Row Player</b></td><td><b>Column Player</b></td></tr>
 				<tr><td class="info-header" colspan="2">x,b coordinates</td></tr>
 				<tr><td><span id="x-row"></span>, <span id="b-row"></span></td><td><span id="x-col"></span>, <span id="b-col"></span></td></tr>
+				<tr><td class="info-header" colspan="2">y,t coordinates</td></tr>
+				<tr><td><span id="y-row"></span>, <span id="t-row"></span></td><td><span id="y-col"></span>, <span id="t-col"></span></td></tr>
 				<tr><td class="info-header" colspan="2">Equilibrium returns</td></tr>
 				<tr>
 					<td><span id="row-return"></span>
@@ -72,6 +74,10 @@
 					<td><button id="cross-red-1" onclick="crossRed(true)" title="Flip the row player's smallest entries">Cross Row's red</button></td>
 					<td><button id="cross-red-2" onclick="crossRed(false)" title="Flip the column player's smallest entries">Cross Column's red</button></td>
 				</tr>
+				<tr>
+					<td><button id="cross-tan-1" onclick="crossTan(true)">Cross Row's tan</button></td>
+					<td><button id="cross-tan-2" onclick="crossTan(false)">Cross Column's tan</button></td>
+				</tr>
 				<!-- <tr>
 					<td colspan="2"><button id="switch-players" onclick="wiggle(true)" title="Exchanges each player's matrix with the transpose of the other player's matrix">Switch the players</button></td>
 				</tr> -->
@@ -103,6 +109,7 @@
 				</tr> -->
 			</table>
 			<div id="view-modes">
+				<button class="mode-button" id="none-mode" onclick="changeViewMode(12)">None</button>
 				<button class="mode-button" id="quadrant-mode" onclick="changeViewMode(11)">Quadrant</button>
 				<button class="mode-button selected" id="regular-mode" onclick="changeViewMode(0)">Equilibria</button>
 				<button class="mode-button" id="coordination-mode" onclick="changeViewMode(7)">Correlation</button>
@@ -352,28 +359,28 @@
 			<table id="advanced-settings">
 				<tr><td colspan="2"><h2>Layout Convention</h2></td></tr>
 				<tr>
-					<td><button id="convention-2-inverted" class="convention-button selected" onclick="change_conventions(2,-1)">+0</button></td>
+					<td><button id="convention-2-inverted" class="convention-button selected" onclick="change_conventions(2,-1)">1 (green w/ symmetry)</button></td>
 					<td><button id="convention-2" class="convention-button" onclick="change_conventions(2,1)">+0 inverted</button></td>
 				</tr>
 				<tr>
-					<td><button id="convention-3-inverted" class="convention-button" onclick="change_conventions(3,-1)">+1</button></td>
-					<td><button id="convention-3" class="convention-button" onclick="change_conventions(3,1)">+1 inverted</button></td>
+					<td><button id="convention-1-inverted" class="convention-button" onclick="change_conventions(1,-1)">2 (red)</button></td>
+					<td><button id="convention-1" class="convention-button" onclick="change_conventions(1,1)">+5 inverted</button></td>
 				</tr>
 				<tr>
-					<td><button id="convention-4-inverted" class="convention-button" onclick="change_conventions(4,-1)">+2</button></td>
-					<td><button id="convention-4" class="convention-button" onclick="change_conventions(4,1)">+2 inverted</button></td>
-				</tr>
-				<tr>
-					<td><button id="convention-5-inverted" class="convention-button" onclick="change_conventions(5,-1)">+3</button></td>
-					<td><button id="convention-5" class="convention-button" onclick="change_conventions(5,1)">+3 inverted</button></td>
-				</tr>
-				<tr>
-					<td><button id="convention-0-inverted" class="convention-button" onclick="change_conventions(0,-1)">+4</button></td>
+					<td><button id="convention-0-inverted" class="convention-button" onclick="change_conventions(0,-1)">3 (green w/ equilibria)</button></td>
 					<td><button id="convention-0" class="convention-button" onclick="change_conventions(0,1)">+4 inverted</button></td>
 				</tr>
 				<tr>
-					<td><button id="convention-1-inverted" class="convention-button" onclick="change_conventions(1,-1)">+5</button></td>
-					<td><button id="convention-1" class="convention-button" onclick="change_conventions(1,1)">+5 inverted</button></td>
+					<td><button id="convention-5-inverted" class="convention-button" onclick="change_conventions(5,-1)">4 (red w/ symmetry)</button></td>
+					<td><button id="convention-5" class="convention-button" onclick="change_conventions(5,1)">+3 inverted</button></td>
+				</tr>
+				<tr>
+					<td><button id="convention-4-inverted" class="convention-button" onclick="change_conventions(4,-1)">5 (green)</button></td>
+					<td><button id="convention-4" class="convention-button" onclick="change_conventions(4,1)">+2 inverted</button></td>
+				</tr>
+				<tr>
+					<td><button id="convention-3-inverted" class="convention-button" onclick="change_conventions(3,-1)">6 (red w/ equilibria)</button></td>
+					<td><button id="convention-3" class="convention-button" onclick="change_conventions(3,1)">+6 inverted</button></td>
 				</tr>
 			</table>
 			<div style="height:2vh;width:inherit;"></div>
@@ -397,52 +404,52 @@
 			<foreignObject id="canvasForeignObject-big-pic" x="0" y="0" width="0" height="0"><canvas id="big-pic-canvas"></canvas></foreignObject>
 
 			<!-- quad1: thirds -->
-			<line class="big-pic-line" x1="68%" x2="68%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="82%" x2="82%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="54%" x2="96%" y1="18%" y2="18%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="54%" x2="96%" y1="32%" y2="32%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="68%" x2="68%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="82%" x2="82%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="54%" x2="96%" y1="18%" y2="18%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="54%" x2="96%" y1="32%" y2="32%" stroke="green" stroke-width="1%" />
 
 			<!-- quad2: thirds -->
-			<line class="big-pic-line" x1="18%" x2="18%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="32%" x2="32%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="4%" x2="46%" y1="18%" y2="18%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="4%" x2="46%" y1="32%" y2="32%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="18%" x2="18%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="32%" x2="32%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="4%" x2="46%" y1="18%" y2="18%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="4%" x2="46%" y1="32%" y2="32%" stroke="green" stroke-width="1%" />
 
 			<!-- quad3: thirds -->
-			<line class="big-pic-line" x1="18%" x2="18%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="32%" x2="32%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="4%" x2="46%" y1="68%" y2="68%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="4%" x2="46%" y1="82%" y2="82%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="18%" x2="18%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="32%" x2="32%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="4%" x2="46%" y1="68%" y2="68%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="4%" x2="46%" y1="82%" y2="82%" stroke="green" stroke-width="1%" />
 
 			<!-- quad4: thirds -->
-			<line class="big-pic-line" x1="68%" x2="68%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="82%" x2="82%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="54%" x2="96%" y1="68%" y2="68%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="54%" x2="96%" y1="82%" y2="82%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="68%" x2="68%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="82%" x2="82%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="54%" x2="96%" y1="68%" y2="68%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="54%" x2="96%" y1="82%" y2="82%" stroke="green" stroke-width="1%" />
 
 			<!-- quad1 frame -->
-			<line class="big-pic-line" x1="53.5%" x2="96.5%" y1="4%" y2="4%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="53.5%" x2="96.5%" y1="46%" y2="46%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="54%" x2="54%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="96%" x2="96%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="53.5%" x2="96.5%" y1="4%" y2="4%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="53.5%" x2="96.5%" y1="46%" y2="46%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="54%" x2="54%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="96%" x2="96%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
 
 			<!-- quad2 frame -->
-			<line class="big-pic-line" x1="3.5%" x2="46.5%" y1="4%" y2="4%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="3.5%" x2="46.5%" y1="46%" y2="46%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="4%" x2="4%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="46%" x2="46%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="3.5%" x2="46.5%" y1="4%" y2="4%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="3.5%" x2="46.5%" y1="46%" y2="46%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="4%" x2="4%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="46%" x2="46%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
 
 			<!-- quad3 frame -->
-			<line class="big-pic-line" x1="3.5%" x2="46.5%" y1="54%" y2="54%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="3.5%" x2="46.5%" y1="96%" y2="96%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="4%" x2="4%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="46%" x2="46%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="3.5%" x2="46.5%" y1="54%" y2="54%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="3.5%" x2="46.5%" y1="96%" y2="96%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="4%" x2="4%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="46%" x2="46%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
 
 			<!-- quad4 frame -->
-			<line class="big-pic-line" x1="53.5%" x2="96.5%" y1="54%" y2="54%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="53.5%" x2="96.5%" y1="96%" y2="96%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="54%" x2="54%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line" x1="96%" x2="96%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="53.5%" x2="96.5%" y1="54%" y2="54%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-hor" x1="53.5%" x2="96.5%" y1="96%" y2="96%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="54%" x2="54%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
+			<line class="big-pic-line-ver" x1="96%" x2="96%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
 
 			<circle id="big-pic-point9" r="2%" cx="25%" cy="25%" fill="#888" />
 			<circle id="big-pic-point8" r="2%" cx="25%" cy="25%" fill="#888" />
@@ -627,20 +634,20 @@
 				<rect id="region3b" />
 				<rect id="region4" /> -->
 				<foreignObject id="canvasForeignObject" x="0" y="0" width="0" height="0"><canvas id="canvas"></canvas></foreignObject>
-				<line class="red-line" id="red1" />
-				<line class="red-line" id="red2" />
-				<line class="red-line" id="red3" />
-				<line class="red-line" id="red4" />
-				<line class="red-line" id="red5" />
-				<line class="red-line" id="red6" />
-				<line class="green-line" id="green1" />
-				<line class="green-line" id="green2" />
-				<line class="green-line" id="green3" />
-				<line class="green-line" id="green4" />
-				<line class="green-line" id="green5" />
-				<line class="green-line" id="green6" />
-				<line class="green-line" id="green7" />
-				<line class="green-line" id="green8" />
+				<line class="red-line-hor" id="red1" />
+				<line class="red-line-hor" id="red2" />
+				<line class="red-line-hor" id="red3" />
+				<line class="red-line-ver" id="red4" />
+				<line class="red-line-ver" id="red5" />
+				<line class="red-line-ver" id="red6" />
+				<line class="green-line-hor" id="green1" />
+				<line class="green-line-hor" id="green2" />
+				<line class="green-line-hor" id="green3" />
+				<line class="green-line-hor" id="green4" />
+				<line class="green-line-ver" id="green5" />
+				<line class="green-line-ver" id="green6" />
+				<line class="green-line-ver" id="green7" />
+				<line class="green-line-ver" id="green8" />
 				
 				<line class="boundary-line" id="boundary-line-1" />
 				<line class="boundary-line" id="boundary-line-2" />
@@ -758,12 +765,12 @@
 		<table cellspacing="0" cellpadding="0" style="border-collapse: separate;border-spacing: 5px 0;">
 			<tr>
 				<td><button class="show-diagrams" id="fix-image-button-0" onclick="hideGame()">Hide game</button></td>
-				<td><button id="alt-image-button-1" onclick="altImage(false)" class="selected">All games</button></td>
+				<td><button id="alt-image-button-1" onclick="altImage(false)" class="selected">Blueness slices</button></td>
 				<td><button id="hide-lines-button" onclick="hideLines(true)">Hide lines</button></td>
 			</tr>
 			<tr>
 				<td><button class="show-diagrams selected" id="fix-image-button-1" onclick="fixImage(false)" class="selected">Show one game</button></td>
-				<td><button id="alt-image-button-2" onclick="altImage(true)">Balanced games only</button></td>
+				<td><button id="alt-image-button-2" onclick="altImage(true)">Temperature slices</button></td>
 				<td><button id="show-lines-button" onclick="hideLines(false)" class="selected">Show lines</button></td>
 			</tr>
 			<tr>

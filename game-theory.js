@@ -127,8 +127,8 @@ class Game {
     #clear() {
         // this.#row_matrix = undefined; this.#row_ranks = undefined;
         // this.#col_matrix = undefined; this.#col_ranks = undefined;
-        this.#x1 = undefined; this.#x2 = undefined; this.#b1 = undefined; this.#b2 = undefined; this.#quadrant = undefined;
-        this.#y1 = undefined; this.#y2 = undefined; this.#t1 = undefined; this.#t2 = undefined; this.#quad_temp = undefined;
+        // this.#x1 = undefined; this.#x2 = undefined; this.#b1 = undefined; this.#b2 = undefined; this.#quadrant = undefined;
+        // this.#y1 = undefined; this.#y2 = undefined; this.#t1 = undefined; this.#t2 = undefined; this.#quad_temp = undefined;
         // this.#zone_row = undefined; this.#zone_col = undefined;
         this.#backstop = undefined; this.#threat_point = undefined; this.#threat_point_2 = undefined; this.#pareto = undefined;
         this.#rhombic_x1 = undefined; this.#rhombic_y1 = undefined; this.#rhombic_x2 = undefined; this.#rhombic_y2 = undefined;
@@ -141,6 +141,12 @@ class Game {
         this.#row_tu_bs_return = undefined; this.#col_tu_bs_return = undefined;
         this.#row_tu_tp_return = undefined; this.#col_tu_tp_return = undefined;
         this.#max_total = undefined; this.#correlation = undefined;
+    }
+    #clear1() {
+        this.#x1 = undefined; this.#x2 = undefined; this.#b1 = undefined; this.#b2 = undefined; this.#quadrant = undefined;
+    }
+    #clear2() {
+        this.#y1 = undefined; this.#y2 = undefined; this.#t1 = undefined; this.#t2 = undefined; this.#quad_temp = undefined;
     }
 
     #ranks(m) {
@@ -155,8 +161,8 @@ class Game {
 
     get row_matrix() { return this.#row_matrix; }
     get col_matrix() { return this.#col_matrix; }
-    set row_matrix(val) { this.#clear(); this.#row_matrix = val; this.#row_ranks = this.#ranks(val); this.#update_zone(); }
-    set col_matrix(val) { this.#clear(); this.#col_matrix = val; this.#col_ranks = this.#ranks(val); this.#update_zone(); }
+    set row_matrix(val) { this.#clear(); this.#clear1(); this.#clear2(); this.#row_matrix = val; this.#row_ranks = this.#ranks(val); }
+    set col_matrix(val) { this.#clear(); this.#clear1(); this.#clear2(); this.#col_matrix = val; this.#col_ranks = this.#ranks(val); }
     get row_ranks() {
         if (this.#row_ranks === undefined) this.#row_ranks = this.#ranks(this.row_matrix);
         return this.#row_ranks;
@@ -186,13 +192,6 @@ class Game {
             this.#quad_temp = 4;
         else this.#quad_temp = 3;
     }
-    #update_zone() {
-        const error = 0.0000001;
-        if (this.t1 < 3 - error) this.zone_row = 0;
-        else if (this.t1 > 3 + error) this.zone_row = 1;
-        if (this.t2 < 3 - error) this.zone_col = 0;
-        else if (this.t2 > 3 + error) this.zone_col = 1;
-    }
 
     #matrix_to_xb(matrix,ranks) {
         const sorted_matrix = matrix.toSorted();
@@ -217,8 +216,22 @@ class Game {
         return [x,blue];
     }
 
-    #negate(m) {
-        return m.map(x => 6 - x);
+    #negate_row(m) {
+        const new_matrix = [0,1,2,3];
+        for (let i = 0; i < 4; i++) {
+            new_matrix[i] = this.row_matrix[this.row_ranks.indexOf(3-this.row_ranks[i])];
+        }
+        this.#row_matrix = new_matrix;
+        this.#row_ranks = this.#row_ranks.map(x => 3 - x);
+    }
+
+    #negate_col(m) {
+        const new_matrix = [0,1,2,3];
+        for (let i = 0; i < 4; i++) {
+            new_matrix[i] = this.col_matrix[this.col_ranks.indexOf(3-this.col_ranks[i])];
+        }
+        this.#col_matrix = new_matrix;
+        this.#col_ranks = this.#col_ranks.map(x => 3 - x);
     }
 
     #x1b1_to_matrix() {
@@ -258,6 +271,8 @@ class Game {
             this.#row_matrix = [this.#row_matrix[2],this.#row_matrix[3],this.#row_matrix[0],this.#row_matrix[1]];
             this.#row_ranks = [this.#row_ranks[2],this.#row_ranks[3],this.#row_ranks[0],this.#row_ranks[1]];
         }
+        this.#clear();
+        this.#clear2();
         return this.#row_matrix;
     }
     #update_x1b1() {
@@ -303,6 +318,8 @@ class Game {
             this.#col_matrix = [this.#col_matrix[1],this.#col_matrix[0],this.#col_matrix[3],this.#col_matrix[2]];
             this.#col_ranks = [this.#col_ranks[1],this.#col_ranks[0],this.#col_ranks[3],this.#col_ranks[2]];
         }
+        this.#clear();
+        this.#clear2();
         return this.#col_matrix;
     }
     #update_x2b2() {
@@ -434,13 +451,10 @@ class Game {
             this.#row_ranks = [this.#row_ranks[2],this.#row_ranks[3],this.#row_ranks[0],this.#row_ranks[1]];
         }
         if (this.zone_row == 1) {
-            const new_matrix = [0,1,2,3];
-            for (let i = 0; i < 4; i++) {
-                new_matrix[i] = this.row_matrix[this.row_ranks.indexOf(3-this.row_ranks[i])];
-            }
-            this.#row_matrix = new_matrix;
-            this.#row_ranks = this.#row_ranks.map(x => 3 - x);
+            this.#negate_row();
         }
+        this.#clear();
+        this.#clear1();
         return this.#row_matrix;
     }
     #y2t2_to_matrix() {
@@ -483,13 +497,10 @@ class Game {
             this.#col_ranks = [this.#col_ranks[1],this.#col_ranks[0],this.#col_ranks[3],this.#col_ranks[2]];
         }
         if (this.zone_col == 1) {
-            const new_matrix = [0,1,2,3];
-            for (let i = 0; i < 4; i++) {
-                new_matrix[i] = this.col_matrix[this.col_ranks.indexOf(3-this.col_ranks[i])];
-            }
-            this.#col_matrix = new_matrix;
-            this.#col_ranks = this.#col_ranks.map(x => 3 - x);
+            this.#negate_col();
         }
+        this.#clear();
+        this.#clear1();
         return this.#col_matrix;
     }
 
@@ -550,20 +561,20 @@ class Game {
     }
     set y1(val) {
         this.#y1 = val;
-        if (this.#t1 !== undefined && this.#quad_temp !== undefined) this.#y1t1_to_matrix();
+        if (this.#t1 !== undefined && this.#zone_row !== undefined && this.#quad_temp !== undefined) this.#y1t1_to_matrix();
     }
     set y2(val) {
         this.#y2 = val;
-        if (this.#t2 !== undefined && this.#quad_temp !== undefined) this.#y2t2_to_matrix();
+        if (this.#t2 !== undefined && this.#zone_col !== undefined && this.#quad_temp !== undefined) this.#y2t2_to_matrix();
     }
     set t1(val) {
-        if (val != 3) this.#zone_row = undefined;
         this.#t1 = val;
+        if (this.#t1 != 3) this.zone_row = val < 3 ? 0 : 1;
         if (this.#y1 !== undefined && this.#quad_temp !== undefined) this.#y1t1_to_matrix();
     }
     set t2(val) {
-        if (val != 3) this.#zone_col = undefined;
         this.#t2 = val;
+        if (this.#t2 != 3) this.zone_col = val < 3 ? 0 : 1;
         if (this.#y2 !== undefined && this.#quad_temp !== undefined) this.#y2t2_to_matrix();
     }
     set quad_temp(val) {
@@ -574,9 +585,6 @@ class Game {
             this.#y2t2_to_matrix();
     }
     set zone(val) {
-        const save_matrices = this.#t1 !== undefined && this.#t2 !== undefined && this.#b1 !== undefined && this.#b2 !== undefined;
-        const row_matrix = save_matrices ? [...this.row_matrix] : null;
-        const col_matrix = save_matrices ? [...this.col_matrix] : null;
         switch (val) {
             case 1:
                 this.zone_row = 0;
@@ -595,16 +603,22 @@ class Game {
                 this.zone_col = 1;
                 break;
         }
-        if (save_matrices) {
-            this.row_matrix = row_matrix;
-            this.col_matrix = col_matrix;
-        }
     }
     set zone_row(val) {
-        this.#zone_row = val;
+        if (this.#row_matrix !== undefined && this.#col_matrix !== undefined && val != this.#zone_row) {
+            this.#zone_row = val;
+            this.#update_quad_temp();
+        } else {
+            this.#zone_row = val;
+        }
     }
     set zone_col(val) {
-        this.#zone_col = val;
+        if (this.#row_matrix !== undefined && this.#col_matrix !== undefined && val != this.#zone_col) {
+            this.#zone_col = val;
+            this.#update_quad_temp();
+        } else {
+            this.#zone_col = val;
+        }
     }
 
     get mode() { return this.#mode; }
@@ -1435,6 +1449,24 @@ class Game {
             const b = this.col_ranks.indexOf(1);
             matrix[a] = this.col_matrix[b];
             matrix[b] = this.col_matrix[a];
+            this.col_matrix = matrix;
+        }
+    }
+
+    crossTan(p1) {
+        if (p1) {
+            const matrix = [...this.row_matrix];
+            const a = this.row_ranks.indexOf(1);
+            const b = this.row_ranks.indexOf(2);
+            matrix[a] = 6-this.row_matrix[b];
+            matrix[b] = 6-this.row_matrix[a];
+            this.row_matrix = matrix;
+        } else {
+            const matrix = [...this.col_matrix];
+            const a = this.col_ranks.indexOf(1);
+            const b = this.col_ranks.indexOf(2);
+            matrix[a] = 6-this.col_matrix[b];
+            matrix[b] = 6-this.col_matrix[a];
             this.col_matrix = matrix;
         }
     }
@@ -2688,6 +2720,10 @@ function update() {
     const rowB = document.getElementById("b-row");
     const colX = document.getElementById("x-col");
     const colB = document.getElementById("b-col");
+    const rowY = document.getElementById("y-row");
+    const rowT = document.getElementById("t-row");
+    const colY = document.getElementById("y-col");
+    const colT = document.getElementById("t-col");
     const rowReturns = document.getElementById("row-return");
     const colReturns = document.getElementById("col-return");
     // const rowMixedReturns = document.getElementById("row-return-mixed");
@@ -2706,6 +2742,12 @@ function update() {
     
     rowB.innerHTML = game.b1.toFixed(1);
     colB.innerHTML = game.b2.toFixed(1);
+
+    rowY.innerHTML = game.y1.toFixed(1);
+    colY.innerHTML = game.y2.toFixed(1);
+    
+    rowT.innerHTML = game.t1.toFixed(1);
+    colT.innerHTML = game.t2.toFixed(1);
 
     // row's equilibrium return
     if (game.row_equilibrium_return_2 == null) {
@@ -4239,7 +4281,6 @@ function update() {
     const bigPicPoint9 = document.getElementById("big-pic-point9");
     const pointObjects = [ bigPicPoint1, bigPicPoint2, bigPicPoint3, bigPicPoint4, bigPicPoint5, bigPicPoint6, bigPicPoint7, bigPicPoint8, bigPicPoint9 ];
     games.length = 0;
-    // games.push([ game.quad, game.coord_1 % 6, game.coord_2 % 6 ]);
     games.push(game.use_conventions(game.coord_1 % 6, game.coord_2 % 6, game.coord_3, game.coord_4, game.quad));
     if (!useAltSchema) {
         if (dimensions()[0] == 1) {
@@ -4498,6 +4539,8 @@ function update() {
 
     updateDegenerateGames();
 
+    update_rgb_lines();
+
     time++;
 }
 
@@ -4579,6 +4622,11 @@ function crossGreen(p1) {
     //     let greenLine = Math.round(game.coord_2/2)*2;
     //     game.coord_2 = (greenLine - (game.coord_2 - greenLine) + 6) % 6;
     // }
+}
+
+function crossTan(p1) {
+    game.crossTan(p1);
+    updateBackground();
 }
 
 function switchMatrices() {
@@ -5886,6 +5934,10 @@ function changeViewMode(mode, player1=true) {
                 // document.getElementById("q4b").style.display = "none";
                 updateBackground();
                 break;
+            case 12:
+                document.getElementById("none-mode").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "No background";
+                break;
         }
     } else {
         switch (mode) {
@@ -5945,11 +5997,15 @@ function updateBigPicCanvas(lowRes = false) {
         const quadrantWidth = canvasBigPic.width*0.42;
         for (let j = 0; j < quadrantWidth; j++) {
             for (let i = 0; i < quadrantWidth; i++) {
-                let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,1);
                 let color = [];
-                if (viewMode == 0) color = new_game.equilibrium_color;
-                else if (viewMode == 11) color = new_game.quadrant_color;
-                else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+                if (viewMode == 12) {
+                    color = [255,255,255];
+                } else {
+                    let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,1);
+                    if (viewMode == 0) color = new_game.equilibrium_color;
+                    else if (viewMode == 11) color = new_game.quadrant_color;
+                    else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+                }
                 const x = i + Math.round(canvasBigPic.width*0.54);
                 const y = j + Math.round(canvasBigPic.height*0.04);
                 data[(x+y*canvasBigPic.width)*4] = color[0];
@@ -5960,11 +6016,15 @@ function updateBigPicCanvas(lowRes = false) {
         }
         for (let j = 0; j < quadrantWidth; j++) {
             for (let i = 0; i < quadrantWidth; i++) {
-                let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,2);
                 let color = [];
-                if (viewMode == 0) color = new_game.equilibrium_color;
-                else if (viewMode == 11) color = new_game.quadrant_color;
-                else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+                if (viewMode == 12) {
+                    color = [255,255,255];
+                } else {
+                    let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,2);
+                    if (viewMode == 0) color = new_game.equilibrium_color;
+                    else if (viewMode == 11) color = new_game.quadrant_color;
+                    else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+                }
                 const x = i + Math.round(canvasBigPic.width*0.04);
                 const y = j + Math.round(canvasBigPic.height*0.04);
                 data[(x+y*canvasBigPic.width)*4] = color[0];
@@ -5975,11 +6035,15 @@ function updateBigPicCanvas(lowRes = false) {
         }
         for (let j = 0; j < quadrantWidth; j++) {
             for (let i = 0; i < quadrantWidth; i++) {
-                let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,3);
                 let color = [];
-                if (viewMode == 0) color = new_game.equilibrium_color;
-                else if (viewMode == 11) color = new_game.quadrant_color;
-                else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+                if (viewMode == 12) {
+                    color = [255,255,255];
+                } else {
+                    let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,3);
+                    if (viewMode == 0) color = new_game.equilibrium_color;
+                    else if (viewMode == 11) color = new_game.quadrant_color;
+                    else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+                }
                 const x = i + Math.round(canvasBigPic.width*0.04);
                 const y = j + Math.round(canvasBigPic.height*0.54);
                 data[(x+y*canvasBigPic.width)*4] = color[0];
@@ -5990,11 +6054,15 @@ function updateBigPicCanvas(lowRes = false) {
         }
         for (let j = 0; j < quadrantWidth; j++) {
             for (let i = 0; i < quadrantWidth; i++) {
-                let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,4);
                 let color = [];
-                if (viewMode == 0) color = new_game.equilibrium_color;
-                else if (viewMode == 11) color = new_game.quadrant_color;
-                else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+                if (viewMode == 12) {
+                    color = [255,255,255];
+                } else {
+                    let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,4);
+                    if (viewMode == 0) color = new_game.equilibrium_color;
+                    else if (viewMode == 11) color = new_game.quadrant_color;
+                    else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+                }
                 const x = i + Math.round(canvasBigPic.width*0.54);
                 const y = j + Math.round(canvasBigPic.height*0.54);
                 data[(x+y*canvasBigPic.width)*4] = color[0];
@@ -6509,7 +6577,6 @@ function updateDiagramGrid() {
             //     else
             //         new_game.coord_2 = 6;
             // } else new_game.crossGreen(false);
-            // console.log((i0+i+k % 6) - new_game.coord_2);
             // if (new_game.coord_2 != 4)
             new_game.coord_2 = (new_game.coord_2 + 2*((i0+i+k % 6)+1 - new_game.coord_2)) % 6;
             // else
@@ -6531,7 +6598,6 @@ function updateDiagramGrid() {
                 // else
                 //     new_game.coord_1 = 6;
             }
-            // console.log(i,j);
             updateDiagram(new_game);
             createDiagram();
         }
@@ -6583,10 +6649,10 @@ function updateBlueLines() {
         redSemicircle.style.display = "none";
         blueSemicircle.style.display = "none";
     } else {
-        if (game.t1 > 3 && game.t2 > 3) game.zone = 3;
-        else if (game.t1 < 3 && game.t2 > 3) game.zone = 4;
-        else if (game.t1 > 3 && game.t2 < 3) game.zone = 2;
-        else if (game.t1 < 3 && game.t2 < 3) game.zone = 1;
+        // if (game.t1 > 3 && game.t2 > 3) game.zone = 3;
+        // else if (game.t1 < 3 && game.t2 > 3) game.zone = 4;
+        // else if (game.t1 > 3 && game.t2 < 3) game.zone = 2;
+        // else if (game.t1 < 3 && game.t2 < 3) game.zone = 1;
         blueLine3.style.display = "";
         blueLine4.style.display = "";
         blueCorner1.style.display = (game.zone == 1 || game.t1 == 3 && game.t2 == 3 || game.zone == 2 && game.t1 == 3 || game.zone == 4 && game.t2 == 3) ? "" : "none";
@@ -6851,7 +6917,8 @@ function altImage(alt) {
     // if (!diagramGrid) fixImageSize = alt;
     backgroundOutOfDate = true;
     if (useAltSchema && !alt) {
-        game = Game.xb(game.coord_1,game.coord_2,2,2,game.quad);
+        // game = Game.xb(game.coord_1,game.coord_2,2,2,game.quad);
+        game.mode = 0;
         useAltSchema = false;
         button2.classList.remove("selected");
         button1.classList.add("selected");
@@ -6866,7 +6933,8 @@ function altImage(alt) {
         hex2.style.display = "none";
         hex3.style.display = "none";
     } else if (!useAltSchema && alt) {
-        game = Game.temp(game.coord_1,game.coord_2,3,3,game.quad,game.zone);
+        // game = Game.temp(game.coord_1,game.coord_2,3,3,game.quad,game.zone);
+        game.mode = 1;
         useAltSchema = true;
         button1.classList.remove("selected");
         button2.classList.add("selected");
@@ -7366,28 +7434,55 @@ function change_conventions(offset, inversion) {
     const selected_button = document.getElementById("convention-" + offset.toString() + (inversion == -1 ? "-inverted" : ""));
     selected_button.classList.add("selected");
 
-    const redLines = document.getElementsByClassName("red-line");
-    const greenLines = document.getElementsByClassName("green-line");
-    const bigPicLines = document.getElementsByClassName("big-pic-line");
-    if (offset % 2 == 0) {
-        for (let line of redLines) {
-            line.style.stroke = "red";
+    update_rgb_lines();
+}
+
+function update_rgb_lines() {
+    const color1 = !useAltSchema || game.zone_row == 0 ? "red" : "blue";
+    const color2 = !useAltSchema || game.zone_col == 0 ? "red" : "blue";
+    const redLinesHor = document.getElementsByClassName("red-line-hor");
+    const greenLinesHor = document.getElementsByClassName("green-line-hor");
+    const redLinesVer = document.getElementsByClassName("red-line-ver");
+    const greenLinesVer = document.getElementsByClassName("green-line-ver");
+    const bigPicLinesHor = document.getElementsByClassName("big-pic-line-hor");
+    const bigPicLinesVer = document.getElementsByClassName("big-pic-line-ver");
+    if (game.offset % 2 == 0) {
+        for (let line of redLinesHor) {
+            line.style.stroke = color2;
         }
-        for (let line of greenLines) {
+        for (let line of redLinesVer) {
+            line.style.stroke = color1;
+        }
+        for (let line of greenLinesHor) {
             line.style.stroke = "green";
         }
-        for (let line of bigPicLines) {
+        for (let line of greenLinesVer) {
+            line.style.stroke = "green";
+        }
+        for (let line of bigPicLinesHor) {
+            line.style.stroke = "green";
+        }
+        for (let line of bigPicLinesVer) {
             line.style.stroke = "green";
         }
     } else {
-        for (let line of redLines) {
+        for (let line of redLinesHor) {
             line.style.stroke = "green";
         }
-        for (let line of greenLines) {
-            line.style.stroke = "red";
+        for (let line of redLinesVer) {
+            line.style.stroke = "green";
         }
-        for (let line of bigPicLines) {
-            line.style.stroke = "red";
+        for (let line of greenLinesHor) {
+            line.style.stroke = color2;
+        }
+        for (let line of greenLinesVer) {
+            line.style.stroke = color1;
+        }
+        for (let line of bigPicLinesHor) {
+            line.style.stroke = color2;
+        }
+        for (let line of bigPicLinesVer) {
+            line.style.stroke = color1;
         }
     }
 }
@@ -7607,6 +7702,7 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
     backgroundOutOfDate = false;
 
     const pixel_size = [Math.ceil(canvas.width/30), Math.ceil(canvas.height/30)];
+    if (pixel_size[0] == 0 || pixel_size[1] == 0) return;
     const ctx = canvas.getContext("2d");
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
@@ -7620,6 +7716,8 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
                 } else if (viewMode == 11) {
                     const new_game = game.use_conventions(i/canvas.width*6, (canvas.height-j)/canvas.height*6, game.coord_3, game.coord_4, game.quad);
                     color = new_game.quadrant_color;
+                } else if (viewMode == 12) {
+                    color = [255,255,255];
                 } else {
                     let value = 0;
                     // if (high_res) {
