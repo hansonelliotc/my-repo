@@ -148,6 +148,9 @@ class Game {
     #clear2() {
         this.#y1 = undefined; this.#y2 = undefined; this.#t1 = undefined; this.#t2 = undefined; this.#quad_temp = undefined;
     }
+    #clear_zones() {
+        this.#zone_row = undefined; this.#zone_col = undefined;
+    }
 
     #ranks(m) {
         let ranks = [0,0,0,0];
@@ -161,8 +164,20 @@ class Game {
 
     get row_matrix() { return this.#row_matrix; }
     get col_matrix() { return this.#col_matrix; }
-    set row_matrix(val) { this.#clear(); this.#clear1(); this.#clear2(); this.#row_matrix = val; this.#row_ranks = this.#ranks(val); }
-    set col_matrix(val) { this.#clear(); this.#clear1(); this.#clear2(); this.#col_matrix = val; this.#col_ranks = this.#ranks(val); }
+    set row_matrix(val) {
+        this.#clear(); this.#clear1(); this.#clear2();
+        this.#row_matrix = val;
+        this.#row_ranks = this.#ranks(val);
+        if (this.t1 > 3) this.#zone_row = 1;
+        else if (this.t1 < 3) this.#zone_row = 0;
+    }
+    set col_matrix(val) {
+        this.#clear(); this.#clear1(); this.#clear2();
+        this.#col_matrix = val;
+        this.#col_ranks = this.#ranks(val);
+        if (this.t2 > 3) this.#zone_col = 1;
+        else if (this.t2 < 3) this.#zone_col = 0;
+    }
     get row_ranks() {
         if (this.#row_ranks === undefined) this.#row_ranks = this.#ranks(this.row_matrix);
         return this.#row_ranks;
@@ -542,19 +557,19 @@ class Game {
     get zone_row() {
         if (this.#zone_row === undefined) {
             if (this.t1 <= 3) {
-                this.zone_row = 0;
+                this.#zone_row = 0;
             } else {
-                this.zone_row = 1;
+                this.#zone_row = 1;
             }
         }
         return this.#zone_row;
     }
     get zone_col() {
         if (this.#zone_col === undefined) {
-            if (this.#t2 !== undefined && this.#t2 <= 3) {
-                this.zone_col = 0;
+            if (this.#t2 <= 3) {
+                this.#zone_col = 0;
             } else {
-                this.zone_col = 1;
+                this.#zone_col = 1;
             }
         }
         return this.#zone_col;
@@ -4281,44 +4296,45 @@ function update() {
     const bigPicPoint9 = document.getElementById("big-pic-point9");
     const pointObjects = [ bigPicPoint1, bigPicPoint2, bigPicPoint3, bigPicPoint4, bigPicPoint5, bigPicPoint6, bigPicPoint7, bigPicPoint8, bigPicPoint9 ];
     games.length = 0;
-    games.push(game.use_conventions(game.coord_1 % 6, game.coord_2 % 6, game.coord_3, game.coord_4, game.quad));
-    if (!useAltSchema) {
-        if (dimensions()[0] == 1) {
-            let redLine = Math.round((games[0].x1+1)/2)*2-1;
-            games.push(games[0].acrossBlue(true));
-            if (Number.isInteger(game.coord_1/2)) {
-                let redLine = Math.round((games[1].x1+1)/2)*2-1;
-                games.push(games[1].acrossBlue(true));
-            }
-        }
-        if (dimensions()[1] == 1) {
-            const length = games.length;
-            for (let i = 0; i < length; i++) {
-                let redLine = Math.round((games[i].x2+1)/2)*2-1;
-                games.push(games[i].acrossBlue(false));
-            }
-            if (Number.isInteger(game.coord_2/2)) {
-                for (let i = length; i < 2*length; i++) {
-                    let redLine = Math.round((games[i].x2+1)/2)*2-1;
-                    games.push(games[i].acrossBlue(false));
-                }
-            }
-        }
-    }
-    if (draggingInBigPic && isMouseDown) {
-        placePoint(bigPicPoint1, game.quad, game.coord_1, game.coord_2);
-    } else {
-        placePoint(pointObjects[0], games[0].quad, games[0].coord_1, games[0].coord_2);
-        draggingInBigPic = false;
-    }
-    for (let i = 1; i < 9; i++) {
-        if (i < games.length) {
-            pointObjects[i].style.display = "";
-            placePoint(pointObjects[i], games[i].quad, games[i].coord_1, games[i].coord_2);
-        } else {
-            pointObjects[i].style.display = "none";
-        }
-    }
+    // uncomment
+    // games.push(game.use_conventions(game.coord_1 % 6, game.coord_2 % 6, game.coord_3, game.coord_4, game.quad));
+    // if (!useAltSchema) {
+    //     if (dimensions()[0] == 1) {
+    //         let redLine = Math.round((games[0].x1+1)/2)*2-1;
+    //         games.push(games[0].acrossBlue(true));
+    //         if (Number.isInteger(game.coord_1/2)) {
+    //             let redLine = Math.round((games[1].x1+1)/2)*2-1;
+    //             games.push(games[1].acrossBlue(true));
+    //         }
+    //     }
+    //     if (dimensions()[1] == 1) {
+    //         const length = games.length;
+    //         for (let i = 0; i < length; i++) {
+    //             let redLine = Math.round((games[i].x2+1)/2)*2-1;
+    //             games.push(games[i].acrossBlue(false));
+    //         }
+    //         if (Number.isInteger(game.coord_2/2)) {
+    //             for (let i = length; i < 2*length; i++) {
+    //                 let redLine = Math.round((games[i].x2+1)/2)*2-1;
+    //                 games.push(games[i].acrossBlue(false));
+    //             }
+    //         }
+    //     }
+    // }
+    // if (draggingInBigPic && isMouseDown) {
+    //     placePoint(bigPicPoint1, game.quad, game.coord_1, game.coord_2);
+    // } else {
+    //     placePoint(pointObjects[0], games[0].quad, games[0].coord_1, games[0].coord_2);
+    //     draggingInBigPic = false;
+    // }
+    // for (let i = 1; i < 9; i++) {
+    //     if (i < games.length) {
+    //         pointObjects[i].style.display = "";
+    //         placePoint(pointObjects[i], games[i].quad, games[i].coord_1, games[i].coord_2);
+    //     } else {
+    //         pointObjects[i].style.display = "none";
+    //     }
+    // }
 
     // update birhombic picture
     const birhombicPic = document.getElementById("birhombic-pic");
@@ -7215,6 +7231,8 @@ function hideLines(hide) {
     const hotspot1 = document.getElementById("hotspot-1");
     const hotspot2 = document.getElementById("hotspot-2");
     const hotspot3 = document.getElementById("hotspot-3");
+    const big_pic_lines_hor = document.getElementsByClassName("big-pic-line-hor");
+    const big_pic_lines_ver = document.getElementsByClassName("big-pic-line-ver");
 
     if (hide) {
         red1.style.display = "none";
@@ -7262,11 +7280,12 @@ function hideLines(hide) {
         hotspot1.style.display = "none";
         hotspot2.style.display = "none";
         hotspot3.style.display = "none";
-        const bigPicLines = document.getElementsByClassName("big-pic-line");
-        for (let line of bigPicLines) {
+        for (let line of big_pic_lines_hor) {
             line.style.display = "none";
         }
-
+        for (let line of big_pic_lines_ver) {
+            line.style.display = "none";
+        }
     } else {
         red1.style.display = "";
         red2.style.display = "";
@@ -7313,8 +7332,10 @@ function hideLines(hide) {
         hotspot1.style.display = "";
         hotspot2.style.display = "";
         hotspot3.style.display = "";
-        const bigPicLines = document.getElementsByClassName("big-pic-line");
-        for (let line of bigPicLines) {
+        for (let line of big_pic_lines_hor) {
+            line.style.display = "";
+        }
+        for (let line of big_pic_lines_ver) {
             line.style.display = "";
         }
     }
@@ -7444,6 +7465,7 @@ function update_rgb_lines() {
     const greenLinesHor = document.getElementsByClassName("green-line-hor");
     const redLinesVer = document.getElementsByClassName("red-line-ver");
     const greenLinesVer = document.getElementsByClassName("green-line-ver");
+    const corners = document.getElementsByClassName("pic-corner");
     const bigPicLinesHor = document.getElementsByClassName("big-pic-line-hor");
     const bigPicLinesVer = document.getElementsByClassName("big-pic-line-ver");
     if (game.offset % 2 == 0) {
@@ -7465,6 +7487,9 @@ function update_rgb_lines() {
         for (let line of bigPicLinesVer) {
             line.style.stroke = "green";
         }
+        for (let circle of corners) {
+            circle.style.fill = "green";
+        }
     } else {
         for (let line of redLinesHor) {
             line.style.stroke = "green";
@@ -7483,6 +7508,9 @@ function update_rgb_lines() {
         }
         for (let line of bigPicLinesVer) {
             line.style.stroke = color1;
+        }
+        for (let circle of corners) {
+            circle.style.fill = color1;
         }
     }
 }
@@ -7745,6 +7773,8 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
 }
 
 
+// bugs
+// sometimes switching from blue to temp changes the game
 
 // add parameter for transferable utility
 // add means
