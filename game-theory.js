@@ -46,7 +46,8 @@ let useAltSchema = false;
 let diagramGrid = false;
 let showAllReturns = false;
 let showAllReturnsAlways = false;
-let hiddenLines = false;
+let hiddenLines = 1;
+let windows = false;
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.04;
@@ -4116,7 +4117,7 @@ function update() {
         return ((y-game.conventions[0])*game.conventions[1]+12) % 6;
     }
 
-    if (dimensions()[0] == 1 && !hiddenLines && !useAltSchema) {
+    if (dimensions()[0] == 1 && hiddenLines != 0 && !useAltSchema) {
         boundaryLine1.x1.baseVal.value = picWidth*adjust_x(1)/6+picPadding1;
         boundaryLine1.y1.baseVal.value = picHeight*adjust_y(0.5)/6+picPadding2;
         boundaryLine1.x2.baseVal.value = picWidth*adjust_x(1)/6+picPadding1;
@@ -4173,7 +4174,7 @@ function update() {
         boundaryLine8.style.display = "none";
         boundaryLine9.style.display = "none";
     }
-    if (dimensions()[1] == 1 && !hiddenLines && !useAltSchema) {
+    if (dimensions()[1] == 1 && hiddenLines != 0 && !useAltSchema) {
         boundaryLine10.x1.baseVal.value = picWidth*adjust_x(0.5)/6+picPadding1;
         boundaryLine10.y1.baseVal.value = picHeight*adjust_y(1)/6+picPadding2;
         boundaryLine10.x2.baseVal.value = picWidth*adjust_x(1.5)/6+picPadding1;
@@ -4230,7 +4231,7 @@ function update() {
         boundaryLine17.style.display = "none";
         boundaryLine18.style.display = "none";
     }
-    if (dimensions()[0] == 1 && dimensions()[1] == 1 && !hiddenLines && !useAltSchema) {
+    if (dimensions()[0] == 1 && dimensions()[1] == 1 && hiddenLines != 0 && !useAltSchema) {
         boundaryPoint1.cx.baseVal.value = picWidth*adjust_x(1)/6+picPadding1;
         boundaryPoint1.cy.baseVal.value = picHeight*adjust_y(1)/6+picPadding2;
         // boundaryPoint2.cx.baseVal.value = picWidth/2+picPadding1;
@@ -4296,45 +4297,44 @@ function update() {
     const bigPicPoint9 = document.getElementById("big-pic-point9");
     const pointObjects = [ bigPicPoint1, bigPicPoint2, bigPicPoint3, bigPicPoint4, bigPicPoint5, bigPicPoint6, bigPicPoint7, bigPicPoint8, bigPicPoint9 ];
     games.length = 0;
-    // uncomment
-    // games.push(game.use_conventions(game.coord_1 % 6, game.coord_2 % 6, game.coord_3, game.coord_4, game.quad));
-    // if (!useAltSchema) {
-    //     if (dimensions()[0] == 1) {
-    //         let redLine = Math.round((games[0].x1+1)/2)*2-1;
-    //         games.push(games[0].acrossBlue(true));
-    //         if (Number.isInteger(game.coord_1/2)) {
-    //             let redLine = Math.round((games[1].x1+1)/2)*2-1;
-    //             games.push(games[1].acrossBlue(true));
-    //         }
-    //     }
-    //     if (dimensions()[1] == 1) {
-    //         const length = games.length;
-    //         for (let i = 0; i < length; i++) {
-    //             let redLine = Math.round((games[i].x2+1)/2)*2-1;
-    //             games.push(games[i].acrossBlue(false));
-    //         }
-    //         if (Number.isInteger(game.coord_2/2)) {
-    //             for (let i = length; i < 2*length; i++) {
-    //                 let redLine = Math.round((games[i].x2+1)/2)*2-1;
-    //                 games.push(games[i].acrossBlue(false));
-    //             }
-    //         }
-    //     }
-    // }
-    // if (draggingInBigPic && isMouseDown) {
-    //     placePoint(bigPicPoint1, game.quad, game.coord_1, game.coord_2);
-    // } else {
-    //     placePoint(pointObjects[0], games[0].quad, games[0].coord_1, games[0].coord_2);
-    //     draggingInBigPic = false;
-    // }
-    // for (let i = 1; i < 9; i++) {
-    //     if (i < games.length) {
-    //         pointObjects[i].style.display = "";
-    //         placePoint(pointObjects[i], games[i].quad, games[i].coord_1, games[i].coord_2);
-    //     } else {
-    //         pointObjects[i].style.display = "none";
-    //     }
-    // }
+    games.push(game.use_conventions(game.coord_1 % 6, game.coord_2 % 6, game.coord_3, game.coord_4, game.quad));
+    if (!useAltSchema) {
+        if (dimensions()[0] == 1) {
+            let redLine = Math.round((games[0].x1+1)/2)*2-1;
+            games.push(games[0].acrossBlue(true));
+            if (Number.isInteger(game.coord_1/2)) {
+                let redLine = Math.round((games[1].x1+1)/2)*2-1;
+                games.push(games[1].acrossBlue(true));
+            }
+        }
+        if (dimensions()[1] == 1) {
+            const length = games.length;
+            for (let i = 0; i < length; i++) {
+                let redLine = Math.round((games[i].x2+1)/2)*2-1;
+                games.push(games[i].acrossBlue(false));
+            }
+            if (Number.isInteger(game.coord_2/2)) {
+                for (let i = length; i < 2*length; i++) {
+                    let redLine = Math.round((games[i].x2+1)/2)*2-1;
+                    games.push(games[i].acrossBlue(false));
+                }
+            }
+        }
+    }
+    if (draggingInBigPic && isMouseDown) {
+        placePoint(bigPicPoint1, game.quad, game.coord_1, game.coord_2);
+    } else {
+        placePoint(pointObjects[0], games[0].quad, games[0].coord_1, games[0].coord_2);
+        draggingInBigPic = false;
+    }
+    for (let i = 1; i < 9; i++) {
+        if (i < games.length) {
+            pointObjects[i].style.display = "";
+            placePoint(pointObjects[i], games[i].quad, games[i].coord_1, games[i].coord_2);
+        } else {
+            pointObjects[i].style.display = "none";
+        }
+    }
 
     // update birhombic picture
     const birhombicPic = document.getElementById("birhombic-pic");
@@ -5134,15 +5134,19 @@ function changeCoords(e) {
             if (elements.includes(blueCorner1)) {
                 draggingB1 = true; draggingB2 = true;
                 game.zone = 1;
+                updateBackground();
             } else if (elements.includes(blueCorner3)) {
                 draggingB1 = true; draggingB2 = true;
                 game.zone = 2;
+                updateBackground();
             } else if (elements.includes(blueCorner4)) {
                 draggingB1 = true; draggingB2 = true;
                 game.zone = 3;
+                updateBackground();
             } else if (elements.includes(blueCorner5)) {
                 draggingB1 = true; draggingB2 = true;
                 game.zone = 4;
+                updateBackground();
             } else if (elements.includes(blueLine1)) {
                 draggingB1 = true;
             } else if (elements.includes(blueLine2)) {
@@ -5235,10 +5239,10 @@ function changeCoords(e) {
         const newX2 = (1 - relativeY1 / rect.height) * 6;
         if (-0.1 <= newX1 && newX1 <= 6.1 && -0.1 <= newX2 && newX2 <= 6.1) {
             if (isMouseDown) {
-                if (dimensions()[0] == 1 && !useAltSchema && !hiddenLines && integerBetween((game.coord_1+1)/2,(newX1+1)/2) && game.coord_2 % 2 > 0.5 && game.coord_2 % 2 < 1.5) {
+                if (dimensions()[0] == 1 && !useAltSchema && hiddenLines != 0 && integerBetween((game.coord_1+1)/2,(newX1+1)/2) && game.coord_2 % 2 > 0.5 && game.coord_2 % 2 < 1.5) {
                     crossBlue(true);
                 }
-                if (dimensions()[1] == 1 && !useAltSchema && !hiddenLines && integerBetween((game.coord_2+1)/2,(newX2+1)/2) && game.coord_1 % 2 > 0.5 && game.coord_1 % 2 < 1.5) {
+                if (dimensions()[1] == 1 && !useAltSchema && hiddenLines != 0 && integerBetween((game.coord_2+1)/2,(newX2+1)/2) && game.coord_1 % 2 > 0.5 && game.coord_1 % 2 < 1.5) {
                     crossBlue(false);
                 }
                 game.coord_1 = newX1;
@@ -7177,15 +7181,12 @@ function goToZeroSum(q,i) {
 
 function hideLines(hide) {
     hiddenLines = hide;
-    const showLinesButton = document.getElementById("show-lines-button");
-    const hideLinesButton = document.getElementById("hide-lines-button");
-    if (hide) {
-        showLinesButton.classList.remove("selected");
-        hideLinesButton.classList.add("selected");
-    } else {
-        showLinesButton.classList.add("selected");
-        hideLinesButton.classList.remove("selected");
+    const buttons = document.getElementsByClassName("lines-opt-button");
+    for (let button of buttons) {
+        button.classList.remove("selected");
     }
+    document.getElementById("lines-opt-button-" + hide).classList.add("selected");
+
     const red1 = document.getElementById("red1");
     const red2 = document.getElementById("red2");
     const red3 = document.getElementById("red3");
@@ -7234,7 +7235,8 @@ function hideLines(hide) {
     const big_pic_lines_hor = document.getElementsByClassName("big-pic-line-hor");
     const big_pic_lines_ver = document.getElementsByClassName("big-pic-line-ver");
 
-    if (hide) {
+    windows = false;
+    if (hide == 0) {
         red1.style.display = "none";
         red2.style.display = "none";
         red3.style.display = "none";
@@ -7286,7 +7288,7 @@ function hideLines(hide) {
         for (let line of big_pic_lines_ver) {
             line.style.display = "none";
         }
-    } else {
+    } else if (hide == 1 || hide == 2) {
         red1.style.display = "";
         red2.style.display = "";
         red3.style.display = "";
@@ -7338,6 +7340,9 @@ function hideLines(hide) {
         for (let line of big_pic_lines_ver) {
             line.style.display = "";
         }
+    }
+    if (hide == 2) {
+        windows = true;
     }
 }
 
@@ -7738,18 +7743,22 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
     for (let j = 0; j < canvas.height; j++) {
         for (let i = 0; i < canvas.width; i++) {
             if (high_res || i % pixel_size[0] == 0) {
-                if (viewMode == 0) {
-                    const new_game = game.use_conventions(i/canvas.width*6, (canvas.height-j)/canvas.height*6, game.coord_3, game.coord_4, game.quad);
+                const x1 = i/canvas.width*6;
+                const x2 = (canvas.height-j)/canvas.height*6;
+                if (viewMode == 0 || windows && Math.abs((6-x1-x2+2*(game.offset-2)*game.flip+15)%12-3) < 0.5*Math.abs(Math.sin((x1-x2+2)*PI/4))
+                                //   || windows && Math.abs(6-x1-x2-2*game.offset-2) < 0.5*Math.abs(Math.sin((x1-x2)*PI/4))
+                                  || windows && Math.abs((6-x1-x2+2*(game.offset-2)*game.flip+9)%12-3) < 0.5*Math.abs(Math.sin((x1-x2)*PI/4))) {
+                    const new_game = game.use_conventions(x1, x2, game.coord_3, game.coord_4, game.quad);
                     color = new_game.equilibrium_color;
                 } else if (viewMode == 11) {
-                    const new_game = game.use_conventions(i/canvas.width*6, (canvas.height-j)/canvas.height*6, game.coord_3, game.coord_4, game.quad);
+                    const new_game = game.use_conventions(x1, x2, game.coord_3, game.coord_4, game.quad);
                     color = new_game.quadrant_color;
                 } else if (viewMode == 12) {
                     color = [255,255,255];
                 } else {
                     let value = 0;
                     // if (high_res) {
-                    let new_game = game.use_conventions(i/canvas.width*6, (canvas.height-j)/canvas.height*6, game.coord_3, game.coord_4, game.quad);
+                    let new_game = game.use_conventions(x1, x2, game.coord_3, game.coord_4, game.quad);
                     value = returns(new_game,viewMode,viewModeP1);
                     // } else {
                     //     const weight1 = i/canvas.width*valuesX % 1;
@@ -7775,6 +7784,7 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
 
 // bugs
 // sometimes switching from blue to temp changes the game
+// negate buttons should always change zones
 
 // add parameter for transferable utility
 // add means

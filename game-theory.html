@@ -648,6 +648,10 @@
 				<line class="green-line-ver" id="green6" />
 				<line class="green-line-ver" id="green7" />
 				<line class="green-line-ver" id="green8" />
+				<circle class="pic-corner" id="green-corner1" r="0.3%" />
+				<circle class="pic-corner" id="green-corner2" r="0.3%" />
+				<circle class="pic-corner" id="green-corner3" r="0.3%" />
+				<circle class="pic-corner" id="green-corner4" r="0.3%" />
 				
 				<line class="boundary-line" id="boundary-line-1" />
 				<line class="boundary-line" id="boundary-line-2" />
@@ -679,11 +683,6 @@
 				<circle class="hotspot" id="hotspot-1" r="1.5%" />
 				<circle class="hotspot" id="hotspot-2" r="1.5%" />
 				<circle class="hotspot" id="hotspot-3" r="1.5%" />
-
-				<circle class="pic-corner" id="green-corner1" r="0.3%" />
-				<circle class="pic-corner" id="green-corner2" r="0.3%" />
-				<circle class="pic-corner" id="green-corner3" r="0.3%" />
-				<circle class="pic-corner" id="green-corner4" r="0.3%" />
 			</svg>
 
 			<svg id="edge-figure">
@@ -766,15 +765,17 @@
 			<tr>
 				<td><button class="show-diagrams" id="fix-image-button-0" onclick="hideGame()">Hide game</button></td>
 				<td><button id="alt-image-button-1" onclick="altImage(false)" class="selected">Blueness slices</button></td>
-				<td><button id="hide-lines-button" onclick="hideLines(true)">Hide lines</button></td>
+				<td><button class="lines-opt-button" id="lines-opt-button-0" onclick="hideLines(0)">Hide lines</button></td>
 			</tr>
 			<tr>
 				<td><button class="show-diagrams selected" id="fix-image-button-1" onclick="fixImage(false)" class="selected">Show one game</button></td>
 				<td><button id="alt-image-button-2" onclick="altImage(true)">Temperature slices</button></td>
-				<td><button id="show-lines-button" onclick="hideLines(false)" class="selected">Show lines</button></td>
+				<td><button class="lines-opt-button selected" id="lines-opt-button-1" onclick="hideLines(1)">Show lines</button></td>
 			</tr>
 			<tr>
 				<td><button class="show-diagrams" id="fix-image-button-2" onclick="more_games()">Show more games</button></td>
+				<td></td>
+				<td><button class="lines-opt-button" id="lines-opt-button-2" onclick="hideLines(2)">Show windows</button></td>
 			</tr>
 			<tr>
 				<td><button class="show-diagrams" id="fix-image-button-3" onclick="fixImage(true)">Show 36 games</button></td>
