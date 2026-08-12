@@ -1358,6 +1358,16 @@ class Game {
         return new_game;
     }
 
+    copy() {
+        const new_game = new Game();
+        new_game.offset = this.offset;
+        new_game.flip = this.flip;
+        new_game.zone = this.zone;
+        new_game.row_matrix = this.row_matrix;
+        new_game.col_matrix = this.col_matrix;
+        return new_game;
+    }
+
     qOverBlue(p1) {
         let x = 0;
         if (p1) {
@@ -4297,7 +4307,7 @@ function update() {
     const bigPicPoint9 = document.getElementById("big-pic-point9");
     const pointObjects = [ bigPicPoint1, bigPicPoint2, bigPicPoint3, bigPicPoint4, bigPicPoint5, bigPicPoint6, bigPicPoint7, bigPicPoint8, bigPicPoint9 ];
     games.length = 0;
-    games.push(game.use_conventions(game.coord_1 % 6, game.coord_2 % 6, game.coord_3, game.coord_4, game.quad));
+    games.push(game.copy());
     if (!useAltSchema) {
         if (dimensions()[0] == 1) {
             let redLine = Math.round((games[0].x1+1)/2)*2-1;
@@ -4320,6 +4330,62 @@ function update() {
                 }
             }
         }
+    } else {
+        let c = x => x == 2 || x == 4 ? x % 4 + 1 : (x+2) % 4 + 1;
+        let r = x => x == 1 || x == 3 ? x + 1 : x - 1;
+        let d = x => (x+1) % 4 + 1;
+        const y1 = (games[0].y1-games[0].offset+7) % 6;
+        const y2 = (games[0].y2-games[0].offset+7) % 6;
+        const class1 = Math.floor(y1/2);
+        const class2 = (5 - Math.floor(y2/2)) % 3;
+        if (dimensions()[0] == 1 && dimensions()[1] == 1 && y1 % 2 == 0 && y2 % 2 == 0 && class1 != class2) {
+            for (let i = games[0].quad_temp % 4; i != games[0].quad_temp - 1; i = (i+1) % 4) {
+                const new_game = games[0].copy();
+                new_game.quad_temp = i+1;
+                games.push(new_game);
+            }
+        } else if (dimensions()[0] == 1 && y1 % 2 == 0) {
+            const new_game = games[0].copy();
+            switch (class1) {
+                case 1:
+                    new_game.quad_temp = d(games[0].quad_temp);
+                    break;
+                case 2:
+                    new_game.quad_temp = c(games[0].quad_temp);
+                    break;
+                case 0:
+                    new_game.quad_temp = r(games[0].quad_temp);
+                    break;
+            }
+            games.push(new_game);
+        } else if (dimensions()[1] == 1 && y2 % 2 == 0) {
+            const new_game = games[0].copy();
+            switch (class2) {
+                case 1:
+                    new_game.quad_temp = d(games[0].quad_temp);
+                    break;
+                case 2:
+                    new_game.quad_temp = c(games[0].quad_temp);
+                    break;
+                case 0:
+                    new_game.quad_temp = r(games[0].quad_temp);
+                    break;
+            }
+            games.push(new_game);
+        }
+        // if (dimensions()[1] == 1) {
+        //     const length = games.length;
+        //     for (let i = 0; i < length; i++) {
+        //         let redLine = Math.round((games[i].x2+1)/2)*2-1;
+        //         games.push(games[i].acrossBlue(false));
+        //     }
+        //     if (Number.isInteger(game.coord_2/2)) {
+        //         for (let i = length; i < 2*length; i++) {
+        //             let redLine = Math.round((games[i].x2+1)/2)*2-1;
+        //             games.push(games[i].acrossBlue(false));
+        //         }
+        //     }
+        // }
     }
     if (draggingInBigPic && isMouseDown) {
         placePoint(bigPicPoint1, game.quad, game.coord_1, game.coord_2);
@@ -4660,8 +4726,10 @@ function flipMatrices() {
 
 function negate(player1) {
     if (player1) {
+        game.zone_row = 1 - game.zone_row;
         game.row_matrix = [...game.row_matrix].map(x => 6 - x);
     } else {
+        game.zone_col = 1 - game.zone_col;
         game.col_matrix = [...game.col_matrix].map(x => 6 - x);
     }
     updateCoords();
