@@ -7813,14 +7813,14 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
             if (high_res || i % pixel_size[0] == 0) {
                 const x1 = i/canvas.width*6;
                 const x2 = (canvas.height-j)/canvas.height*6;
-                if (viewMode == 0 || windows && Math.abs((6-x1-x2+2*(game.offset-2)*game.flip+15)%12-3) < 0.5*Math.abs(Math.sin((x1-x2+2)*PI/4))
+                if (viewMode == 11 || windows && Math.abs((6-x1-x2+2*(game.offset-2)*game.flip+15)%12-3) < 0.5*Math.abs(Math.sin((x1-x2+2)*PI/4))
                                 //   || windows && Math.abs(6-x1-x2-2*game.offset-2) < 0.5*Math.abs(Math.sin((x1-x2)*PI/4))
                                   || windows && Math.abs((6-x1-x2+2*(game.offset-2)*game.flip+9)%12-3) < 0.5*Math.abs(Math.sin((x1-x2)*PI/4))) {
                     const new_game = game.use_conventions(x1, x2, game.coord_3, game.coord_4, game.quad);
-                    color = new_game.equilibrium_color;
-                } else if (viewMode == 11) {
-                    const new_game = game.use_conventions(x1, x2, game.coord_3, game.coord_4, game.quad);
                     color = new_game.quadrant_color;
+                } else if (viewMode == 0) {
+                    const new_game = game.use_conventions(x1, x2, game.coord_3, game.coord_4, game.quad);
+                    color = new_game.equilibrium_color;
                 } else if (viewMode == 12) {
                     color = [255,255,255];
                 } else {
