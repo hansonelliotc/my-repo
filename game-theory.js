@@ -1362,6 +1362,7 @@ class Game {
         const new_game = new Game();
         new_game.offset = this.offset;
         new_game.flip = this.flip;
+        new_game.mode = this.mode;
         new_game.zone = this.zone;
         new_game.row_matrix = this.row_matrix;
         new_game.col_matrix = this.col_matrix;
@@ -4308,6 +4309,7 @@ function update() {
     const pointObjects = [ bigPicPoint1, bigPicPoint2, bigPicPoint3, bigPicPoint4, bigPicPoint5, bigPicPoint6, bigPicPoint7, bigPicPoint8, bigPicPoint9 ];
     games.length = 0;
     games.push(game.copy());
+    // games.push(game.use_conventions(game.coord_1 % 6, game.coord_2 % 6, game.coord_3, game.coord_4, game.quad));
     if (!useAltSchema) {
         if (dimensions()[0] == 1) {
             let redLine = Math.round((games[0].x1+1)/2)*2-1;
@@ -4605,16 +4607,16 @@ function update() {
     } else {
         switch (game.zone) {
             case 1:
-                zone_label.innerHTML = " - cold-cold";
+                zone_label.innerHTML = " - cool-cool";
                 break;
             case 2:
-                zone_label.innerHTML = " - warm-cold";
+                zone_label.innerHTML = " - warm-cool";
                 break;
             case 3:
                 zone_label.innerHTML = " - warm-warm";
                 break;
             case 4:
-                zone_label.innerHTML = " - cold-warm";
+                zone_label.innerHTML = " - cool-warm";
                 break;
         }
     }
@@ -7852,7 +7854,9 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
 
 // bugs
 // sometimes switching from blue to temp changes the game
-// negate buttons should always change zones
+// fix cross tan at the boundary case
+// dragging in 36-game temp slices
+// add more backgrounds
 
 // add parameter for transferable utility
 // add means
