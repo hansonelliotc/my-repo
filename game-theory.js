@@ -1482,6 +1482,7 @@ class Game {
 
     crossTan(p1) {
         if (p1) {
+            this.zone_row = 1-this.#zone_row;
             const matrix = [...this.row_matrix];
             const a = this.row_ranks.indexOf(1);
             const b = this.row_ranks.indexOf(2);
@@ -1489,6 +1490,7 @@ class Game {
             matrix[b] = 6-this.row_matrix[a];
             this.row_matrix = matrix;
         } else {
+            this.zone_col = 1-this.#zone_col;
             const matrix = [...this.col_matrix];
             const a = this.col_ranks.indexOf(1);
             const b = this.col_ranks.indexOf(2);
