@@ -48,6 +48,7 @@ let showAllReturns = false;
 let showAllReturnsAlways = false;
 let hiddenLines = 1;
 let windows = false;
+let show_all_zones = false;
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.04;
@@ -1335,7 +1336,7 @@ class Game {
         return [this.#offset1, this.#flip1];
     }
 
-    use_conventions(x1,x2,b1,b2,q) {
+    use_conventions(x1,x2,b1,b2,q,zone) {
         const new_game = new Game();
         new_game.offset = this.offset;
         new_game.flip = this.flip;
@@ -1347,7 +1348,10 @@ class Game {
             new_game.quadrant = q;
             new_game.mode = 0;
         } else {
-            new_game.zone = this.zone;
+            if (zone === undefined)
+                new_game.zone = this.zone;
+            else
+                new_game.zone = zone;
             new_game.y1 = x1;
             new_game.y2 = x2;
             new_game.t1 = b1;
@@ -4392,15 +4396,15 @@ function update() {
         // }
     }
     if (draggingInBigPic && isMouseDown) {
-        placePoint(bigPicPoint1, game.quad, game.coord_1, game.coord_2);
+        placePoint(bigPicPoint1, game.quad, game.coord_1, game.coord_2, game.zone);
     } else {
-        placePoint(pointObjects[0], games[0].quad, games[0].coord_1, games[0].coord_2);
+        placePoint(pointObjects[0], games[0].quad, games[0].coord_1, games[0].coord_2, games[0].zone);
         draggingInBigPic = false;
     }
     for (let i = 1; i < 9; i++) {
         if (i < games.length) {
             pointObjects[i].style.display = "";
-            placePoint(pointObjects[i], games[i].quad, games[i].coord_1, games[i].coord_2);
+            placePoint(pointObjects[i], games[i].quad, games[i].coord_1, games[i].coord_2, games[i].zone);
         } else {
             pointObjects[i].style.display = "none";
         }
@@ -5348,7 +5352,7 @@ function changeCoords(e) {
             for (let i = 0; i < games.length; i++) {
                 const x = pointObjects[i].cx.baseVal.value / bigPicWidth;
                 const y = pointObjects[i].cy.baseVal.value / bigPicWidth;
-                const r = pointObjects[i].r.baseVal.value / bigPicWidth;
+                const r = pointObjects[i].r.baseVal.value / bigPicWidth * 1.1;
                 if (Math.sqrt((x - relativeX)**2 + (y - relativeY)**2) <= r) {
                     relativeX = x;
                     relativeY = y;
@@ -5359,8 +5363,29 @@ function changeCoords(e) {
             const bigPicPoint1 = document.getElementById("big-pic-point1");
             const x = bigPicPoint1.cx.baseVal.value / bigPicWidth;
             const y = bigPicPoint1.cy.baseVal.value / bigPicWidth;
-            const r = bigPicPoint1.r.baseVal.value / bigPicWidth;
+            const r = bigPicPoint1.r.baseVal.value / bigPicWidth * 1.1;
             if (Math.sqrt((x - relativeX)**2 + (y - relativeY)**2) <= r) draggingInBigPic = true;
+        }
+
+        if (show_all_zones) {
+            if (relativeX < 0.49) {
+                if (game.t1 > 3) game.t1 = 6 - game.t1;
+                game.zone_row = 0;
+                relativeX = relativeX*2;
+            } else if (relativeX > 0.51) {
+                if (game.t1 < 3) game.t1 = 6 - game.t1;
+                game.zone_row = 1;
+                relativeX = (relativeX-0.5)*2;
+            }
+            if (relativeY > 0.51) {
+                if (game.t2 > 3) game.t2 = 6 - game.t2;
+                game.zone_col = 0;
+                relativeY = (relativeY-0.5)*2;
+            } else if (relativeY < 0.49) {
+                if (game.t2 < 3) game.t2 = 6 - game.t2;
+                game.zone_col = 1;
+                relativeY = relativeY*2;
+            }
         }
 
         if (0.02 <= relativeX && relativeX <= 0.48 && 0.02 <= relativeY && relativeY <= 0.48) {
@@ -5368,52 +5393,32 @@ function changeCoords(e) {
             else game.quad = 2;
             const newX1 = 6 * (relativeX - 0.04) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.04) / 0.42;
-            // if (!useAltSchema) {
             game.coord_1 = newX1;
             game.coord_2 = newX2;
-            // } else {
-            //     game.balanced1 = newX1;
-            //     game.balanced2 = newX2;
-            // }
             enRoute = false;
         } else if (0.52 <= relativeX && relativeX <= 0.98 && 0.02 <= relativeY && relativeY <= 0.48) {
             if (game.quad != 1) { game.quad = 1; updateBackground(); }
             else game.quad = 1;
             const newX1 = 6 * (relativeX - 0.54) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.04) / 0.42;
-            // if (!useAltSchema) {
             game.coord_1 = newX1;
             game.coord_2 = newX2;
-            // } else {
-            //     game.balanced1 = newX1;
-            //     game.balanced2 = newX2;
-            // }
             enRoute = false;
         } else if (0.02 <= relativeX && relativeX <= 0.48 && 0.52 <= relativeY && relativeY <= 0.98) {
             if (game.quad != 3) { game.quad = 3; updateBackground(); }
             else game.quad = 3;
             const newX1 = 6 * (relativeX - 0.04) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.54) / 0.42;
-            // if (!useAltSchema) {
             game.coord_1 = newX1;
             game.coord_2 = newX2;
-            // } else {
-            //     game.balanced1 = newX1;
-            //     game.balanced2 = newX2;
-            // }
             enRoute = false;
         } else if (0.52 <= relativeX && relativeX <= 0.98 && 0.52 <= relativeY && relativeY <= 0.98) {
             if (game.quad != 4) { game.quad = 4; updateBackground(); }
             else game.quad = 4;
             const newX1 = 6 * (relativeX - 0.54) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.54) / 0.42;
-            // if (!useAltSchema) {
             game.coord_1 = newX1;
             game.coord_2 = newX2;
-            // } else {
-            //     game.balanced1 = newX1;
-            //     game.balanced2 = newX2;
-            // }
             enRoute = false;
         }
     }
@@ -5553,25 +5558,28 @@ function fromNearestRed(x, distance) {
     else return nearestRed + distance;
 }
 
-function placePoint(point, q, x1, x2) {
+function placePoint(point, q, x1, x2, zone) {
     const bigPicture = document.getElementById("big-picture");
     const bigPictureWidth = bigPicture.width.baseVal.value;
+    const zone_row = zone == 1 || zone == 4 ? 0 : 1;
+    const zone_col = zone == 1 || zone == 2 ? 0 : 1;
+    const grid_size = show_all_zones ? 4 : 2;
     switch (q) {
         case 1:
-            point.cx.baseVal.value = (0.54 + x1/6*0.42)*bigPictureWidth;
-            point.cy.baseVal.value = (0.46 - x2/6*0.42)*bigPictureWidth;
+            point.cx.baseVal.value = ((0.54 + x1/6*0.42)/grid_size*2+zone_row/2)*bigPictureWidth;
+            point.cy.baseVal.value = ((0.46 - x2/6*0.42)/grid_size*2+0.5-zone_col/2)*bigPictureWidth;
             break;
         case 2:
-            point.cx.baseVal.value = (0.04 + x1/6*0.42)*bigPictureWidth;
-            point.cy.baseVal.value = (0.46 - x2/6*0.42)*bigPictureWidth;
+            point.cx.baseVal.value = ((0.04 + x1/6*0.42)/grid_size*2+zone_row/2)*bigPictureWidth;
+            point.cy.baseVal.value = ((0.46 - x2/6*0.42)/grid_size*2+0.5-zone_col/2)*bigPictureWidth;
             break;
         case 3:
-            point.cx.baseVal.value = (0.04 + x1/6*0.42)*bigPictureWidth;
-            point.cy.baseVal.value = (0.96 - x2/6*0.42)*bigPictureWidth;
+            point.cx.baseVal.value = ((0.04 + x1/6*0.42)/grid_size*2+zone_row/2)*bigPictureWidth;
+            point.cy.baseVal.value = ((0.96 - x2/6*0.42)/grid_size*2+0.5-zone_col/2)*bigPictureWidth;
             break;
         case 4:
-            point.cx.baseVal.value = (0.54 + x1/6*0.42)*bigPictureWidth;
-            point.cy.baseVal.value = (0.96 - x2/6*0.42)*bigPictureWidth;
+            point.cx.baseVal.value = ((0.54 + x1/6*0.42)/grid_size*2+zone_row/2)*bigPictureWidth;
+            point.cy.baseVal.value = ((0.96 - x2/6*0.42)/grid_size*2+0.5-zone_col/2)*bigPictureWidth;
             break;
     }
 }
@@ -6083,86 +6091,103 @@ function updateBigPicCanvas(lowRes = false) {
         }
     }
     const error = 0.00001;
-    const b1 = game.coord_3 != 0 ? game.coord_3 : error;
-    const b2 = game.coord_4 != 0 ? game.coord_4 : error;
-    // if (!lowRes) {
-        const quadrantWidth = canvasBigPic.width*0.42;
-        for (let j = 0; j < quadrantWidth; j++) {
-            for (let i = 0; i < quadrantWidth; i++) {
-                let color = [];
-                if (viewMode == 12) {
-                    color = [255,255,255];
-                } else {
-                    let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,1);
-                    if (viewMode == 0) color = new_game.equilibrium_color;
-                    else if (viewMode == 11) color = new_game.quadrant_color;
-                    else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+    let b1 = game.coord_3 != 0 ? game.coord_3 : error;
+    let b2 = game.coord_4 != 0 ? game.coord_4 : error;
+    if (b1 > 3 && show_all_zones) b1 = 6 - b1;
+    if (b2 < 3 && show_all_zones) b2 = 6 - b2;
+    const grid_size = show_all_zones ? 4 : 2;
+    for (let row = 0; row < grid_size; row++) {
+        for (let col = 0; col < grid_size; col++) {
+            let quadrant;
+            if (row % 2 == 0 && col % 2 == 0) quadrant = 2;
+            else if (row % 2 == 0 && col % 2 == 1) quadrant = 1;
+            else if (row % 2 == 1 && col % 2 == 0) quadrant = 3;
+            else if (row % 2 == 1 && col % 2 == 1) quadrant = 4;
+            let zone;
+            if (row < 2 && col < 2) zone = 4;
+            else if (col < 2) zone = 1;
+            else if (row < 2) zone = 3;
+            else zone = 2;
+            const quadrantWidth = Math.floor(canvasBigPic.width*0.84/grid_size);
+            for (let j = 0; j < quadrantWidth; j++) {
+                for (let i = 0; i < quadrantWidth; i++) {
+                    let color = [];
+                    if (viewMode == 12) {
+                        color = [255,255,255];
+                    } else {
+                        let new_game = game.use_conventions((i+0.5)*6/quadrantWidth,(1-(j+0.5)/quadrantWidth)*6,
+                                                            col < 2 ? b1 : 6 - b1, row < 2 ? b2 : 6 - b2,quadrant,zone);
+                        if (viewMode == 0) color = new_game.equilibrium_color;
+                        else if (viewMode == 11) color = new_game.quadrant_color;
+                        else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+                    }
+                    const x = i + Math.round(canvasBigPic.width*((0.08+col)/grid_size));
+                    const y = j + Math.round(canvasBigPic.height*((0.08+row)/grid_size));
+                    data[(x+y*canvasBigPic.width)*4] = color[0];
+                    data[(x+y*canvasBigPic.width)*4+1] = color[1];
+                    data[(x+y*canvasBigPic.width)*4+2] = color[2];
+                    data[(x+y*canvasBigPic.width)*4+3] = 255;
                 }
-                const x = i + Math.round(canvasBigPic.width*0.54);
-                const y = j + Math.round(canvasBigPic.height*0.04);
-                data[(x+y*canvasBigPic.width)*4] = color[0];
-                data[(x+y*canvasBigPic.width)*4+1] = color[1];
-                data[(x+y*canvasBigPic.width)*4+2] = color[2];
-                data[(x+y*canvasBigPic.width)*4+3] = 255;
             }
         }
-        for (let j = 0; j < quadrantWidth; j++) {
-            for (let i = 0; i < quadrantWidth; i++) {
-                let color = [];
-                if (viewMode == 12) {
-                    color = [255,255,255];
-                } else {
-                    let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,2);
-                    if (viewMode == 0) color = new_game.equilibrium_color;
-                    else if (viewMode == 11) color = new_game.quadrant_color;
-                    else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
-                }
-                const x = i + Math.round(canvasBigPic.width*0.04);
-                const y = j + Math.round(canvasBigPic.height*0.04);
-                data[(x+y*canvasBigPic.width)*4] = color[0];
-                data[(x+y*canvasBigPic.width)*4+1] = color[1];
-                data[(x+y*canvasBigPic.width)*4+2] = color[2];
-                data[(x+y*canvasBigPic.width)*4+3] = 255;
-            }
-        }
-        for (let j = 0; j < quadrantWidth; j++) {
-            for (let i = 0; i < quadrantWidth; i++) {
-                let color = [];
-                if (viewMode == 12) {
-                    color = [255,255,255];
-                } else {
-                    let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,3);
-                    if (viewMode == 0) color = new_game.equilibrium_color;
-                    else if (viewMode == 11) color = new_game.quadrant_color;
-                    else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
-                }
-                const x = i + Math.round(canvasBigPic.width*0.04);
-                const y = j + Math.round(canvasBigPic.height*0.54);
-                data[(x+y*canvasBigPic.width)*4] = color[0];
-                data[(x+y*canvasBigPic.width)*4+1] = color[1];
-                data[(x+y*canvasBigPic.width)*4+2] = color[2];
-                data[(x+y*canvasBigPic.width)*4+3] = 255;
-            }
-        }
-        for (let j = 0; j < quadrantWidth; j++) {
-            for (let i = 0; i < quadrantWidth; i++) {
-                let color = [];
-                if (viewMode == 12) {
-                    color = [255,255,255];
-                } else {
-                    let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,4);
-                    if (viewMode == 0) color = new_game.equilibrium_color;
-                    else if (viewMode == 11) color = new_game.quadrant_color;
-                    else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
-                }
-                const x = i + Math.round(canvasBigPic.width*0.54);
-                const y = j + Math.round(canvasBigPic.height*0.54);
-                data[(x+y*canvasBigPic.width)*4] = color[0];
-                data[(x+y*canvasBigPic.width)*4+1] = color[1];
-                data[(x+y*canvasBigPic.width)*4+2] = color[2];
-                data[(x+y*canvasBigPic.width)*4+3] = 255;
-            }
-        }
+    }
+        // for (let j = 0; j < quadrantWidth; j++) {
+        //     for (let i = 0; i < quadrantWidth; i++) {
+        //         let color = [];
+        //         if (viewMode == 12) {
+        //             color = [255,255,255];
+        //         } else {
+        //             let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,2);
+        //             if (viewMode == 0) color = new_game.equilibrium_color;
+        //             else if (viewMode == 11) color = new_game.quadrant_color;
+        //             else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+        //         }
+        //         const x = i + Math.round(canvasBigPic.width*0.04);
+        //         const y = j + Math.round(canvasBigPic.height*0.04);
+        //         data[(x+y*canvasBigPic.width)*4] = color[0];
+        //         data[(x+y*canvasBigPic.width)*4+1] = color[1];
+        //         data[(x+y*canvasBigPic.width)*4+2] = color[2];
+        //         data[(x+y*canvasBigPic.width)*4+3] = 255;
+        //     }
+        // }
+        // for (let j = 0; j < quadrantWidth; j++) {
+        //     for (let i = 0; i < quadrantWidth; i++) {
+        //         let color = [];
+        //         if (viewMode == 12) {
+        //             color = [255,255,255];
+        //         } else {
+        //             let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,3);
+        //             if (viewMode == 0) color = new_game.equilibrium_color;
+        //             else if (viewMode == 11) color = new_game.quadrant_color;
+        //             else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+        //         }
+        //         const x = i + Math.round(canvasBigPic.width*0.04);
+        //         const y = j + Math.round(canvasBigPic.height*0.54);
+        //         data[(x+y*canvasBigPic.width)*4] = color[0];
+        //         data[(x+y*canvasBigPic.width)*4+1] = color[1];
+        //         data[(x+y*canvasBigPic.width)*4+2] = color[2];
+        //         data[(x+y*canvasBigPic.width)*4+3] = 255;
+        //     }
+        // }
+        // for (let j = 0; j < quadrantWidth; j++) {
+        //     for (let i = 0; i < quadrantWidth; i++) {
+        //         let color = [];
+        //         if (viewMode == 12) {
+        //             color = [255,255,255];
+        //         } else {
+        //             let new_game = game.use_conventions(i*6/quadrantWidth,(1-j/quadrantWidth)*6,b1,b2,4);
+        //             if (viewMode == 0) color = new_game.equilibrium_color;
+        //             else if (viewMode == 11) color = new_game.quadrant_color;
+        //             else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+        //         }
+        //         const x = i + Math.round(canvasBigPic.width*0.54);
+        //         const y = j + Math.round(canvasBigPic.height*0.54);
+        //         data[(x+y*canvasBigPic.width)*4] = color[0];
+        //         data[(x+y*canvasBigPic.width)*4+1] = color[1];
+        //         data[(x+y*canvasBigPic.width)*4+2] = color[2];
+        //         data[(x+y*canvasBigPic.width)*4+3] = 255;
+        //     }
+        // }
     // } else {
     //     const resolution = 24;
     //     const quadrantWidth = canvasBigPic.width*0.42;
@@ -7406,11 +7431,13 @@ function hideLines(hide) {
         hotspot1.style.display = "";
         hotspot2.style.display = "";
         hotspot3.style.display = "";
-        for (let line of big_pic_lines_hor) {
-            line.style.display = "";
-        }
-        for (let line of big_pic_lines_ver) {
-            line.style.display = "";
+        if (!show_all_zones) {
+            for (let line of big_pic_lines_hor) {
+                line.style.display = "";
+            }
+            for (let line of big_pic_lines_ver) {
+                line.style.display = "";
+            }
         }
     }
     if (hide == 2) {
@@ -7851,6 +7878,25 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
         }
     }
     ctx.putImageData(imageData,0,0);
+}
+
+function change_big_pic(all_zones) {
+    for (let button of document.getElementsByClassName("zone-button"))
+        button.classList.remove("selected");
+    if (all_zones) document.getElementById("all-zones-button").classList.add("selected");
+    else document.getElementById("one-zone-button").classList.add("selected");
+    show_all_zones = all_zones;
+    if (all_zones) {
+        for (let line of document.getElementsByClassName("big-pic-line-hor"))
+            line.style.display = "none";
+        for (let line of document.getElementsByClassName("big-pic-line-ver"))
+            line.style.display = "none";
+    } else if (hiddenLines != 0) {
+        for (let line of document.getElementsByClassName("big-pic-line-hor"))
+            line.style.display = "";
+        for (let line of document.getElementsByClassName("big-pic-line-ver"))
+            line.style.display = "";
+    }
 }
 
 
