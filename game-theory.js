@@ -4303,18 +4303,33 @@ function update() {
     updateBlueLines();
 
     // update big picture
-    const bigPicPoint1 = document.getElementById("big-pic-point1");
-    const bigPicPoint2 = document.getElementById("big-pic-point2");
-    const bigPicPoint3 = document.getElementById("big-pic-point3");
-    const bigPicPoint4 = document.getElementById("big-pic-point4");
-    const bigPicPoint5 = document.getElementById("big-pic-point5");
-    const bigPicPoint6 = document.getElementById("big-pic-point6");
-    const bigPicPoint7 = document.getElementById("big-pic-point7");
-    const bigPicPoint8 = document.getElementById("big-pic-point8");
-    const bigPicPoint9 = document.getElementById("big-pic-point9");
-    const pointObjects = [ bigPicPoint1, bigPicPoint2, bigPicPoint3, bigPicPoint4, bigPicPoint5, bigPicPoint6, bigPicPoint7, bigPicPoint8, bigPicPoint9 ];
+    // const bigPicPoint1 = document.getElementById("big-pic-point1");
+    // const bigPicPoint2 = document.getElementById("big-pic-point2");
+    // const bigPicPoint3 = document.getElementById("big-pic-point3");
+    // const bigPicPoint4 = document.getElementById("big-pic-point4");
+    // const bigPicPoint5 = document.getElementById("big-pic-point5");
+    // const bigPicPoint6 = document.getElementById("big-pic-point6");
+    // const bigPicPoint7 = document.getElementById("big-pic-point7");
+    // const bigPicPoint8 = document.getElementById("big-pic-point8");
+    // const bigPicPoint9 = document.getElementById("big-pic-point9");
+    const pointObjects = [];
+    for (let i = 1; i <= 16; i++) {
+        pointObjects.push(document.getElementById("big-pic-point-"+i.toString()));
+    }
     games.length = 0;
     games.push(game.copy());
+    if (show_all_zones) {
+        const new_game_1 = games[0].copy();
+        new_game_1.crossTan(true);
+        games.push(new_game_1);
+        const new_game_2 = games[0].copy();
+        new_game_2.crossTan(false);
+        games.push(new_game_2);
+        const new_game_3 = games[0].copy();
+        new_game_3.crossTan(true);
+        new_game_3.crossTan(false);
+        games.push(new_game_3);
+    }
     // games.push(game.use_conventions(game.coord_1 % 6, game.coord_2 % 6, game.coord_3, game.coord_4, game.quad));
     if (!useAltSchema) {
         if (dimensions()[0] == 1) {
@@ -4339,47 +4354,49 @@ function update() {
             }
         }
     } else {
-        let c = x => x == 2 || x == 4 ? x % 4 + 1 : (x+2) % 4 + 1;
-        let r = x => x == 1 || x == 3 ? x + 1 : x - 1;
-        let d = x => (x+1) % 4 + 1;
-        const y1 = (games[0].y1-games[0].offset+7) % 6;
-        const y2 = (games[0].y2-games[0].offset+7) % 6;
-        const class1 = Math.floor(y1/2);
-        const class2 = (5 - Math.floor(y2/2)) % 3;
-        if (dimensions()[0] == 1 && dimensions()[1] == 1 && y1 % 2 == 0 && y2 % 2 == 0 && class1 != class2) {
-            for (let i = games[0].quad_temp % 4; i != games[0].quad_temp - 1; i = (i+1) % 4) {
-                const new_game = games[0].copy();
-                new_game.quad_temp = i+1;
+        for (let game of [...games]) {
+            let c = x => x == 2 || x == 4 ? x % 4 + 1 : (x+2) % 4 + 1;
+            let r = x => x == 1 || x == 3 ? x + 1 : x - 1;
+            let d = x => (x+1) % 4 + 1;
+            const y1 = (game.y1-games[0].offset+7) % 6;
+            const y2 = (game.y2-games[0].offset+7) % 6;
+            const class1 = Math.floor(y1/2);
+            const class2 = (5 - Math.floor(y2/2)) % 3;
+            if (/*dimensions()[0] == 1 && dimensions()[1] == 1 && */y1 % 2 == 0 && y2 % 2 == 0 && class1 != class2) {
+                for (let i = game.quad_temp % 4; i != game.quad_temp - 1; i = (i+1) % 4) {
+                    const new_game = game.copy();
+                    new_game.quad_temp = i+1;
+                    games.push(new_game);
+                }
+            } else if (/*dimensions()[0] == 1 && */y1 % 2 == 0) {
+                const new_game = game.copy();
+                switch (class1) {
+                    case 1:
+                        new_game.quad_temp = d(game.quad_temp);
+                        break;
+                    case 2:
+                        new_game.quad_temp = c(game.quad_temp);
+                        break;
+                    case 0:
+                        new_game.quad_temp = r(game.quad_temp);
+                        break;
+                }
+                games.push(new_game);
+            } else if (/*dimensions()[1] == 1 && */y2 % 2 == 0) {
+                const new_game = game.copy();
+                switch (class2) {
+                    case 1:
+                        new_game.quad_temp = d(game.quad_temp);
+                        break;
+                    case 2:
+                        new_game.quad_temp = c(game.quad_temp);
+                        break;
+                    case 0:
+                        new_game.quad_temp = r(game.quad_temp);
+                        break;
+                }
                 games.push(new_game);
             }
-        } else if (dimensions()[0] == 1 && y1 % 2 == 0) {
-            const new_game = games[0].copy();
-            switch (class1) {
-                case 1:
-                    new_game.quad_temp = d(games[0].quad_temp);
-                    break;
-                case 2:
-                    new_game.quad_temp = c(games[0].quad_temp);
-                    break;
-                case 0:
-                    new_game.quad_temp = r(games[0].quad_temp);
-                    break;
-            }
-            games.push(new_game);
-        } else if (dimensions()[1] == 1 && y2 % 2 == 0) {
-            const new_game = games[0].copy();
-            switch (class2) {
-                case 1:
-                    new_game.quad_temp = d(games[0].quad_temp);
-                    break;
-                case 2:
-                    new_game.quad_temp = c(games[0].quad_temp);
-                    break;
-                case 0:
-                    new_game.quad_temp = r(games[0].quad_temp);
-                    break;
-            }
-            games.push(new_game);
         }
         // if (dimensions()[1] == 1) {
         //     const length = games.length;
@@ -4396,12 +4413,12 @@ function update() {
         // }
     }
     if (draggingInBigPic && isMouseDown) {
-        placePoint(bigPicPoint1, game.quad, game.coord_1, game.coord_2, game.zone);
+        placePoint(pointObjects[0], game.quad, game.coord_1, game.coord_2, game.zone);
     } else {
         placePoint(pointObjects[0], games[0].quad, games[0].coord_1, games[0].coord_2, games[0].zone);
         draggingInBigPic = false;
     }
-    for (let i = 1; i < 9; i++) {
+    for (let i = 1; i < 16; i++) {
         if (i < games.length) {
             pointObjects[i].style.display = "";
             placePoint(pointObjects[i], games[i].quad, games[i].coord_1, games[i].coord_2, games[i].zone);
@@ -5339,16 +5356,20 @@ function changeCoords(e) {
 
     if (0 <= relativeX && relativeX <= 1 && 0 <= relativeY && relativeY <= 1) {
         if (!isMouseDown) {
-            const bigPicPoint1 = document.getElementById("big-pic-point1");
-            const bigPicPoint2 = document.getElementById("big-pic-point2");
-            const bigPicPoint3 = document.getElementById("big-pic-point3");
-            const bigPicPoint4 = document.getElementById("big-pic-point4");
-            const bigPicPoint5 = document.getElementById("big-pic-point5");
-            const bigPicPoint6 = document.getElementById("big-pic-point6");
-            const bigPicPoint7 = document.getElementById("big-pic-point7");
-            const bigPicPoint8 = document.getElementById("big-pic-point8");
-            const bigPicPoint9 = document.getElementById("big-pic-point9");
-            const pointObjects = [ bigPicPoint1, bigPicPoint2, bigPicPoint3, bigPicPoint4, bigPicPoint5, bigPicPoint6, bigPicPoint7, bigPicPoint8, bigPicPoint9 ];
+            // const bigPicPoint1 = document.getElementById("big-pic-point1");
+            // const bigPicPoint2 = document.getElementById("big-pic-point2");
+            // const bigPicPoint3 = document.getElementById("big-pic-point3");
+            // const bigPicPoint4 = document.getElementById("big-pic-point4");
+            // const bigPicPoint5 = document.getElementById("big-pic-point5");
+            // const bigPicPoint6 = document.getElementById("big-pic-point6");
+            // const bigPicPoint7 = document.getElementById("big-pic-point7");
+            // const bigPicPoint8 = document.getElementById("big-pic-point8");
+            // const bigPicPoint9 = document.getElementById("big-pic-point9");
+            // const pointObjects = [ bigPicPoint1, bigPicPoint2, bigPicPoint3, bigPicPoint4, bigPicPoint5, bigPicPoint6, bigPicPoint7, bigPicPoint8, bigPicPoint9 ];
+            const pointObjects = [];
+            for (let i = 1; i <= 16; i++) {
+                pointObjects.push(document.getElementById("big-pic-point-"+i.toString()));
+            }
             for (let i = 0; i < games.length; i++) {
                 const x = pointObjects[i].cx.baseVal.value / bigPicWidth;
                 const y = pointObjects[i].cy.baseVal.value / bigPicWidth;
@@ -5360,7 +5381,7 @@ function changeCoords(e) {
                 }
             }
         } else {
-            const bigPicPoint1 = document.getElementById("big-pic-point1");
+            const bigPicPoint1 = document.getElementById("big-pic-point-1");
             const x = bigPicPoint1.cx.baseVal.value / bigPicWidth;
             const y = bigPicPoint1.cy.baseVal.value / bigPicWidth;
             const r = bigPicPoint1.r.baseVal.value / bigPicWidth * 1.1;
