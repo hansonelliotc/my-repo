@@ -44,20 +44,20 @@
 				<tr><td><span id="y-row"></span>, <span id="t-row"></span></td><td><span id="y-col"></span>, <span id="t-col"></span></td></tr>
 				<tr><td class="info-header" colspan="2">Equilibrium returns</td></tr>
 				<tr>
-					<td><span id="row-return"></span>
+					<td><b><span id="row-return"></span></b></td>
 						<!-- <span id="row-return-mixed"></span></td> -->
-					<td><span id="col-return"></span>
+					<td><b><span id="col-return"></span></b></td>
 						<!-- <span id="col-return-mixed"></span></td> -->
 				</tr>
 				<tr><td class="info-header" colspan="2">Bargaining returns<br>(backstop & threat point)</td></tr>
 				<tr><td>bs, tp</td> <td>bs, tp</td> </tr>
 				<tr>
-					<td><span class="row-header">NTU</span><span id="row-return-bargaining-1"></span>, <span id="row-return-bargaining-2"></span></td>
-					<td><span class="row-header">NTU</span><span id="col-return-bargaining-1"></span>, <span id="col-return-bargaining-2"></span></td>
+					<td><span class="row-header">NTU</span><b><span id="row-return-bargaining-1"></span></b>, <b><span id="row-return-bargaining-2"></span></b></td>
+					<td><span class="row-header">NTU</span><b><span id="col-return-bargaining-1"></span></b>, <b><span id="col-return-bargaining-2"></span></b></td>
 				</tr>
 				<tr>
-					<td><span class="row-header">TU</span><span id="row-return-transferable"></span>, <span id="row-return-coco"></span></td>
-					<td><span class="row-header">TU</span><span id="col-return-transferable"></span>, <span id="col-return-coco"></span></td>
+					<td><span class="row-header">TU</span><b><span id="row-return-transferable"></span></b>, <b><span id="row-return-coco"></span></b></td>
+					<td><span class="row-header">TU</span><b><span id="col-return-transferable"></span></b>, <b><span id="col-return-coco"></span></b></td>
 				</tr>
 			</table>
 			<table id="navigation">
@@ -391,8 +391,8 @@
 		</div>
 	</div>
 	<div id="pictures">
-		<svg id="big-picture" width="35vh" height="35vh">
-			<rect x="0" y="0" width="100%" height="100%" fill="white" />
+		<svg id="big-picture" width="35vh" height="35vh" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));">
+			<!-- <rect x="0" y="0" width="100%" height="100%" fill="white" /> -->
 			<!-- <rect id="quad1" x="54%" y="4%" width="42%" height="42%" />
 			<rect id="quad2" x="4%" y="4%" width="42%" height="42%" />
 			<rect id="quad3" x="4%" y="54%" width="42%" height="42%" />
@@ -472,7 +472,7 @@
 			<circle id="big-pic-point-2" r="2%" cx="25%" cy="25%" fill="#888" />
 			<circle id="big-pic-point-1" r="2%" cx="25%" cy="25%" fill="black" />
 		</svg>
-		<svg id="birhombic-pic" width="45vh" height="20vh">
+		<svg id="birhombic-pic" width="45vh" height="20vh" style="display:none">
 			<polygon id="br-green-background" />
 			<polygon id="br-gold-background" />
 			<polygon id="br-cerulean-background" />
@@ -528,6 +528,10 @@
 				<rect id="br-row-rect" opacity="0" />
 				<polygon id="br-row-player-poly" />
 			</svg>
+		</svg>
+		<svg id="temp-pic" width="20vh" height="20vh">
+			<foreignObject id="foreign-object-temp-pic" x="0" y="0" width="0" height="0"><canvas id="temp-pic-canvas"></canvas></foreignObject>
+			<circle id="temp-pic-point" r="0.7vh" cx="25%" cy="25%" fill="black" />
 		</svg>
 	</div>
 	<svg id="big-diagram" width="45vh" height="45vh" style="position:fixed;right:0;bottom:0">

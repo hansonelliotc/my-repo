@@ -49,6 +49,7 @@ let showAllReturnsAlways = false;
 let hiddenLines = 1;
 let windows = false;
 let show_all_zones = false;
+let dragging_temp = false;
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.04;
@@ -520,6 +521,54 @@ class Game {
         this.#clear1();
         return this.#col_matrix;
     }
+    #rectify_matrices() {
+        if (this.#zone_row == 0 && (this.row_ranks[0] == 3 || this.row_ranks[2] == 3) || 
+            this.#zone_row == 1 && (this.row_ranks[0] == 0 || this.row_ranks[2] == 0)) {
+            let buffer = [...this.row_matrix];
+            this.#row_matrix[0] = buffer[1];
+            this.#row_matrix[1] = buffer[0];
+            this.#row_matrix[2] = buffer[3];
+            this.#row_matrix[3] = buffer[2];
+            buffer = [...this.col_matrix];
+            this.#col_matrix[0] = buffer[1];
+            this.#col_matrix[1] = buffer[0];
+            this.#col_matrix[2] = buffer[3];
+            this.#col_matrix[3] = buffer[2];
+            buffer = [...this.row_ranks];
+            this.#row_ranks[0] = buffer[1];
+            this.#row_ranks[1] = buffer[0];
+            this.#row_ranks[2] = buffer[3];
+            this.#row_ranks[3] = buffer[2];
+            buffer = [...this.col_ranks];
+            this.#col_ranks[0] = buffer[1];
+            this.#col_ranks[1] = buffer[0];
+            this.#col_ranks[2] = buffer[3];
+            this.#col_ranks[3] = buffer[2];
+        }
+        if (this.#zone_col == 0 && (this.col_ranks[2] == 3 || this.col_ranks[3] == 3) || 
+            this.#zone_col == 1 && (this.col_ranks[2] == 0 || this.col_ranks[3] == 0)) {
+            let buffer = [...this.row_matrix];
+            this.#row_matrix[0] = buffer[2];
+            this.#row_matrix[1] = buffer[3];
+            this.#row_matrix[2] = buffer[0];
+            this.#row_matrix[3] = buffer[1];
+            buffer = [...this.col_matrix];
+            this.#col_matrix[0] = buffer[2];
+            this.#col_matrix[1] = buffer[3];
+            this.#col_matrix[2] = buffer[0];
+            this.#col_matrix[3] = buffer[1];
+            buffer = [...this.row_ranks];
+            this.#row_ranks[0] = buffer[2];
+            this.#row_ranks[1] = buffer[3];
+            this.#row_ranks[2] = buffer[0];
+            this.#row_ranks[3] = buffer[1];
+            buffer = [...this.col_ranks];
+            this.#col_ranks[0] = buffer[2];
+            this.#col_ranks[1] = buffer[3];
+            this.#col_ranks[2] = buffer[0];
+            this.#col_ranks[3] = buffer[1];
+        }
+    }
 
     get y1() {
         if (this.#y1 === undefined) this.#update_y1();
@@ -587,11 +636,15 @@ class Game {
     set t1(val) {
         this.#t1 = val;
         if (this.#t1 != 3) this.zone_row = val < 3 ? 0 : 1;
+        if (this.#row_matrix !== undefined) this.y1;
+        if (this.#row_matrix !== undefined && this.#col_matrix !== undefined) this.quad_temp;
         if (this.#y1 !== undefined && this.#quad_temp !== undefined) this.#y1t1_to_matrix();
     }
     set t2(val) {
         this.#t2 = val;
         if (this.#t2 != 3) this.zone_col = val < 3 ? 0 : 1;
+        if (this.#col_matrix !== undefined) this.y2;
+        if (this.#row_matrix !== undefined && this.#col_matrix !== undefined) this.quad_temp;
         if (this.#y2 !== undefined && this.#quad_temp !== undefined) this.#y2t2_to_matrix();
     }
     set quad_temp(val) {
@@ -622,7 +675,7 @@ class Game {
         }
     }
     set zone_row(val) {
-        if (this.#row_matrix !== undefined && this.#col_matrix !== undefined && val != this.#zone_row) {
+        if (this.#row_matrix !== undefined && this.#col_matrix !== undefined && val != this.zone_row) {
             this.#zone_row = val;
             this.#update_quad_temp();
         } else {
@@ -630,7 +683,7 @@ class Game {
         }
     }
     set zone_col(val) {
-        if (this.#row_matrix !== undefined && this.#col_matrix !== undefined && val != this.#zone_col) {
+        if (this.#row_matrix !== undefined && this.#col_matrix !== undefined && val != this.zone_col) {
             this.#zone_col = val;
             this.#update_quad_temp();
         } else {
@@ -1364,12 +1417,59 @@ class Game {
 
     copy() {
         const new_game = new Game();
-        new_game.offset = this.offset;
-        new_game.flip = this.flip;
-        new_game.mode = this.mode;
-        new_game.zone = this.zone;
-        new_game.row_matrix = this.row_matrix;
-        new_game.col_matrix = this.col_matrix;
+        // new_game.offset = this.offset;
+        // new_game.flip = this.flip;
+        // new_game.mode = this.mode;
+        // new_game.zone = this.zone;
+        // new_game.row_matrix = this.row_matrix;
+        // new_game.col_matrix = this.col_matrix;
+        new_game.#row_matrix = this.#row_matrix;
+        new_game.#row_ranks = this.#row_ranks;
+        new_game.#col_matrix = this.#col_matrix;
+        new_game.#col_ranks = this.#col_ranks;
+        new_game.#quadrant = this.#quadrant;
+        new_game.#x1 = this.#x1;
+        new_game.#b1 = this.#b1;
+        new_game.#x2 = this.#x2;
+        new_game.#b2 = this.#b2;
+        new_game.#quad_temp = this.#quad_temp;
+        new_game.#y1 = this.#y1; 
+        new_game.#y2 = this.#y2;
+        new_game.#t1 = this.#t1;
+        new_game.#t2 = this.#t2;
+        new_game.#mode = this.#mode;
+        new_game.#zone_row = this.#zone_row;
+        new_game.#zone_col = this.#zone_col;
+        new_game.#backstop = this.#backstop;
+        new_game.#threat_point = this.#threat_point;
+        new_game.#threat_point_2 = this.#threat_point_2;
+        new_game.#pareto = this.#pareto;
+        new_game.#rhombic_x1 = this.#rhombic_x1;
+        new_game.#rhombic_y1 = this.#rhombic_y1;
+        new_game.#rhombic_x2 = this.#rhombic_x2;
+        new_game.#rhombic_y2 = this.#rhombic_y2;
+        new_game.#row_equilibrium_return = this.#row_equilibrium_return;
+        new_game.#col_equilibrium_return = this.#col_equilibrium_return;
+        new_game.#row_equilibrium_return_2 = this.#row_equilibrium_return_2;
+        new_game.#col_equilibrium_return_2 = this.#col_equilibrium_return_2;
+        new_game.#row_mixed_return = this.#row_mixed_return;
+        new_game.#col_mixed_return = this.#col_mixed_return;
+        new_game.#row_ntu_bs_return = this.#row_ntu_bs_return;
+        new_game.#col_ntu_bs_return = this.#col_ntu_bs_return;
+        new_game.#row_ntu_tp_return = this.#row_ntu_tp_return;
+        new_game.#col_ntu_tp_return = this.#col_ntu_tp_return;
+        new_game.#row_ntu_tp_return_2 = this.#row_ntu_tp_return_2;
+        new_game.#col_ntu_tp_return_2 = this.#col_ntu_tp_return_2;
+        new_game.#row_tu_bs_return = this.#row_tu_bs_return;
+        new_game.#col_tu_bs_return = this.#col_tu_bs_return;
+        new_game.#row_tu_tp_return = this.#row_tu_tp_return;
+        new_game.#col_tu_tp_return = this.#col_tu_tp_return;
+        new_game.#max_total = this.#max_total;
+        new_game.#correlation = this.#correlation;
+        new_game.#offset1 = this.#offset1;
+        new_game.#offset2 = this.#offset2;
+        new_game.#flip1 = this.#flip1;
+        new_game.#flip2 = this.#flip2;
         return new_game;
     }
 
@@ -1486,7 +1586,7 @@ class Game {
 
     crossTan(p1) {
         if (p1) {
-            this.zone_row = 1-this.#zone_row;
+            this.zone_row = 1-this.zone_row;
             const matrix = [...this.row_matrix];
             const a = this.row_ranks.indexOf(1);
             const b = this.row_ranks.indexOf(2);
@@ -1494,7 +1594,7 @@ class Game {
             matrix[b] = 6-this.row_matrix[a];
             this.row_matrix = matrix;
         } else {
-            this.zone_col = 1-this.#zone_col;
+            this.zone_col = 1-this.zone_col;
             const matrix = [...this.col_matrix];
             const a = this.col_ranks.indexOf(1);
             const b = this.col_ranks.indexOf(2);
@@ -1938,6 +2038,7 @@ function init() {
         draggingRhombus2 = false;
         isMouseDown = false;
         backgroundOutOfDate = true;
+        dragging_temp = false;
     });
     document.addEventListener('mousemove', (e) => {
         if (isMouseDown) {
@@ -2083,19 +2184,19 @@ function init() {
                 break;
             case "a":
                 b1up = false;
-                if (viewMode != 0 && viewMode != 11) updateCanvas();
+                if (viewMode != 11) updateCanvas();
                 break;
             case "d":
                 b1down = false;
-                if (viewMode != 0 && viewMode != 11) updateCanvas();
+                if (viewMode != 11) updateCanvas();
                 break;
             case "w":
                 b2up = false;
-                if (viewMode != 0 && viewMode != 11) updateCanvas();
+                if (viewMode != 11) updateCanvas();
                 break;
             case "s":
                 b2down = false;
-                if (viewMode != 0 && viewMode != 11) updateCanvas();
+                if (viewMode != 11) updateCanvas();
                 break;
         }
     });
@@ -2457,6 +2558,8 @@ function init() {
     canvas.getContext("2d", { willReadFrequently: true});
     const canvasBigPic = document.getElementById("big-pic-canvas");
     canvasBigPic.getContext("2d", { willReadFrequently: true});
+    const temp_pic_canvas = document.getElementById("temp-pic-canvas");
+    temp_pic_canvas.getContext("2d", { willReadFrequently: true});
 
     const navButtons = document.getElementsByClassName("nav-button");
     for (let button of navButtons) {
@@ -2589,6 +2692,8 @@ function init() {
     hotspot2.style.fill = gold;
     hotspot3.style.fill = lightGreen;    
 
+    update_temp_pic();
+
     update();
 }
 
@@ -2598,19 +2703,25 @@ function update() {
 
     const error = 0.00001;
 
-    if (Math.abs(game.coord_1 - Math.round(game.coord_1*2)/2) < 0.05 && !isMouseDown && !x1up && !x1down && x1V == 0 && !enRoute) {
+    const to_nearest_1 = Math.abs(game.coord_1 - Math.round(game.coord_1*2)/2);
+    const to_nearest_2 = Math.abs(game.coord_2 - Math.round(game.coord_2*2)/2);
+    const to_nearest_3 = Math.abs(game.coord_3 - Math.round(game.coord_3));
+    const to_nearest_4 = Math.abs(game.coord_4 - Math.round(game.coord_4));
+    if (to_nearest_1 > error && to_nearest_1 < 0.05 && !isMouseDown && !x1up && !x1down && x1V == 0 && !enRoute) {
         game.coord_1 = Math.round(game.coord_1*2)/2;
         updateRequired = true;
+        update_temp_pic();
     }
-    if (Math.abs(game.coord_2 - Math.round(game.coord_2*2)/2) < 0.05 && !isMouseDown && !x2up && !x2down && x2V == 0 && !enRoute) {
+    if (to_nearest_2 > error && to_nearest_2 < 0.05 && !isMouseDown && !x2up && !x2down && x2V == 0 && !enRoute) {
         game.coord_2 = Math.round(game.coord_2*2)/2;
         updateRequired = true;
+        update_temp_pic();
     }
-    if (Math.abs(game.coord_3 - Math.round(game.coord_3)) < 0.05 && !b1up && !b1down && b1V == 0 && !enRoute) {
+    if (to_nearest_3 > error && to_nearest_3 < 0.05 && !b1up && !b1down && b1V == 0 && !enRoute) {
         game.coord_3 = Math.round(game.coord_3);
         updateRequired = true;
     }
-    if (Math.abs(game.coord_4 - Math.round(game.coord_4)) < 0.05 && !b2up && !b2down && b2V == 0 && !enRoute) {
+    if (to_nearest_4 > error && to_nearest_4 < 0.05 && !b2up && !b2down && b2V == 0 && !enRoute) {
         game.coord_4 = Math.round(game.coord_4);
         updateRequired = true;
     }
@@ -2686,6 +2797,10 @@ function update() {
         game.coord_4 = game.coord_4 + b2V;
     }
     fixCoords();
+
+    if (x1up || x1down || x2up || x2down || x1V != 0 || x2V != 0) {
+        update_temp_pic();
+    }
 
     // if (changeQuad1 && +b1coord.value != 0 && coords[2] == 0) {
     //     hitZero1 = true;
@@ -3694,6 +3809,7 @@ function update() {
     //         break;
     // }
 
+    const container = document.getElementById("container");
     const diagram = document.getElementById("diagram");
     const diagramWidth = diagram.width.baseVal.value;
     const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*dimensions()[0];
@@ -4459,9 +4575,9 @@ function update() {
     if (backgroundOutOfDate) { //  && viewMode != 0
         if ((dimensions()[0] != 1 && dimensions()[1] != 1 || !isMouseDown && !x1up && !x1down && !x2up && !x2down) && 
             !draggingB1 && !draggingB2  && !b1up && !b1down && !b2up && !b2down && b1V == 0 && b2V == 0) {
-            updateCanvas(false);
+            updateBigPicCanvas(false);
         } else {
-            updateCanvas(true);
+            updateBigPicCanvas(true);
         }
     }
 
@@ -4647,6 +4763,13 @@ function update() {
     updateDegenerateGames();
 
     update_rgb_lines();
+
+    // update position in the temperature picture
+    const temp_pic_canvas = document.getElementById("temp-pic-canvas");
+    const ctx = temp_pic_canvas.getContext("2d");
+    const circle = document.getElementById("temp-pic-point");
+    circle.cx.baseVal.value = game.t1/6*temp_pic_canvas.width;
+    circle.cy.baseVal.value = (1-game.t2/6)*temp_pic_canvas.height;
 
     time++;
 }
@@ -5317,10 +5440,12 @@ function changeCoords(e) {
         if (dimensions()[1] == 0 && rect2.left-margins <= x && rect2.right+margins >= x && rect1.top+rect1.width/2-margins <= y && rect1.top+rect1.width/2+margins >= y) {
             game.coord_1 = (x - rect2.left) / rect2.width * 6;
             enRoute = false;
+            update_temp_pic();
         }
         if (dimensions()[0] == 0 && rect2.top-margins <= y && rect2.bottom+margins >= y && rect1.left+rect1.height/2-margins <= x && rect1.left+rect1.height/2+margins >= x) {
             game.coord_2 = 6 - (y - rect2.top) / rect2.height * 6;
             enRoute = false;
+            update_temp_pic();
         }
     }
     else {
@@ -5344,6 +5469,7 @@ function changeCoords(e) {
                 game.coord_1 = Math.round(newX1*6)/6;
                 game.coord_2 = Math.round(newX2*6)/6;
             }
+            update_temp_pic();
             enRoute = false;
         }
     }
@@ -5417,6 +5543,7 @@ function changeCoords(e) {
             game.coord_1 = newX1;
             game.coord_2 = newX2;
             enRoute = false;
+            update_temp_pic();
         } else if (0.52 <= relativeX && relativeX <= 0.98 && 0.02 <= relativeY && relativeY <= 0.48) {
             if (game.quad != 1) { game.quad = 1; updateBackground(); }
             else game.quad = 1;
@@ -5425,6 +5552,7 @@ function changeCoords(e) {
             game.coord_1 = newX1;
             game.coord_2 = newX2;
             enRoute = false;
+            update_temp_pic();
         } else if (0.02 <= relativeX && relativeX <= 0.48 && 0.52 <= relativeY && relativeY <= 0.98) {
             if (game.quad != 3) { game.quad = 3; updateBackground(); }
             else game.quad = 3;
@@ -5433,6 +5561,7 @@ function changeCoords(e) {
             game.coord_1 = newX1;
             game.coord_2 = newX2;
             enRoute = false;
+            update_temp_pic();
         } else if (0.52 <= relativeX && relativeX <= 0.98 && 0.52 <= relativeY && relativeY <= 0.98) {
             if (game.quad != 4) { game.quad = 4; updateBackground(); }
             else game.quad = 4;
@@ -5441,7 +5570,21 @@ function changeCoords(e) {
             game.coord_1 = newX1;
             game.coord_2 = newX2;
             enRoute = false;
+            update_temp_pic();
         }
+    }
+
+    const temp_pic = document.getElementById("temp-pic");
+    const temp_pic_width = temp_pic.width.baseVal.value;
+    const temp_pic_rect = temp_pic.getBoundingClientRect();
+    let relativeX_temp = (e.pageX - temp_pic_rect.left) / temp_pic_width;
+    let relativeY_temp = (e.pageY - temp_pic_rect.top) / temp_pic_width;
+    if (relativeX_temp >= -0.02 && relativeX_temp <= 1.02 && relativeY_temp >= -0.02 && relativeY_temp <= 1.02) {
+        game.t1 = 6*relativeX_temp;
+        game.t2 = 6*(1-relativeY_temp);
+        enRoute = false;
+        dragging_temp = true;
+        updateBackground();
     }
 
     if (draggingRhombus1 || draggingRhombus2) {
@@ -5582,8 +5725,8 @@ function fromNearestRed(x, distance) {
 function placePoint(point, q, x1, x2, zone) {
     const bigPicture = document.getElementById("big-picture");
     const bigPictureWidth = bigPicture.width.baseVal.value;
-    const zone_row = zone == 1 || zone == 4 ? 0 : 1;
-    const zone_col = zone == 1 || zone == 2 ? 0 : 1;
+    const zone_row = zone == 1 || zone == 4 || !show_all_zones ? 0 : 1;
+    const zone_col = zone == 3 || zone == 4 || !show_all_zones ? 1 : 0;
     const grid_size = show_all_zones ? 4 : 2;
     switch (q) {
         case 1:
@@ -6092,6 +6235,7 @@ function changeViewMode(mode, player1=true) {
                 break;
         }
     }
+    update_temp_pic();
 }
 
 function updateBigPicCanvas(lowRes = false) {
@@ -6343,6 +6487,15 @@ function updateCanvas(lowRes = false) {
     //             break;
     //     }
     // }
+
+    const container = document.getElementById("container");
+    const diagram = document.getElementById("diagram");
+    const diagramWidth = diagram.width.baseVal.value;
+    const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*dimensions()[0];
+    const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*dimensions()[1];
+    const picPadding1 = (container.width.baseVal.value-picWidth)/2;
+    const picPadding2 = (container.height.baseVal.value-picHeight)/2;
+    render_background(picWidth,picHeight,picPadding1,picPadding2);
     updateBigPicCanvas(lowRes);
 }
 
@@ -7801,10 +7954,12 @@ function set_coords(x1,x2,b1,b2) {
     if (x1 != null) {
         if (!useAltSchema) game.coord_1 = x1;
         else game.y1 = x1;
+        update_temp_pic();
     }
     if (x2 != null) {
         if (!useAltSchema) game.coord_2 = x2;
         else game.y2 = x2;
+        update_temp_pic();
     }
     if (b1 != null) {
         if (!useAltSchema) game.coord_3 = b1;
@@ -7837,7 +7992,7 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
     canvas.width = picWidth;
     canvas.height = picHeight;
 
-    const high_res = (dimensions()[0] != 1 && dimensions()[1] != 1 || !isMouseDown && !x1up && !x1down && !x2up && !x2down) && 
+    const high_res = (dimensions()[0] != 1 && dimensions()[1] != 1 || !isMouseDown && !x1up && !x1down && !x2up && !x2down) && !dragging_temp && 
                      !draggingB1 && !draggingB2 && !b1up && !b1down && !b2up && !b2down && b1V == 0 && b2V == 0;
     // if (!high_res && viewMode != 0 && viewMode != 11) {
     //     valuesX = 6*Math.round(picWidth/30);
@@ -7918,6 +8073,50 @@ function change_big_pic(all_zones) {
         for (let line of document.getElementsByClassName("big-pic-line-ver"))
             line.style.display = "";
     }
+}
+
+function update_temp_pic() {
+    const foreign_object = document.getElementById("foreign-object-temp-pic");
+    const temp_pic_canvas = document.getElementById("temp-pic-canvas");
+    const temp_pic = document.getElementById("temp-pic");
+    temp_pic_canvas.width = temp_pic.width.baseVal.value;
+    temp_pic_canvas.height = temp_pic.height.baseVal.value;
+    foreign_object.width.baseVal.value = temp_pic.width.baseVal.value;
+    foreign_object.height.baseVal.value = temp_pic.height.baseVal.value;
+    const ctx = temp_pic_canvas.getContext("2d");
+    const imageData = ctx.getImageData(0, 0, temp_pic_canvas.width, temp_pic_canvas.height);
+    const data = imageData.data;
+    for (let i = 0; i < temp_pic_canvas.width; i++) {
+        for (let j = 0; j < temp_pic_canvas.height; j++) {
+            let color = [];
+            const t1 = (i+0.5) / temp_pic_canvas.width * 6;
+            const t2 = (1 - (j+0.5) / temp_pic_canvas.height) * 6;
+            const new_game = game.copy();
+            if (game.zone_row == 0 && t1 > 3 || game.zone_row == 1 && t1 < 3) new_game.crossTan(true);
+            if (game.zone_col == 0 && t2 > 3 || game.zone_col == 1 && t2 < 3) new_game.crossTan(false);
+            new_game.t1 = t1;
+            new_game.t2 = t2;
+            if (viewMode == 12) {
+                color = [255,255,255];
+            } else {
+                if (viewMode == 0) color = new_game.equilibrium_color;
+                else if (viewMode == 11) color = new_game.quadrant_color;
+                else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+            }
+            // color = colorFunction(new_game.quad_temp,viewMode);
+            data[(i+j*temp_pic_canvas.width)*4] = color[0];
+            data[(i+j*temp_pic_canvas.width)*4+1] = color[1];
+            data[(i+j*temp_pic_canvas.width)*4+2] = color[2];
+            data[(i+j*temp_pic_canvas.width)*4+3] = 255;
+        }
+    }
+    ctx.putImageData(imageData,0,0);
+    
+    // const temp_pic_canvas = document.getElementById("temp-pic-canvas");
+    // const ctx = temp_pic_canvas.getContext("2d");
+    // const circle = document.getElementById("temp-pic-point");
+    // circle.cx.baseVal.value = game.t1/6*temp_pic_canvas.width;
+    // circle.cy.baseVal.value = (1-game.t2/6)*temp_pic_canvas.height;
 }
 
 
