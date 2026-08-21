@@ -166,15 +166,15 @@ span {
     width: 26vw;
 }
 
-#blue-line-1 {
+#blue-line-1, #blue-line-3 {
     cursor: ew-resize;
 }
 
-#blue-line-2 {
+#blue-line-2, #blue-line-4 {
     cursor: ns-resize;
 }
 
-#blue-corner-1 {
+#blue-corner-1, #blue-corner-3, #blue-corner-4, #blue-corner-5, #red-semicircle, #blue-semicircle {
     cursor: all-scroll;
 }
 

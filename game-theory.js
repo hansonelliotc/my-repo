@@ -3816,8 +3816,8 @@ function update() {
     const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*dimensions()[1];
     const rowMax = Math.max(...game.row_matrix) - error;
     const colMax = Math.max(...game.col_matrix) - error;
-    const picPadding1 = (container.width.baseVal.value-picWidth)/2;
-    const picPadding2 = (container.height.baseVal.value-picHeight)/2;
+    const picPadding1 = game.zone_row == 0 ? diagramWidth/2 : container.width.baseVal.value-diagramWidth/2-picWidth;
+    const picPadding2 = game.zone_col == 1 ? diagramWidth/2 : container.height.baseVal.value-diagramWidth/2-picHeight;
 
     if (game.row_matrix[0] - game.row_matrix[2] >= -error && game.col_matrix[0] - game.col_matrix[1] >= -error) {
         if (game.row_matrix[0] >= rowMax && game.col_matrix[0] >= colMax)
@@ -5393,12 +5393,12 @@ function changeCoords(e) {
                 game.coord_3 = 6 - 2*(x - containerWidth/2 - blueLinePadding) / diagramWidth;
             else {
                 if (game.zone == 1 || game.zone == 4) {
-                    game.coord_3 = Math.min((x - containerWidth/2 - blueLinePadding) / diagramWidth,3);
+                    game.coord_3 = Math.min(0.5*(x - blueLinePadding) / diagramWidth - 0.25,3);
                     // if (game.coord_3 > 3) game.coord_3 = 3;
                 }
                 else {
-                    game.coord_3 = Math.max(3 + (x - blueLinePadding) / diagramWidth,3);
-                    if (game.coord_3 < 3) game.coord_3 = 3;
+                    game.coord_3 = Math.max(3 + 0.5*(x - diagramWidth/2 + blueLinePadding) / diagramWidth,3);
+                    // if (game.coord_3 < 3) game.coord_3 = 3;
                 }
             }
         }
@@ -5410,11 +5410,11 @@ function changeCoords(e) {
                 game.coord_4 = 6 - 2*(y - containerHeight/2 - blueLinePadding) / diagramHeight;
             else {
                 if (game.zone == 1 || game.zone == 2) {
-                    game.coord_4 = Math.min(3 - (y - blueLinePadding) / diagramHeight,3);
+                    game.coord_4 = Math.min(3 - 0.5*(y - diagramHeight/2 + blueLinePadding) / diagramHeight,3);
                     // if (game.coord_4 > 3) game.coord_4 = 3;
                 }
                 else {
-                    game.coord_4 = Math.max(6 - (y - containerHeight/2 - blueLinePadding) / diagramHeight,3);
+                    game.coord_4 = Math.max(6 - 0.5*(y - blueLinePadding) / diagramHeight + 0.25,3);
                     // if (game.coord_4 < 3) game.coord_4 = 3;
                 }
             }
@@ -6269,10 +6269,14 @@ function updateBigPicCanvas(lowRes = false) {
             else if (row % 2 == 1 && col % 2 == 0) quadrant = 3;
             else if (row % 2 == 1 && col % 2 == 1) quadrant = 4;
             let zone;
-            if (row < 2 && col < 2) zone = 4;
-            else if (col < 2) zone = 1;
-            else if (row < 2) zone = 3;
-            else zone = 2;
+            if (show_all_zones) {
+                if (row < 2 && col < 2) zone = 4;
+                else if (col < 2) zone = 1;
+                else if (row < 2) zone = 3;
+                else zone = 2;
+            } else {
+                zone = game.zone;
+            }
             const quadrantWidth = Math.floor(canvasBigPic.width*0.84/grid_size);
             for (let j = 0; j < quadrantWidth; j++) {
                 for (let i = 0; i < quadrantWidth; i++) {
@@ -6493,8 +6497,8 @@ function updateCanvas(lowRes = false) {
     const diagramWidth = diagram.width.baseVal.value;
     const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*dimensions()[0];
     const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*dimensions()[1];
-    const picPadding1 = (container.width.baseVal.value-picWidth)/2;
-    const picPadding2 = (container.height.baseVal.value-picHeight)/2;
+    const picPadding1 = game.zone_row == 0 ? diagramWidth/2 : container.width.baseVal.value-diagramWidth/2-picWidth;
+    const picPadding2 = game.zone_col == 1 ? diagramWidth/2 : container.height.baseVal.value-diagramWidth/2-picHeight;
     render_background(picWidth,picHeight,picPadding1,picPadding2);
     updateBigPicCanvas(lowRes);
 }
@@ -6643,8 +6647,8 @@ function updateDiagram(game) {
     const diagramWidth = diagram.width.baseVal.value;
     const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*dimensions()[0];
     const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*dimensions()[1];
-    const picPadding1 = (container.width.baseVal.value-picWidth)/2;
-    const picPadding2 = (container.height.baseVal.value-picHeight)/2;
+    const picPadding1 = game.zone_row == 0 ? diagramWidth/2 : container.width.baseVal.value-diagramWidth/2-picWidth;
+    const picPadding2 = game.zone_col == 1 ? diagramWidth/2 : container.height.baseVal.value-diagramWidth/2-picHeight;
     const maxPicWidth = (container.width.baseVal.value - diagram.width.baseVal.value);
     const maxPicHeight = (container.height.baseVal.value - diagram.height.baseVal.value);
 
@@ -6897,12 +6901,13 @@ function updateDiagramGrid() {
 
 function updateBlueLines() {
     const container = document.getElementById("container");
+    const containerWidth = container.width.baseVal.value;
     const diagram = document.getElementById("diagram");
     const diagramWidth = diagram.width.baseVal.value;
-    const picWidth = fixImageSize ? container.width.baseVal.value - diagramWidth : (container.width.baseVal.value - diagramWidth)*dimensions()[0];
+    const picWidth = fixImageSize ? containerWidth - diagramWidth : (containerWidth - diagramWidth)*dimensions()[0];
     const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*dimensions()[1];
-    const picPadding1 = (container.width.baseVal.value-picWidth)/2;
-    const picPadding2 = (container.height.baseVal.value-picHeight)/2;
+    const picPadding1 = game.zone_row == 0 ? diagramWidth/2 : containerWidth-diagramWidth/2-picWidth;
+    const picPadding2 = game.zone_col == 1 ? diagramWidth/2 : container.height.baseVal.value-diagramWidth/2-picHeight;
 
     const blueLine1 = document.getElementById("blue-line-1");
     const blueLine2 = document.getElementById("blue-line-2");
@@ -6915,10 +6920,10 @@ function updateBlueLines() {
     const blueCorner5 = document.getElementById("blue-corner-5");
     const redSemicircle = document.getElementById("red-semicircle");
     const blueSemicircle = document.getElementById("blue-semicircle");
-    const blueLineWidth = (container.width.baseVal.value - diagramWidth)*dimensions()[0];
+    const blueLineWidth = (containerWidth - diagramWidth)*dimensions()[0];
     const blueLineHeight = (container.height.baseVal.value - diagramWidth)*dimensions()[1];
-    const blueLinePadding1 = (container.width.baseVal.value-blueLineWidth)/2;
-    const blueLinePadding2 = (container.height.baseVal.value-blueLineHeight)/2;
+    const blueLinePadding1 = game.zone_row == 0 ? diagramWidth/2 : containerWidth-diagramWidth/2-picWidth;
+    const blueLinePadding2 = game.zone_col == 1 ? diagramWidth/2 : container.height.baseVal.value-diagramWidth/2-picHeight;
 
     if (!useAltSchema) {
         blueLine1.x1.baseVal.value = picWidth + picPadding1 + blueLinePadding;
@@ -6944,14 +6949,16 @@ function updateBlueLines() {
         // else if (game.t1 < 3 && game.t2 > 3) game.zone = 4;
         // else if (game.t1 > 3 && game.t2 < 3) game.zone = 2;
         // else if (game.t1 < 3 && game.t2 < 3) game.zone = 1;
-        blueLine3.style.display = "";
-        blueLine4.style.display = "";
         blueCorner1.style.display = (game.zone == 1 || game.t1 == 3 && game.t2 == 3 || game.zone == 2 && game.t1 == 3 || game.zone == 4 && game.t2 == 3) ? "" : "none";
         blueCorner3.style.display = (game.zone == 2 || game.t1 == 3 && game.t2 == 3 || game.zone == 1 && game.t1 == 3 || game.zone == 3 && game.t2 == 3) ? "" : "none";
         blueCorner4.style.display = (game.zone == 3 || game.t1 == 3 && game.t2 == 3 || game.zone == 4 && game.t1 == 3 || game.zone == 2 && game.t2 == 3) ? "" : "none";
         blueCorner5.style.display = (game.zone == 4 || game.t1 == 3 && game.t2 == 3 || game.zone == 3 && game.t1 == 3 || game.zone == 1 && game.t2 == 3) ? "" : "none";
         redSemicircle.style.display = (game.zone == 2 || game.t1 == 3 && game.t2 == 3 || game.zone == 1 && game.t1 == 3 || game.zone == 3 && game.t2 == 3) ? "" : "none";
         blueSemicircle.style.display = (game.zone == 4 || game.t1 == 3 && game.t2 == 3 || game.zone == 3 && game.t1 == 3 || game.zone == 1 && game.t2 == 3) ? "" : "none";
+        blueLine1.style.display = (game.zone == 1 || game.zone == 4 || game.t1 == 3) ? "" : "none";
+        blueLine2.style.display = (game.zone == 3 || game.zone == 4 || game.t2 == 3) ? "" : "none";
+        blueLine3.style.display = (game.zone == 2 || game.zone == 3 || game.t1 == 3) ? "" : "none";
+        blueLine4.style.display = (game.zone == 1 || game.zone == 2 || game.t2 == 3) ? "" : "none";
         blueLine1.x1.baseVal.value = picWidth + picPadding1 + blueLinePadding;
         blueLine1.y1.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
         blueLine1.x2.baseVal.value = picWidth + picPadding1 + blueLinePadding;
