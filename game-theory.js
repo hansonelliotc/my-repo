@@ -521,54 +521,6 @@ class Game {
         this.#clear1();
         return this.#col_matrix;
     }
-    #rectify_matrices() {
-        if (this.#zone_row == 0 && (this.row_ranks[0] == 3 || this.row_ranks[2] == 3) || 
-            this.#zone_row == 1 && (this.row_ranks[0] == 0 || this.row_ranks[2] == 0)) {
-            let buffer = [...this.row_matrix];
-            this.#row_matrix[0] = buffer[1];
-            this.#row_matrix[1] = buffer[0];
-            this.#row_matrix[2] = buffer[3];
-            this.#row_matrix[3] = buffer[2];
-            buffer = [...this.col_matrix];
-            this.#col_matrix[0] = buffer[1];
-            this.#col_matrix[1] = buffer[0];
-            this.#col_matrix[2] = buffer[3];
-            this.#col_matrix[3] = buffer[2];
-            buffer = [...this.row_ranks];
-            this.#row_ranks[0] = buffer[1];
-            this.#row_ranks[1] = buffer[0];
-            this.#row_ranks[2] = buffer[3];
-            this.#row_ranks[3] = buffer[2];
-            buffer = [...this.col_ranks];
-            this.#col_ranks[0] = buffer[1];
-            this.#col_ranks[1] = buffer[0];
-            this.#col_ranks[2] = buffer[3];
-            this.#col_ranks[3] = buffer[2];
-        }
-        if (this.#zone_col == 0 && (this.col_ranks[2] == 3 || this.col_ranks[3] == 3) || 
-            this.#zone_col == 1 && (this.col_ranks[2] == 0 || this.col_ranks[3] == 0)) {
-            let buffer = [...this.row_matrix];
-            this.#row_matrix[0] = buffer[2];
-            this.#row_matrix[1] = buffer[3];
-            this.#row_matrix[2] = buffer[0];
-            this.#row_matrix[3] = buffer[1];
-            buffer = [...this.col_matrix];
-            this.#col_matrix[0] = buffer[2];
-            this.#col_matrix[1] = buffer[3];
-            this.#col_matrix[2] = buffer[0];
-            this.#col_matrix[3] = buffer[1];
-            buffer = [...this.row_ranks];
-            this.#row_ranks[0] = buffer[2];
-            this.#row_ranks[1] = buffer[3];
-            this.#row_ranks[2] = buffer[0];
-            this.#row_ranks[3] = buffer[1];
-            buffer = [...this.col_ranks];
-            this.#col_ranks[0] = buffer[2];
-            this.#col_ranks[1] = buffer[3];
-            this.#col_ranks[2] = buffer[0];
-            this.#col_ranks[3] = buffer[1];
-        }
-    }
 
     get y1() {
         if (this.#y1 === undefined) this.#update_y1();
@@ -1588,19 +1540,23 @@ class Game {
         if (p1) {
             this.zone_row = 1-this.zone_row;
             const matrix = [...this.row_matrix];
+            const ranks = [...this.row_ranks];
             const a = this.row_ranks.indexOf(1);
             const b = this.row_ranks.indexOf(2);
             matrix[a] = 6-this.row_matrix[b];
             matrix[b] = 6-this.row_matrix[a];
             this.row_matrix = matrix;
+            this.#row_ranks = ranks;
         } else {
             this.zone_col = 1-this.zone_col;
             const matrix = [...this.col_matrix];
+            const ranks = [...this.col_ranks];
             const a = this.col_ranks.indexOf(1);
             const b = this.col_ranks.indexOf(2);
             matrix[a] = 6-this.col_matrix[b];
             matrix[b] = 6-this.col_matrix[a];
             this.col_matrix = matrix;
+            this.#col_ranks = ranks;
         }
     }
 
@@ -2694,6 +2650,7 @@ function init() {
 
     update_temp_pic();
 
+    altImage(true);
     update();
 }
 
@@ -2707,21 +2664,21 @@ function update() {
     const to_nearest_2 = Math.abs(game.coord_2 - Math.round(game.coord_2*2)/2);
     const to_nearest_3 = Math.abs(game.coord_3 - Math.round(game.coord_3));
     const to_nearest_4 = Math.abs(game.coord_4 - Math.round(game.coord_4));
-    if (to_nearest_1 > error && to_nearest_1 < 0.05 && !isMouseDown && !x1up && !x1down && x1V == 0 && !enRoute) {
+    if (to_nearest_1 != 0 && to_nearest_1 < 0.05 && !isMouseDown && !x1up && !x1down && x1V == 0 && !enRoute) {
         game.coord_1 = Math.round(game.coord_1*2)/2;
         updateRequired = true;
         update_temp_pic();
     }
-    if (to_nearest_2 > error && to_nearest_2 < 0.05 && !isMouseDown && !x2up && !x2down && x2V == 0 && !enRoute) {
+    if (to_nearest_2 != 0 && to_nearest_2 < 0.05 && !isMouseDown && !x2up && !x2down && x2V == 0 && !enRoute) {
         game.coord_2 = Math.round(game.coord_2*2)/2;
         updateRequired = true;
         update_temp_pic();
     }
-    if (to_nearest_3 > error && to_nearest_3 < 0.05 && !b1up && !b1down && b1V == 0 && !enRoute) {
+    if (to_nearest_3 != 0 && to_nearest_3 < 0.05 && !b1up && !b1down && b1V == 0 && !enRoute) {
         game.coord_3 = Math.round(game.coord_3);
         updateRequired = true;
     }
-    if (to_nearest_4 > error && to_nearest_4 < 0.05 && !b2up && !b2down && b2V == 0 && !enRoute) {
+    if (to_nearest_4 != 0 && to_nearest_4 < 0.05 && !b2up && !b2down && b2V == 0 && !enRoute) {
         game.coord_4 = Math.round(game.coord_4);
         updateRequired = true;
     }
