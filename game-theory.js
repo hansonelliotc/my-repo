@@ -2128,15 +2128,19 @@ function init() {
         switch (e.key) {
             case "ArrowRight":
                 x1up = false;
+                update_temp_pic();
                 break;
             case "ArrowLeft":
                 x1down = false;
+                update_temp_pic();
                 break;
             case "ArrowUp":
                 x2up = false;
+                update_temp_pic();
                 break;
             case "ArrowDown":
                 x2down = false;
+                update_temp_pic();
                 break;
             case "a":
                 b1up = false;
@@ -8040,6 +8044,8 @@ function change_big_pic(all_zones) {
 }
 
 function update_temp_pic() {
+    const high_res = (dimensions()[0] != 1 && dimensions()[1] != 1 || !isMouseDown && !x1up && !x1down && !x2up && !x2down) && !dragging_temp && 
+                     !draggingB1 && !draggingB2 && !b1up && !b1down && !b2up && !b2down && b1V == 0 && b2V == 0;
     const foreign_object = document.getElementById("foreign-object-temp-pic");
     const temp_pic_canvas = document.getElementById("temp-pic-canvas");
     const temp_pic = document.getElementById("temp-pic");
@@ -8047,25 +8053,30 @@ function update_temp_pic() {
     temp_pic_canvas.height = temp_pic.height.baseVal.value;
     foreign_object.width.baseVal.value = temp_pic.width.baseVal.value;
     foreign_object.height.baseVal.value = temp_pic.height.baseVal.value;
+    const pixel_size = Math.ceil(temp_pic_canvas.width/20);
+    if (pixel_size == 0) return;
+
     const ctx = temp_pic_canvas.getContext("2d");
     const imageData = ctx.getImageData(0, 0, temp_pic_canvas.width, temp_pic_canvas.height);
     const data = imageData.data;
+    let color;
     for (let i = 0; i < temp_pic_canvas.width; i++) {
         for (let j = 0; j < temp_pic_canvas.height; j++) {
-            let color = [];
-            const t1 = (i+0.5) / temp_pic_canvas.width * 6;
-            const t2 = (1 - (j+0.5) / temp_pic_canvas.height) * 6;
-            const new_game = game.copy();
-            if (game.zone_row == 0 && t1 > 3 || game.zone_row == 1 && t1 < 3) new_game.crossTan(true);
-            if (game.zone_col == 0 && t2 > 3 || game.zone_col == 1 && t2 < 3) new_game.crossTan(false);
-            new_game.t1 = t1;
-            new_game.t2 = t2;
-            if (viewMode == 12) {
-                color = [255,255,255];
-            } else {
-                if (viewMode == 0) color = new_game.equilibrium_color;
-                else if (viewMode == 11) color = new_game.quadrant_color;
-                else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+            if (high_res || j % pixel_size == 0) {
+                const t1 = (i+0.5) / temp_pic_canvas.width * 6;
+                const t2 = (1 - (j+0.5) / temp_pic_canvas.height) * 6;
+                const new_game = game.copy();
+                if (game.zone_row == 0 && t1 > 3 || game.zone_row == 1 && t1 < 3) new_game.crossTan(true);
+                if (game.zone_col == 0 && t2 > 3 || game.zone_col == 1 && t2 < 3) new_game.crossTan(false);
+                new_game.t1 = t1;
+                new_game.t2 = t2;
+                if (viewMode == 12) {
+                    color = [255,255,255];
+                } else {
+                    if (viewMode == 0) color = new_game.equilibrium_color;
+                    else if (viewMode == 11) color = new_game.quadrant_color;
+                    else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+                }
             }
             // color = colorFunction(new_game.quad_temp,viewMode);
             data[(i+j*temp_pic_canvas.width)*4] = color[0];
