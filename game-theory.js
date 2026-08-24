@@ -8094,6 +8094,8 @@ function update_temp_pic() {
     // circle.cy.baseVal.value = (1-game.t2/6)*temp_pic_canvas.height;
 }
 
+// add numbers to main pic
+// add lines to temp pic
 
 // bugs
 // sometimes switching from blue to temp changes the game
