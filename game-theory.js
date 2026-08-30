@@ -1672,10 +1672,10 @@ function init() {
     corner4.r.baseVal.value = lineWidth*width/2;
 
     // Initialize blue lines
-    const blueLine1 = document.getElementById("blue-line-1");
-    const blueLine2 = document.getElementById("blue-line-2");
-    const blueLine3 = document.getElementById("blue-line-3");
-    const blueLine4 = document.getElementById("blue-line-4");
+    // const blueLine1 = document.getElementById("blue-line-1");
+    // const blueLine2 = document.getElementById("blue-line-2");
+    // const blueLine3 = document.getElementById("blue-line-3");
+    // const blueLine4 = document.getElementById("blue-line-4");
     const blueCorner1 = document.getElementById("blue-corner-1");
     const blueCorner2 = document.getElementById("blue-corner-2");
     const blueCorner3 = document.getElementById("blue-corner-3");
@@ -1683,10 +1683,10 @@ function init() {
     const blueCorner5 = document.getElementById("blue-corner-5");
     const redSemicircle = document.getElementById("red-semicircle");
     const blueSemicircle = document.getElementById("blue-semicircle");
-    blueLine1.style.stroke = "black";
-    blueLine2.style.stroke = "black";
-    blueLine3.style.stroke = "black";
-    blueLine4.style.stroke = "black";
+    // blueLine1.style.stroke = "black";
+    // blueLine2.style.stroke = "black";
+    // blueLine3.style.stroke = "black";
+    // blueLine4.style.stroke = "black";
     blueCorner1.style.fill = "blue";
     blueCorner2.style.fill = "blue";
     blueCorner3.style.fill = "blue";
@@ -5310,10 +5310,10 @@ function changeCoords(e) {
         const blueCorner3 = document.getElementById("blue-corner-3");
         const blueCorner4 = document.getElementById("blue-corner-4");
         const blueCorner5 = document.getElementById("blue-corner-5");
-        const blueLine1 = document.getElementById("blue-line-1");
-        const blueLine2 = document.getElementById("blue-line-2");
-        const blueLine3 = document.getElementById("blue-line-3");
-        const blueLine4 = document.getElementById("blue-line-4");
+        // const blueLine1 = document.getElementById("blue-line-1");
+        // const blueLine2 = document.getElementById("blue-line-2");
+        // const blueLine3 = document.getElementById("blue-line-3");
+        // const blueLine4 = document.getElementById("blue-line-4");
         const elements = document.elementsFromPoint(x,y);
         if (!fixImageSize) {
             if (elements.includes(blueCorner1)) {
@@ -5332,15 +5332,16 @@ function changeCoords(e) {
                 draggingB1 = true; draggingB2 = true;
                 game.zone = 4;
                 updateBackground();
-            } else if (elements.includes(blueLine1)) {
-                draggingB1 = true;
-            } else if (elements.includes(blueLine2)) {
-                draggingB2 = true;
-            } else if (elements.includes(blueLine3)) {
-                draggingB1 = true;
-            } else if (elements.includes(blueLine4)) {
-                draggingB2 = true;
             }
+            // else if (elements.includes(blueLine1)) {
+            //     draggingB1 = true;
+            // } else if (elements.includes(blueLine2)) {
+            //     draggingB2 = true;
+            // } else if (elements.includes(blueLine3)) {
+            //     draggingB1 = true;
+            // } else if (elements.includes(blueLine4)) {
+            //     draggingB2 = true;
+            // }
         } else {
             if (elements.includes(blueCorner1) || (elements.includes(blueLine2) && dimensions()[0] == 1 && dimensions()[1] == 1)) {
                 draggingB2 = true;
@@ -6878,10 +6879,10 @@ function updateBlueLines() {
     const picPadding1 = game.zone_row == 0 ? diagramWidth/2 : containerWidth-diagramWidth/2-picWidth;
     const picPadding2 = game.zone_col == 1 ? diagramWidth/2 : container.height.baseVal.value-diagramWidth/2-picHeight;
 
-    const blueLine1 = document.getElementById("blue-line-1");
-    const blueLine2 = document.getElementById("blue-line-2");
-    const blueLine3 = document.getElementById("blue-line-3");
-    const blueLine4 = document.getElementById("blue-line-4");
+    // const blueLine1 = document.getElementById("blue-line-1");
+    // const blueLine2 = document.getElementById("blue-line-2");
+    // const blueLine3 = document.getElementById("blue-line-3");
+    // const blueLine4 = document.getElementById("blue-line-4");
     const blueCorner1 = document.getElementById("blue-corner-1");
     const blueCorner2 = document.getElementById("blue-corner-2");
     const blueCorner3 = document.getElementById("blue-corner-3");
@@ -6895,18 +6896,18 @@ function updateBlueLines() {
     const blueLinePadding2 = game.zone_col == 1 ? diagramWidth/2 : container.height.baseVal.value-diagramWidth/2-picHeight;
 
     if (!useAltSchema) {
-        blueLine1.x1.baseVal.value = picWidth + picPadding1 + blueLinePadding;
-        blueLine1.y1.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
-        blueLine1.x2.baseVal.value = picWidth + picPadding1 + blueLinePadding;
-        blueLine1.y2.baseVal.value = blueLinePadding2;
-        blueLine2.x1.baseVal.value = blueLineWidth + blueLinePadding1 + blueLinePadding;
-        blueLine2.y1.baseVal.value = picHeight + picPadding2 + blueLinePadding;
-        blueLine2.x2.baseVal.value = blueLinePadding1;
-        blueLine2.y2.baseVal.value = picHeight + picPadding2 + blueLinePadding;
+        // blueLine1.x1.baseVal.value = picWidth + picPadding1 + blueLinePadding;
+        // blueLine1.y1.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
+        // blueLine1.x2.baseVal.value = picWidth + picPadding1 + blueLinePadding;
+        // blueLine1.y2.baseVal.value = blueLinePadding2;
+        // blueLine2.x1.baseVal.value = blueLineWidth + blueLinePadding1 + blueLinePadding;
+        // blueLine2.y1.baseVal.value = picHeight + picPadding2 + blueLinePadding;
+        // blueLine2.x2.baseVal.value = blueLinePadding1;
+        // blueLine2.y2.baseVal.value = picHeight + picPadding2 + blueLinePadding;
         blueCorner1.cx.baseVal.value = picWidth + picPadding1 + blueLinePadding;
         blueCorner1.cy.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
-        blueLine3.style.display = "none";
-        blueLine4.style.display = "none";
+        // blueLine3.style.display = "none";
+        // blueLine4.style.display = "none";
         blueCorner1.style.display = "";
         blueCorner3.style.display = "none";
         blueCorner4.style.display = "none";
@@ -6914,6 +6915,56 @@ function updateBlueLines() {
         redSemicircle.style.display = "none";
         blueSemicircle.style.display = "none";
     } else {
+        if (dimensions()[0] > 0.1) {
+            for (let i = 1; i <= 6; i++) {
+                const label_top = document.getElementById("col-label-top-"+i.toString());
+                label_top.setAttribute("x",picWidth*(i-0.5)/6 + picPadding1);
+                label_top.setAttribute("y",picPadding2 - blueLinePadding);
+                label_top.innerHTML = (i + game.offset + 3) % 6 + 1;
+                label_top.style.display = "";
+            }
+            for (let i = 1; i <= 6; i++) {
+                const label_bottom = document.getElementById("col-label-bottom-"+i.toString());
+                label_bottom.setAttribute("x",picWidth*(i-0.5)/6 + picPadding1);
+                label_bottom.setAttribute("y",picHeight + picPadding2 + blueLinePadding);
+                label_bottom.innerHTML = (i + game.offset + 3) % 6 + 1;
+                label_bottom.style.display = "";
+            }
+        } else {
+            for (let i = 1; i <= 6; i++) {
+                const label_top = document.getElementById("col-label-top-"+i.toString());
+                label_top.style.display = "none";
+            }
+            for (let i = 1; i <= 6; i++) {
+                const label_bottom = document.getElementById("col-label-bottom-"+i.toString());
+                label_bottom.style.display = "none";
+            }
+        }
+        if (dimensions()[1] > 0.1) {
+            for (let i = 1; i <= 6; i++) {
+                const label_left = document.getElementById("row-label-left-"+i.toString());
+                label_left.setAttribute("x",picPadding1 - blueLinePadding);
+                label_left.setAttribute("y",picHeight*(i-0.5)/6 + picPadding2);
+                label_left.innerHTML = (10 - i + game.offset) % 6 + 1;
+                label_left.style.display = "";
+            }
+            for (let i = 1; i <= 6; i++) {
+                const label_right = document.getElementById("row-label-right-"+i.toString());
+                label_right.setAttribute("x",picWidth + picPadding1 + blueLinePadding);
+                label_right.setAttribute("y",picHeight*(i-0.5)/6 + picPadding2);
+                label_right.innerHTML = (10 - i + game.offset) % 6 + 1;
+                label_right.style.display = "";
+            }
+        } else {
+            for (let i = 1; i <= 6; i++) {
+                const label_left = document.getElementById("row-label-left-"+i.toString());
+                label_left.style.display = "none";
+            }
+            for (let i = 1; i <= 6; i++) {
+                const label_right = document.getElementById("row-label-right-"+i.toString());
+                label_right.style.display = "none";
+            }
+        }
         // if (game.t1 > 3 && game.t2 > 3) game.zone = 3;
         // else if (game.t1 < 3 && game.t2 > 3) game.zone = 4;
         // else if (game.t1 > 3 && game.t2 < 3) game.zone = 2;
@@ -6924,38 +6975,38 @@ function updateBlueLines() {
         blueCorner5.style.display = (game.zone == 4 || game.t1 == 3 && game.t2 == 3 || game.zone == 3 && game.t1 == 3 || game.zone == 1 && game.t2 == 3) ? "" : "none";
         redSemicircle.style.display = (game.zone == 2 || game.t1 == 3 && game.t2 == 3 || game.zone == 1 && game.t1 == 3 || game.zone == 3 && game.t2 == 3) ? "" : "none";
         blueSemicircle.style.display = (game.zone == 4 || game.t1 == 3 && game.t2 == 3 || game.zone == 3 && game.t1 == 3 || game.zone == 1 && game.t2 == 3) ? "" : "none";
-        blueLine1.style.display = (game.zone == 1 || game.zone == 4 || game.t1 == 3) ? "" : "none";
-        blueLine2.style.display = (game.zone == 3 || game.zone == 4 || game.t2 == 3) ? "" : "none";
-        blueLine3.style.display = (game.zone == 2 || game.zone == 3 || game.t1 == 3) ? "" : "none";
-        blueLine4.style.display = (game.zone == 1 || game.zone == 2 || game.t2 == 3) ? "" : "none";
-        blueLine1.x1.baseVal.value = picWidth + picPadding1 + blueLinePadding;
-        blueLine1.y1.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
-        blueLine1.x2.baseVal.value = picWidth + picPadding1 + blueLinePadding;
-        blueLine1.y2.baseVal.value = blueLinePadding2 - blueLinePadding;
-        blueLine2.x1.baseVal.value = blueLineWidth + blueLinePadding1 + blueLinePadding;
-        blueLine2.y1.baseVal.value = picHeight + picPadding2 + blueLinePadding;
-        blueLine2.x2.baseVal.value = blueLinePadding1 - blueLinePadding;
-        blueLine2.y2.baseVal.value = picHeight + picPadding2 + blueLinePadding;
-        blueLine3.x1.baseVal.value = picPadding1 - blueLinePadding;
-        blueLine3.y1.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
-        blueLine3.x2.baseVal.value = picPadding1 - blueLinePadding;
-        blueLine3.y2.baseVal.value = blueLinePadding2 - blueLinePadding;
-        blueLine4.x1.baseVal.value = blueLineWidth + blueLinePadding1 + blueLinePadding;
-        blueLine4.y1.baseVal.value = picPadding2 - blueLinePadding;
-        blueLine4.x2.baseVal.value = blueLinePadding1 - blueLinePadding;
-        blueLine4.y2.baseVal.value = picPadding2 - blueLinePadding;
+        // blueLine1.style.display = (game.zone == 1 || game.zone == 4 || game.t1 == 3) ? "" : "none";
+        // blueLine2.style.display = (game.zone == 3 || game.zone == 4 || game.t2 == 3) ? "" : "none";
+        // blueLine3.style.display = (game.zone == 2 || game.zone == 3 || game.t1 == 3) ? "" : "none";
+        // blueLine4.style.display = (game.zone == 1 || game.zone == 2 || game.t2 == 3) ? "" : "none";
+        // blueLine1.x1.baseVal.value = picWidth + picPadding1 + blueLinePadding;
+        // blueLine1.y1.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
+        // blueLine1.x2.baseVal.value = picWidth + picPadding1 + blueLinePadding;
+        // blueLine1.y2.baseVal.value = blueLinePadding2 - blueLinePadding;
+        // blueLine2.x1.baseVal.value = blueLineWidth + blueLinePadding1 + blueLinePadding;
+        // blueLine2.y1.baseVal.value = picHeight + picPadding2 + blueLinePadding;
+        // blueLine2.x2.baseVal.value = blueLinePadding1 - blueLinePadding;
+        // blueLine2.y2.baseVal.value = picHeight + picPadding2 + blueLinePadding;
+        // blueLine3.x1.baseVal.value = picPadding1 - blueLinePadding;
+        // blueLine3.y1.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
+        // blueLine3.x2.baseVal.value = picPadding1 - blueLinePadding;
+        // blueLine3.y2.baseVal.value = blueLinePadding2 - blueLinePadding;
+        // blueLine4.x1.baseVal.value = blueLineWidth + blueLinePadding1 + blueLinePadding;
+        // blueLine4.y1.baseVal.value = picPadding2 - blueLinePadding;
+        // blueLine4.x2.baseVal.value = blueLinePadding1 - blueLinePadding;
+        // blueLine4.y2.baseVal.value = picPadding2 - blueLinePadding;
         blueCorner1.cx.baseVal.value = picWidth + picPadding1 + blueLinePadding;
-        blueCorner1.cy.baseVal.value = blueLinePadding2 - blueLinePadding;
+        blueCorner1.cy.baseVal.value = picPadding2 - blueLinePadding;
         blueCorner3.cx.baseVal.value = picPadding1 - blueLinePadding;
-        blueCorner3.cy.baseVal.value = blueLinePadding2 - blueLinePadding;
+        blueCorner3.cy.baseVal.value = picPadding2 - blueLinePadding;
         blueCorner4.cx.baseVal.value = picPadding1 - blueLinePadding;
-        blueCorner4.cy.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
+        blueCorner4.cy.baseVal.value = blueLineHeight + picPadding2 + blueLinePadding;
         blueCorner5.cx.baseVal.value = picWidth + picPadding1 + blueLinePadding;
-        blueCorner5.cy.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
+        blueCorner5.cy.baseVal.value = blueLineHeight + picPadding2 + blueLinePadding;
         redSemicircle.x.baseVal.value = picPadding1 - blueLinePadding - 10;
-        redSemicircle.y.baseVal.value = blueLinePadding2 - blueLinePadding - 10;
+        redSemicircle.y.baseVal.value = picPadding2 - blueLinePadding - 10;
         blueSemicircle.x.baseVal.value = picWidth + picPadding1 + blueLinePadding - 10;
-        blueSemicircle.y.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding - 10;
+        blueSemicircle.y.baseVal.value = blueLineHeight + picPadding2 + blueLinePadding - 10;
     }
     // blueCorner3.cx.baseVal.value = picWidth + picPadding1 + blueLinePadding;
     // blueCorner3.cy.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
@@ -6976,18 +7027,18 @@ function updateBlueLines() {
         blueCorner2.cx.baseVal.value = blueLineWidth + blueLinePadding1 + blueLinePadding;
         blueCorner2.cy.baseVal.value = picHeight + picPadding2 + blueLinePadding;
         if (dimensions()[0] == 1 && dimensions()[1] == 1) {
-            blueLine1.style.cursor = "ew-resize";
-            blueLine2.style.cursor = "ns-resize";
+            // blueLine1.style.cursor = "ew-resize";
+            // blueLine2.style.cursor = "ns-resize";
             blueCorner1.style.cursor = "all-scroll";
         } else {
-            blueLine1.style.cursor = "auto";
-            blueLine2.style.cursor = "auto";
+            // blueLine1.style.cursor = "auto";
+            // blueLine2.style.cursor = "auto";
             blueCorner1.style.cursor = "ns-resize";
         }
     } else {
         blueCorner2.style.display = "none";
-        blueLine1.style.cursor = "ew-resize";
-        blueLine2.style.cursor = "ns-resize";
+        // blueLine1.style.cursor = "ew-resize";
+        // blueLine2.style.cursor = "ns-resize";
         blueCorner1.style.cursor = "all-scroll";
     }
 }
