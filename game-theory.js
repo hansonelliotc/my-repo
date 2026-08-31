@@ -5423,10 +5423,10 @@ function changeCoords(e) {
             //     draggingB2 = true;
             // }
         } else {
-            if (elements.includes(blueCorner1) || (elements.includes(blueLine2) && dimensions()[0] == 1 && dimensions()[1] == 1)) {
+            if (elements.includes(blueCorner1)) {
                 draggingB2 = true;
             }
-            if (elements.includes(blueCorner2) || (elements.includes(blueLine1) && dimensions()[0] == 1 && dimensions()[1] == 1)) {
+            if (elements.includes(blueCorner2)) {
                 draggingB1 = true;
             }
         }
@@ -8346,8 +8346,15 @@ function update_temp_pic() {
     // circle.cy.baseVal.value = (1-game.t2/6)*temp_pic_canvas.height;
 }
 
-// add numbers to main pic
-// add lines to temp pic
+// renumber column's cells
+// print current return value
+// print cool/warm next to the big pic
+// allow for right clicking to show differences
+// mixing competitive strategies
+// show orbits
+// fix big diagram movement
+// remove dots when not on the mild slice
+// make global picture the default?
 
 // bugs
 // sometimes switching from blue to temp changes the game
