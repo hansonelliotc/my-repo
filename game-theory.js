@@ -1104,6 +1104,86 @@ class Game {
         return this.#col_tu_tp_return;
     }
 
+    get row_random_return() {
+        return (this.row_matrix[0] + this.row_matrix[1] + this.row_matrix[2] + this.row_matrix[3]) / 4;
+    }
+
+    get col_random_return() {
+        return (this.col_matrix[0] + this.col_matrix[1] + this.col_matrix[2] + this.col_matrix[3]) / 4;
+    }
+
+    get row_max_mean_return() {
+        if (this.row_matrix[0]+this.row_matrix[1] > this.row_matrix[2]+this.row_matrix[3]) {
+            if (this.col_matrix[0]+this.col_matrix[2] > this.col_matrix[1]+this.col_matrix[3]) {
+                return this.row_matrix[0];
+            } else {
+                return this.row_matrix[1];
+            }
+        } else {
+            if (this.col_matrix[0]+this.col_matrix[2] > this.col_matrix[1]+this.col_matrix[3]) {
+                return this.row_matrix[2];
+            } else {
+                return this.row_matrix[3];
+            }
+        }
+    }
+
+    get col_max_mean_return() {
+        if (this.row_matrix[0]+this.row_matrix[1] > this.row_matrix[2]+this.row_matrix[3]) {
+            if (this.col_matrix[0]+this.col_matrix[2] > this.col_matrix[1]+this.col_matrix[3]) {
+                return this.col_matrix[0];
+            } else {
+                return this.col_matrix[1];
+            }
+        } else {
+            if (this.col_matrix[0]+this.col_matrix[2] > this.col_matrix[1]+this.col_matrix[3]) {
+                return this.col_matrix[2];
+            } else {
+                return this.col_matrix[3];
+            }
+        }
+    }
+
+    get row_first_return() {
+        const row_1_result = this.col_matrix[0] > this.col_matrix[1] ? 0 : 1;
+        const row_2_result = this.col_matrix[2] > this.col_matrix[3] ? 2 : 3;
+        if (this.row_ranks[row_1_result] > this.row_ranks[row_2_result]) {
+            return this.row_matrix[row_1_result];
+        } else {
+            return this.row_matrix[row_2_result];
+        }
+    }
+
+    get col_second_return() {
+        const row_1_result = this.col_matrix[0] > this.col_matrix[1] ? 0 : 1;
+        const row_2_result = this.col_matrix[2] > this.col_matrix[3] ? 2 : 3;
+        if (this.row_ranks[row_1_result] > this.row_ranks[row_2_result]) {
+            return this.col_matrix[row_1_result];
+        } else {
+            return this.col_matrix[row_2_result];
+        }
+    }
+
+    get col_first_return() {
+        const col_1_result = this.row_matrix[0] > this.row_matrix[2] ? 0 : 2;
+        const col_2_result = this.row_matrix[1] > this.row_matrix[3] ? 1 : 3;
+        if (this.col_ranks[col_1_result] > this.col_ranks[col_2_result]) {
+            return this.col_matrix[col_1_result];
+        } else {
+            return this.col_matrix[col_2_result];
+        }
+    }
+
+    get row_second_return() {
+        const col_1_result = this.row_matrix[0] > this.row_matrix[2] ? 0 : 2;
+        const col_2_result = this.row_matrix[1] > this.row_matrix[3] ? 1 : 3;
+        if (this.col_ranks[col_1_result] > this.col_ranks[col_2_result]) {
+            return this.row_matrix[col_1_result];
+        } else {
+            return this.row_matrix[col_2_result];
+        }
+    }
+
     // get balanced1() {
     //     if (this.#balanced1 === undefined) {
     //         let y1 = Math.floor(this.#x1/2)*2;
@@ -5488,21 +5568,22 @@ function changeCoords(e) {
             if (relativeX < 0.49) {
                 if (game.t1 > 3) game.t1 = 6 - game.t1;
                 game.zone_row = 0;
-                relativeX = relativeX*2;
+                relativeX = (relativeX+0.02)*2;
             } else if (relativeX > 0.51) {
                 if (game.t1 < 3) game.t1 = 6 - game.t1;
                 game.zone_row = 1;
-                relativeX = (relativeX-0.5)*2;
+                relativeX = (relativeX-0.5-0.02)*2;
             }
             if (relativeY > 0.51) {
                 if (game.t2 > 3) game.t2 = 6 - game.t2;
                 game.zone_col = 0;
-                relativeY = (relativeY-0.5)*2;
+                relativeY = (relativeY-0.5-0.02)*2;
             } else if (relativeY < 0.49) {
                 if (game.t2 < 3) game.t2 = 6 - game.t2;
                 game.zone_col = 1;
-                relativeY = relativeY*2;
+                relativeY = (relativeY+0.02)*2;
             }
+            console.log(relativeX);
         }
 
         if (0.02 <= relativeX && relativeX <= 0.48 && 0.02 <= relativeY && relativeY <= 0.48) {
@@ -5698,22 +5779,28 @@ function placePoint(point, q, x1, x2, zone) {
     const zone_row = zone == 1 || zone == 4 || !show_all_zones ? 0 : 1;
     const zone_col = zone == 3 || zone == 4 || !show_all_zones ? 1 : 0;
     const grid_size = show_all_zones ? 4 : 2;
+    let offsetX = 0; // offset due to the gap between the zones
+    let offsetY = 0;
+    if (show_all_zones) {
+        offsetX = zone_row == 0 ? -0.02 : 0.02;
+        offsetY = zone_col == 0 ? 0.02 : -0.02;
+    }
     switch (q) {
         case 1:
-            point.cx.baseVal.value = ((0.54 + x1/6*0.42)/grid_size*2+zone_row/2)*bigPictureWidth;
-            point.cy.baseVal.value = ((0.46 - x2/6*0.42)/grid_size*2+0.5-zone_col/2)*bigPictureWidth;
+            point.cx.baseVal.value = ((0.54 + x1/6*0.42)/grid_size*2+zone_row/2+offsetX)*bigPictureWidth;
+            point.cy.baseVal.value = ((0.46 - x2/6*0.42)/grid_size*2+0.5-zone_col/2+offsetY)*bigPictureWidth;
             break;
         case 2:
-            point.cx.baseVal.value = ((0.04 + x1/6*0.42)/grid_size*2+zone_row/2)*bigPictureWidth;
-            point.cy.baseVal.value = ((0.46 - x2/6*0.42)/grid_size*2+0.5-zone_col/2)*bigPictureWidth;
+            point.cx.baseVal.value = ((0.04 + x1/6*0.42)/grid_size*2+zone_row/2+offsetX)*bigPictureWidth;
+            point.cy.baseVal.value = ((0.46 - x2/6*0.42)/grid_size*2+0.5-zone_col/2+offsetY)*bigPictureWidth;
             break;
         case 3:
-            point.cx.baseVal.value = ((0.04 + x1/6*0.42)/grid_size*2+zone_row/2)*bigPictureWidth;
-            point.cy.baseVal.value = ((0.96 - x2/6*0.42)/grid_size*2+0.5-zone_col/2)*bigPictureWidth;
+            point.cx.baseVal.value = ((0.04 + x1/6*0.42)/grid_size*2+zone_row/2+offsetX)*bigPictureWidth;
+            point.cy.baseVal.value = ((0.96 - x2/6*0.42)/grid_size*2+0.5-zone_col/2+offsetY)*bigPictureWidth;
             break;
         case 4:
-            point.cx.baseVal.value = ((0.54 + x1/6*0.42)/grid_size*2+zone_row/2)*bigPictureWidth;
-            point.cy.baseVal.value = ((0.96 - x2/6*0.42)/grid_size*2+0.5-zone_col/2)*bigPictureWidth;
+            point.cx.baseVal.value = ((0.54 + x1/6*0.42)/grid_size*2+zone_row/2+offsetX)*bigPictureWidth;
+            point.cy.baseVal.value = ((0.96 - x2/6*0.42)/grid_size*2+0.5-zone_col/2+offsetY)*bigPictureWidth;
             break;
     }
 }
@@ -5995,6 +6082,18 @@ function payoffCustom(game) {
         value1 = returns(game,9,false);
     } else if (choice1 == "threat-point-col") {
         value1 = returns(game,10,false);
+    } else if (choice1 == "returns-mixed") {
+        value1 = returns(game,13,true);
+    } else if (choice1 == "returns-mixed-col") {
+        value1 = returns(game,13,false);
+    } else if (choice1 == "returns-row-first") {
+        value1 = returns(game,14,true);
+    } else if (choice1 == "returns-row-first-col") {
+        value1 = returns(game,14,false);
+    } else if (choice1 == "returns-col-first") {
+        value1 = returns(game,15,true);
+    } else if (choice1 == "returns-col-first-col") {
+        value1 = returns(game,15,false);
     }
 
     if (choice2 == "returns") {
@@ -6027,6 +6126,18 @@ function payoffCustom(game) {
         value2 = returns(game,9,false);
     } else if (choice2 == "threat-point-col") {
         value2 = returns(game,10,false);
+    } else if (choice2 == "returns-mixed") {
+        value2 = returns(game,13,true);
+    } else if (choice2 == "returns-mixed-col") {
+        value2 = returns(game,13,false);
+    } else if (choice2 == "returns-row-first") {
+        value2 = returns(game,14,true);
+    } else if (choice2 == "returns-row-first-col") {
+        value2 = returns(game,14,false);
+    } else if (choice2 == "returns-col-first") {
+        value2 = returns(game,15,true);
+    } else if (choice2 == "returns-col-first-col") {
+        value2 = returns(game,15,false);
     }
     return (value1 - value2)/12+1/2;
 }
@@ -6172,6 +6283,26 @@ function changeViewMode(mode, player1=true) {
                 document.getElementById("none-mode").classList.add("selected");
                 document.getElementById("view-mode-label").innerHTML = "No background";
                 break;
+            case 13:
+                document.getElementById("return-mode-1").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's equilibrium returns (using mixed)";
+                break;
+            case 14:
+                document.getElementById("row-first-mode").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's return when row plays first";
+                break;
+            case 15:
+                document.getElementById("col-first-mode").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's return when column plays first";
+                break;
+            case 16:
+                document.getElementById("random-mode").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's return when play is random";
+                break;
+            case 17:
+                document.getElementById("max-mean-mode").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Row's return when players opt for greatest mean";
+                break;
         }
     } else {
         switch (mode) {
@@ -6197,11 +6328,31 @@ function changeViewMode(mode, player1=true) {
                 break;
             case 9:
                 document.getElementById("backstop-col").classList.add("selected");
-                document.getElementById("view-mode-label").innerHTML = "Row's backstop";
+                document.getElementById("view-mode-label").innerHTML = "Column's backstop";
                 break;
             case 10:
                 document.getElementById("threat-point-col").classList.add("selected");
-                document.getElementById("view-mode-label").innerHTML = "Row's threat point";
+                document.getElementById("view-mode-label").innerHTML = "Column's threat point";
+                break;
+            case 13:
+                document.getElementById("return-mode-1-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Column's equilibrium returns (using mixed)";
+                break;
+            case 14:
+                document.getElementById("row-first-mode-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Column's return when row plays first";
+                break;
+            case 15:
+                document.getElementById("col-first-mode-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Column's return when column plays first";
+                break;
+            case 16:
+                document.getElementById("random-mode-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Column's return when play is random";
+                break;
+            case 17:
+                document.getElementById("max-mean-mode-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Column's return when players opt for greatest mean";
                 break;
         }
     }
@@ -6260,8 +6411,12 @@ function updateBigPicCanvas(lowRes = false) {
                         else if (viewMode == 11) color = new_game.quadrant_color;
                         else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
                     }
-                    const x = i + Math.round(canvasBigPic.width*((0.08+col)/grid_size));
-                    const y = j + Math.round(canvasBigPic.height*((0.08+row)/grid_size));
+                    let x = i + Math.round(canvasBigPic.width*((0.08+col)/grid_size));
+                    let y = j + Math.round(canvasBigPic.height*((0.08+row)/grid_size));
+                    if (grid_size == 4) {
+                        x += Math.round(canvasBigPic.width*0.02) * (col < 2 ? -1 : 1);
+                        y += Math.round(canvasBigPic.height*0.02) * (row < 2 ? -1 : 1);
+                    }
                     data[(x+y*canvasBigPic.width)*4] = color[0];
                     data[(x+y*canvasBigPic.width)*4+1] = color[1];
                     data[(x+y*canvasBigPic.width)*4+2] = color[2];
@@ -7749,6 +7904,42 @@ function returns(game, mode, row_player) {
                         return game.threat_point_2[1];
                 }
             }
+        case 13:
+            if (row_player) {
+                if (game.row_mixed_return == null)
+                    return game.row_equilibrium_return;
+                else
+                    return game.row_mixed_return;
+            } else {
+                if (game.col_mixed_return == null)
+                    return game.col_equilibrium_return;
+                else
+                    return game.col_mixed_return;
+            }
+        case 14:
+            if (row_player) {
+                return game.row_first_return;
+            } else {
+                return game.col_second_return;
+            }
+        case 15:
+            if (row_player) {
+                return game.row_second_return;
+            } else {
+                return game.col_first_return;
+            }
+        case 16:
+            if (row_player) {
+                return game.row_random_return;
+            } else {
+                return game.col_random_return;
+            }
+        case 17:
+            if (row_player) {
+                return game.row_max_mean_return;
+            } else {
+                return game.col_max_mean_return;
+            }
     }
 }
 
@@ -8124,14 +8315,16 @@ function update_temp_pic() {
             if (high_res || j % pixel_size == 0) {
                 const t1 = (i+0.5) / temp_pic_canvas.width * 6;
                 const t2 = (1 - (j+0.5) / temp_pic_canvas.height) * 6;
-                const new_game = game.copy();
-                if (game.zone_row == 0 && t1 > 3 || game.zone_row == 1 && t1 < 3) new_game.crossTan(true);
-                if (game.zone_col == 0 && t2 > 3 || game.zone_col == 1 && t2 < 3) new_game.crossTan(false);
-                new_game.t1 = t1;
-                new_game.t2 = t2;
-                if (viewMode == 12) {
+                if (Math.abs(t1 - 3) < 0.05 || Math.abs(t2 - 3) < 0.05) {
+                    color = [0,0,0];
+                } else if (viewMode == 12) {
                     color = [255,255,255];
                 } else {
+                    const new_game = game.copy();
+                    if (game.zone_row == 0 && t1 > 3 || game.zone_row == 1 && t1 < 3) new_game.crossTan(true);
+                    if (game.zone_col == 0 && t2 > 3 || game.zone_col == 1 && t2 < 3) new_game.crossTan(false);
+                    new_game.t1 = t1;
+                    new_game.t2 = t2;
                     if (viewMode == 0) color = new_game.equilibrium_color;
                     else if (viewMode == 11) color = new_game.quadrant_color;
                     else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);

@@ -115,12 +115,18 @@
 				<button class="mode-button" id="coordination-mode" onclick="changeViewMode(7)">Correlation</button>
 				<!-- <div style="padding:1vh"></div> -->
 				<h2>Returns to Row Player</h2>
-				<span><button class="third-mode-button" id="return-mode-2" onclick="changeViewMode(1)">Equilibrium</button></span><span><button class="third-mode-button" id="backstop-row" onclick="changeViewMode(9)">Backstop</button></span><span><button class="third-mode-button" id="threat-point-row" onclick="changeViewMode(10)">Threat point</button></span>
+				<span><button class="half-mode-button" id="return-mode-2" onclick="changeViewMode(1)">Equilibrium</button></span><span><button class="half-mode-button" id="return-mode-1" onclick="changeViewMode(13)">Equilibrium (mixed)</button></span>
+				<span><button class="half-mode-button" id="row-first-mode" onclick="changeViewMode(14)">Row first</button></span><span><button class="half-mode-button" id="col-first-mode" onclick="changeViewMode(15)">Column first</button></span>
+				<span><button class="half-mode-button" id="random-mode" onclick="changeViewMode(16)">Random</button></span><span><button class="half-mode-button" id="max-mean-mode" onclick="changeViewMode(17)">Max mean</button></span>
+				<span><button class="half-mode-button" id="backstop-row" onclick="changeViewMode(9)">Backstop</button></span><span><button class="half-mode-button" id="threat-point-row" onclick="changeViewMode(10)">Threat point</button></span>
 				<span><button class="half-mode-button" id="bargaining-mode-1" onclick="changeViewMode(2)">Backstop NTU</button></span><span><button class="half-mode-button" id="bargaining-mode-2" onclick="changeViewMode(3)">Threat point NTU</button></span>
 				<span><button class="half-mode-button" id="shapley-mode" onclick="changeViewMode(4)">Backstop TU</button></span><span><button class="half-mode-button" id="coco-mode" onclick="changeViewMode(5)">Threat point TU</button></span>
 				<!-- <div style="padding:1vh"></div> -->
 				<h2>Returns to Column Player</h2>
-				<span><button class="third-mode-button" id="return-mode-2-col" onclick="changeViewMode(1,false)">Equilibrium</button></span><span><button class="third-mode-button" id="backstop-col" onclick="changeViewMode(9,false)">Backstop</button></span><span><button class="third-mode-button" id="threat-point-col" onclick="changeViewMode(10,false)">Threat point</button></span>
+				<span><button class="half-mode-button" id="return-mode-2-col" onclick="changeViewMode(1,false)">Equilibrium</button></span><span><button class="half-mode-button" id="return-mode-1-col" onclick="changeViewMode(13,false)">Equilibrium (mixed)</button></span>
+				<span><button class="half-mode-button" id="row-first-mode-col" onclick="changeViewMode(14,false)">Row first</button></span><span><button class="half-mode-button" id="col-first-mode-col" onclick="changeViewMode(15,false)">Column first</button></span>
+				<span><button class="half-mode-button" id="random-mode-col" onclick="changeViewMode(16,false)">Random</button></span><span><button class="half-mode-button" id="max-mean-mode-col" onclick="changeViewMode(17,false)">Max mean</button></span>
+				<span><button class="half-mode-button" id="backstop-col" onclick="changeViewMode(9,false)">Backstop</button></span><span><button class="half-mode-button" id="threat-point-col" onclick="changeViewMode(10,false)">Threat point</button></span>
 				<span><button class="half-mode-button" id="bargaining-mode-1-col" onclick="changeViewMode(2,false)">Backstop NTU</button></span><span><button class="half-mode-button" id="bargaining-mode-2-col" onclick="changeViewMode(3,false)">Threat point NTU</button></span>
 				<span><button class="half-mode-button" id="shapley-mode-col" onclick="changeViewMode(4,false)">Backstop TU</button></span><span><button class="half-mode-button" id="coco-mode-col" onclick="changeViewMode(5,false)">Threat point TU</button></span>
 				<div style="padding:1vh"></div>
@@ -130,16 +136,21 @@
 				<p id="custom-options">
 					<select name="Choice 1" id="view-custom-1">
 						<option value="returns">Row's equilibrium returns</option>
-						<!-- <option value="returns-mixed">Returns with mixed</option> -->
+						<option value="returns-mixed">Row's equilibrium returns (using mixed)</option>
 						<option value="returns-bargaining-bs">Row's backstop NTU</option>
 						<option value="returns-bargaining-tp">Row's threat point NTU</option>
 						<option value="returns-shapley">Row's backstop TU</option>
 						<option value="returns-coco">Row's threat point TU</option>
+						<option value="returns-row-first">Row's return when row goes first</option>
+						<option value="returns-col-first">Row's return when column goes first</option>
 						<option value="returns-col">Column's equilibrium returns</option>
+						<option value="returns-mixed-col">Column's equilibrium returns (using mixed)</option>
 						<option value="returns-bargaining-bs-col">Column's backstop NTU</option>
 						<option value="returns-bargaining-tp-col">Column's threat point NTU</option>
 						<option value="returns-shapley-col">Column's backstop TU</option>
 						<option value="returns-coco-col">Column's threat point TU</option>
+						<option value="returns-row-first-col">Column's return when row goes first</option>
+						<option value="returns-col-first-col">Column's return when column goes first</option>
 						<option value="returns-max-total">Max total</option>
 						<option value="backstop-row">Row's backstop</option>
 						<option value="threat-point-row">Row's threat point</option>
@@ -149,16 +160,21 @@
 					<br>minus<br>
 					<select name="Choice 2" id="view-custom-2">
 						<option value="returns">Row's equilibrium returns</option>
-						<!-- <option value="returns-mixed">Returns with mixed</option> -->
+						<option value="returns-mixed">Row's equilibrium returns (using mixed)</option>
 						<option value="returns-bargaining-bs">Row's backstop NTU</option>
 						<option value="returns-bargaining-tp">Row's threat point NTU</option>
 						<option value="returns-shapley">Row's backstop TU</option>
 						<option value="returns-coco">Row's threat point TU</option>
-						<option value="returns-col" selected>Column's equilibrium returns</option>
+						<option value="returns-row-first">Row's return when row goes first</option>
+						<option value="returns-col-first">Row's return when column goes first</option>
+						<option value="returns-col">Column's equilibrium returns</option>
+						<option value="returns-mixed-col">Column's equilibrium returns (using mixed)</option>
 						<option value="returns-bargaining-bs-col">Column's backstop NTU</option>
 						<option value="returns-bargaining-tp-col">Column's threat point NTU</option>
 						<option value="returns-shapley-col">Column's backstop TU</option>
 						<option value="returns-coco-col">Column's threat point TU</option>
+						<option value="returns-row-first-col">Column's return when row goes first</option>
+						<option value="returns-col-first-col">Column's return when column goes first</option>
 						<option value="returns-max-total">Max total</option>
 						<option value="backstop-row">Row's backstop</option>
 						<option value="threat-point-row">Row's threat point</option>
