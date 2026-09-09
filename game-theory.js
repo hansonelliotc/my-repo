@@ -71,7 +71,8 @@ const brown = "#7c4700";
 const lightBrown = "#ac7020";
 const dashedStroke = "10,10";
 const animationFrames = 70;
-const games = [];
+let games = [];
+const orbit_operations = [];
 const blueLinePadding = 15;
 const birhombicPadding = 20;
 let xWidth = 0;
@@ -1648,6 +1649,44 @@ class Game {
         }
     }
 
+    negate(p1) {
+        if (p1) {
+            this.zone_row = 1 - this.zone_row;
+            this.row_matrix = [...this.row_matrix].map(x => 6 - x);
+        } else {
+            this.zone_col = 1 - this.zone_col;
+            this.col_matrix = [...this.col_matrix].map(x => 6 - x);
+        }
+    }
+
+    exchange_matrices() {
+        const temp = [...this.row_matrix];
+        this.row_matrix = [...this.col_matrix];
+        this.col_matrix = temp;
+    }
+
+    switch_rows() {
+        const temp = [...this.row_matrix];
+        this.row_matrix = [temp[2],temp[3],temp[0],temp[1]];
+    }
+
+    switch_columns() {
+        const temp = [...this.col_matrix];
+        this.col_matrix = [temp[1],temp[0],temp[3],temp[2]];
+    }
+
+    flip_matrices() {
+        this.row_matrix = Game.flip(this.row_matrix);
+        this.col_matrix = Game.flip(this.col_matrix);
+    }
+
+    cycle_matrices() {
+        const tempA = [...this.row_matrix];
+        const tempB = [...this.col_matrix];
+        this.row_matrix = [tempA[3], tempA[1], tempA[0], tempA[2]];
+        this.col_matrix = [tempB[3], tempB[1], tempB[0], tempB[2]];
+    }
+
     get equilibrium_color() {
         const greenBackground = [217, 255, 217];
         const ceruleanBackground = [196, 224, 235];
@@ -1711,9 +1750,19 @@ class Game {
         else if (max1 == 0 && max2 == 1 || max1 == 1 && max2 == 0 || max1 == 2 && max2 == 3 || max1 == 3 && max2 == 2) return ceruleanBackground;
         else return grayBackground;
     }
+
+    static equal(game_1, game_2) {
+        for (let i = 0; i < 4; i++) {
+            if (Math.abs(game_1.row_matrix[i] - game_2.row_matrix[i]) > 0.000001)
+                return false;
+            if (Math.abs(game_1.col_matrix[i] - game_2.col_matrix[i]) > 0.000001)
+                return false;
+        }
+        return true;
+    }
 }
 
-let game = Game.xb(0.5,0.5,2,2,3);
+let game = Game.temp(0.5,0.5,2,2,3);
 
 init();
 setInterval('update()', 50);
@@ -2248,6 +2297,14 @@ function init() {
                 break;
         }
     });
+    const nav_buttons = document.getElementsByClassName("operation-button");
+    for (let i = 0; i < nav_buttons.length; i++) {
+        nav_buttons[i].addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            orbit_operations.push(i);
+            // add_orbit(i);
+        });
+    }
 
     // const bigPicQuad1 = document.getElementById("quad1");
     // const bigPicQuad2 = document.getElementById("quad2");
@@ -3020,6 +3077,12 @@ function update() {
     // column's threat point bargaining returns w/ transferable utility
     colReturnsCoco.innerHTML = game.col_tu_tp_return.toFixed(1);
     colReturnsCoco.style.color = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`)(colorFunction(game.col_tu_tp_return, 1));
+
+    // current return value
+    const cur_returns = document.getElementById("current-returns");
+    if (viewMode != 0 && viewMode != 11 && viewMode != 12) {
+        cur_returns.innerHTML = " (" + returns(game,viewMode,viewModeP1).toFixed(1) + ")";
+    }
 
     const crossBlue1 = document.getElementById("cross-blue-1");
     const crossBlue2 = document.getElementById("cross-blue-2");
@@ -4495,6 +4558,16 @@ function update() {
         new_game_3.crossTan(false);
         games.push(new_game_3);
     }
+    games = subgroup(orbit_operations);
+    // for (let f of orbit_operations) { // this does not work
+    //     const new_games = [];
+    //     for (let game of games) {
+    //         new_games.push(f(game));
+    //     }
+    //     for (let game of new_games) {
+    //         games.push(game);
+    //     }
+    // }
     // games.push(game.use_conventions(game.coord_1 % 6, game.coord_2 % 6, game.coord_3, game.coord_4, game.quad));
     if (!useAltSchema) {
         if (dimensions()[0] == 1) {
@@ -4527,13 +4600,13 @@ function update() {
             const y2 = (game.y2-games[0].offset+7) % 6;
             const class1 = Math.floor(y1/2);
             const class2 = (5 - Math.floor(y2/2)) % 3;
-            if (/*dimensions()[0] == 1 && dimensions()[1] == 1 && */y1 % 2 == 0 && y2 % 2 == 0 && class1 != class2) {
+            if (game.t1 == 3 && game.t2 == 3 && y1 % 2 == 0 && y2 % 2 == 0 && class1 != class2) {
                 for (let i = game.quad_temp % 4; i != game.quad_temp - 1; i = (i+1) % 4) {
                     const new_game = game.copy();
                     new_game.quad_temp = i+1;
                     games.push(new_game);
                 }
-            } else if (/*dimensions()[0] == 1 && */y1 % 2 == 0) {
+            } else if (game.t1 == 3 && y1 % 2 == 0) {
                 const new_game = game.copy();
                 switch (class1) {
                     case 1:
@@ -4547,7 +4620,7 @@ function update() {
                         break;
                 }
                 games.push(new_game);
-            } else if (/*dimensions()[1] == 1 && */y2 % 2 == 0) {
+            } else if (game.t2 == 3 && y2 % 2 == 0) {
                 const new_game = game.copy();
                 switch (class2) {
                     case 1:
@@ -4563,19 +4636,6 @@ function update() {
                 games.push(new_game);
             }
         }
-        // if (dimensions()[1] == 1) {
-        //     const length = games.length;
-        //     for (let i = 0; i < length; i++) {
-        //         let redLine = Math.round((games[i].x2+1)/2)*2-1;
-        //         games.push(games[i].acrossBlue(false));
-        //     }
-        //     if (Number.isInteger(game.coord_2/2)) {
-        //         for (let i = length; i < 2*length; i++) {
-        //             let redLine = Math.round((games[i].x2+1)/2)*2-1;
-        //             games.push(games[i].acrossBlue(false));
-        //         }
-        //     }
-        // }
     }
     if (draggingInBigPic && isMouseDown) {
         placePoint(pointObjects[0], game.quad, game.coord_1, game.coord_2, game.zone);
@@ -4785,7 +4845,7 @@ function update() {
     // update cell name
     const cellName = document.getElementById("cell-name");
     let cellCol = (-1*(Math.floor(game.coord_1*game.conventions[1])-game.conventions[0]) + 15) % 6 + 1;
-    let cellRow = (-1*(Math.floor(game.coord_2*game.conventions[1])-game.conventions[0]) + 15) % 6 + 1;
+    let cellRow = ((Math.floor(game.coord_2*game.conventions[1])-game.conventions[0]) + 14) % 6 + 1;
     cellName.innerHTML = cellCol.toString() + "," + cellRow.toString();
 
     // update zone label
@@ -4795,16 +4855,16 @@ function update() {
     } else {
         switch (game.zone) {
             case 1:
-                zone_label.innerHTML = " - cool-cool";
+                zone_label.innerHTML = "cool-cool";
                 break;
             case 2:
-                zone_label.innerHTML = " - warm-cool";
+                zone_label.innerHTML = "warm-cool";
                 break;
             case 3:
-                zone_label.innerHTML = " - warm-warm";
+                zone_label.innerHTML = "warm-warm";
                 break;
             case 4:
-                zone_label.innerHTML = " - cool-warm";
+                zone_label.innerHTML = "cool-warm";
                 break;
         }
     }
@@ -4909,9 +4969,10 @@ function crossTan(p1) {
 }
 
 function switchMatrices() {
-    const temp = [...game.row_matrix];
-    game.row_matrix = [...game.col_matrix];
-    game.col_matrix = temp;
+    game.exchange_matrices();
+    // const temp = [...game.row_matrix];
+    // game.row_matrix = [...game.col_matrix];
+    // game.col_matrix = temp;
     updateCoords();
 }
 
@@ -4922,13 +4983,14 @@ function flipMatrices() {
 }
 
 function negate(player1) {
-    if (player1) {
-        game.zone_row = 1 - game.zone_row;
-        game.row_matrix = [...game.row_matrix].map(x => 6 - x);
-    } else {
-        game.zone_col = 1 - game.zone_col;
-        game.col_matrix = [...game.col_matrix].map(x => 6 - x);
-    }
+    game.negate(player1);
+    // if (player1) {
+    //     game.zone_row = 1 - game.zone_row;
+    //     game.row_matrix = [...game.row_matrix].map(x => 6 - x);
+    // } else {
+    //     game.zone_col = 1 - game.zone_col;
+    //     game.col_matrix = [...game.col_matrix].map(x => 6 - x);
+    // }
     updateCoords();
 }
 
@@ -5583,7 +5645,6 @@ function changeCoords(e) {
                 game.zone_col = 1;
                 relativeY = (relativeY+0.02)*2;
             }
-            console.log(relativeX);
         }
 
         if (0.02 <= relativeX && relativeX <= 0.48 && 0.02 <= relativeY && relativeY <= 0.48) {
@@ -7100,14 +7161,14 @@ function updateBlueLines() {
                 const label_left = document.getElementById("row-label-left-"+i.toString());
                 label_left.setAttribute("x",picPadding1 - blueLinePadding);
                 label_left.setAttribute("y",picHeight*(i-0.5)/6 + picPadding2);
-                label_left.innerHTML = (10 - i + game.offset) % 6 + 1;
+                label_left.innerHTML = (1 + i - game.offset) % 6 + 1;
                 label_left.style.display = "";
             }
             for (let i = 1; i <= 6; i++) {
                 const label_right = document.getElementById("row-label-right-"+i.toString());
                 label_right.setAttribute("x",picWidth + picPadding1 + blueLinePadding);
                 label_right.setAttribute("y",picHeight*(i-0.5)/6 + picPadding2);
-                label_right.innerHTML = (10 - i + game.offset) % 6 + 1;
+                label_right.innerHTML = (1 + i - game.offset) % 6 + 1;
                 label_right.style.display = "";
             }
         } else {
@@ -8285,11 +8346,15 @@ function change_big_pic(all_zones) {
             line.style.display = "none";
         for (let line of document.getElementsByClassName("big-pic-line-ver"))
             line.style.display = "none";
+        for (let line of document.getElementsByClassName("big-pic-label"))
+            line.style.display = "";
     } else if (hiddenLines != 0) {
         for (let line of document.getElementsByClassName("big-pic-line-hor"))
             line.style.display = "";
         for (let line of document.getElementsByClassName("big-pic-line-ver"))
             line.style.display = "";
+        for (let line of document.getElementsByClassName("big-pic-label"))
+            line.style.display = "none";
     }
 }
 
@@ -8346,14 +8411,195 @@ function update_temp_pic() {
     // circle.cy.baseVal.value = (1-game.t2/6)*temp_pic_canvas.height;
 }
 
-// renumber column's cells
-// print current return value
-// print cool/warm next to the big pic
+function add_orbit(op) {
+    switch (op) {
+        case 0:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.crossBlue(true);
+                return new_game;
+            });
+            break;
+        case 1:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.crossBlue(false);
+                return new_game;
+            });
+            break;
+        case 2:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.crossGreen(true);
+                return new_game;
+            });
+            break;
+        case 3:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.crossGreen(false);
+                return new_game;
+            });
+            break;
+        case 4:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.crossRed(true);
+                return new_game;
+            });
+            break;
+        case 5:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.crossRed(false);
+                return new_game;
+            });
+            break;
+        case 6:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.crossTan(true);
+                return new_game;
+            });
+            break;
+        case 7:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.crossTan(false);
+                return new_game;
+            });
+            break;
+        case 8:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.negate(true);
+                return new_game;
+            });
+            break;
+        case 9:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.negate(false);
+                return new_game;
+            });
+            break;
+        case 10:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.exchange_matrices();
+                return new_game;
+            });
+            break;
+        case 11:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.switch_rows();
+                return new_game;
+            });
+            break;
+        case 12:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.switch_columns();
+                return new_game;
+            });
+            break;
+        case 13:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.flip_matrices();
+                return new_game;
+            });
+            break;
+        case 14:
+            orbit_operations.push((game0) => {
+                const new_game = game0.copy();
+                new_game.cycle_matrices();
+                return new_game;
+            });
+            break;
+    }
+}
+
+function orbit_operation(game0,op) {
+    const new_game = game0.copy();
+    switch (op) {
+        case 0:
+            new_game.crossBlue(true);
+            break;
+        case 1:
+            new_game.crossBlue(false);
+            break;
+        case 2:
+            new_game.crossGreen(true);
+            break;
+        case 3:
+            new_game.crossGreen(false);
+            break;
+        case 4:
+            new_game.crossRed(true);
+            break;
+        case 5:
+            new_game.crossRed(false);
+            break;
+        case 6:
+            new_game.crossTan(true);
+            break;
+        case 7:
+            new_game.crossTan(false);
+            break;
+        case 8:
+            new_game.negate(true);
+            break;
+        case 9:
+            new_game.negate(false);
+            break;
+        case 10:
+            new_game.exchange_matrices();
+            break;
+        case 11:
+            new_game.switch_rows();
+            break;
+        case 12:
+            new_game.switch_columns();
+            break;
+        case 13:
+            new_game.flip_matrices();
+            break;
+        case 14:
+            new_game.cycle_matrices();
+            break;
+    }
+    return new_game;
+}
+
+function subgroup(fcns, new_elt = game, elts = [], iter = 0) {
+    if (iter == 10000) { console.alert("Subgroup exceeded 10000 iterations"); return elts; }
+    elts.push(new_elt);
+    let temp = fcns.map(f => orbit_operation(new_elt,f));
+    for (let game_1 of temp) {
+        if (!elts.some(game_2 => Game.equal(game_1,game_2))) {
+            subgroup(fcns, game_1, elts, iter+1);
+        }
+    }
+    return elts;
+}
+
+// function apply_operations(new_game, games, operations) {
+//     games.push(new_game);
+//     for (let op of operations) {
+//         const game_image = op(new_game);
+//         for (let game of games) {
+//             Game.equal(game, game_image);
+//         }
+//         games = apply_operations(game_image, games, operations);
+//     }
+// }
+
 // allow for right clicking to show differences
 // mixing competitive strategies
-// show orbits
+// show orbits (include squares in the temp pic)
 // fix big diagram movement
-// remove dots when not on the mild slice
 // make global picture the default?
 
 // bugs

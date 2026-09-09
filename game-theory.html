@@ -63,20 +63,20 @@
 			<table id="navigation">
 				<tr><td colspan="2"><h2>Discontinuous Operations</h2></td></tr>
 				<tr>
-					<td><button id="cross-blue-1" onclick="crossBlue(true)" title="Flip the row player's biggest entries">Cross Row's blue (B<sub>r</sub>)</button></td>
-					<td><button id="cross-blue-2" onclick="crossBlue(false)" title="Flip the column player's biggest entries">Cross Column's blue (B<sub>c</sub>)</button></td>
+					<td><button id="cross-blue-1" class="operation-button" onclick="crossBlue(true)" title="Flip the row player's biggest entries">Cross Row's blue (B<sub>r</sub>)</button></td>
+					<td><button id="cross-blue-2" class="operation-button" onclick="crossBlue(false)" title="Flip the column player's biggest entries">Cross Column's blue (B<sub>c</sub>)</button></td>
 				</tr>
 				<tr>
-					<td><button id="cross-green-1" onclick="crossGreen(true)" title="Flip the row player's middle entries">Cross Row's green (G<sub>r</sub>)</button></td>
-					<td><button id="cross-green-2" onclick="crossGreen(false)" title="Flip the column player's middle entries">Cross Column's green (G<sub>c</sub>)</button></td>
+					<td><button id="cross-green-1" class="operation-button" onclick="crossGreen(true)" title="Flip the row player's middle entries">Cross Row's green (G<sub>r</sub>)</button></td>
+					<td><button id="cross-green-2" class="operation-button" onclick="crossGreen(false)" title="Flip the column player's middle entries">Cross Column's green (G<sub>c</sub>)</button></td>
 				</tr>
 				<tr>
-					<td><button id="cross-red-1" onclick="crossRed(true)" title="Flip the row player's smallest entries">Cross Row's red (R<sub>r</sub>)</button></td>
-					<td><button id="cross-red-2" onclick="crossRed(false)" title="Flip the column player's smallest entries">Cross Column's red (R<sub>c</sub>)</button></td>
+					<td><button id="cross-red-1" class="operation-button" onclick="crossRed(true)" title="Flip the row player's smallest entries">Cross Row's red (R<sub>r</sub>)</button></td>
+					<td><button id="cross-red-2" class="operation-button" onclick="crossRed(false)" title="Flip the column player's smallest entries">Cross Column's red (R<sub>c</sub>)</button></td>
 				</tr>
 				<tr>
-					<td><button id="cross-tan-1" onclick="crossTan(true)">Cross Row's tan (T<sub>r</sub>)</button></td>
-					<td><button id="cross-tan-2" onclick="crossTan(false)">Cross Column's tan (T<sub>c</sub>)</button></td>
+					<td><button id="cross-tan-1" class="operation-button" onclick="crossTan(true)">Cross Row's tan (T<sub>r</sub>)</button></td>
+					<td><button id="cross-tan-2" class="operation-button" onclick="crossTan(false)">Cross Column's tan (T<sub>c</sub>)</button></td>
 				</tr>
 				<!-- <tr>
 					<td colspan="2"><button id="switch-players" onclick="wiggle(true)" title="Exchanges each player's matrix with the transpose of the other player's matrix">Switch the players</button></td>
@@ -87,20 +87,20 @@
 				</tr> -->
 				<tr><td colspan="2"><h2>D<sub>4</sub> Operations</h2></td></tr>
 				<tr>
-					<td><button id="negate-1" onclick="negate(true)" title="Each entry in the row player's matrix is subtracted from 6.">Negate Row's matrix (N<sub>r</sub>)</button></td>
-					<td><button id="negate-2" onclick="negate(false)" title="Each entry in the column player's matrix is subtracted from 6.">Negate Column's matrix (N<sub>c</sub>)</button></td>
+					<td><button id="negate-1" class="operation-button" onclick="negate(true)" title="Each entry in the row player's matrix is subtracted from 6.">Negate Row's matrix (N<sub>r</sub>)</button></td>
+					<td><button id="negate-2" class="operation-button" onclick="negate(false)" title="Each entry in the column player's matrix is subtracted from 6.">Negate Column's matrix (N<sub>c</sub>)</button></td>
 				</tr>
 				<tr>
-					<td><button id="switch-matrices" onclick="switchMatrices()" title="Exchange the players' matrices">Exchange matrices (E)</button></td>
+					<td><button id="switch-matrices" class="operation-button" onclick="switchMatrices()" title="Exchange the players' matrices">Exchange matrices (E)</button></td>
 				</tr>
 				<tr><td colspan="2"><h2>S<sub>4</sub> Operations</h2></td></tr>
 				<tr>
-					<td><button id="switch-rows" onclick="switchRows()" title="The rows in the row player's matrix are switched.">Switch Row's rows (S<sub>r</sub>)</button></td>
-					<td><button id="switch-cols" onclick="switchColumns(false)" title="The columns in the column player's matrix are switched.">Switch Column's columns (S<sub>c</sub>)</button></td>
+					<td><button id="switch-rows" class="operation-button" onclick="switchRows()" title="The rows in the row player's matrix are switched.">Switch Row's rows (S<sub>r</sub>)</button></td>
+					<td><button id="switch-cols" class="operation-button" onclick="switchColumns(false)" title="The columns in the column player's matrix are switched.">Switch Column's columns (S<sub>c</sub>)</button></td>
 				</tr>
 				<tr>
-					<td><button id="flip-matrices" onclick="flipMatrices()" title="Each player's matrix is flipped">Flip both matrices (F)</button></td>
-					<td><button id="rotate" onclick="rotate()" title="Rotates each matrix's first, third, and fourth entries.">Cycle both matrices (C)</button></td>
+					<td><button id="flip-matrices" class="operation-button" onclick="flipMatrices()" title="Each player's matrix is flipped">Flip both matrices (F)</button></td>
+					<td><button id="rotate" class="operation-button" onclick="rotate()" title="Rotates each matrix's first, third, and fourth entries.">Cycle both matrices (C)</button></td>
 				</tr>
 				<!-- <tr height="10vh" />
 				<tr>
@@ -407,86 +407,92 @@
 		</div>
 	</div>
 	<div id="pictures">
-		<svg id="big-picture" width="35vh" height="35vh">
-			<!-- <rect x="0" y="0" width="100%" height="100%" fill="white" /> -->
-			<!-- <rect id="quad1" x="54%" y="4%" width="42%" height="42%" />
-			<rect id="quad2" x="4%" y="4%" width="42%" height="42%" />
-			<rect id="quad3" x="4%" y="54%" width="42%" height="42%" />
-			<rect id="quad4" x="54%" y="54%" width="42%" height="42%" />
-			<rect id="q1a" x="54%" y="25%" width="21%" height="21%" />
-			<rect id="q2a" x="4%" y="25%" width="21%" height="21%" />
-			<rect id="q2b" x="25%" y="25%" width="21%" height="21%" />
-			<rect id="q3a" x="4%" y="54%" width="21%" height="21%" />
-			<rect id="q3b" x="4%" y="75%" width="21%" height="21%" />
-			<rect id="q3c" x="25%" y="75%" width="21%" height="21%" />
-			<rect id="q4a" x="54%" y="54%" width="21%" height="21%" />
-			<rect id="q4b" x="54%" y="75%" width="21%" height="21%" /> -->
-			<foreignObject id="canvasForeignObject-big-pic" x="0" y="0" width="0" height="0"><canvas id="big-pic-canvas"></canvas></foreignObject>
+		<svg id="big-pic-container" width="40vh" height="40vh">
+			<svg id="big-picture" x="4vh" y="1vh" width="35vh" height="35vh">
+				<!-- <rect x="0" y="0" width="100%" height="100%" fill="white" /> -->
+				<!-- <rect id="quad1" x="54%" y="4%" width="42%" height="42%" />
+				<rect id="quad2" x="4%" y="4%" width="42%" height="42%" />
+				<rect id="quad3" x="4%" y="54%" width="42%" height="42%" />
+				<rect id="quad4" x="54%" y="54%" width="42%" height="42%" />
+				<rect id="q1a" x="54%" y="25%" width="21%" height="21%" />
+				<rect id="q2a" x="4%" y="25%" width="21%" height="21%" />
+				<rect id="q2b" x="25%" y="25%" width="21%" height="21%" />
+				<rect id="q3a" x="4%" y="54%" width="21%" height="21%" />
+				<rect id="q3b" x="4%" y="75%" width="21%" height="21%" />
+				<rect id="q3c" x="25%" y="75%" width="21%" height="21%" />
+				<rect id="q4a" x="54%" y="54%" width="21%" height="21%" />
+				<rect id="q4b" x="54%" y="75%" width="21%" height="21%" /> -->
+				<foreignObject id="canvasForeignObject-big-pic" x="0" y="0" width="0" height="0"><canvas id="big-pic-canvas"></canvas></foreignObject>
 
-			<!-- quad1: thirds -->
-			<line class="big-pic-line-ver" x1="68%" x2="68%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-ver" x1="82%" x2="82%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-hor" x1="54%" x2="96%" y1="18%" y2="18%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-hor" x1="54%" x2="96%" y1="32%" y2="32%" stroke="green" stroke-width="1%" />
+				<!-- quad1: thirds -->
+				<line class="big-pic-line-ver" x1="68%" x2="68%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-ver" x1="82%" x2="82%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-hor" x1="54%" x2="96%" y1="18%" y2="18%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-hor" x1="54%" x2="96%" y1="32%" y2="32%" stroke="green" stroke-width="1%" />
 
-			<!-- quad2: thirds -->
-			<line class="big-pic-line-ver" x1="18%" x2="18%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-ver" x1="32%" x2="32%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-hor" x1="4%" x2="46%" y1="18%" y2="18%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-hor" x1="4%" x2="46%" y1="32%" y2="32%" stroke="green" stroke-width="1%" />
+				<!-- quad2: thirds -->
+				<line class="big-pic-line-ver" x1="18%" x2="18%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-ver" x1="32%" x2="32%" y1="4%" y2="46%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-hor" x1="4%" x2="46%" y1="18%" y2="18%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-hor" x1="4%" x2="46%" y1="32%" y2="32%" stroke="green" stroke-width="1%" />
 
-			<!-- quad3: thirds -->
-			<line class="big-pic-line-ver" x1="18%" x2="18%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-ver" x1="32%" x2="32%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-hor" x1="4%" x2="46%" y1="68%" y2="68%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-hor" x1="4%" x2="46%" y1="82%" y2="82%" stroke="green" stroke-width="1%" />
+				<!-- quad3: thirds -->
+				<line class="big-pic-line-ver" x1="18%" x2="18%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-ver" x1="32%" x2="32%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-hor" x1="4%" x2="46%" y1="68%" y2="68%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-hor" x1="4%" x2="46%" y1="82%" y2="82%" stroke="green" stroke-width="1%" />
 
-			<!-- quad4: thirds -->
-			<line class="big-pic-line-ver" x1="68%" x2="68%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-ver" x1="82%" x2="82%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-hor" x1="54%" x2="96%" y1="68%" y2="68%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-hor" x1="54%" x2="96%" y1="82%" y2="82%" stroke="green" stroke-width="1%" />
+				<!-- quad4: thirds -->
+				<line class="big-pic-line-ver" x1="68%" x2="68%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-ver" x1="82%" x2="82%" y1="54%" y2="96%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-hor" x1="54%" x2="96%" y1="68%" y2="68%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-hor" x1="54%" x2="96%" y1="82%" y2="82%" stroke="green" stroke-width="1%" />
 
-			<!-- quad1 frame -->
-			<line class="big-pic-line-hor" x1="53.5%" x2="96.5%" y1="4%" y2="4%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-hor" x1="53.5%" x2="96.5%" y1="46%" y2="46%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-ver" x1="54%" x2="54%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-ver" x1="96%" x2="96%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
+				<!-- quad1 frame -->
+				<line class="big-pic-line-hor" x1="53.5%" x2="96.5%" y1="4%" y2="4%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-hor" x1="53.5%" x2="96.5%" y1="46%" y2="46%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-ver" x1="54%" x2="54%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-ver" x1="96%" x2="96%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
 
-			<!-- quad2 frame -->
-			<line class="big-pic-line-hor" x1="3.5%" x2="46.5%" y1="4%" y2="4%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-hor" x1="3.5%" x2="46.5%" y1="46%" y2="46%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-ver" x1="4%" x2="4%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-ver" x1="46%" x2="46%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
+				<!-- quad2 frame -->
+				<line class="big-pic-line-hor" x1="3.5%" x2="46.5%" y1="4%" y2="4%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-hor" x1="3.5%" x2="46.5%" y1="46%" y2="46%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-ver" x1="4%" x2="4%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-ver" x1="46%" x2="46%" y1="3.5%" y2="46.5%" stroke="green" stroke-width="1%" />
 
-			<!-- quad3 frame -->
-			<line class="big-pic-line-hor" x1="3.5%" x2="46.5%" y1="54%" y2="54%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-hor" x1="3.5%" x2="46.5%" y1="96%" y2="96%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-ver" x1="4%" x2="4%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-ver" x1="46%" x2="46%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
+				<!-- quad3 frame -->
+				<line class="big-pic-line-hor" x1="3.5%" x2="46.5%" y1="54%" y2="54%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-hor" x1="3.5%" x2="46.5%" y1="96%" y2="96%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-ver" x1="4%" x2="4%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-ver" x1="46%" x2="46%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
 
-			<!-- quad4 frame -->
-			<line class="big-pic-line-hor" x1="53.5%" x2="96.5%" y1="54%" y2="54%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-hor" x1="53.5%" x2="96.5%" y1="96%" y2="96%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-ver" x1="54%" x2="54%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
-			<line class="big-pic-line-ver" x1="96%" x2="96%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
+				<!-- quad4 frame -->
+				<line class="big-pic-line-hor" x1="53.5%" x2="96.5%" y1="54%" y2="54%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-hor" x1="53.5%" x2="96.5%" y1="96%" y2="96%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-ver" x1="54%" x2="54%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
+				<line class="big-pic-line-ver" x1="96%" x2="96%" y1="53.5%" y2="96.5%" stroke="green" stroke-width="1%" />
 
-			<circle id="big-pic-point-16" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-15" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-14" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-13" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-12" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-11" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-10" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-9" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-8" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-7" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-6" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-5" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-4" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-3" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-2" r="2%" cx="25%" cy="25%" fill="#888" />
-			<circle id="big-pic-point-1" r="2%" cx="25%" cy="25%" fill="black" />
+				<circle id="big-pic-point-16" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-15" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-14" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-13" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-12" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-11" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-10" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-9" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-8" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-7" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-6" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-5" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-4" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-3" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-2" r="2%" cx="25%" cy="25%" fill="#888" />
+				<circle id="big-pic-point-1" r="2%" cx="25%" cy="25%" fill="black" />
+			</svg>
+			<text class="big-pic-label" x="30.1%" y="97%" text-anchor="middle" dominant-baseline="bottom" fill="blue" style="display:none">Cool</text>
+			<text class="big-pic-label" x="77.4%" y="97%" text-anchor="middle" dominant-baseline="bottom" fill="red" style="display:none">Warm</text>
+			<text class="big-pic-label big-pic-label-left" x="30.1%" y="97%" text-anchor="middle" dominant-baseline="bottom" fill="red" style="display:none">Warm</text>
+			<text class="big-pic-label big-pic-label-left" x="77.4%" y="97%" text-anchor="middle" dominant-baseline="bottom" fill="blue" style="display:none">Cool</text>
 		</svg>
 		<svg id="birhombic-pic" width="45vh" height="20vh" style="display:none">
 			<polygon id="br-green-background" />
@@ -815,7 +821,11 @@
 	<div style="display:flex"><div id="b1-label">b<sub>1</sub></div>
 	<input id="b1coord" type="range" min="0" max="6" step="0.01" value="2"></div> -->
 	<div id="display-options">
-		<h2 style="padding:1vh 1vw"><span id="quadrant-label">Bad quadrant</span><span id="zone"></span><br><span id="view-mode-label">Equilibrium view</span></h2>
+		<h2 style="padding:1vh 1vw">
+			<span id="zone"></span> - <span id="quadrant-label">Bad quadrant</span>
+			<br>
+			<span id="view-mode-label">Equilibrium view</span><span id="current-returns"></span>
+		</h2>
 		<table cellspacing="0" cellpadding="0" style="border-collapse: separate;border-spacing: 5px 0;">
 			<tr>
 				<td><button class="show-diagrams" id="fix-image-button-0" onclick="hideGame()">Hide game</button></td>

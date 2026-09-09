@@ -253,5 +253,9 @@ h2 {
 
 #big-picture, #temp-pic {
     filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
-    margin: 1vh;
+}
+
+.big-pic-label-left {
+    transform-origin: 21.5vh 18.5vh;
+    transform: rotate(90deg);
 }
