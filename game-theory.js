@@ -2301,7 +2301,13 @@ function init() {
     for (let i = 0; i < nav_buttons.length; i++) {
         nav_buttons[i].addEventListener("contextmenu", (e) => {
             e.preventDefault();
-            orbit_operations.push(i);
+            if (!orbit_operations.includes(i)) {
+                orbit_operations.push(i);
+                nav_buttons[i].style.color = "red";
+            } else {
+                orbit_operations.splice(orbit_operations.indexOf(i), 1);
+                nav_buttons[i].style.color = "black";
+            }
             // add_orbit(i);
         });
     }
@@ -3090,36 +3096,36 @@ function update() {
     const crossGreen2 = document.getElementById("cross-green-2");
     const crossRed1 = document.getElementById("cross-red-1");
     const crossRed2 = document.getElementById("cross-red-2");
-    if (take(game.row_matrix,3) - take(game.row_matrix,2) < 0.0001) {
-        crossBlue1.style.color = "blue";
-    } else {
-        crossBlue1.style.color = "black";
-    }
-    if (take(game.col_matrix,3) - take(game.col_matrix,2) < 0.0001) {
-        crossBlue2.style.color = "blue";
-    } else {
-        crossBlue2.style.color = "black";
-    }
-    if (take(game.row_matrix,2) - take(game.row_matrix,1) < 0.0001) {
-        crossGreen1.style.color = "green";
-    } else {
-        crossGreen1.style.color = "black";
-    }
-    if (take(game.col_matrix,2) - take(game.col_matrix,1) < 0.0001) {
-        crossGreen2.style.color = "green";
-    } else {
-        crossGreen2.style.color = "black";
-    }
-    if (take(game.row_matrix,1) - take(game.row_matrix,0) < 0.0001) {
-        crossRed1.style.color = "red";
-    } else {
-        crossRed1.style.color = "black";
-    }
-    if (take(game.col_matrix,1) - take(game.col_matrix,0) < 0.0001) {
-        crossRed2.style.color = "red";
-    } else {
-        crossRed2.style.color = "black";
-    }
+    // if (take(game.row_matrix,3) - take(game.row_matrix,2) < 0.0001) {
+    //     crossBlue1.style.color = "blue";
+    // } else {
+    //     crossBlue1.style.color = "black";
+    // }
+    // if (take(game.col_matrix,3) - take(game.col_matrix,2) < 0.0001) {
+    //     crossBlue2.style.color = "blue";
+    // } else {
+    //     crossBlue2.style.color = "black";
+    // }
+    // if (take(game.row_matrix,2) - take(game.row_matrix,1) < 0.0001) {
+    //     crossGreen1.style.color = "green";
+    // } else {
+    //     crossGreen1.style.color = "black";
+    // }
+    // if (take(game.col_matrix,2) - take(game.col_matrix,1) < 0.0001) {
+    //     crossGreen2.style.color = "green";
+    // } else {
+    //     crossGreen2.style.color = "black";
+    // }
+    // if (take(game.row_matrix,1) - take(game.row_matrix,0) < 0.0001) {
+    //     crossRed1.style.color = "red";
+    // } else {
+    //     crossRed1.style.color = "black";
+    // }
+    // if (take(game.col_matrix,1) - take(game.col_matrix,0) < 0.0001) {
+    //     crossRed2.style.color = "red";
+    // } else {
+    //     crossRed2.style.color = "black";
+    // }
 
     if (viewModeVolatile) backgroundOutOfDate = true;
 
