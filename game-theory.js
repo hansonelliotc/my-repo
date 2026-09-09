@@ -2825,13 +2825,13 @@ function init() {
 
     // svg.querySelectorAll('[id^="big-pic-point-"]').forEach(el => el.remove());
 
-    for (let i = 2; i <= 2304; i++) {
+    for (let i = 2304; i >= 1; i--) {
       const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       circle.setAttribute("id", `big-pic-point-${i}`);
       circle.setAttribute("r", "2%");
       circle.setAttribute("cx", "25%");
       circle.setAttribute("cy", "25%");
-      circle.setAttribute("fill", "#888");
+      circle.setAttribute("fill", i == 1 ? "black" : "#888");
       big_picture.appendChild(circle);
     }
 
