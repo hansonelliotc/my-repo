@@ -1752,13 +1752,13 @@ class Game {
     }
 
     static equal(game_1, game_2) {
-        for (let i = 0; i < 4; i++) {
-            if (Math.abs(game_1.row_matrix[i] - game_2.row_matrix[i]) > 0.000001)
-                return false;
-            if (Math.abs(game_1.col_matrix[i] - game_2.col_matrix[i]) > 0.000001)
-                return false;
-        }
-        return true;
+        // for (let i = 0; i < 4; i++) {
+        //     if (Math.abs(game_1.row_matrix[i] - game_2.row_matrix[i]) > 0.000001)
+        //         return false;
+        //     if (Math.abs(game_1.col_matrix[i] - game_2.col_matrix[i]) > 0.000001)
+        //         return false;
+        // }
+        return game_1.y1 == game_2.y1 && game_1.y2 == game_2.y2 && game_1.t1 == game_2.t1 && game_1.t2 == game_2.t2 && game_1.quad_temp == game_2.quad_temp;
     }
 }
 
@@ -2806,7 +2806,7 @@ function init() {
     update_temp_pic();
 
     const big_picture = document.getElementById("big-picture");
-    // for (let i = 2; i <= 2304; i++) {
+    // for (let i = 2; i <= 576; i++) {
     //     const new_point = document.createElement("circle");
     //     new_point.setAttribute("id","big-pic-point-" + i);
     //     new_point.setAttribute("r",big_picture.width.baseVal.value*0.02);
@@ -2825,7 +2825,7 @@ function init() {
 
     // svg.querySelectorAll('[id^="big-pic-point-"]').forEach(el => el.remove());
 
-    for (let i = 2304; i >= 1; i--) {
+    for (let i = 576; i >= 1; i--) {
       const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       circle.setAttribute("id", `big-pic-point-${i}`);
       circle.setAttribute("r", "2%");
@@ -4577,7 +4577,7 @@ function update() {
     // const bigPicPoint8 = document.getElementById("big-pic-point8");
     // const bigPicPoint9 = document.getElementById("big-pic-point9");
     const pointObjects = [];
-    for (let i = 1; i <= 2304; i++) {
+    for (let i = 1; i <= 576; i++) {
         pointObjects.push(document.getElementById("big-pic-point-"+i.toString()));
     }
     games.length = 0;
@@ -4680,7 +4680,7 @@ function update() {
         placePoint(pointObjects[0], games[0].quad, games[0].coord_1, games[0].coord_2, games[0].zone);
         draggingInBigPic = false;
     }
-    for (let i = 1; i < 2304; i++) {
+    for (let i = 1; i < 576; i++) {
         if (i < games.length) {
             pointObjects[i].style.display = "";
             placePoint(pointObjects[i], games[i].quad, games[i].coord_1, games[i].coord_2, games[i].zone);
@@ -5642,7 +5642,7 @@ function changeCoords(e) {
             // const bigPicPoint9 = document.getElementById("big-pic-point9");
             // const pointObjects = [ bigPicPoint1, bigPicPoint2, bigPicPoint3, bigPicPoint4, bigPicPoint5, bigPicPoint6, bigPicPoint7, bigPicPoint8, bigPicPoint9 ];
             const pointObjects = [];
-            for (let i = 1; i <= 2304; i++) {
+            for (let i = 1; i <= 576; i++) {
                 pointObjects.push(document.getElementById("big-pic-point-"+i.toString()));
             }
             for (let i = 0; i < games.length; i++) {
@@ -8618,9 +8618,6 @@ function subgroup(fcns, new_elt = game, elts = [], iter = 0) {
         if (!elts.some(game_2 => Game.equal(game_1,game_2))) {
             subgroup(fcns, game_1, elts, iter+1);
         }
-        // else {
-        //     console.log(game_1.row_matrix,game_1.col_matrix,elts.find(x => Game.equal(game_1,x)).row_matrix,elts.find(x => Game.equal(game_1,x)).col_matrix);
-        // }
     }
     return elts;
 }
