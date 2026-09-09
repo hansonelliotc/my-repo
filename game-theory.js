@@ -2805,6 +2805,36 @@ function init() {
 
     update_temp_pic();
 
+    const big_picture = document.getElementById("big-picture");
+    // for (let i = 2; i <= 2304; i++) {
+    //     const new_point = document.createElement("circle");
+    //     new_point.setAttribute("id","big-pic-point-" + i);
+    //     new_point.setAttribute("r",big_picture.width.baseVal.value*0.02);
+    //     new_point.setAttribute("fill","#888");
+    //     new_point.setAttribute("cx",big_picture.width.baseVal.value*0.5);
+    //     new_point.setAttribute("cy",big_picture.width.baseVal.value*0.5);
+    //     // console.log()
+    //     // new_point.id = "big-pic-point-" + i;
+    //     // new_point.r = big_picture.width*0.02;
+    //     // new_point.fill = "#888";
+    //     // new_point.cx = big_picture.width*0.5;
+    //     // new_point.cy = big_picture.width*0.5;
+    //     big_picture.appendChild(new_point);
+    // }
+    // const svg = document.getElementById("big-picture");
+
+    // svg.querySelectorAll('[id^="big-pic-point-"]').forEach(el => el.remove());
+
+    for (let i = 2; i <= 2304; i++) {
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("id", `big-pic-point-${i}`);
+      circle.setAttribute("r", "2%");
+      circle.setAttribute("cx", "25%");
+      circle.setAttribute("cy", "25%");
+      circle.setAttribute("fill", "#888");
+      big_picture.appendChild(circle);
+    }
+
     altImage(true);
     update();
 }
@@ -4547,7 +4577,7 @@ function update() {
     // const bigPicPoint8 = document.getElementById("big-pic-point8");
     // const bigPicPoint9 = document.getElementById("big-pic-point9");
     const pointObjects = [];
-    for (let i = 1; i <= 16; i++) {
+    for (let i = 1; i <= 2304; i++) {
         pointObjects.push(document.getElementById("big-pic-point-"+i.toString()));
     }
     games.length = 0;
@@ -4564,6 +4594,7 @@ function update() {
         new_game_3.crossTan(false);
         games.push(new_game_3);
     }
+    // console.log("");
     games = subgroup(orbit_operations);
     // for (let f of orbit_operations) { // this does not work
     //     const new_games = [];
@@ -4649,7 +4680,7 @@ function update() {
         placePoint(pointObjects[0], games[0].quad, games[0].coord_1, games[0].coord_2, games[0].zone);
         draggingInBigPic = false;
     }
-    for (let i = 1; i < 16; i++) {
+    for (let i = 1; i < 2304; i++) {
         if (i < games.length) {
             pointObjects[i].style.display = "";
             placePoint(pointObjects[i], games[i].quad, games[i].coord_1, games[i].coord_2, games[i].zone);
@@ -5611,7 +5642,7 @@ function changeCoords(e) {
             // const bigPicPoint9 = document.getElementById("big-pic-point9");
             // const pointObjects = [ bigPicPoint1, bigPicPoint2, bigPicPoint3, bigPicPoint4, bigPicPoint5, bigPicPoint6, bigPicPoint7, bigPicPoint8, bigPicPoint9 ];
             const pointObjects = [];
-            for (let i = 1; i <= 16; i++) {
+            for (let i = 1; i <= 2304; i++) {
                 pointObjects.push(document.getElementById("big-pic-point-"+i.toString()));
             }
             for (let i = 0; i < games.length; i++) {
@@ -8587,6 +8618,9 @@ function subgroup(fcns, new_elt = game, elts = [], iter = 0) {
         if (!elts.some(game_2 => Game.equal(game_1,game_2))) {
             subgroup(fcns, game_1, elts, iter+1);
         }
+        // else {
+        //     console.log(game_1.row_matrix,game_1.col_matrix,elts.find(x => Game.equal(game_1,x)).row_matrix,elts.find(x => Game.equal(game_1,x)).col_matrix);
+        // }
     }
     return elts;
 }
