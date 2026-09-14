@@ -97,6 +97,11 @@ button {
     margin: 0;
 }
 
+.quarter-mode-button {
+    width: 5vw;
+    margin: 0;
+}
+
 button:hover, .selected {
     background-color: #ccc;
 }
