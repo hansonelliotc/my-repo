@@ -115,26 +115,36 @@
 				<button class="mode-button" id="coordination-mode" onclick="changeViewMode(7)">Correlation</button>
 				<!-- <div style="padding:1vh"></div> -->
 				<h2>Returns to Row Player</h2>
-				<span><button class="quarter-mode-button" id="return-mode-2r" onclick="changeViewMode(18,true,2,true)">R</button></span><span><button class="half-mode-button" id="return-mode-2" onclick="changeViewMode(1)">Equilibrium</button></span><span><button class="quarter-mode-button" id="return-mode-2c" onclick="changeViewMode(18,true,2,false)">C</button></span><br>
+				<span><button class="mode-button" id="non-cooperative-1-row" onclick="changeViewMode(18,true)">Non-Cooperative</button></span>
+				<span><button class="mode-button" id="non-cooperative-2-row" style="display:none" onclick="changeViewMode(19,true)">Non-Cooperative 2</button></span>
+				<!-- <span><button class="quarter-mode-button" id="return-mode-2r" onclick="changeViewMode(18,true,2,true)">R</button></span><span><button class="half-mode-button" id="return-mode-2" onclick="changeViewMode(1)">Equilibrium</button></span><span><button class="quarter-mode-button" id="return-mode-2c" onclick="changeViewMode(18,true,2,false)">C</button></span><br>
 				<span><button class="quarter-mode-button" id="return-mode-13r" onclick="changeViewMode(18,true,13,true)">R</button></span><span><button class="half-mode-button" id="return-mode-1" onclick="changeViewMode(13)">Equilibrium (mixed)</button></span><span><button class="quarter-mode-button" id="return-mode-13c" onclick="changeViewMode(18,true,13,false)">C</button></span><br>
 				<span><button class="quarter-mode-button" id="return-mode-16r" onclick="changeViewMode(18,true,16,true)">R</button></span><span><button class="half-mode-button" id="random-mode" onclick="changeViewMode(16)">Random</button></span><span><button class="quarter-mode-button" id="return-mode-16a" onclick="changeViewMode(18,true,16,false)">C</button></span><br>
-				<span><button class="quarter-mode-button" id="return-mode-17r" onclick="changeViewMode(18,true,17,true)">R</button></span><span><button class="half-mode-button" id="max-mean-mode" onclick="changeViewMode(17)">Max Mean</button></span><span><button class="quarter-mode-button" id="return-mode-17a" onclick="changeViewMode(18,true,17,false)">C</button></span>
+				<span><button class="quarter-mode-button" id="return-mode-17r" onclick="changeViewMode(18,true,17,true)">R</button></span><span><button class="half-mode-button" id="max-mean-mode" onclick="changeViewMode(17)">Max Mean</button></span><span><button class="quarter-mode-button" id="return-mode-17a" onclick="changeViewMode(18,true,17,false)">C</button></span> -->
 				<span><button class="half-mode-button" id="row-first-mode" onclick="changeViewMode(14)">Row first</button></span><span><button class="half-mode-button" id="col-first-mode" onclick="changeViewMode(15)">Column first</button></span>
 				<span><button class="half-mode-button" id="backstop-row" onclick="changeViewMode(9)">Backstop</button></span><span><button class="half-mode-button" id="threat-point-row" onclick="changeViewMode(10)">Threat point</button></span>
 				<span><button class="half-mode-button" id="bargaining-mode-1" onclick="changeViewMode(2)">Backstop NTU</button></span><span><button class="half-mode-button" id="bargaining-mode-2" onclick="changeViewMode(3)">Threat point NTU</button></span>
 				<span><button class="half-mode-button" id="shapley-mode" onclick="changeViewMode(4)">Backstop TU</button></span><span><button class="half-mode-button" id="coco-mode" onclick="changeViewMode(5)">Threat point TU</button></span>
 				<!-- <div style="padding:1vh"></div> -->
 				<h2>Returns to Column Player</h2>
-				<span><button class="half-mode-button" id="return-mode-2-col" onclick="changeViewMode(1,false)">Equilibrium</button></span><span><button class="half-mode-button" id="return-mode-1-col" onclick="changeViewMode(13,false)">Equilibrium (mixed)</button></span>
+				<button class="mode-button" id="non-cooperative-1-col" onclick="changeViewMode(18,false)">Non-Cooperative</button>
+				<button class="mode-button" id="non-cooperative-2-col" style="display:none" onclick="changeViewMode(19,false)">Non-Cooperative 2</button>
+				<!-- <span><button class="half-mode-button" id="return-mode-2-col" onclick="changeViewMode(1,false)">Equilibrium</button></span><span><button class="half-mode-button" id="return-mode-1-col" onclick="changeViewMode(13,false)">Equilibrium (mixed)</button></span> -->
 				<span><button class="half-mode-button" id="row-first-mode-col" onclick="changeViewMode(14,false)">Row first</button></span><span><button class="half-mode-button" id="col-first-mode-col" onclick="changeViewMode(15,false)">Column first</button></span>
-				<span><button class="half-mode-button" id="random-mode-col" onclick="changeViewMode(16,false)">Random</button></span><span><button class="half-mode-button" id="max-mean-mode-col" onclick="changeViewMode(17,false)">Max mean</button></span>
+				<!-- <span><button class="half-mode-button" id="random-mode-col" onclick="changeViewMode(16,false)">Random</button></span><span><button class="half-mode-button" id="max-mean-mode-col" onclick="changeViewMode(17,false)">Max mean</button></span> -->
 				<span><button class="half-mode-button" id="backstop-col" onclick="changeViewMode(9,false)">Backstop</button></span><span><button class="half-mode-button" id="threat-point-col" onclick="changeViewMode(10,false)">Threat point</button></span>
 				<span><button class="half-mode-button" id="bargaining-mode-1-col" onclick="changeViewMode(2,false)">Backstop NTU</button></span><span><button class="half-mode-button" id="bargaining-mode-2-col" onclick="changeViewMode(3,false)">Threat point NTU</button></span>
 				<span><button class="half-mode-button" id="shapley-mode-col" onclick="changeViewMode(4,false)">Backstop TU</button></span><span><button class="half-mode-button" id="coco-mode-col" onclick="changeViewMode(5,false)">Threat point TU</button></span>
 				<div style="padding:1vh"></div>
 				<button class="mode-button" id="transferable-mode" onclick="changeViewMode(6)">Max total</button>
 				<div style="padding:1vh"></div>
-				<button class="mode-button" id="custom-mode" onclick="changeViewMode(8)">Difference</button>
+				<h2>Non-Cooperative Strategies</h2>
+				<div><span style="display:inline-block;width:10vw;">Row</span><span style="display:inline-block;width:10vw;">Column</span></div>
+				<span><button class="quarter-mode-button non-competitive-button-row selected" id="non-cooperative-strat-1-row" onclick="change_strategy_row_1(1)">Eq</button></span><span><button class="quarter-mode-button non-competitive-button-row" id="non-cooperative-strat-2-row" onclick="change_strategy_row_1(2)">Eq (m)</button></span><span><button class="quarter-mode-button non-competitive-button-col selected" id="non-cooperative-strat-1-col" onclick="change_strategy_col_1(1)">Eq</button></span><span><button class="quarter-mode-button non-competitive-button-col" id="non-cooperative-strat-2-col" onclick="change_strategy_col_1(2)">Eq (m)</button></span><br>
+				<span><button class="quarter-mode-button non-competitive-button-row" id="non-cooperative-strat-3-row" onclick="change_strategy_row_1(3)">Eq (+)</button></span><span><button class="quarter-mode-button non-competitive-button-row" id="non-cooperative-strat-4-row" onclick="change_strategy_row_1(4)">Eq (-)</button></span><span><button class="quarter-mode-button non-competitive-button-col" id="non-cooperative-strat-3-col" onclick="change_strategy_col_1(3)">Eq (+)</button></span><span><button class="quarter-mode-button non-competitive-button-col" id="non-cooperative-strat-4-col" onclick="change_strategy_col_1(4)">Eq (-)</button></span><br>
+				<span><button class="quarter-mode-button non-competitive-button-row" id="non-cooperative-strat-5-row" onclick="change_strategy_row_1(5)">Random</button></span><span><button class="quarter-mode-button non-competitive-button-row" id="non-cooperative-strat-6-row" onclick="change_strategy_row_1(6)">Max mean</button></span><span><button class="quarter-mode-button non-competitive-button-col" id="non-cooperative-strat-5-col" onclick="change_strategy_col_1(5)">Random</button></span><span><button class="quarter-mode-button non-competitive-button-col" id="non-cooperative-strat-6-col" onclick="change_strategy_col_1(6)">Max mean</button></span><br>
+				<span><button class="quarter-mode-button non-competitive-button-row" id="non-cooperative-strat-7-row" onclick="change_strategy_row_1(7)">Golden</button></span><span><button class="quarter-mode-button non-competitive-button-row" id="non-cooperative-strat-8-row" onclick="change_strategy_row_1(8)">Anti-gold</button></span><span><button class="quarter-mode-button non-competitive-button-col" id="non-cooperative-strat-7-col" onclick="change_strategy_col_1(7)">Golden</button></span><span><button class="quarter-mode-button non-competitive-button-col" id="non-cooperative-strat-8-col" onclick="change_strategy_col_1(8)">Anti-gold</button></span><br>
+				<!-- <button class="mode-button" id="custom-mode" onclick="changeViewMode(8)">Difference</button>
 				<p id="custom-options">
 					<select name="Choice 1" id="view-custom-1">
 						<option value="returns">Row's equilibrium returns</option>
@@ -183,7 +193,7 @@
 						<option value="backstop-col">Column's backstop</option>
 						<option value="threat-point-col">Column's threat point</option>
 					</select>
-				</p>
+				</p> -->
 			</div>
 			<div id="controls">
 				<p>

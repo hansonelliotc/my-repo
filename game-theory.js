@@ -31,7 +31,6 @@ let enRoute = false;
 let draggingInBigPic = false;
 let viewMode = 0;
 let viewModeP1 = true;
-let strategies = [null,null];
 let time = 0;
 let values = [];
 let valuesX = 0;
@@ -51,6 +50,10 @@ let hiddenLines = 1;
 let windows = false;
 let show_all_zones = false;
 let dragging_temp = false;
+let noncompetitive_row_1 = 1;
+let noncompetitive_row_2 = 1;
+let noncompetitive_col_1 = 1;
+let noncompetitive_col_2 = 1;
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.04;
@@ -1757,6 +1760,183 @@ class Game {
                Math.abs(game_1.t1 - game_2.t1) < 0.0001 && Math.abs(game_1.t2 - game_2.t2) < 0.0001 &&
                game_1.quad_temp == game_2.quad_temp && game_1.zone_row == game_2.zone_row && game_1.zone_col == game_2.zone_col;
     }
+
+    compare_strategies(strat_1, strat_2, p1) {
+        let rows_strategy = 0; // the probability that row chooses the second row
+        let cols_strategy = 0; // the probability that column chooses the second column
+        let equilibria = [];
+        for (let i = 0; i < 2; i++) { // i is the row
+            for (let j = 0; j < 2; j++) { // j is the column
+                if (this.row_matrix[j + i * 2] > this.row_matrix[j + (i+1)%2 * 2] && this.col_matrix[j + i * 2] > this.col_matrix[(j+1)%2 + i * 2]) {
+                    equilibria.push([i,j]);
+                }
+            }
+        }
+        // if (equilibria.length != 1) {
+        //     const A = this.row_matrix;
+        //     const B = this.col_matrix;
+        //     equilibria.push([(B[3] - B[2])/(B[0] - B[1] - B[2] + B[3]),(A[3] - A[1])/(A[0] - A[1] - A[2] + A[3])]);
+        // }
+        let safe = [];
+        if ((strat_1 == 1 || strat_2 == 1) && equilibria.length == 2) {
+            const product1 = (this.row_matrix[equilibria[0][1] + equilibria[0][0]*2]-this.row_matrix[equilibria[0][1] + (equilibria[0][0]+1)%2*2])
+                           * (this.col_matrix[equilibria[0][1] + equilibria[0][0]*2]-this.col_matrix[(equilibria[0][1]+1)%2 + equilibria[0][0]*2]);
+            const product2 = (this.row_matrix[equilibria[1][1] + equilibria[1][0]*2]-this.row_matrix[equilibria[1][1] + (equilibria[1][0]+1)%2*2])
+                           * (this.col_matrix[equilibria[1][1] + equilibria[1][0]*2]-this.col_matrix[(equilibria[1][1]+1)%2 + equilibria[1][0]*2]);
+            if (Math.abs(product1-product2) < 0.0001) {
+                safe.push(equilibria[0]);
+                safe.push(equilibria[1]);
+            } else if (product1 > product2) {
+                safe.push(equilibria[0]);
+            } else {
+                safe.push(equilibria[1]);
+            }
+        }
+        let golden = [];
+        if (strat_1 == 7 || strat_1 == 8 || strat_2 == 7 || strat_2 == 8) {
+            let index = 0;
+            let max = -100;
+            for (let i = 0; i < 4; i++) {
+                if (max < this.row_matrix[i]+this.col_matrix[i]) {
+                    index = i;
+                    max = this.row_matrix[i]+this.col_matrix[i];
+                }
+            }
+            golden.push([Math.floor(index/2), index % 2]);
+        }
+        switch (strat_1) {
+            case 1:
+                if (equilibria.length == 1) {
+                    rows_strategy = equilibria[0][0];
+                } else if (equilibria.length == 2) {
+                    rows_strategy = safe[0][0];
+                } else {
+                    const B = this.col_matrix;
+                    rows_strategy = (B[0] - B[1])/(B[0] - B[1] - B[2] + B[3]);
+                }
+                break;
+            case 2:
+                if (equilibria.length == 1) {
+                    rows_strategy = equilibria[0][0];
+                } else {
+                    const B = this.col_matrix;
+                    rows_strategy = (B[0] - B[1])/(B[0] - B[1] - B[2] + B[3]);
+                }
+                break;
+            case 3:
+                if (equilibria.length == 1) {
+                    rows_strategy = equilibria[0][0];
+                } else if (equilibria.length == 2) {
+                    if (this.row_matrix[equilibria[0][1] + equilibria[0][0]*2] > this.row_matrix[equilibria[1][1] + equilibria[1][0]*2]) {
+                        rows_strategy = equilibria[0][0];
+                    } else {
+                        rows_strategy = equilibria[1][0];
+                    }
+                } else {
+                    const B = this.col_matrix;
+                    rows_strategy = (B[0] - B[1])/(B[0] - B[1] - B[2] + B[3]);
+                }
+                break;
+            case 4:
+                if (equilibria.length == 1) {
+                    rows_strategy = equilibria[0][0];
+                } else if (equilibria.length == 2) {
+                    if (this.row_matrix[equilibria[0][1] + equilibria[0][0]*2] > this.row_matrix[equilibria[1][1] + equilibria[1][0]*2]) {
+                        rows_strategy = equilibria[1][0];
+                    } else {
+                        rows_strategy = equilibria[0][0];
+                    }
+                } else {
+                    const B = this.col_matrix;
+                    rows_strategy = (B[0] - B[1])/(B[0] - B[1] - B[2] + B[3]);
+                }
+                break;
+            case 5:
+                rows_strategy = 0.5;
+                break;
+            case 6:
+                rows_strategy = this.row_matrix[0]+this.row_matrix[1] > this.row_matrix[2]+this.row_matrix[3] ? 0 : 1;
+                break;
+            case 7:
+                rows_strategy = golden[0][0];
+                break;
+            case 8:
+                if (this.row_matrix[golden[0][1]] > this.row_matrix[golden[0][1] + 2]) {
+                    rows_strategy = 0;
+                } else {
+                    rows_strategy = 1;
+                }
+                break;
+        }
+        switch (strat_2) {
+            case 1:
+                if (equilibria.length == 1) {
+                    cols_strategy = equilibria[0][1];
+                } else if (equilibria.length == 2) {
+                    cols_strategy = safe[0][1];
+                } else {
+                    const B = this.row_matrix;
+                    cols_strategy = (B[0] - B[2])/(B[0] - B[1] - B[2] + B[3]);
+                }
+                break;
+            case 2:
+                if (equilibria.length == 1) {
+                    cols_strategy = equilibria[0][1];
+                } else {
+                    const B = this.row_matrix;
+                    cols_strategy = (B[0] - B[2])/(B[0] - B[1] - B[2] + B[3]);
+                }
+                break;
+            case 3:
+                if (equilibria.length == 1) {
+                    cols_strategy = equilibria[0][1];
+                } else if (equilibria.length == 2) {
+                    if (this.col_matrix[equilibria[0][1] + equilibria[0][0]*2] > this.col_matrix[equilibria[1][1] + equilibria[1][0]*2]) {
+                        cols_strategy = equilibria[0][1];
+                    } else {
+                        cols_strategy = equilibria[1][1];
+                    }
+                } else {
+                    const B = this.row_matrix;
+                    cols_strategy = (B[0] - B[2])/(B[0] - B[1] - B[2] + B[3]);
+                }
+                break;
+            case 4:
+                if (equilibria.length == 1) {
+                    cols_strategy = equilibria[0][1];
+                } else if (equilibria.length == 2) {
+                    if (this.col_matrix[equilibria[0][1] + equilibria[0][0]*2] > this.col_matrix[equilibria[1][1] + equilibria[1][0]*2]) {
+                        cols_strategy = equilibria[1][1];
+                    } else {
+                        cols_strategy = equilibria[0][1];
+                    }
+                } else {
+                    const B = this.row_matrix;
+                    cols_strategy = (B[0] - B[2])/(B[0] - B[1] - B[2] + B[3]);
+                }
+                break;
+            case 5:
+                cols_strategy = 0.5;
+                break;
+            case 6:
+                cols_strategy = this.col_matrix[0]+this.col_matrix[2] > this.col_matrix[1]+this.col_matrix[3] ? 0 : 1;
+                break;
+            case 7:
+                cols_strategy = golden[0][1];
+                break;
+            case 8:
+                if (this.row_matrix[golden[0][0]*2] > this.row_matrix[golden[0][0]*2+1]) {
+                    cols_strategy = 0;
+                } else {
+                    cols_strategy = 1;
+                }
+                break;
+        }
+        if (p1)
+            return this.row_matrix[0]*(1-rows_strategy)*(1-cols_strategy) + this.row_matrix[1]*(1-rows_strategy)*(cols_strategy) + this.row_matrix[2]*(rows_strategy)*(1-cols_strategy) + this.row_matrix[3]*(rows_strategy)*(cols_strategy);
+        else
+            return this.col_matrix[0]*(1-rows_strategy)*(1-cols_strategy) + this.col_matrix[1]*(1-rows_strategy)*(cols_strategy) + this.col_matrix[2]*(rows_strategy)*(1-cols_strategy) + this.col_matrix[3]*(rows_strategy)*(cols_strategy);
+    }
 }
 
 let game = Game.temp(0.5,0.5,2,2,3);
@@ -2148,26 +2328,26 @@ function init() {
     });
     bigDiagram.addEventListener('mousedown', (e) => { growBox(e); });
 
-    document.getElementById("view-custom-1").addEventListener('change', (event) => {
-        if (viewMode == 7) {
-            backgroundOutOfDate = true;
-            updateBigPicCanvas(payoffCustom);
-            const select1 = document.getElementById("view-custom-1");
-            const select2 = document.getElementById("view-custom-2");
-            document.getElementById("view-mode-label").innerHTML = "<span style=\"color:rgb(150,0,0)\">" + select1.getElementsByTagName("option")[select1.selectedIndex].innerHTML
-                                                    + "</span> minus <span style=\"color:rgb(0,0,150)\">" + select2.getElementsByTagName("option")[select2.selectedIndex].innerHTML + "</span>";
-        }
-    });
-    document.getElementById("view-custom-2").addEventListener('change', (event) => {
-        if (viewMode == 7) {
-            backgroundOutOfDate = true;
-            updateBigPicCanvas((a,b)=>payoffCustom(flip(b),flip(a)));
-            const select1 = document.getElementById("view-custom-1");
-            const select2 = document.getElementById("view-custom-2");
-            document.getElementById("view-mode-label").innerHTML = "<span style=\"color:rgb(150,0,0)\">" + select1.getElementsByTagName("option")[select1.selectedIndex].innerHTML
-                                                    + "</span> minus <span style=\"color:rgb(0,0,150)\">" + select2.getElementsByTagName("option")[select2.selectedIndex].innerHTML + "</span>";
-        }
-    });
+    // document.getElementById("view-custom-1").addEventListener('change', (event) => {
+    //     if (viewMode == 7) {
+    //         backgroundOutOfDate = true;
+    //         updateBigPicCanvas(payoffCustom);
+    //         const select1 = document.getElementById("view-custom-1");
+    //         const select2 = document.getElementById("view-custom-2");
+    //         document.getElementById("view-mode-label").innerHTML = "<span style=\"color:rgb(150,0,0)\">" + select1.getElementsByTagName("option")[select1.selectedIndex].innerHTML
+    //                                                 + "</span> minus <span style=\"color:rgb(0,0,150)\">" + select2.getElementsByTagName("option")[select2.selectedIndex].innerHTML + "</span>";
+    //     }
+    // });
+    // document.getElementById("view-custom-2").addEventListener('change', (event) => {
+    //     if (viewMode == 7) {
+    //         backgroundOutOfDate = true;
+    //         updateBigPicCanvas((a,b)=>payoffCustom(flip(b),flip(a)));
+    //         const select1 = document.getElementById("view-custom-1");
+    //         const select2 = document.getElementById("view-custom-2");
+    //         document.getElementById("view-mode-label").innerHTML = "<span style=\"color:rgb(150,0,0)\">" + select1.getElementsByTagName("option")[select1.selectedIndex].innerHTML
+    //                                                 + "</span> minus <span style=\"color:rgb(0,0,150)\">" + select2.getElementsByTagName("option")[select2.selectedIndex].innerHTML + "</span>";
+    //     }
+    // });
 
     const acc = 0.02;
     document.addEventListener('keydown', (e) => {
@@ -6347,17 +6527,8 @@ function colorFunction(value,vMode) {
     }
 }
 
-function changeViewMode(mode, player1=true, strategy, player) { // strategy and player are only used for mode 18
+function changeViewMode(mode, player1=true) { // strategy and player are only used for mode 18
     viewModeP1 = player1;
-    if (mode == 18){
-        if (player) {
-            strategies[0] = strategy;
-        } else {
-            strategies[1] = strategy;
-        }
-    } else {
-        strategies = [null, null];
-    }
     if (viewMode == 7 || mode == 7 || viewMode == 8 || mode == 8 || viewMode == 0 || mode == 0) {
         viewMode = mode;
         updateLegend();
@@ -6479,12 +6650,13 @@ function changeViewMode(mode, player1=true, strategy, player) { // strategy and 
                 document.getElementById("view-mode-label").innerHTML = "Row's return when players opt for greatest mean";
                 break;
             case 18:
-                if (player) {
-                    document.getElementById("return-mode-"+strategy+"r").classList.add("selected");
-                } else {
-                    document.getElementById("return-mode-"+strategy+"c").classList.add("selected");
-                }
-                document.getElementById("view-mode-label").innerHTML = "Comparing competitive strategies";
+                document.getElementById("non-cooperative-1-row").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Competitive strategies";
+                break;
+            case 19:
+                document.getElementById("non-cooperative-2-row").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Competitive strategies 2";
+                break;
         }
     } else {
         switch (mode) {
@@ -6536,39 +6708,56 @@ function changeViewMode(mode, player1=true, strategy, player) { // strategy and 
                 document.getElementById("max-mean-mode-col").classList.add("selected");
                 document.getElementById("view-mode-label").innerHTML = "Column's return when players opt for greatest mean";
                 break;
+            case 18:
+                document.getElementById("non-cooperative-1-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Competitive strategies";
+                break;
+            case 19:
+                document.getElementById("non-cooperative-2-col").classList.add("selected");
+                document.getElementById("view-mode-label").innerHTML = "Competitive strategies 2";
+                break;
         }
     }
     update_temp_pic();
 }
 
-function compare_strategies(game) {
-    if (strategies[0] == null || strategies[1] == null) return 0;
-    let rows_strategy = 0; // the probability that row chooses the second row
-    let cols_strategy = 0; // the probability that column chooses the second column
-    switch (strategies[0]) {
-        case 16:
-            rows_strategy = 0.5;
-            break;
-        case 17:
-            rows_strategy = game.row_matrix[0]+game.row_matrix[1] > game.row_matrix[2]+game.row_matrix[3] ? 0 : 1;
-            break;
-        case 1:
-            // rows_strategy = game.equilibrium;
-            break;
-    }
-    switch (strategies[1]) {
-        case 16:
-            cols_strategy = 0.5;
-            break;
-        case 17:
-            cols_strategy = game.row_matrix[0]+game.row_matrix[1] > game.row_matrix[2]+game.row_matrix[3] ? 0 : 1;
-            break;
-        case 1:
-            // rows_strategy = game.equilibrium;
-            break;
-    }
-    return game.row_matrix[0]*(1-rows_strategy)*(1-cols_strategy) + game.row_matrix[1]*(1-rows_strategy)*(cols_strategy) + game.row_matrix[2]*(rows_strategy)*(1-cols_strategy) + game.row_matrix[3]*(rows_strategy)*(cols_strategy);
-}
+// function compare_strategies(game, strat_1, strat_2) {
+//     let rows_strategy = 0; // the probability that row chooses the second row
+//     let cols_strategy = 0; // the probability that column chooses the second column
+//     let equilibria = [];
+//     for (let i = 0; i < 2; i++) { // i is the row
+//         for (let j = 0; j < 2; j++) { // j is the column
+//             if (game.row_matrix[j + i * 2] > game.row_matrix[j + (i+1)%2 * 2] && game.col_matrix[j + i * 2] > game.col_matrix[(i+1)%2 + i * 2]) {
+//                 equilibria.push([i,j]);
+//             }
+//         }
+//     }
+//     if (equilibria.length != 1) {
+//         const A = game.row_matrix;
+//         const B = game.col_matrix;
+//         equilibria.push([(B[3] - B[2])/(B[0] - B[1] - B[2] + B[3]),(A[3] - A[1])/(A[0] - A[1] - A[2] + A[3])]);
+//     }
+//     switch (strat_1) {
+//         case 1:
+
+//             break;
+//         case 5:
+//             rows_strategy = 0.5;
+//             break;
+//         case 6:
+//             rows_strategy = game.row_matrix[0]+game.row_matrix[1] > game.row_matrix[2]+game.row_matrix[3] ? 0 : 1;
+//             break;
+//     }
+//     switch (strat_2) {
+//         case 5:
+//             cols_strategy = 0.5;
+//             break;
+//         case 6:
+//             cols_strategy = game.col_matrix[0]+game.col_matrix[2] > game.col_matrix[1]+game.col_matrix[3] ? 0 : 1;
+//             break;
+//     }
+//     return game.row_matrix[0]*(1-rows_strategy)*(1-cols_strategy) + game.row_matrix[1]*(1-rows_strategy)*(cols_strategy) + game.row_matrix[2]*(rows_strategy)*(1-cols_strategy) + game.row_matrix[3]*(rows_strategy)*(cols_strategy);
+// }
 
 function updateBigPicCanvas(lowRes = false) {
     // update big pic canvas
@@ -6613,7 +6802,7 @@ function updateBigPicCanvas(lowRes = false) {
             for (let j = 0; j < quadrantWidth; j++) {
                 for (let i = 0; i < quadrantWidth; i++) {
                     let color = [];
-                    if (viewMode == 12 || viewMode == 18 && (strategies[0] == null || strategies[1] == null)) {
+                    if (viewMode == 12) {
                         color = [255,255,255];
                     } else {
                         let new_game = game.use_conventions((i+0.5)*6/quadrantWidth,(1-(j+0.5)/quadrantWidth)*6,
@@ -8152,7 +8341,9 @@ function returns(game, mode, row_player) {
                 return game.col_max_mean_return;
             }
         case 18:
-            return compare_strategies(game);
+            return game.compare_strategies(noncompetitive_row_1,noncompetitive_col_1,row_player);
+        case 19:
+            return game.compare_strategies(noncompetitive_row_2,noncompetitive_col_2,row_player);
     }
 }
 
@@ -8459,7 +8650,7 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
                 } else if (viewMode == 0) {
                     const new_game = game.use_conventions(x1, x2, game.coord_3, game.coord_4, game.quad);
                     color = new_game.equilibrium_color;
-                } else if (viewMode == 12 || viewMode == 18 && (strategies[0] == null || strategies[1] == null)) {
+                } else if (viewMode == 12) {
                     color = [255,255,255];
                 } else {
                     let value = 0;
@@ -8534,7 +8725,7 @@ function update_temp_pic() {
                 const t2 = (1 - (j+0.5) / temp_pic_canvas.height) * 6;
                 if (Math.abs(t1 - 3) < 0.05 || Math.abs(t2 - 3) < 0.05) {
                     color = [0,0,0];
-                } else if (viewMode == 12 || viewMode == 18 && (strategies[0] == null || strategies[1] == null)) {
+                } else if (viewMode == 12) {
                     color = [255,255,255];
                 } else {
                     const new_game = game.copy();
@@ -8735,6 +8926,29 @@ function subgroup(fcns, new_elt = game, elts = [], iter = 0) {
         }
     }
     return elts;
+}
+
+function change_strategy_row_1(val) {
+    const buttons = document.getElementsByClassName("non-competitive-button-row");
+    for (let button of buttons) {
+        button.classList.remove("selected");
+    }
+    document.getElementById("non-cooperative-strat-"+val+"-row").classList.add("selected");
+    noncompetitive_row_1 = val;
+}
+function change_strategy_row_2(val) {
+    noncompetitive_row_2 = val;
+}
+function change_strategy_col_1(val) {
+    const buttons = document.getElementsByClassName("non-competitive-button-col");
+    for (let button of buttons) {
+        button.classList.remove("selected");
+    }
+    document.getElementById("non-cooperative-strat-"+val+"-col").classList.add("selected");
+    noncompetitive_col_1 = val;
+}
+function change_strategy_col_2(val) {
+    noncompetitive_col_2 = val;
 }
 
 // function apply_operations(new_game, games, operations) {
