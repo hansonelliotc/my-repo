@@ -1925,7 +1925,7 @@ class Game {
                 cols_strategy = golden[0][1];
                 break;
             case 8:
-                if (this.row_matrix[golden[0][0]*2] > this.row_matrix[golden[0][0]*2+1]) {
+                if (this.col_matrix[golden[0][0]*2] > this.col_matrix[golden[0][0]*2+1]) {
                     cols_strategy = 0;
                 } else {
                     cols_strategy = 1;
