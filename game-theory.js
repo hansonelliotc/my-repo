@@ -31,6 +31,8 @@ let enRoute = false;
 let draggingInBigPic = false;
 let viewMode = 0;
 let viewModeP1 = true;
+let viewModeB = null;
+let viewModeBP1 = true;
 let time = 0;
 let values = [];
 let valuesX = 0;
@@ -50,10 +52,11 @@ let hiddenLines = 1;
 let windows = false;
 let show_all_zones = false;
 let dragging_temp = false;
-let noncompetitive_row_1 = 1;
-let noncompetitive_row_2 = 1;
-let noncompetitive_col_1 = 1;
-let noncompetitive_col_2 = 1;
+let noncooperative_row_1 = 1;
+let noncooperative_row_2 = null;
+let noncooperative_col_1 = 1;
+let noncooperative_col_2 = null;
+let exchange_factor = 1;
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.04;
@@ -856,11 +859,11 @@ class Game {
     get max_total() {
         if (this.#max_total === undefined) {
             let biggestEntry = 0;
-            let max = this.row_matrix[0]+this.col_matrix[0];
+            let max = this.row_matrix[0]+this.col_matrix[0]*exchange_factor;
             for (let i = 1; i < 4; i++) {
-                if (max < this.row_matrix[i]+this.col_matrix[i]) {
+                if (max < this.row_matrix[i]+this.col_matrix[i]*exchange_factor) {
                     biggestEntry = i;
-                    max = this.row_matrix[i]+this.col_matrix[i];
+                    max = this.row_matrix[i]+this.col_matrix[i]*exchange_factor;
                 }
             }
             this.#max_total = max/2;
@@ -885,7 +888,7 @@ class Game {
                 colBackstop = col2_min;
             else colBackstop = col1_min;
 
-            this.#backstop = [rowBackstop,colBackstop];
+            this.#backstop = [rowBackstop,colBackstop*exchange_factor];
         }
         return this.#backstop;
     }
@@ -893,8 +896,8 @@ class Game {
     get threat_point() {
         if (this.#threat_point === undefined) {
             // create zero-sum game given by A=R-C and B=C-R
-            const A = [this.row_matrix[0]-this.col_matrix[0], this.row_matrix[1]-this.col_matrix[1],
-                    this.row_matrix[2]-this.col_matrix[2], this.row_matrix[3]-this.col_matrix[3]];
+            const A = [this.row_matrix[0]-exchange_factor*this.col_matrix[0], this.row_matrix[1]-exchange_factor*this.col_matrix[1],
+                    this.row_matrix[2]-exchange_factor*this.col_matrix[2], this.row_matrix[3]-exchange_factor*this.col_matrix[3]];
             const B = [-A[0],-A[1],-A[2],-A[3]];
 
             // compute the equilibrium of the zero-sum game
@@ -942,7 +945,7 @@ class Game {
             //                 + (1-equilibrium[0])*equilibrium[1]*A[2] + (1-equilibrium[0])*(1-equilibrium[1])*A[3];
             // const colDisagree = equilibrium[0]*equilibrium[1]*B[0] + equilibrium[0]*(1-equilibrium[1])*B[1]
             //                 + (1-equilibrium[0])*equilibrium[1]*B[2] + (1-equilibrium[0])*(1-equilibrium[1])*B[3];
-            this.#threat_point = [rowDisagree,colDisagree];
+            this.#threat_point = [rowDisagree,colDisagree*exchange_factor];
 
             // if there are two equally valid threat points, compute the second one
             if (!mixed && (A[3] <= A[1] || A[2] <= A[0]) && (A[1] <= A[3] || A[0] <= A[2]) && (B[3] <= B[2] || B[1] <= B[0]) && (B[2] <= B[3] || B[0] <= B[1])) {
@@ -956,7 +959,7 @@ class Game {
                 // const colDisagree2 = equilibrium2[0]*equilibrium2[1]*B[0] + equilibrium2[0]*(1-equilibrium2[1])*B[1]
                 //                 + (1-equilibrium2[0])*equilibrium2[1]*B[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*B[3];
                 if (Math.abs(this.#threat_point[0]-rowDisagree2) > 0.001 && Math.abs(this.#threat_point[1]-colDisagree2) > 0.001)
-                    this.#threat_point_2 = [rowDisagree2,colDisagree2];
+                    this.#threat_point_2 = [rowDisagree2,colDisagree2*exchange_factor];
             }
         }
         return this.#threat_point;
@@ -1000,8 +1003,8 @@ class Game {
                 const j = pareto[m];
                 const x1 = this.row_matrix[i] - tp[0];
                 const x2 = this.row_matrix[j] - tp[0];
-                const y1 = this.col_matrix[i] - tp[1];
-                const y2 = this.col_matrix[j] - tp[1];
+                const y1 = this.col_matrix[i]*exchange_factor - tp[1];
+                const y2 = this.col_matrix[j]*exchange_factor - tp[1];
                 // maximizing   (x1*t+x2*(1-t))*(y1*t+y2*(1-t))
                 // derivative   (x1*t+x2*(1-t))*(y1-y2)+(y1*t+y2*(1-t))*(x1-x2) = 0
                 // solve        t*(x1-x2)*(y1-y2)*2+x2*(y1-y2)+y2*(x1-x2) = 0
@@ -1025,7 +1028,7 @@ class Game {
                 }
             }
         }
-        return [return1,return2];
+        return [return1,return2*exchange_factor];
     }
 
     #bargaining_trans(tp) {
@@ -1755,6 +1758,15 @@ class Game {
         else return grayBackground;
     }
 
+    get class() {
+        const max1 = this.row_ranks.indexOf(3);
+        const max2 = this.col_ranks.indexOf(3);
+        if (max1 == max2) return "A";
+        else if (max1 == 0 && max2 == 2 || max1 == 2 && max2 == 0 || max1 == 1 && max2 == 3 || max1 == 3 && max2 == 1) return "R";
+        else if (max1 == 0 && max2 == 1 || max1 == 1 && max2 == 0 || max1 == 2 && max2 == 3 || max1 == 3 && max2 == 2) return "C";
+        else return "D";
+    }
+
     static equal(game_1, game_2) {
         return Math.abs(game_1.y1 - game_2.y1) < 0.0001 && Math.abs(game_1.y2 - game_2.y2) < 0.0001 &&
                Math.abs(game_1.t1 - game_2.t1) < 0.0001 && Math.abs(game_1.t2 - game_2.t2) < 0.0001 &&
@@ -1799,7 +1811,7 @@ class Game {
             for (let i = 0; i < 4; i++) {
                 if (max < this.row_matrix[i]+this.col_matrix[i]) {
                     index = i;
-                    max = this.row_matrix[i]+this.col_matrix[i];
+                    max = this.row_matrix[i]+exchange_factor*this.col_matrix[i];
                 }
             }
             golden.push([Math.floor(index/2), index % 2]);
@@ -2309,6 +2321,7 @@ function init() {
         isMouseDown = false;
         backgroundOutOfDate = true;
         dragging_temp = false;
+        update_temp_pic();
     });
     document.addEventListener('mousemove', (e) => {
         if (isMouseDown) {
@@ -2486,6 +2499,19 @@ function init() {
                 nav_buttons[i].style.color = "black";
             }
             // add_orbit(i);
+        });
+    }
+    const non_cooperative_row_buttons = document.getElementsByClassName("non-cooperative-button-row");
+    for (let i = 1; i <= non_cooperative_row_buttons.length; i++) {
+        const button1 = document.getElementById("non-cooperative-strat-" + i.toString() + "-row");
+        button1.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            change_strategy_row_2(i);
+        });
+        const button2 = document.getElementById("non-cooperative-strat-" + i.toString() + "-col");
+        button2.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            change_strategy_col_2(i);
         });
     }
 
@@ -2990,7 +3016,6 @@ function init() {
     //     new_point.setAttribute("fill","#888");
     //     new_point.setAttribute("cx",big_picture.width.baseVal.value*0.5);
     //     new_point.setAttribute("cy",big_picture.width.baseVal.value*0.5);
-    //     // console.log()
     //     // new_point.id = "big-pic-point-" + i;
     //     // new_point.r = big_picture.width*0.02;
     //     // new_point.fill = "#888";
@@ -3025,6 +3050,7 @@ function init() {
     }
 
     altImage(true);
+    change_big_pic(true);
     update();
 }
 
@@ -3306,7 +3332,13 @@ function update() {
     // current return value
     const cur_returns = document.getElementById("current-returns");
     if (viewMode != 0 && viewMode != 11 && viewMode != 12) {
-        cur_returns.innerHTML = " (" + returns(game,viewMode,viewModeP1).toFixed(1) + ")";
+        if (viewModeB !== null) {
+            cur_returns.innerHTML = " (" + returns(game,viewMode,viewModeP1,viewModeB,viewModeBP1).toFixed(2) + ")";
+        } else if (viewModeP1) {
+            cur_returns.innerHTML = " (<u>" + returns(game,viewMode,true).toFixed(2) + "</u>, " + returns(game,viewMode,false).toFixed(2) + ")";
+        } else {
+            cur_returns.innerHTML = " (" + returns(game,viewMode,true).toFixed(2) + ", <u>" + returns(game,viewMode,false).toFixed(2) + "</u>)";
+        }
     }
 
     const crossBlue1 = document.getElementById("cross-blue-1");
@@ -4783,7 +4815,6 @@ function update() {
     //     new_game_3.crossTan(false);
     //     games.push(new_game_3);
     // }
-    // console.log("");
     games = subgroup(orbit_operations);
     // for (let f of orbit_operations) { // this does not work
     //     const new_games = [];
@@ -5110,7 +5141,9 @@ function update() {
     const cellName = document.getElementById("cell-name");
     let cellCol = (-1*(Math.floor(game.coord_1*game.conventions[1])-game.conventions[0]) + 15) % 6 + 1;
     let cellRow = ((Math.floor(game.coord_2*game.conventions[1])-game.conventions[0]) + 14) % 6 + 1;
-    cellName.innerHTML = cellCol.toString() + "," + cellRow.toString();
+    cellName.innerHTML = game.class + cellCol.toString() + cellRow.toString() + (game.zone_row ? "&plus;" : "&minus;") + (game.zone_col ? "&plus;" : "&minus;");
+    const coordinatesObj = document.getElementById("coordinates");
+    coordinatesObj.innerHTML = "y<sub>1</sub>: " + game.y1.toFixed(2) + ", y<sub>2</sub>: " + game.y2.toFixed(2) + ", t<sub>1</sub>: " + game.t1.toFixed(2) + ", t<sub>2</sub>: " + game.t2.toFixed(2);
 
     // update zone label
     const zone_label = document.getElementById("zone");
@@ -5143,6 +5176,14 @@ function update() {
     const circle = document.getElementById("temp-pic-point");
     circle.cx.baseVal.value = game.t1/6*temp_pic_canvas.width;
     circle.cy.baseVal.value = (1-game.t2/6)*temp_pic_canvas.height;
+
+    // update exchange rate
+    if (exchange_factor != 10 ** document.getElementById("exchange-slider").value) {
+        exchange_factor = 10 ** document.getElementById("exchange-slider").value;
+        document.getElementById("exchange-factor").innerHTML = exchange_factor.toFixed(2);
+        updateCanvas(true);
+        update_temp_pic(true);
+    }
 
     time++;
 }
@@ -6420,13 +6461,13 @@ function payoffCustom(game) {
         value1 = returns(game,2,false);
     } else if (choice1 == "returns-bargaining-tp-col") {
         value1 = returns(game,3,false);
-    } else if (choice1 == "backstop-row") {
+    } else if (choice1 == "mode-button-5-row") {
         value1 = returns(game,9,true);
-    } else if (choice1 == "threat-point-row") {
+    } else if (choice1 == "mode-button-6-row") {
         value1 = returns(game,10,true);
-    } else if (choice1 == "backstop-col") {
+    } else if (choice1 == "mode-button-5-col") {
         value1 = returns(game,9,false);
-    } else if (choice1 == "threat-point-col") {
+    } else if (choice1 == "mode-button-6-col") {
         value1 = returns(game,10,false);
     } else if (choice1 == "returns-mixed") {
         value1 = returns(game,13,true);
@@ -6464,13 +6505,13 @@ function payoffCustom(game) {
         value2 = returns(game,2,false);
     } else if (choice2 == "returns-bargaining-tp-col") {
         value2 = returns(game,3,false);
-    } else if (choice2 == "backstop-row") {
+    } else if (choice2 == "mode-button-5-row") {
         value2 = returns(game,9,true);
-    } else if (choice2 == "threat-point-row") {
+    } else if (choice2 == "mode-button-6-row") {
         value2 = returns(game,10,true);
-    } else if (choice2 == "backstop-col") {
+    } else if (choice2 == "mode-button-5-col") {
         value2 = returns(game,9,false);
-    } else if (choice2 == "threat-point-col") {
+    } else if (choice2 == "mode-button-6-col") {
         value2 = returns(game,10,false);
     } else if (choice2 == "returns-mixed") {
         value2 = returns(game,13,true);
@@ -6512,12 +6553,12 @@ function colorFunction(value,vMode) {
         colors = [[0,0,100],[0,0,130],[111,118,172],[255,255,255],[184,114,116],[130,0,0],[100,0,0]];
         cutoffs = [0,0.1,0.3,0.5,0.7,0.9,1];
     } else {
-        colors = [[0,7,105],[0,98,162],[48,175,149],[94,190,64],[195,167,48],[199,111,8],[198,34,41],[243,178,188],[255,222,226]];
-        cutoffs = [0,0.11,0.22,0.33,0.44,0.55,0.67,0.85,1];
+        colors = [[0,7,105],[0,98,162],[48,175,149],[94,190,64],[195,167,48],[199,111,8],[198,34,41],[243,178,188],[255,222,226],[255,255,255]];
+        cutoffs = [0,0.11,0.22,0.33,0.44,0.55,0.67,0.85,1,2.67];
         divisor = 9;
     }
     value = value / divisor;
-    if (value > 1) value = 1;
+    if (value > cutoffs[cutoffs.length-1]) value = cutoffs[cutoffs.length-1];
     const result = [0,0,0];
     for (let i = 1; i <= cutoffs.length; i++) {
         if (value <= cutoffs[i]) {
@@ -6535,6 +6576,7 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
     } else {
         viewMode = mode;
     }
+    if (viewModeB !== null && (viewMode == 12 || viewMode == 11 || viewMode == 0 || viewMode == 7)) change_mode_b(viewModeB,viewModeBP1);
     // const canvas = document.getElementById("canvas");
     // const canvasBig = document.getElementById("big-pic-canvas");
     // if (mode == 0) {
@@ -6553,6 +6595,7 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
 
     const curButton = document.getElementsByClassName("selected")[0];
     curButton.classList.remove("selected");
+    curButton.classList.remove("selected-red");
 
     if (player1) {
         switch (mode) {
@@ -6571,6 +6614,8 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
                 break;
             case 6:
                 document.getElementById("transferable-mode").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("transferable-mode").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Max total";
                 break;
             case 1:
@@ -6578,15 +6623,21 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
                 document.getElementById("view-mode-label").innerHTML = "Row's equilibrium returns";
                 break;
             case 5:
-                document.getElementById("coco-mode").classList.add("selected");
+                document.getElementById("mode-button-10-row").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-10-row").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Row's threat point TU";
                 break;
             case 2:
-                document.getElementById("bargaining-mode-1").classList.add("selected");
+                document.getElementById("mode-button-7-row").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-7-row").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Row's backstop NTU";
                 break;
             case 3:
-                document.getElementById("bargaining-mode-2").classList.add("selected");
+                document.getElementById("mode-button-8-row").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-8-row").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Row's threat point NTU";
                 break;
             case 8:
@@ -6601,15 +6652,21 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
                 document.getElementById("view-mode-label").innerHTML = "Correlation";
                 break;
             case 4:
-                document.getElementById("shapley-mode").classList.add("selected");
+                document.getElementById("mode-button-9-row").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-9-row").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Row's backstop TU";
                 break;
             case 9:
-                document.getElementById("backstop-row").classList.add("selected");
+                document.getElementById("mode-button-5-row").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-5-row").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Row's backstop";
                 break;
             case 10:
-                document.getElementById("threat-point-row").classList.add("selected");
+                document.getElementById("mode-button-6-row").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-6-row").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Row's threat point";
                 break;
             case 11:
@@ -6631,14 +6688,20 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
                 break;
             case 13:
                 document.getElementById("return-mode-1").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("return-mode-1").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Row's equilibrium returns (using mixed)";
                 break;
             case 14:
-                document.getElementById("row-first-mode").classList.add("selected");
+                document.getElementById("mode-button-3-row").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-3-row").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Row's return when row plays first";
                 break;
             case 15:
-                document.getElementById("col-first-mode").classList.add("selected");
+                document.getElementById("mode-button-4-row").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-4-row").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Row's return when column plays first";
                 break;
             case 16:
@@ -6650,11 +6713,15 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
                 document.getElementById("view-mode-label").innerHTML = "Row's return when players opt for greatest mean";
                 break;
             case 18:
-                document.getElementById("non-cooperative-1-row").classList.add("selected");
+                document.getElementById("mode-button-1-row").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-1-row").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Competitive strategies";
                 break;
             case 19:
-                document.getElementById("non-cooperative-2-row").classList.add("selected");
+                document.getElementById("mode-button-2-row").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-2-row").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Competitive strategies 2";
                 break;
         }
@@ -6665,27 +6732,39 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
                 document.getElementById("view-mode-label").innerHTML = "Column's equilibrium returns";
                 break;
             case 5:
-                document.getElementById("coco-mode-col").classList.add("selected");
+                document.getElementById("mode-button-10-col").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-10-col").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Column's threat point TU";
                 break;
             case 2:
-                document.getElementById("bargaining-mode-1-col").classList.add("selected");
+                document.getElementById("mode-button-7-col").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-7-col").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Column's backstop NTU";
                 break;
             case 3:
-                document.getElementById("bargaining-mode-2-col").classList.add("selected");
+                document.getElementById("mode-button-8-col").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-8-col").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Column's threat point NTU";
                 break;
             case 4:
-                document.getElementById("shapley-mode-col").classList.add("selected");
+                document.getElementById("mode-button-9-col").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-9-col").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Column's backstop TU";
                 break;
             case 9:
-                document.getElementById("backstop-col").classList.add("selected");
+                document.getElementById("mode-button-5-col").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-5-col").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Column's backstop";
                 break;
             case 10:
-                document.getElementById("threat-point-col").classList.add("selected");
+                document.getElementById("mode-button-6-col").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-6-col").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Column's threat point";
                 break;
             case 13:
@@ -6693,11 +6772,15 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
                 document.getElementById("view-mode-label").innerHTML = "Column's equilibrium returns (using mixed)";
                 break;
             case 14:
-                document.getElementById("row-first-mode-col").classList.add("selected");
+                document.getElementById("mode-button-3-col").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-3-col").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Column's return when row plays first";
                 break;
             case 15:
-                document.getElementById("col-first-mode-col").classList.add("selected");
+                document.getElementById("mode-button-4-col").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-4-col").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Column's return when column plays first";
                 break;
             case 16:
@@ -6709,11 +6792,15 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
                 document.getElementById("view-mode-label").innerHTML = "Column's return when players opt for greatest mean";
                 break;
             case 18:
-                document.getElementById("non-cooperative-1-col").classList.add("selected");
+                document.getElementById("mode-button-1-col").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-1-col").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Competitive strategies";
                 break;
             case 19:
-                document.getElementById("non-cooperative-2-col").classList.add("selected");
+                document.getElementById("mode-button-2-col").classList.add("selected");
+                if (viewModeB !== null)
+                    document.getElementById("mode-button-2-col").classList.add("selected-red");
                 document.getElementById("view-mode-label").innerHTML = "Competitive strategies 2";
                 break;
         }
@@ -6798,7 +6885,8 @@ function updateBigPicCanvas(lowRes = false) {
             } else {
                 zone = game.zone;
             }
-            const quadrantWidth = Math.floor(canvasBigPic.width*0.84/grid_size);
+            let quadrantWidth = Math.floor(canvasBigPic.width*0.84/grid_size);
+            quadrantWidth = quadrantWidth - quadrantWidth % 6;
             for (let j = 0; j < quadrantWidth; j++) {
                 for (let i = 0; i < quadrantWidth; i++) {
                     let color = [];
@@ -6809,7 +6897,7 @@ function updateBigPicCanvas(lowRes = false) {
                                                             col < 2 ? b1 : 6 - b1, row < 2 ? b2 : 6 - b2,quadrant,zone);
                         if (viewMode == 0) color = new_game.equilibrium_color;
                         else if (viewMode == 11) color = new_game.quadrant_color;
-                        else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+                        else color = colorFunction(returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1),viewModeB === null ? viewMode : 8);
                     }
                     let x = i + Math.round(canvasBigPic.width*((0.08+col)/grid_size));
                     let y = j + Math.round(canvasBigPic.height*((0.08+row)/grid_size));
@@ -7024,7 +7112,7 @@ function updateCanvas(lowRes = false) {
     const picHeight = fixImageSize ? container.height.baseVal.value - diagramWidth : (container.height.baseVal.value - diagramWidth)*dimensions()[1];
     const picPadding1 = game.zone_row == 0 ? diagramWidth/2 : container.width.baseVal.value-diagramWidth/2-picWidth;
     const picPadding2 = game.zone_col == 1 ? diagramWidth/2 : container.height.baseVal.value-diagramWidth/2-picHeight;
-    render_background(picWidth,picHeight,picPadding1,picPadding2);
+    render_background(picWidth,picHeight,picPadding1,picPadding2,lowRes);
     updateBigPicCanvas(lowRes);
 }
 
@@ -7150,7 +7238,7 @@ function updateCoords() {
     // else if (max1 == 0 && max2 == 2 || max1 == 2 && max2 == 0 || max1 == 1 && max2 == 3 || max1 == 3 && max2 == 1) game.quad = 2;
     // else if (max1 == 0 && max2 == 1 || max1 == 1 && max2 == 0 || max1 == 2 && max2 == 3 || max1 == 3 && max2 == 2) game.quad = 4;
     // else game.quad = 3;
-    updateBackground();
+    updateCanvas(true);
 }
 
 function createDiagram() {
@@ -7907,8 +7995,8 @@ function updateLegend() {
     const imageData = ctx.getImageData(0, 0, legendCanvas.width, legendCanvas.height);
     const data = imageData.data;
     for (let j = 0; j < legendCanvas.height; j++) {
-        const mult = viewMode == 7 || viewMode == 8 ? 1 : 9;
-        const color = colorFunction((1-j/legendCanvas.height)*mult, viewMode);
+        const mult = viewMode == 7 || viewMode == 8 || viewModeB !== null ? 1 : 9;
+        const color = colorFunction((1-j/legendCanvas.height)*mult, viewModeB === null ? viewMode : 8);
         for (let i = 0; i < legendCanvas.height; i++) {
             data[(j*legendCanvas.width+i)*4]   = color[0];
             data[(j*legendCanvas.width+i)*4+1] = color[1];
@@ -7918,7 +8006,7 @@ function updateLegend() {
     }
     ctx.putImageData(imageData,0,0);
 
-    if (viewMode == 8) {
+    if (viewMode == 8 || viewModeB !== null) {
         legendLabel2.style.display = "none";
         legendLabel3.style.display = "none";
         legendLabel4.style.display = "none";
@@ -8201,150 +8289,172 @@ function hideLines(hide) {
     }
 }
 
-function returns(game, mode, row_player) {
+function returns(game, mode, row_player, mode_b, row_player_b) {
+    let return_1 = null;
+    let return_2 = null;
+    if (mode_b != null) { return_2 = returns(game,mode_b,row_player_b); }
     switch (mode) {
         case 1: // equilibrium returns
             if (row_player) {
                 if (game.row_equilibrium_return_2 == null)
-                    return game.row_equilibrium_return;
+                    return_1 = game.row_equilibrium_return;
                 else {
                     const checker_size = 0.25;
                     const diagonal1 = (game.coord_1+game.coord_2) % checker_size < checker_size/2;
                     const diagonal2 = (game.coord_1-game.coord_2+6) % checker_size < checker_size/2;
                     if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
-                        return game.row_equilibrium_return;
+                        return_1 = game.row_equilibrium_return;
                     else
-                        return game.row_equilibrium_return_2;
+                        return_1 = game.row_equilibrium_return_2;
                 }
             }
             else {
                 if (game.col_equilibrium_return_2 == null)
-                    return game.col_equilibrium_return;
+                    return_1 = game.col_equilibrium_return;
                 else {
                     const checker_size = 0.25;
                     const diagonal1 = (game.coord_1+game.coord_2) % checker_size < checker_size/2;
                     const diagonal2 = (game.coord_1-game.coord_2+6) % checker_size < checker_size/2;
                     if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
-                        return game.col_equilibrium_return;
+                        return_1 = game.col_equilibrium_return;
                     else
-                        return game.col_equilibrium_return_2;
+                        return_1 = game.col_equilibrium_return_2;
                 }
             }
+            break;
         case 2: // non-transferable utility backstop
-            if (row_player) return game.row_ntu_bs_return;
-            else return game.col_ntu_bs_return;
+            if (row_player) return_1 = game.row_ntu_bs_return;
+            else return_1 = game.col_ntu_bs_return;
+            break;
         case 3: // non-transferable utility threat point
             if (row_player) {
                 if (game.row_ntu_tp_return_2 == null)
-                    return game.row_ntu_tp_return;
+                    return_1 = game.row_ntu_tp_return;
                 else {
                     const checker_size = 0.25;
                     const diagonal1 = (game.coord_1+game.coord_2) % checker_size < checker_size/2;
                     const diagonal2 = (game.coord_1-game.coord_2+6) % checker_size < checker_size/2;
                     if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
-                        return game.row_ntu_tp_return;
+                        return_1 = game.row_ntu_tp_return;
                     else
-                        return game.row_ntu_tp_return_2;
+                        return_1 = game.row_ntu_tp_return_2;
                 }
             }
             else {
                 if (game.col_ntu_tp_return_2 == null)
-                    return game.col_ntu_tp_return;
+                    return_1 = game.col_ntu_tp_return;
                 else {
                     const checker_size = 0.25;
                     const diagonal1 = (game.coord_1+game.coord_2) % checker_size < checker_size/2;
                     const diagonal2 = (game.coord_1-game.coord_2+6) % checker_size < checker_size/2;
                     if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
-                        return game.col_ntu_tp_return;
+                        return_1 = game.col_ntu_tp_return;
                     else
-                        return game.col_ntu_tp_return_2;
+                        return_1 = game.col_ntu_tp_return_2;
                 }
             }
+            break;
         case 4: // transferable utility backstop
-            if (row_player) return game.row_tu_bs_return;
-            else return game.col_tu_bs_return;
+            if (row_player) return_1 = game.row_tu_bs_return;
+            else return_1 = game.col_tu_bs_return;
+            break;
         case 5: // transferable utility threat point
-            if (row_player) return game.row_tu_tp_return;
-            else return game.col_tu_tp_return;
+            if (row_player) return_1 = game.row_tu_tp_return;
+            else return_1 = game.col_tu_tp_return;
+            break;
         case 6: // max total
-            return game.max_total;
+            return_1 = game.max_total;
+            break;
         case 7: // correlation
-            return game.correlation;
+            return_1 = game.correlation;
+            break;
         case 8: // custom difference
-            return payoffCustom(game);
+            return_1 = payoffCustom(game);
+            break;
         case 9: // backstop
             if (row_player)
-                return game.backstop[0];
+                return_1 = game.backstop[0];
             else
-                return game.backstop[1];
+                return_1 = game.backstop[1];
+            break;
         case 10: // threat points
             if (row_player) {
                 if (game.threat_point_2 == null)
-                    return game.threat_point[0];
+                    return_1 = game.threat_point[0];
                 else {
                     const checker_size = 0.25;
                     const diagonal1 = (game.coord_1+game.coord_2) % checker_size < checker_size/2;
                     const diagonal2 = (game.coord_1-game.coord_2+6) % checker_size < checker_size/2;
                     if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
-                        return game.threat_point[0];
+                        return_1 = game.threat_point[0];
                     else
-                        return game.threat_point_2[0];
+                        return_1 = game.threat_point_2[0];
                 }
             }
             else {
                 if (game.threat_point_2 == null)
-                    return game.threat_point[1];
+                    return_1 = game.threat_point[1];
                 else {
                     const checker_size = 0.25;
                     const diagonal1 = (game.coord_1+game.coord_2) % checker_size < checker_size/2;
                     const diagonal2 = (game.coord_1-game.coord_2+6) % checker_size < checker_size/2;
                     if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
-                        return game.threat_point[1];
+                        return_1 = game.threat_point[1];
                     else
-                        return game.threat_point_2[1];
+                        return_1 = game.threat_point_2[1];
                 }
             }
+            break;
         case 13:
             if (row_player) {
                 if (game.row_mixed_return == null)
-                    return game.row_equilibrium_return;
+                    return_1 = game.row_equilibrium_return;
                 else
-                    return game.row_mixed_return;
+                    return_1 = game.row_mixed_return;
             } else {
                 if (game.col_mixed_return == null)
-                    return game.col_equilibrium_return;
+                    return_1 = game.col_equilibrium_return;
                 else
-                    return game.col_mixed_return;
+                    return_1 = game.col_mixed_return;
             }
+            break;
         case 14:
             if (row_player) {
-                return game.row_first_return;
+                return_1 = game.row_first_return;
             } else {
-                return game.col_second_return;
+                return_1 = game.col_second_return;
             }
+            break;
         case 15:
             if (row_player) {
-                return game.row_second_return;
+                return_1 = game.row_second_return;
             } else {
-                return game.col_first_return;
+                return_1 = game.col_first_return;
             }
+            break;
         case 16:
             if (row_player) {
-                return game.row_random_return;
+                return_1 = game.row_random_return;
             } else {
-                return game.col_random_return;
+                return_1 = game.col_random_return;
             }
+            break;
         case 17:
             if (row_player) {
-                return game.row_max_mean_return;
+                return_1 = game.row_max_mean_return;
             } else {
-                return game.col_max_mean_return;
+                return_1 = game.col_max_mean_return;
             }
+            break;
         case 18:
-            return game.compare_strategies(noncompetitive_row_1,noncompetitive_col_1,row_player);
+            return_1 = game.compare_strategies(noncooperative_row_1,noncooperative_col_1,row_player);
+            break;
         case 19:
-            return game.compare_strategies(noncompetitive_row_2,noncompetitive_col_2,row_player);
+            return_1 = game.compare_strategies(noncooperative_row_2,noncooperative_col_2,row_player);
+            break;
     }
+    if (return_2 == null) return return_1;
+    else return (return_1 - return_2)/12+1/2;
 }
 
 function change_conventions(offset, inversion) {
@@ -8601,7 +8711,7 @@ function dimensions() {
     }
 }
 
-function render_background(picWidth,picHeight,picPadding1,picPadding2) {
+function render_background(picWidth,picHeight,picPadding1,picPadding2,low_res) {
     // res = 1 denotes full resolution. Use smaller values to decrease the resolution.
     const foreignObject = document.getElementById("canvasForeignObject");
     const canvas = document.getElementById("canvas");
@@ -8611,11 +8721,12 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
     foreignObject.y.baseVal.value = picPadding2;
     foreignObject.width.baseVal.value = picWidth;
     foreignObject.height.baseVal.value = picHeight;
-    canvas.width = picWidth;
-    canvas.height = picHeight;
+    canvas.width = picWidth - picWidth % 2;
+    canvas.height = picHeight - picHeight % 2;
 
-    const high_res = (dimensions()[0] != 1 && dimensions()[1] != 1 || !isMouseDown && !x1up && !x1down && !x2up && !x2down) && !dragging_temp && 
-                     !draggingB1 && !draggingB2 && !b1up && !b1down && !b2up && !b2down && b1V == 0 && b2V == 0;
+    const high_res = low_res === undefined ? 
+                     (dimensions()[0] != 1 && dimensions()[1] != 1 || !isMouseDown && !x1up && !x1down && !x2up && !x2down) && !dragging_temp && 
+                     !draggingB1 && !draggingB2 && !b1up && !b1down && !b2up && !b2down && b1V == 0 && b2V == 0 : !low_res;
     // if (!high_res && viewMode != 0 && viewMode != 11) {
     //     valuesX = 6*Math.round(picWidth/30);
     //     valuesY = 6*Math.round(picHeight/30);
@@ -8640,8 +8751,8 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
     for (let j = 0; j < canvas.height; j++) {
         for (let i = 0; i < canvas.width; i++) {
             if (high_res || i % pixel_size[0] == 0) {
-                const x1 = i/canvas.width*6;
-                const x2 = (canvas.height-j)/canvas.height*6;
+                const x1 = (i+0.5)/canvas.width*6;
+                const x2 = (canvas.height-j-0.5)/canvas.height*6;
                 if (viewMode == 11 || windows && Math.abs((6-x1-x2+2*(game.offset-2)*game.flip+15)%12-3) < 0.5*Math.abs(Math.sin((x1-x2+2)*PI/4))
                                 //   || windows && Math.abs(6-x1-x2-2*game.offset-2) < 0.5*Math.abs(Math.sin((x1-x2)*PI/4))
                                   || windows && Math.abs((6-x1-x2+2*(game.offset-2)*game.flip+9)%12-3) < 0.5*Math.abs(Math.sin((x1-x2)*PI/4))) {
@@ -8656,7 +8767,7 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
                     let value = 0;
                     // if (high_res) {
                     let new_game = game.use_conventions(x1, x2, game.coord_3, game.coord_4, game.quad);
-                    value = returns(new_game,viewMode,viewModeP1);
+                    value = returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1);
                     // } else {
                     //     const weight1 = i/canvas.width*valuesX % 1;
                     //     const weight2 = j/canvas.height*valuesY % 1;
@@ -8665,10 +8776,9 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2) {
                     //             values[Math.ceil(j/canvas.height*valuesY)%valuesY][Math.floor(i/canvas.width*valuesX)%valuesX] * (1-weight1) * weight2 +
                     //             values[Math.ceil(j/canvas.height*valuesY)%valuesY][Math.ceil(i/canvas.width*valuesX)%valuesX] * weight1 * weight2;
                     // }
-                    color = colorFunction(value, viewMode);
+                    color = colorFunction(value, viewModeB === null ? viewMode : 8);
                 }
             }
-
             data[(j*canvas.width+i)*4]   = color[0];
             data[(j*canvas.width+i)*4+1] = color[1];
             data[(j*canvas.width+i)*4+2] = color[2];
@@ -8701,9 +8811,10 @@ function change_big_pic(all_zones) {
     }
 }
 
-function update_temp_pic() {
-    const high_res = (dimensions()[0] != 1 && dimensions()[1] != 1 || !isMouseDown && !x1up && !x1down && !x2up && !x2down) && !dragging_temp && 
-                     !draggingB1 && !draggingB2 && !b1up && !b1down && !b2up && !b2down && b1V == 0 && b2V == 0;
+function update_temp_pic(low_res) {
+    const high_res = low_res === undefined ? 
+                     (dimensions()[0] != 1 && dimensions()[1] != 1 || !isMouseDown && !x1up && !x1down && !x2up && !x2down) && !dragging_temp && 
+                     !draggingB1 && !draggingB2 && !b1up && !b1down && !b2up && !b2down && b1V == 0 && b2V == 0 : !low_res;
     const foreign_object = document.getElementById("foreign-object-temp-pic");
     const temp_pic_canvas = document.getElementById("temp-pic-canvas");
     const temp_pic = document.getElementById("temp-pic");
@@ -8735,7 +8846,7 @@ function update_temp_pic() {
                     new_game.t2 = t2;
                     if (viewMode == 0) color = new_game.equilibrium_color;
                     else if (viewMode == 11) color = new_game.quadrant_color;
-                    else color = colorFunction(returns(new_game,viewMode,viewModeP1),viewMode);
+                    else color = colorFunction(returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1),viewModeB === null ? viewMode : 8);
                 }
             }
             // color = colorFunction(new_game.quad_temp,viewMode);
@@ -8929,26 +9040,127 @@ function subgroup(fcns, new_elt = game, elts = [], iter = 0) {
 }
 
 function change_strategy_row_1(val) {
-    const buttons = document.getElementsByClassName("non-competitive-button-row");
-    for (let button of buttons) {
-        button.classList.remove("selected");
+    const buttons = document.getElementsByClassName("non-cooperative-button-row");
+    const purple_button = document.querySelector(".selected-olive.non-cooperative-button-row");
+    if (purple_button) {
+        purple_button.classList.remove("selected-olive");
+        purple_button.classList.add("selected-green");
+    } else {
+        for (let button of buttons) {
+            button.classList.remove("selected");
+        }
     }
-    document.getElementById("non-cooperative-strat-"+val+"-row").classList.add("selected");
-    noncompetitive_row_1 = val;
+    if (noncooperative_row_2 != val) {
+        document.getElementById("non-cooperative-strat-"+val+"-row").classList.add("selected");
+    } else {
+        document.getElementById("non-cooperative-strat-"+val+"-row").classList.remove("selected-green");
+        document.getElementById("non-cooperative-strat-"+val+"-row").classList.add("selected-olive");
+    }
+    noncooperative_row_1 = val;
 }
 function change_strategy_row_2(val) {
-    noncompetitive_row_2 = val;
+    if (noncooperative_row_2 === null && noncooperative_col_2 !== null) {
+        document.getElementById("mode-button-2-row").style.display = "";
+        document.getElementById("mode-button-2-col").style.display = "";
+        // document.getElementById("mode-button-1-row").style.color = "red";
+        // document.getElementById("mode-button-1-col").style.color = "red";
+        // document.getElementById("mode-button-2-row").style.color = "blue";
+        // document.getElementById("mode-button-2-col").style.color = "blue";
+    }
+    const buttons = document.getElementsByClassName("non-cooperative-button-row");
+    const purple_button = document.querySelector(".selected-olive.non-cooperative-button-row");
+    if (purple_button) {
+        purple_button.classList.remove("selected-olive");
+        purple_button.classList.add("selected");
+    } else {
+        for (let button of buttons) {
+            button.classList.remove("selected-green");
+        }
+    }
+    if (noncooperative_row_1 != val) {
+        document.getElementById("non-cooperative-strat-"+val+"-row").classList.add("selected-green");
+    } else {
+        document.getElementById("non-cooperative-strat-"+val+"-row").classList.remove("selected");
+        document.getElementById("non-cooperative-strat-"+val+"-row").classList.add("selected-olive");
+    }
+    noncooperative_row_2 = val;
 }
 function change_strategy_col_1(val) {
-    const buttons = document.getElementsByClassName("non-competitive-button-col");
-    for (let button of buttons) {
-        button.classList.remove("selected");
+    const buttons = document.getElementsByClassName("non-cooperative-button-col");
+    const purple_button = document.querySelector(".selected-olive.non-cooperative-button-col");
+    if (purple_button) {
+        purple_button.classList.remove("selected-olive");
+        purple_button.classList.add("selected-green");
+    } else {
+        for (let button of buttons) {
+            button.classList.remove("selected");
+        }
     }
-    document.getElementById("non-cooperative-strat-"+val+"-col").classList.add("selected");
-    noncompetitive_col_1 = val;
+    if (noncooperative_col_2 != val)
+        document.getElementById("non-cooperative-strat-"+val+"-col").classList.add("selected");
+    else {
+        document.getElementById("non-cooperative-strat-"+val+"-col").classList.remove("selected-green");
+        document.getElementById("non-cooperative-strat-"+val+"-col").classList.add("selected-olive");
+    }
+    noncooperative_col_1 = val;
 }
 function change_strategy_col_2(val) {
-    noncompetitive_col_2 = val;
+    if (noncooperative_row_2 !== null && noncooperative_col_2 === null) {
+        document.getElementById("mode-button-2-row").style.display = "";
+        document.getElementById("mode-button-2-col").style.display = "";
+        // document.getElementById("mode-button-1-row").style.color = "red";
+        // document.getElementById("mode-button-1-col").style.color = "red";
+        // document.getElementById("mode-button-2-row").style.color = "blue";
+        // document.getElementById("mode-button-2-col").style.color = "blue";
+    }
+    const buttons = document.getElementsByClassName("non-cooperative-button-col");
+    const purple_button = document.querySelector(".selected-olive.non-cooperative-button-col");
+    if (purple_button) {
+        purple_button.classList.remove("selected-olive");
+        purple_button.classList.add("selected");
+    } else {
+        for (let button of buttons) {
+            button.classList.remove("selected-green");
+        }
+    }
+    if (noncooperative_col_1 != val) {
+        document.getElementById("non-cooperative-strat-"+val+"-col").classList.add("selected-green");
+    } else {
+        document.getElementById("non-cooperative-strat-"+val+"-col").classList.remove("selected");
+        document.getElementById("non-cooperative-strat-"+val+"-col").classList.add("selected-olive");
+    }
+    noncooperative_col_2 = val;
+}
+
+function change_mode_b(mode, p1) {
+    const view_modes = [18,19,14,15,9,10,2,3,4,5,6];
+    if (view_modes[mode-1] == viewModeB && p1 == viewModeBP1 || view_modes[mode-1] == viewMode && p1 == viewModeP1 || viewMode == 12 || viewMode == 11 || viewMode == 0 || viewMode == 7) {
+        viewModeB = null;
+        const selected_button = document.querySelector(".mode-button.selected");
+        if (selected_button) selected_button.classList.remove("selected-red");
+    } else {
+        viewModeB = view_modes[mode-1];
+        viewModeBP1 = p1;
+    }
+    updateBackground();
+    update_temp_pic();
+    updateBigPicCanvas(false);
+    updateLegend();
+    const blue_button = document.getElementsByClassName("selected-blue");
+    for (let button of blue_button) button.classList.remove("selected-blue");
+    if (viewModeB !== null) {
+        const selected_button = document.querySelector(".mode-button.selected");
+        if (selected_button) selected_button.classList.add("selected-red");
+        if (mode != 11)
+            document.getElementById("mode-button-" + mode + (p1 ? "-row" : "-col")).classList.add("selected-blue");
+        else
+            document.getElementById("transferable-mode").classList.add("selected-blue");
+    }
+}
+
+function reset_exchange() {
+    const slider = document.getElementById("exchange-slider");
+    slider.value = 0;
 }
 
 // function apply_operations(new_game, games, operations) {
@@ -8990,3 +9202,12 @@ function change_strategy_col_2(val) {
 
 
 // change conventions to break equilibrium quads and put hotspots on the diagonal
+
+// todo
+// add fifth parameter (exchange factor)
+// update game info
+// update thermostat more often
+
+// class A,R,C,D
+// quadrant a,r,c,d
+// zone ++,+-,-+,--
