@@ -1809,7 +1809,7 @@ class Game {
             let index = 0;
             let max = -100;
             for (let i = 0; i < 4; i++) {
-                if (max < this.row_matrix[i]+this.col_matrix[i]) {
+                if (max < this.row_matrix[i]+exchange_factor*this.col_matrix[i]) {
                     index = i;
                     max = this.row_matrix[i]+exchange_factor*this.col_matrix[i];
                 }
