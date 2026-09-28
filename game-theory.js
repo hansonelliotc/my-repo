@@ -57,6 +57,8 @@ let noncooperative_row_2 = null;
 let noncooperative_col_1 = 1;
 let noncooperative_col_2 = null;
 let exchange_factor = 1;
+let rows_multiplier = 1;
+let cols_multiplier = 1;
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.04;
@@ -173,18 +175,18 @@ class Game {
         return ranks;
     }
 
-    get row_matrix() { return this.#row_matrix; }
-    get col_matrix() { return this.#col_matrix; }
+    get row_matrix() { return this.#row_matrix.map(x => x*rows_multiplier); }
+    get col_matrix() { return this.#col_matrix.map(x => x*cols_multiplier); }
     set row_matrix(val) {
         this.#clear(); this.#clear1(); this.#clear2();
-        this.#row_matrix = val;
+        this.#row_matrix = normalize(val);
         this.#row_ranks = this.#ranks(val);
         if (this.t1 > 3) this.#zone_row = 1;
         else if (this.t1 < 3) this.#zone_row = 0;
     }
     set col_matrix(val) {
         this.#clear(); this.#clear1(); this.#clear2();
-        this.#col_matrix = val;
+        this.#col_matrix = normalize(val);
         this.#col_ranks = this.#ranks(val);
         if (this.t2 > 3) this.#zone_col = 1;
         else if (this.t2 < 3) this.#zone_col = 0;
@@ -245,7 +247,7 @@ class Game {
     #negate_row(m) {
         const new_matrix = [0,1,2,3];
         for (let i = 0; i < 4; i++) {
-            new_matrix[i] = this.row_matrix[this.row_ranks.indexOf(3-this.row_ranks[i])];
+            new_matrix[i] = this.#row_matrix[this.row_ranks.indexOf(3-this.row_ranks[i])];
         }
         this.#row_matrix = new_matrix;
         this.#row_ranks = this.#row_ranks.map(x => 3 - x);
@@ -254,7 +256,7 @@ class Game {
     #negate_col(m) {
         const new_matrix = [0,1,2,3];
         for (let i = 0; i < 4; i++) {
-            new_matrix[i] = this.col_matrix[this.col_ranks.indexOf(3-this.col_ranks[i])];
+            new_matrix[i] = this.#col_matrix[this.col_ranks.indexOf(3-this.col_ranks[i])];
         }
         this.#col_matrix = new_matrix;
         this.#col_ranks = this.#col_ranks.map(x => 3 - x);
@@ -403,7 +405,7 @@ class Game {
     }
 
     #matrix_to_yt(matrix,ranks) {
-        const sorted_matrix = matrix.toSorted();
+        const sorted_matrix = normalize(matrix).toSorted();
         const temp = (sorted_matrix[1] + sorted_matrix[2]) / 2;
         const y0 = (sorted_matrix[2] - temp) / (temp == 0 || temp == 6 ? 1 : Math.min(temp,6-temp));
 
@@ -424,16 +426,20 @@ class Game {
         else y = cell + y0;
         return [y,temp];
     }
+    static negate(m) {
+        const max = Math.max(...m);
+        return m.map(x => max - x);
+    }
     #update_y1() {
         const coords = this.zone_row == 0 ? 
                        this.#matrix_to_yt(this.row_matrix,this.row_ranks) :
-                       this.#matrix_to_yt(this.row_matrix.map(x => 6 - x),this.row_ranks.map(x => 3 - x));
+                       this.#matrix_to_yt(Game.negate(this.row_matrix),this.row_ranks.map(x => 3 - x));
         this.#y1 = ((coords[0] + this.#offset1)*this.#flip1 + 12) % 6;
     }
     #update_y2() {
         const coords = this.zone_col == 0 ? 
                        this.#matrix_to_yt(Game.flip(this.col_matrix),Game.flip(this.col_ranks)) :
-                       this.#matrix_to_yt(Game.flip(this.col_matrix.map(x => 6 - x)),Game.flip(this.col_ranks.map(x => 3 - x)));
+                       this.#matrix_to_yt(Game.flip(Game.negate(this.col_matrix)),Game.flip(this.col_ranks.map(x => 3 - x)));
         this.#y2 = ((coords[0] + this.#offset1)*this.#flip1 + 12) % 6;
     }
 
@@ -540,13 +546,13 @@ class Game {
     }
     get t1() {
         if (this.#t1 === undefined) {
-            this.#t1 = (this.row_matrix[0]+this.row_matrix[1]+this.row_matrix[2]+this.row_matrix[3]-6) / 2;
+            this.#t1 = (this.#row_matrix[0]+this.#row_matrix[1]+this.#row_matrix[2]+this.#row_matrix[3]-6) / 2;
         }
         return this.#t1;
     }
     get t2() {
         if (this.#t2 === undefined) {
-            this.#t2 = (this.col_matrix[0]+this.col_matrix[1]+this.col_matrix[2]+this.col_matrix[3]-6) / 2;
+            this.#t2 = (this.#col_matrix[0]+this.#col_matrix[1]+this.#col_matrix[2]+this.#col_matrix[3]-6) / 2;
         }
         return this.#t2;
     }
@@ -858,11 +864,9 @@ class Game {
 
     get max_total() {
         if (this.#max_total === undefined) {
-            let biggestEntry = 0;
             let max = this.row_matrix[0]+this.col_matrix[0]*exchange_factor;
             for (let i = 1; i < 4; i++) {
                 if (max < this.row_matrix[i]+this.col_matrix[i]*exchange_factor) {
-                    biggestEntry = i;
                     max = this.row_matrix[i]+this.col_matrix[i]*exchange_factor;
                 }
             }
@@ -1384,9 +1388,9 @@ class Game {
         return this.#correlation;
     }
 
-    get centroidal_matrices() {
-        return [this.row_ranks.map(x => 2*x), this.col_ranks.map(x => 2*x)];
-    }
+    // get centroidal_matrices() {
+    //     return [this.row_ranks.map(x => 2*x), this.col_ranks.map(x => 2*x)];
+    // }
 
     to_centroid() {
         if (this.mode == 0) {
@@ -1639,8 +1643,9 @@ class Game {
             const ranks = [...this.row_ranks];
             const a = this.row_ranks.indexOf(1);
             const b = this.row_ranks.indexOf(2);
-            matrix[a] = 6-this.row_matrix[b];
-            matrix[b] = 6-this.row_matrix[a];
+            const max = Math.max(...matrix);
+            matrix[a] = max-this.row_matrix[b];
+            matrix[b] = max-this.row_matrix[a];
             this.row_matrix = matrix;
             this.#row_ranks = ranks;
         } else {
@@ -1649,8 +1654,9 @@ class Game {
             const ranks = [...this.col_ranks];
             const a = this.col_ranks.indexOf(1);
             const b = this.col_ranks.indexOf(2);
-            matrix[a] = 6-this.col_matrix[b];
-            matrix[b] = 6-this.col_matrix[a];
+            const max = Math.max(...matrix);
+            matrix[a] = max-this.col_matrix[b];
+            matrix[b] = max-this.col_matrix[a];
             this.col_matrix = matrix;
             this.#col_ranks = ranks;
         }
@@ -1659,17 +1665,21 @@ class Game {
     negate(p1) {
         if (p1) {
             this.zone_row = 1 - this.zone_row;
-            this.row_matrix = [...this.row_matrix].map(x => 6 - x);
+            const max = Math.max(...this.row_matrix);
+            this.row_matrix = [...this.row_matrix].map(x => max - x);
         } else {
             this.zone_col = 1 - this.zone_col;
-            this.col_matrix = [...this.col_matrix].map(x => 6 - x);
+            const max = Math.max(...this.col_matrix);
+            this.col_matrix = [...this.col_matrix].map(x => max - x);
         }
     }
 
     exchange_matrices() {
         const temp = [...this.row_matrix];
-        this.row_matrix = [...this.col_matrix];
-        this.col_matrix = temp;
+        const max_row = Math.max(...this.row_matrix);
+        const max_col = Math.max(...this.col_matrix);
+        this.row_matrix = [...this.col_matrix].map(x => x/max_col*max_row);
+        this.col_matrix = temp.map(x => x/max_row*max_col);
     }
 
     switch_rows() {
@@ -1701,8 +1711,8 @@ class Game {
         const grayBackground = [208, 208, 208];
         switch (this.quadrant) {
             case 1:
-                if ((this.x1*this.#flip1 - this.#offset1 + 12) % 6 < 3 && (this.x2*this.#flip2 - this.#offset2 + 12) % 6 < 3) {
-                    const weight = (Math.sin((this.x1 - this.x2)*6)+1)/2;
+                if ((this.y1*this.#flip1 - this.#offset1 + 12) % 6 < 3 && (this.y2*this.#flip2 - this.#offset2 + 12) % 6 < 3) {
+                    const weight = (Math.sin((this.y1 - this.x2)*6)+1)/2;
                     return [greenBackground[0]*weight+(1-weight)*grayBackground[0],
                             greenBackground[1]*weight+(1-weight)*grayBackground[1],
                             greenBackground[2]*weight+(1-weight)*grayBackground[2]];
@@ -1711,32 +1721,32 @@ class Game {
                 }
                 break;
             case 2:
-                if ((this.x1*this.#flip1 - this.#offset1 + 12) % 6 < 3 && (this.x2*this.#flip2 - this.#offset2 + 12) % 6 < 3) {
+                if ((this.y1*this.#flip1 - this.#offset1 + 12) % 6 < 3 && (this.y2*this.#flip2 - this.#offset2 + 12) % 6 < 3) {
                     return [255,255,255];
-                } else if ((this.x2*this.#flip2 - this.#offset2 + 12) % 6 < 3) {
+                } else if ((this.y2*this.#flip2 - this.#offset2 + 12) % 6 < 3) {
                     return grayBackground;
                 } else {
                     return goldBackground;
                 }
                 break;
             case 3:
-                if ((this.x1*this.#flip1 - this.#offset1 + 12) % 6 >= 3 && (this.x2*this.#flip2 - this.#offset2 + 12) % 6 >= 3) {
+                if ((this.y1*this.#flip1 - this.#offset1 + 12) % 6 >= 3 && (this.y2*this.#flip2 - this.#offset2 + 12) % 6 >= 3) {
                     return grayBackground;
-                } else if ((this.x1*this.#flip1 - this.#offset1 + 12) % 6 >= 3) {
+                } else if ((this.y1*this.#flip1 - this.#offset1 + 12) % 6 >= 3) {
                     return goldBackground;
-                } else if ((this.x2*this.#flip2 - this.#offset2 + 12) % 6 >= 3) {
+                } else if ((this.y2*this.#flip2 - this.#offset2 + 12) % 6 >= 3) {
                     return ceruleanBackground;
                 } else {
-                    const weight = (Math.sin((this.x1 + this.x2)*6)+1)/2;
+                    const weight = (Math.sin((this.y1 + this.y2)*6)+1)/2;
                     return [goldBackground[0]*weight+(1-weight)*ceruleanBackground[0],
                             goldBackground[1]*weight+(1-weight)*ceruleanBackground[1],
                             goldBackground[2]*weight+(1-weight)*ceruleanBackground[2]];
                 }
                 break;
             case 4:
-                if ((this.x1*this.#flip1 - this.#offset1 + 12) % 6 < 3 && (this.x2*this.#flip2 - this.#offset2 + 12) % 6 < 3) {
+                if ((this.y1*this.#flip1 - this.#offset1 + 12) % 6 < 3 && (this.y2*this.#flip2 - this.#offset2 + 12) % 6 < 3) {
                     return [255,255,255];
-                } else if ((this.x1*this.#flip1 - this.#offset1 + 12) % 6 < 3) {
+                } else if ((this.y1*this.#flip1 - this.#offset1 + 12) % 6 < 3) {
                     return grayBackground;
                 } else {
                     return ceruleanBackground;
@@ -2166,30 +2176,30 @@ function init() {
     smallLine7.style.strokeWidth = smallLineWidth;
     smallLine8.style.stroke = "#000";
     smallLine8.style.strokeWidth = smallLineWidth;
-    smallLine1.x1.baseVal.value = paddingBig2;
-    smallLine1.x2.baseVal.value = bigDiagramWidth - paddingBig1;
-    smallLine1.y1.baseVal.value = paddingBig1;
-    smallLine1.y2.baseVal.value = paddingBig1;
-    smallLine2.x1.baseVal.value = bigDiagramWidth - paddingBig1;
-    smallLine2.x2.baseVal.value = bigDiagramWidth - paddingBig1;
-    smallLine2.y1.baseVal.value = paddingBig1;
-    smallLine2.y2.baseVal.value = bigDiagramWidth - paddingBig2;
-    smallLine3.x1.baseVal.value = paddingBig2;
-    smallLine3.x2.baseVal.value = bigDiagramWidth - paddingBig1;
-    smallLine3.y1.baseVal.value = bigDiagramWidth - paddingBig2;
-    smallLine3.y2.baseVal.value = bigDiagramWidth - paddingBig2;
-    smallLine4.x1.baseVal.value = paddingBig2;
-    smallLine4.x2.baseVal.value = paddingBig2;
-    smallLine4.y1.baseVal.value = paddingBig1;
-    smallLine4.y2.baseVal.value = bigDiagramWidth - paddingBig2;
-    smallLine5.x1.baseVal.value = paddingBig2;
-    smallLine5.x2.baseVal.value = bigDiagramWidth - paddingBig1;
-    smallLine6.x1.baseVal.value = paddingBig2;
-    smallLine6.x2.baseVal.value = bigDiagramWidth - paddingBig1;
-    smallLine7.y1.baseVal.value = paddingBig1;
-    smallLine7.y2.baseVal.value = bigDiagramWidth - paddingBig2;
-    smallLine8.y1.baseVal.value = paddingBig1;
-    smallLine8.y2.baseVal.value = bigDiagramWidth - paddingBig2;
+    // smallLine1.x1.baseVal.value = paddingBig2;
+    // smallLine1.x2.baseVal.value = bigDiagramWidth - paddingBig1;
+    // smallLine1.y1.baseVal.value = paddingBig1;
+    // smallLine1.y2.baseVal.value = paddingBig1;
+    // smallLine2.x1.baseVal.value = bigDiagramWidth - paddingBig1;
+    // smallLine2.x2.baseVal.value = bigDiagramWidth - paddingBig1;
+    // smallLine2.y1.baseVal.value = paddingBig1;
+    // smallLine2.y2.baseVal.value = bigDiagramWidth - paddingBig2;
+    // smallLine3.x1.baseVal.value = paddingBig2;
+    // smallLine3.x2.baseVal.value = bigDiagramWidth - paddingBig1;
+    // smallLine3.y1.baseVal.value = bigDiagramWidth - paddingBig2;
+    // smallLine3.y2.baseVal.value = bigDiagramWidth - paddingBig2;
+    // smallLine4.x1.baseVal.value = paddingBig2;
+    // smallLine4.x2.baseVal.value = paddingBig2;
+    // smallLine4.y1.baseVal.value = paddingBig1;
+    // smallLine4.y2.baseVal.value = bigDiagramWidth - paddingBig2;
+    // smallLine5.x1.baseVal.value = paddingBig2;
+    // smallLine5.x2.baseVal.value = bigDiagramWidth - paddingBig1;
+    // smallLine6.x1.baseVal.value = paddingBig2;
+    // smallLine6.x2.baseVal.value = bigDiagramWidth - paddingBig1;
+    // smallLine7.y1.baseVal.value = paddingBig1;
+    // smallLine7.y2.baseVal.value = bigDiagramWidth - paddingBig2;
+    // smallLine8.y1.baseVal.value = paddingBig1;
+    // smallLine8.y2.baseVal.value = bigDiagramWidth - paddingBig2;
     const smallRGBLineWidth = smallLineWidth*5;
     smallRedLine1.style.stroke = "red";
     smallRedLine1.style.strokeWidth = smallRGBLineWidth;
@@ -3419,6 +3429,10 @@ function update() {
     // const goldBar2 = document.getElementById("gold-bar-2");
     // const goldBar3 = document.getElementById("gold-bar-3");
     // const goldBar4 = document.getElementById("gold-bar-4");
+    const smallLine1 = document.getElementById("small-line-1");
+    const smallLine2 = document.getElementById("small-line-2");
+    const smallLine3 = document.getElementById("small-line-3");
+    const smallLine4 = document.getElementById("small-line-4");
     const smallLine5 = document.getElementById("small-line-5");
     const smallLine6 = document.getElementById("small-line-6");
     const smallLine7 = document.getElementById("small-line-7");
@@ -3443,65 +3457,66 @@ function update() {
     const transUtilBoundary = document.getElementById("transferable-util-boundary");
 
     const bigDiagramWidth = bigDiagram.getBoundingClientRect().width;
-    const paddingBig1 = 0.32*bigDiagramWidth;
+    const paddingBig1 = 0.04*bigDiagramWidth;
     const paddingBig2 = 0.04*bigDiagramWidth;
+    const return_space_max = 12;
     const widthBig = bigDiagramWidth - paddingBig1 - paddingBig2;
-    line1Big.x1.baseVal.value = game.row_matrix[0]*widthBig/6+paddingBig2;
-    line1Big.x2.baseVal.value = game.row_matrix[1]*widthBig/6+paddingBig2;
-    line2Big.x1.baseVal.value = game.row_matrix[1]*widthBig/6+paddingBig2;
-    line2Big.x2.baseVal.value = game.row_matrix[3]*widthBig/6+paddingBig2;
-    line3Big.x1.baseVal.value = game.row_matrix[3]*widthBig/6+paddingBig2;
-    line3Big.x2.baseVal.value = game.row_matrix[2]*widthBig/6+paddingBig2;
-    line4Big.x1.baseVal.value = game.row_matrix[2]*widthBig/6+paddingBig2;
-    line4Big.x2.baseVal.value = game.row_matrix[0]*widthBig/6+paddingBig2;
-    line5Big.x1.baseVal.value = game.row_matrix[0]*widthBig/6+paddingBig2;
-    line5Big.x2.baseVal.value = game.row_matrix[3]*widthBig/6+paddingBig2;
-    line6Big.x1.baseVal.value = game.row_matrix[1]*widthBig/6+paddingBig2;
-    line6Big.x2.baseVal.value = game.row_matrix[2]*widthBig/6+paddingBig2;
+    line1Big.x1.baseVal.value = game.row_matrix[0]*widthBig/return_space_max+paddingBig2;
+    line1Big.x2.baseVal.value = game.row_matrix[1]*widthBig/return_space_max+paddingBig2;
+    line2Big.x1.baseVal.value = game.row_matrix[1]*widthBig/return_space_max+paddingBig2;
+    line2Big.x2.baseVal.value = game.row_matrix[3]*widthBig/return_space_max+paddingBig2;
+    line3Big.x1.baseVal.value = game.row_matrix[3]*widthBig/return_space_max+paddingBig2;
+    line3Big.x2.baseVal.value = game.row_matrix[2]*widthBig/return_space_max+paddingBig2;
+    line4Big.x1.baseVal.value = game.row_matrix[2]*widthBig/return_space_max+paddingBig2;
+    line4Big.x2.baseVal.value = game.row_matrix[0]*widthBig/return_space_max+paddingBig2;
+    line5Big.x1.baseVal.value = game.row_matrix[0]*widthBig/return_space_max+paddingBig2;
+    line5Big.x2.baseVal.value = game.row_matrix[3]*widthBig/return_space_max+paddingBig2;
+    line6Big.x1.baseVal.value = game.row_matrix[1]*widthBig/return_space_max+paddingBig2;
+    line6Big.x2.baseVal.value = game.row_matrix[2]*widthBig/return_space_max+paddingBig2;
 
-    line1Big.y1.baseVal.value = (1-game.col_matrix[0]/6)*widthBig+paddingBig1;
-    line1Big.y2.baseVal.value = (1-game.col_matrix[1]/6)*widthBig+paddingBig1;
-    line2Big.y1.baseVal.value = (1-game.col_matrix[1]/6)*widthBig+paddingBig1;
-    line2Big.y2.baseVal.value = (1-game.col_matrix[3]/6)*widthBig+paddingBig1;
-    line3Big.y1.baseVal.value = (1-game.col_matrix[3]/6)*widthBig+paddingBig1;
-    line3Big.y2.baseVal.value = (1-game.col_matrix[2]/6)*widthBig+paddingBig1;
-    line4Big.y1.baseVal.value = (1-game.col_matrix[2]/6)*widthBig+paddingBig1;
-    line4Big.y2.baseVal.value = (1-game.col_matrix[0]/6)*widthBig+paddingBig1;
-    line5Big.y1.baseVal.value = (1-game.col_matrix[0]/6)*widthBig+paddingBig1;
-    line5Big.y2.baseVal.value = (1-game.col_matrix[3]/6)*widthBig+paddingBig1;
-    line6Big.y1.baseVal.value = (1-game.col_matrix[1]/6)*widthBig+paddingBig1;
-    line6Big.y2.baseVal.value = (1-game.col_matrix[2]/6)*widthBig+paddingBig1;
+    line1Big.y1.baseVal.value = (1-game.col_matrix[0]/return_space_max)*widthBig+paddingBig1;
+    line1Big.y2.baseVal.value = (1-game.col_matrix[1]/return_space_max)*widthBig+paddingBig1;
+    line2Big.y1.baseVal.value = (1-game.col_matrix[1]/return_space_max)*widthBig+paddingBig1;
+    line2Big.y2.baseVal.value = (1-game.col_matrix[3]/return_space_max)*widthBig+paddingBig1;
+    line3Big.y1.baseVal.value = (1-game.col_matrix[3]/return_space_max)*widthBig+paddingBig1;
+    line3Big.y2.baseVal.value = (1-game.col_matrix[2]/return_space_max)*widthBig+paddingBig1;
+    line4Big.y1.baseVal.value = (1-game.col_matrix[2]/return_space_max)*widthBig+paddingBig1;
+    line4Big.y2.baseVal.value = (1-game.col_matrix[0]/return_space_max)*widthBig+paddingBig1;
+    line5Big.y1.baseVal.value = (1-game.col_matrix[0]/return_space_max)*widthBig+paddingBig1;
+    line5Big.y2.baseVal.value = (1-game.col_matrix[3]/return_space_max)*widthBig+paddingBig1;
+    line6Big.y1.baseVal.value = (1-game.col_matrix[1]/return_space_max)*widthBig+paddingBig1;
+    line6Big.y2.baseVal.value = (1-game.col_matrix[2]/return_space_max)*widthBig+paddingBig1;
 
-    point1Big.cx.baseVal.value = game.row_matrix[0]*widthBig/6+paddingBig2;
-    point1Big.cy.baseVal.value = (1-game.col_matrix[0]/6)*widthBig+paddingBig1;
-    number1.setAttribute('x',game.row_matrix[0]*widthBig/6+paddingBig2);
-    number1.setAttribute('y',(1-game.col_matrix[0]/6)*widthBig+paddingBig1);
-    point2Big.cx.baseVal.value = game.row_matrix[1]*widthBig/6+paddingBig2;
-    point2Big.cy.baseVal.value = (1-game.col_matrix[1]/6)*widthBig+paddingBig1;
-    number2.setAttribute('x',game.row_matrix[1]*widthBig/6+paddingBig2);
-    number2.setAttribute('y',(1-game.col_matrix[1]/6)*widthBig+paddingBig1);
-    point3Big.cx.baseVal.value = game.row_matrix[2]*widthBig/6+paddingBig2;
-    point3Big.cy.baseVal.value = (1-game.col_matrix[2]/6)*widthBig+paddingBig1;
-    number3.setAttribute('x',game.row_matrix[2]*widthBig/6+paddingBig2);
-    number3.setAttribute('y',(1-game.col_matrix[2]/6)*widthBig+paddingBig1);
-    point4Big.cx.baseVal.value = game.row_matrix[3]*widthBig/6+paddingBig2;
-    point4Big.cy.baseVal.value = (1-game.col_matrix[3]/6)*widthBig+paddingBig1;
-    number4.setAttribute('x',game.row_matrix[3]*widthBig/6+paddingBig2);
-    number4.setAttribute('y',(1-game.col_matrix[3]/6)*widthBig+paddingBig1);
+    point1Big.cx.baseVal.value = game.row_matrix[0]*widthBig/return_space_max+paddingBig2;
+    point1Big.cy.baseVal.value = (1-game.col_matrix[0]/return_space_max)*widthBig+paddingBig1;
+    number1.setAttribute('x',game.row_matrix[0]*widthBig/return_space_max+paddingBig2);
+    number1.setAttribute('y',(1-game.col_matrix[0]/return_space_max)*widthBig+paddingBig1);
+    point2Big.cx.baseVal.value = game.row_matrix[1]*widthBig/return_space_max+paddingBig2;
+    point2Big.cy.baseVal.value = (1-game.col_matrix[1]/return_space_max)*widthBig+paddingBig1;
+    number2.setAttribute('x',game.row_matrix[1]*widthBig/return_space_max+paddingBig2);
+    number2.setAttribute('y',(1-game.col_matrix[1]/return_space_max)*widthBig+paddingBig1);
+    point3Big.cx.baseVal.value = game.row_matrix[2]*widthBig/return_space_max+paddingBig2;
+    point3Big.cy.baseVal.value = (1-game.col_matrix[2]/return_space_max)*widthBig+paddingBig1;
+    number3.setAttribute('x',game.row_matrix[2]*widthBig/return_space_max+paddingBig2);
+    number3.setAttribute('y',(1-game.col_matrix[2]/return_space_max)*widthBig+paddingBig1);
+    point4Big.cx.baseVal.value = game.row_matrix[3]*widthBig/return_space_max+paddingBig2;
+    point4Big.cy.baseVal.value = (1-game.col_matrix[3]/return_space_max)*widthBig+paddingBig1;
+    number4.setAttribute('x',game.row_matrix[3]*widthBig/return_space_max+paddingBig2);
+    number4.setAttribute('y',(1-game.col_matrix[3]/return_space_max)*widthBig+paddingBig1);
 
     if (viewMode == 2 || viewMode == 3 || viewMode == 4 || viewMode == 5) {
         if (viewMode == 2) {
-            bargainingLine.x2.baseVal.value = game.row_ntu_bs_return*widthBig/6+paddingBig2;
-            bargainingLine.y2.baseVal.value = (6-game.col_ntu_bs_return)*widthBig/6+paddingBig1;
+            bargainingLine.x2.baseVal.value = game.row_ntu_bs_return*widthBig/return_space_max+paddingBig2;
+            bargainingLine.y2.baseVal.value = (return_space_max-game.col_ntu_bs_return)*widthBig/return_space_max+paddingBig1;
         } else if (viewMode == 3) {
-            bargainingLine.x2.baseVal.value = game.row_ntu_tp_return*widthBig/6+paddingBig2;
-            bargainingLine.y2.baseVal.value = (6-game.col_ntu_tp_return)*widthBig/6+paddingBig1;
+            bargainingLine.x2.baseVal.value = game.row_ntu_tp_return*widthBig/return_space_max+paddingBig2;
+            bargainingLine.y2.baseVal.value = (return_space_max-game.col_ntu_tp_return)*widthBig/return_space_max+paddingBig1;
         } else if (viewMode == 4) {
-            bargainingLine.x2.baseVal.value = game.row_tu_bs_return*widthBig/6+paddingBig2;
-            bargainingLine.y2.baseVal.value = (6-game.col_tu_bs_return)*widthBig/6+paddingBig1;
+            bargainingLine.x2.baseVal.value = game.row_tu_bs_return*widthBig/return_space_max+paddingBig2;
+            bargainingLine.y2.baseVal.value = (return_space_max-game.col_tu_bs_return)*widthBig/return_space_max+paddingBig1;
         } else {
-            bargainingLine.x2.baseVal.value = game.row_tu_tp_return*widthBig/6+paddingBig2;
-            bargainingLine.y2.baseVal.value = (6-game.col_tu_tp_return)*widthBig/6+paddingBig1;
+            bargainingLine.x2.baseVal.value = game.row_tu_tp_return*widthBig/return_space_max+paddingBig2;
+            bargainingLine.y2.baseVal.value = (return_space_max-game.col_tu_tp_return)*widthBig/return_space_max+paddingBig1;
         }
         if (viewMode == 2 || viewMode == 3) {
             disagreementPoint.style.fill = brown;
@@ -3511,15 +3526,15 @@ function update() {
             bargainingLine.style.stroke = lightBrown;
         }
         if (viewMode == 2 || viewMode == 4) {
-            disagreementPoint.cx.baseVal.value = game.backstop[0]*widthBig/6+paddingBig2;
-            disagreementPoint.cy.baseVal.value = (6-game.backstop[1])*widthBig/6+paddingBig1;
-            bargainingLine.x1.baseVal.value = game.backstop[0]*widthBig/6+paddingBig2;
-            bargainingLine.y1.baseVal.value = (6-game.backstop[1])*widthBig/6+paddingBig1;            
+            disagreementPoint.cx.baseVal.value = game.backstop[0]*widthBig/return_space_max+paddingBig2;
+            disagreementPoint.cy.baseVal.value = (return_space_max-game.backstop[1])*widthBig/return_space_max+paddingBig1;
+            bargainingLine.x1.baseVal.value = game.backstop[0]*widthBig/return_space_max+paddingBig2;
+            bargainingLine.y1.baseVal.value = (return_space_max-game.backstop[1])*widthBig/return_space_max+paddingBig1;            
         } else {
-            disagreementPoint.cx.baseVal.value = game.threat_point[0]*widthBig/6+paddingBig2;
-            disagreementPoint.cy.baseVal.value = (6-game.threat_point[1])*widthBig/6+paddingBig1;
-            bargainingLine.x1.baseVal.value = game.threat_point[0]*widthBig/6+paddingBig2;
-            bargainingLine.y1.baseVal.value = (6-game.threat_point[1])*widthBig/6+paddingBig1;
+            disagreementPoint.cx.baseVal.value = game.threat_point[0]*widthBig/return_space_max+paddingBig2;
+            disagreementPoint.cy.baseVal.value = (return_space_max-game.threat_point[1])*widthBig/return_space_max+paddingBig1;
+            bargainingLine.x1.baseVal.value = game.threat_point[0]*widthBig/return_space_max+paddingBig2;
+            bargainingLine.y1.baseVal.value = (return_space_max-game.threat_point[1])*widthBig/return_space_max+paddingBig1;
         }
         disagreementPoint.style.fillOpacity = 1;
         bargainingLine.style.strokeOpacity = 1;
@@ -3529,24 +3544,24 @@ function update() {
     }
 
     if (viewMode == 2 || showAllReturns) {
-        bargainingPoint1.cx.baseVal.value = game.row_ntu_bs_return*widthBig/6+paddingBig2;
-        bargainingPoint1.cy.baseVal.value = (6-game.col_ntu_bs_return)*widthBig/6+paddingBig1;
+        bargainingPoint1.cx.baseVal.value = game.row_ntu_bs_return*widthBig/return_space_max+paddingBig2;
+        bargainingPoint1.cy.baseVal.value = (return_space_max-game.col_ntu_bs_return)*widthBig/return_space_max+paddingBig1;
         bargainingPoint1.style.fillOpacity = 1;
     } else {
         bargainingPoint1.style.fillOpacity = 0;
     }
 
     if (viewMode == 3 || showAllReturns) {
-        bargainingPoint3.x.baseVal.value = game.row_ntu_tp_return*widthBig/6+paddingBig2 - xWidth/2;
-        bargainingPoint3.y.baseVal.value = (6-game.col_ntu_tp_return)*widthBig/6+paddingBig1 - xWidth/2;
+        bargainingPoint3.x.baseVal.value = game.row_ntu_tp_return*widthBig/return_space_max+paddingBig2 - xWidth/2;
+        bargainingPoint3.y.baseVal.value = (return_space_max-game.col_ntu_tp_return)*widthBig/return_space_max+paddingBig1 - xWidth/2;
         bargainingPoint3.style.fillOpacity = 1;
     } else {
         bargainingPoint3.style.fillOpacity = 0;
     }
     
     if (viewMode == 4 || viewMode == 5 || showAllReturns) {
-        transUtilBoundary.x2.baseVal.value = (game.row_tu_bs_return+game.col_tu_bs_return)/6*widthBig+paddingBig2*2;
-        transUtilBoundary.y1.baseVal.value = widthBig - (game.row_tu_bs_return+game.col_tu_bs_return)/6*widthBig + paddingBig1 - paddingBig2;
+        transUtilBoundary.x2.baseVal.value = (game.row_tu_bs_return+game.col_tu_bs_return)/return_space_max*widthBig+paddingBig2*2;
+        transUtilBoundary.y1.baseVal.value = widthBig - (game.row_tu_bs_return+game.col_tu_bs_return)/return_space_max*widthBig + paddingBig1 - paddingBig2;
         transUtilBoundary.style.strokeOpacity = 0.5;
     } else {
         transUtilBoundary.style.strokeOpacity = 0;
@@ -3556,16 +3571,16 @@ function update() {
 
     if (viewMode == 4 || showAllReturns) {
         bargainingPoint2.style.fillOpacity = 1;
-        bargainingPoint2.cx.baseVal.value = game.row_tu_bs_return/6*widthBig+paddingBig2;
-        bargainingPoint2.cy.baseVal.value = (1-game.col_tu_bs_return/6)*widthBig+paddingBig1;
+        bargainingPoint2.cx.baseVal.value = game.row_tu_bs_return/return_space_max*widthBig+paddingBig2;
+        bargainingPoint2.cy.baseVal.value = (1-game.col_tu_bs_return/return_space_max)*widthBig+paddingBig1;
     } else {
         bargainingPoint2.style.fillOpacity = 0;
     }
 
     if (viewMode == 5 || showAllReturns) {
         bargainingPoint4.style.fillOpacity = 1;
-        bargainingPoint4.x.baseVal.value = game.row_tu_tp_return/6*widthBig+paddingBig2 - xWidth/2;
-        bargainingPoint4.y.baseVal.value = (1-game.col_tu_tp_return/6)*widthBig+paddingBig1 - xWidth/2;
+        bargainingPoint4.x.baseVal.value = game.row_tu_tp_return/return_space_max*widthBig+paddingBig2 - xWidth/2;
+        bargainingPoint4.y.baseVal.value = (1-game.col_tu_tp_return/return_space_max)*widthBig+paddingBig1 - xWidth/2;
     } else {
         bargainingPoint4.style.fillOpacity = 0;
     }
@@ -3590,14 +3605,14 @@ function update() {
     if (overlap[3] == 1) number4.style.display = "none";
     else number4.style.display = "";
 
-    corner1Big.cx.baseVal.value = game.row_matrix[0]*widthBig/6+paddingBig2;
-    corner1Big.cy.baseVal.value = (1-game.col_matrix[0]/6)*widthBig+paddingBig1;
-    corner2Big.cx.baseVal.value = game.row_matrix[1]*widthBig/6+paddingBig2;
-    corner2Big.cy.baseVal.value = (1-game.col_matrix[1]/6)*widthBig+paddingBig1;
-    corner3Big.cx.baseVal.value = game.row_matrix[2]*widthBig/6+paddingBig2;
-    corner3Big.cy.baseVal.value = (1-game.col_matrix[2]/6)*widthBig+paddingBig1;
-    corner4Big.cx.baseVal.value = game.row_matrix[3]*widthBig/6+paddingBig2;
-    corner4Big.cy.baseVal.value = (1-game.col_matrix[3]/6)*widthBig+paddingBig1;
+    corner1Big.cx.baseVal.value = game.row_matrix[0]*widthBig/return_space_max+paddingBig2;
+    corner1Big.cy.baseVal.value = (1-game.col_matrix[0]/return_space_max)*widthBig+paddingBig1;
+    corner2Big.cx.baseVal.value = game.row_matrix[1]*widthBig/return_space_max+paddingBig2;
+    corner2Big.cy.baseVal.value = (1-game.col_matrix[1]/return_space_max)*widthBig+paddingBig1;
+    corner3Big.cx.baseVal.value = game.row_matrix[2]*widthBig/return_space_max+paddingBig2;
+    corner3Big.cy.baseVal.value = (1-game.col_matrix[2]/return_space_max)*widthBig+paddingBig1;
+    corner4Big.cx.baseVal.value = game.row_matrix[3]*widthBig/return_space_max+paddingBig2;
+    corner4Big.cy.baseVal.value = (1-game.col_matrix[3]/return_space_max)*widthBig+paddingBig1;
 
     // top1.x2.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
     // top2.x1.baseVal.value = paddingBig + take(matrixA,1)/6*widthBig;
@@ -3616,54 +3631,79 @@ function update() {
     // bottom2.x2.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
     // bottom3.x1.baseVal.value = paddingBig + take(matrixA,2)/6*widthBig;
 
-    smallLine5.y1.baseVal.value = paddingBig1 + (1-take(game.col_matrix,2)/6)*widthBig;
-    smallLine5.y2.baseVal.value = paddingBig1 + (1-take(game.col_matrix,2)/6)*widthBig;
-    smallLine6.y1.baseVal.value = paddingBig1 + (1-take(game.col_matrix,1)/6)*widthBig;
-    smallLine6.y2.baseVal.value = paddingBig1 + (1-take(game.col_matrix,1)/6)*widthBig;
-    smallLine7.x1.baseVal.value = paddingBig2 + take(game.row_matrix,2)/6*widthBig;
-    smallLine7.x2.baseVal.value = paddingBig2 + take(game.row_matrix,2)/6*widthBig;
-    smallLine8.x1.baseVal.value = paddingBig2 + take(game.row_matrix,1)/6*widthBig;
-    smallLine8.x2.baseVal.value = paddingBig2 + take(game.row_matrix,1)/6*widthBig;
+    smallLine5.y1.baseVal.value = paddingBig1 + (1-take(game.col_matrix,2)/return_space_max)*widthBig;
+    smallLine5.y2.baseVal.value = paddingBig1 + (1-take(game.col_matrix,2)/return_space_max)*widthBig;
+    smallLine6.y1.baseVal.value = paddingBig1 + (1-take(game.col_matrix,1)/return_space_max)*widthBig;
+    smallLine6.y2.baseVal.value = paddingBig1 + (1-take(game.col_matrix,1)/return_space_max)*widthBig;
+    smallLine7.x1.baseVal.value = paddingBig2 + take(game.row_matrix,2)/return_space_max*widthBig;
+    smallLine7.x2.baseVal.value = paddingBig2 + take(game.row_matrix,2)/return_space_max*widthBig;
+    smallLine8.x1.baseVal.value = paddingBig2 + take(game.row_matrix,1)/return_space_max*widthBig;
+    smallLine8.x2.baseVal.value = paddingBig2 + take(game.row_matrix,1)/return_space_max*widthBig;
+    // from init
+    smallLine1.x1.baseVal.value = paddingBig2;
+    smallLine1.x2.baseVal.value = take(game.row_matrix,3)/return_space_max*widthBig + paddingBig2;
+    smallLine1.y1.baseVal.value = (1-take(game.col_matrix,3)/return_space_max)*widthBig + paddingBig1;
+    smallLine1.y2.baseVal.value = (1-take(game.col_matrix,3)/return_space_max)*widthBig + paddingBig1;
+    smallLine2.x1.baseVal.value = take(game.row_matrix,3)/return_space_max*widthBig + paddingBig2;
+    smallLine2.x2.baseVal.value = take(game.row_matrix,3)/return_space_max*widthBig + paddingBig2;
+    smallLine2.y1.baseVal.value = (1-take(game.col_matrix,3)/return_space_max)*widthBig + paddingBig1;
+    smallLine2.y2.baseVal.value = widthBig + paddingBig1;
+    // smallLine3.x1.baseVal.value = paddingBig2;
+    // smallLine3.x2.baseVal.value = take(game.row_matrix,3)/6*widthBig + paddingBig2;
+    // smallLine3.y1.baseVal.value = widthBig + paddingBig1;
+    // smallLine3.y2.baseVal.value = widthBig + paddingBig1;
+    // smallLine4.x1.baseVal.value = paddingBig2;
+    // smallLine4.x2.baseVal.value = paddingBig2;
+    // smallLine4.y1.baseVal.value = paddingBig1;
+    // smallLine4.y2.baseVal.value = widthBig - paddingBig2;
+    smallLine5.x1.baseVal.value = paddingBig2;
+    smallLine5.x2.baseVal.value = take(game.row_matrix,3)/return_space_max*widthBig + paddingBig2;
+    smallLine6.x1.baseVal.value = paddingBig2;
+    smallLine6.x2.baseVal.value = take(game.row_matrix,3)/return_space_max*widthBig + paddingBig2;
+    smallLine7.y1.baseVal.value = (1-take(game.col_matrix,3)/return_space_max)*widthBig + paddingBig1;
+    smallLine7.y2.baseVal.value = widthBig + paddingBig1;
+    smallLine8.y1.baseVal.value = (1-take(game.col_matrix,3)/return_space_max)*widthBig + paddingBig1;
+    smallLine8.y2.baseVal.value = widthBig + paddingBig1;
 
     smallRedLine1.x1.baseVal.value = paddingBig2;
-    smallRedLine1.x2.baseVal.value = paddingBig2 + take(game.row_matrix,1)/6*widthBig;
+    smallRedLine1.x2.baseVal.value = paddingBig2 + take(game.row_matrix,1)/return_space_max*widthBig;
     smallRedLine1.y1.baseVal.value = paddingBig1 + widthBig;
     smallRedLine1.y2.baseVal.value = paddingBig1 + widthBig;
-    smallGreenLine1.x1.baseVal.value = paddingBig2 + take(game.row_matrix,1)/6*widthBig;
-    smallGreenLine1.x2.baseVal.value = paddingBig2 + take(game.row_matrix,2)/6*widthBig;
+    smallGreenLine1.x1.baseVal.value = paddingBig2 + take(game.row_matrix,1)/return_space_max*widthBig;
+    smallGreenLine1.x2.baseVal.value = paddingBig2 + take(game.row_matrix,2)/return_space_max*widthBig;
     smallGreenLine1.y1.baseVal.value = paddingBig1 + widthBig;
     smallGreenLine1.y2.baseVal.value = paddingBig1 + widthBig;
-    smallBlueLine1.x1.baseVal.value = paddingBig2 + take(game.row_matrix,2)/6*widthBig;
-    smallBlueLine1.x2.baseVal.value = paddingBig2 + widthBig;
+    smallBlueLine1.x1.baseVal.value = paddingBig2 + take(game.row_matrix,2)/return_space_max*widthBig;
+    smallBlueLine1.x2.baseVal.value = paddingBig2 + take(game.row_matrix,3)/return_space_max*widthBig;
     smallBlueLine1.y1.baseVal.value = paddingBig1 + widthBig;
     smallBlueLine1.y2.baseVal.value = paddingBig1 + widthBig;
     smallRedLine2.x1.baseVal.value = paddingBig2;
     smallRedLine2.x2.baseVal.value = paddingBig2;
     smallRedLine2.y1.baseVal.value = paddingBig1 + widthBig;
-    smallRedLine2.y2.baseVal.value = paddingBig1 + (1-take(game.col_matrix,1)/6)*widthBig;
+    smallRedLine2.y2.baseVal.value = paddingBig1 + (1-take(game.col_matrix,1)/return_space_max)*widthBig;
     smallGreenLine2.x1.baseVal.value = paddingBig2;
     smallGreenLine2.x2.baseVal.value = paddingBig2;
-    smallGreenLine2.y1.baseVal.value = paddingBig1 + (1-take(game.col_matrix,2)/6)*widthBig;
-    smallGreenLine2.y2.baseVal.value = paddingBig1 + (1-take(game.col_matrix,1)/6)*widthBig;
+    smallGreenLine2.y1.baseVal.value = paddingBig1 + (1-take(game.col_matrix,2)/return_space_max)*widthBig;
+    smallGreenLine2.y2.baseVal.value = paddingBig1 + (1-take(game.col_matrix,1)/return_space_max)*widthBig;
     smallBlueLine2.x1.baseVal.value = paddingBig2;
     smallBlueLine2.x2.baseVal.value = paddingBig2;
-    smallBlueLine2.y1.baseVal.value = paddingBig1 + (1-take(game.col_matrix,2)/6)*widthBig;
-    smallBlueLine2.y2.baseVal.value = paddingBig1;
+    smallBlueLine2.y1.baseVal.value = paddingBig1 + (1-take(game.col_matrix,2)/return_space_max)*widthBig;
+    smallBlueLine2.y2.baseVal.value = paddingBig1 + (1-take(game.col_matrix,3)/return_space_max)*widthBig;
     smallCorner.cx.baseVal.value = paddingBig2;
     smallCorner.cy.baseVal.value = paddingBig1 + widthBig;
 
     redBox.x.baseVal.value = paddingBig2;
-    redBox.y.baseVal.value = paddingBig1 + (1-take(game.col_matrix,1)/6)*widthBig;
-    redBox.width.baseVal.value = take(game.row_matrix,1)/6*widthBig;
-    redBox.height.baseVal.value = take(game.col_matrix,1)/6*widthBig;
-    greenBox.x.baseVal.value = paddingBig2 + take(game.row_matrix,1)/6*widthBig;
-    greenBox.y.baseVal.value = paddingBig1 + (1-take(game.col_matrix,2)/6)*widthBig;
-    greenBox.width.baseVal.value = (take(game.row_matrix,2)-take(game.row_matrix,1))/6*widthBig;
-    greenBox.height.baseVal.value = (take(game.col_matrix,2)-take(game.col_matrix,1))/6*widthBig;
-    blueBox.x.baseVal.value = paddingBig2 + take(game.row_matrix,2)/6*widthBig;
-    blueBox.y.baseVal.value = paddingBig1;
-    blueBox.width.baseVal.value = (6-take(game.row_matrix,2))/6*widthBig;
-    blueBox.height.baseVal.value = (6-take(game.col_matrix,2))/6*widthBig;
+    redBox.y.baseVal.value = paddingBig1 + (1-take(game.col_matrix,1)/return_space_max)*widthBig;
+    redBox.width.baseVal.value = take(game.row_matrix,1)/return_space_max*widthBig;
+    redBox.height.baseVal.value = take(game.col_matrix,1)/return_space_max*widthBig;
+    greenBox.x.baseVal.value = paddingBig2 + take(game.row_matrix,1)/return_space_max*widthBig;
+    greenBox.y.baseVal.value = paddingBig1 + (1-take(game.col_matrix,2)/return_space_max)*widthBig;
+    greenBox.width.baseVal.value = (take(game.row_matrix,2)-take(game.row_matrix,1))/return_space_max*widthBig;
+    greenBox.height.baseVal.value = (take(game.col_matrix,2)-take(game.col_matrix,1))/return_space_max*widthBig;
+    blueBox.x.baseVal.value = paddingBig2 + take(game.row_matrix,2)/return_space_max*widthBig;
+    blueBox.y.baseVal.value = paddingBig1 + (1-take(game.col_matrix,3)/return_space_max)*widthBig;
+    blueBox.width.baseVal.value = (take(game.row_matrix,3)-take(game.row_matrix,2))/return_space_max*widthBig;
+    blueBox.height.baseVal.value = (take(game.col_matrix,3)-take(game.col_matrix,2))/return_space_max*widthBig;
 
     // top1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
     // top2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
@@ -4197,7 +4237,7 @@ function update() {
             point1Big.style = "fill:" + cerulean;
         else
             point1Big.style = "fill:" + bad;
-        point1Big.style.r = eqRadiiBig*widthBig;
+        point1Big.style.r = eqRadiiBig*widthBig/2;
     } else {
         point1Big.style.opacity = 0;
     }
@@ -4211,7 +4251,7 @@ function update() {
             point2Big.style = "fill:" + cerulean;
         else
             point2Big.style = "fill:" + bad;
-        point2Big.style.r = eqRadiiBig*widthBig;
+        point2Big.style.r = eqRadiiBig*widthBig/2;
     } else {
         point2Big.style.opacity = 0;
     }
@@ -4225,7 +4265,7 @@ function update() {
             point3Big.style = "fill:" + cerulean;
         else
             point3Big.style = "fill:" + bad;
-        point3Big.style.r = eqRadiiBig*widthBig;
+        point3Big.style.r = eqRadiiBig*widthBig/2;
     } else {
         point3Big.style.opacity = 0;
     }
@@ -4239,7 +4279,7 @@ function update() {
             point4Big.style = "fill:" + cerulean;
         else
             point4Big.style = "fill:" + bad;
-        point4Big.style.r = eqRadiiBig*widthBig;
+        point4Big.style.r = eqRadiiBig*widthBig/2;
     } else {
         point4Big.style.opacity = 0;
     }
@@ -4247,10 +4287,10 @@ function update() {
         const mixedRow = game.row_mixed_return;
         const mixedCol = game.col_mixed_return;
         point5Big.style = "fill:" + mixedColor;
-        point5Big.style.r = eqRadiiBig*widthBig;
-        point5Big.cx.baseVal.value = mixedRow*widthBig/6+paddingBig2;
-        point5Big.cy.baseVal.value = (1-mixedCol/6)*widthBig+paddingBig1;
-        if (6 - mixedRow < error && 6 - mixedCol < error) point5Big.style.opacity = 0;
+        point5Big.style.r = eqRadiiBig*widthBig/2;
+        point5Big.cx.baseVal.value = mixedRow*widthBig/return_space_max+paddingBig2;
+        point5Big.cy.baseVal.value = (1-mixedCol/return_space_max)*widthBig+paddingBig1;
+        if (mixedRow == null) point5Big.style.opacity = 0;
     } else {
         point5Big.style.opacity = 0;
     }
@@ -5178,9 +5218,14 @@ function update() {
     circle.cy.baseVal.value = (1-game.t2/6)*temp_pic_canvas.height;
 
     // update exchange rate
-    if (exchange_factor != 10 ** document.getElementById("exchange-slider").value) {
-        exchange_factor = 10 ** document.getElementById("exchange-slider").value;
-        document.getElementById("exchange-factor").innerHTML = exchange_factor.toFixed(2);
+    const rows_max = document.getElementById("exchange-slider").value;
+    if (rows_multiplier != Math.max(rows_max/6,0.0001)) {
+        // exchange_factor = (12-rows_max)/rows_max;
+        // rows_multiplier = 2/(exchange_factor+1);
+        // cols_multiplier = 2-2/(exchange_factor+1);
+        rows_multiplier = Math.max(rows_max/6,0.0001);
+        cols_multiplier = Math.max((12 - rows_max)/6,0.0001);
+        document.getElementById("exchange-factor").innerHTML = Number(rows_max).toFixed(2);
         updateCanvas(true);
         update_temp_pic(true);
     }
@@ -5320,8 +5365,8 @@ function rotate() {
 }
 
 function randomGame() {
-    game.row_matrix = normalize([Math.random(),Math.random(),Math.random(),Math.random()]);
-    game.col_matrix = normalize([Math.random(),Math.random(),Math.random(),Math.random()]);
+    game.row_matrix = normalize([Math.random(),Math.random(),Math.random(),Math.random()]).map(x => x*rows_multiplier);
+    game.col_matrix = normalize([Math.random(),Math.random(),Math.random(),Math.random()]).map(x => x*cols_multiplier);
 
     updateCoords();
 }
@@ -7255,6 +7300,9 @@ function createDiagram() {
 function updateDiagram(game) {
     const error = 0.00001;
 
+    const matrixA = normalize(game.row_matrix);
+    const matrixB = normalize(game.col_matrix);
+
     const container = document.getElementById("container");
     const diagram = document.getElementById("diagram");
     const diagramWidth = diagram.width.baseVal.value;
@@ -7294,55 +7342,55 @@ function updateDiagram(game) {
     diagramBox.height.baseVal.value = width;
     diagramBox.x.baseVal.value = padding;
     diagramBox.y.baseVal.value = padding;
-    line1.x1.baseVal.value = game.row_matrix[0]*width/6+padding;
-    line1.x2.baseVal.value = game.row_matrix[1]*width/6+padding;
-    line2.x1.baseVal.value = game.row_matrix[1]*width/6+padding;
-    line2.x2.baseVal.value = game.row_matrix[3]*width/6+padding;
-    line3.x1.baseVal.value = game.row_matrix[3]*width/6+padding;
-    line3.x2.baseVal.value = game.row_matrix[2]*width/6+padding;
-    line4.x1.baseVal.value = game.row_matrix[2]*width/6+padding;
-    line4.x2.baseVal.value = game.row_matrix[0]*width/6+padding;
+    line1.x1.baseVal.value = matrixA[0]*width/6+padding;
+    line1.x2.baseVal.value = matrixA[1]*width/6+padding;
+    line2.x1.baseVal.value = matrixA[1]*width/6+padding;
+    line2.x2.baseVal.value = matrixA[3]*width/6+padding;
+    line3.x1.baseVal.value = matrixA[3]*width/6+padding;
+    line3.x2.baseVal.value = matrixA[2]*width/6+padding;
+    line4.x1.baseVal.value = matrixA[2]*width/6+padding;
+    line4.x2.baseVal.value = matrixA[0]*width/6+padding;
 
-    line1.y1.baseVal.value = (1-game.col_matrix[0]/6)*width+padding;
-    line1.y2.baseVal.value = (1-game.col_matrix[1]/6)*width+padding;
-    line2.y1.baseVal.value = (1-game.col_matrix[1]/6)*width+padding;
-    line2.y2.baseVal.value = (1-game.col_matrix[3]/6)*width+padding;
-    line3.y1.baseVal.value = (1-game.col_matrix[3]/6)*width+padding;
-    line3.y2.baseVal.value = (1-game.col_matrix[2]/6)*width+padding;
-    line4.y1.baseVal.value = (1-game.col_matrix[2]/6)*width+padding;
-    line4.y2.baseVal.value = (1-game.col_matrix[0]/6)*width+padding;
+    line1.y1.baseVal.value = (1-matrixB[0]/6)*width+padding;
+    line1.y2.baseVal.value = (1-matrixB[1]/6)*width+padding;
+    line2.y1.baseVal.value = (1-matrixB[1]/6)*width+padding;
+    line2.y2.baseVal.value = (1-matrixB[3]/6)*width+padding;
+    line3.y1.baseVal.value = (1-matrixB[3]/6)*width+padding;
+    line3.y2.baseVal.value = (1-matrixB[2]/6)*width+padding;
+    line4.y1.baseVal.value = (1-matrixB[2]/6)*width+padding;
+    line4.y2.baseVal.value = (1-matrixB[0]/6)*width+padding;
 
-    point1.cx.baseVal.value = game.row_matrix[0]*width/6+padding;
-    point1.cy.baseVal.value = (1-game.col_matrix[0]/6)*width+padding;
-    point2.cx.baseVal.value = game.row_matrix[1]*width/6+padding;
-    point2.cy.baseVal.value = (1-game.col_matrix[1]/6)*width+padding;
-    point3.cx.baseVal.value = game.row_matrix[2]*width/6+padding;
-    point3.cy.baseVal.value = (1-game.col_matrix[2]/6)*width+padding;
-    point4.cx.baseVal.value = game.row_matrix[3]*width/6+padding;
-    point4.cy.baseVal.value = (1-game.col_matrix[3]/6)*width+padding;
+    point1.cx.baseVal.value = matrixA[0]*width/6+padding;
+    point1.cy.baseVal.value = (1-matrixB[0]/6)*width+padding;
+    point2.cx.baseVal.value = matrixA[1]*width/6+padding;
+    point2.cy.baseVal.value = (1-matrixB[1]/6)*width+padding;
+    point3.cx.baseVal.value = matrixA[2]*width/6+padding;
+    point3.cy.baseVal.value = (1-matrixB[2]/6)*width+padding;
+    point4.cx.baseVal.value = matrixA[3]*width/6+padding;
+    point4.cy.baseVal.value = (1-matrixB[3]/6)*width+padding;
 
-    corner1.cx.baseVal.value = game.row_matrix[0]*width/6+padding;
-    corner1.cy.baseVal.value = (1-game.col_matrix[0]/6)*width+padding;
-    corner2.cx.baseVal.value = game.row_matrix[1]*width/6+padding;
-    corner2.cy.baseVal.value = (1-game.col_matrix[1]/6)*width+padding;
-    corner3.cx.baseVal.value = game.row_matrix[2]*width/6+padding;
-    corner3.cy.baseVal.value = (1-game.col_matrix[2]/6)*width+padding;
-    corner4.cx.baseVal.value = game.row_matrix[3]*width/6+padding;
-    corner4.cy.baseVal.value = (1-game.col_matrix[3]/6)*width+padding;
+    corner1.cx.baseVal.value = matrixA[0]*width/6+padding;
+    corner1.cy.baseVal.value = (1-matrixB[0]/6)*width+padding;
+    corner2.cx.baseVal.value = matrixA[1]*width/6+padding;
+    corner2.cy.baseVal.value = (1-matrixB[1]/6)*width+padding;
+    corner3.cx.baseVal.value = matrixA[2]*width/6+padding;
+    corner3.cy.baseVal.value = (1-matrixB[2]/6)*width+padding;
+    corner4.cx.baseVal.value = matrixA[3]*width/6+padding;
+    corner4.cy.baseVal.value = (1-matrixB[3]/6)*width+padding;
 
-    const rowMax = Math.max(...game.row_matrix) - error;
-    const colMax = Math.max(...game.col_matrix) - error;
+    const rowMax = Math.max(...matrixA) - error;
+    const colMax = Math.max(...matrixB) - error;
 
-    if (game.row_matrix[0] - game.row_matrix[2] >= -error && game.col_matrix[0] - game.col_matrix[1] >= -error) {
-        if (game.row_matrix[0] >= rowMax && game.col_matrix[0] >= colMax) {
+    if (matrixA[0] - matrixA[2] >= -error && matrixB[0] - matrixB[1] >= -error) {
+        if (matrixA[0] >= rowMax && matrixB[0] >= colMax) {
             point1.style = "fill:" + lightGreen;
             a1.style.color = lightGreen;
             a2.style.color = lightGreen;
-        } else if (game.row_matrix[0] >= rowMax) {
+        } else if (matrixA[0] >= rowMax) {
             point1.style = "fill:" + gold;
             a1.style.color = gold;
             a2.style.color = gold;
-        } else if (game.col_matrix[0] >= colMax) {
+        } else if (matrixB[0] >= colMax) {
             point1.style = "fill:" + cerulean;
             a1.style.color = cerulean;
             a2.style.color = cerulean;
@@ -7362,16 +7410,16 @@ function updateDiagram(game) {
         a2.style.fontWeight = "";
     }
     
-    if (game.row_matrix[1] - game.row_matrix[3] >= -error && game.col_matrix[1] - game.col_matrix[0] >= -error) {
-        if (game.row_matrix[1] >= rowMax && game.col_matrix[1] >= colMax) {
+    if (matrixA[1] - matrixA[3] >= -error && matrixB[1] - matrixB[0] >= -error) {
+        if (matrixA[1] >= rowMax && matrixB[1] >= colMax) {
             point2.style = "fill:" + lightGreen;
             b1.style.color = lightGreen;
             b2.style.color = lightGreen;
-        } else if (game.row_matrix[1] >= rowMax) {
+        } else if (matrixA[1] >= rowMax) {
             point2.style = "fill:" + gold;
             b1.style.color = gold;
             b2.style.color = gold;
-        } else if (game.col_matrix[1] >= colMax) {
+        } else if (matrixB[1] >= colMax) {
             point2.style = "fill:" + cerulean;
             b1.style.color = cerulean;
             b2.style.color = cerulean;
@@ -7391,16 +7439,16 @@ function updateDiagram(game) {
         b2.style.fontWeight = "";
     }
 
-    if (game.row_matrix[2] - game.row_matrix[0] >= -error && game.col_matrix[2] - game.col_matrix[3] >= -error) {
-        if (game.row_matrix[2] >= rowMax && game.col_matrix[2] >= colMax) {
+    if (matrixA[2] - matrixA[0] >= -error && matrixB[2] - matrixB[3] >= -error) {
+        if (matrixA[2] >= rowMax && matrixB[2] >= colMax) {
             point3.style = "fill:" + lightGreen;
             c1.style.color = lightGreen;
             c2.style.color = lightGreen;
-        } else if (game.row_matrix[2] >= rowMax) {
+        } else if (matrixA[2] >= rowMax) {
             point3.style = "fill:" + gold;
             c1.style.color = gold;
             c2.style.color = gold;
-        } else if (game.col_matrix[2] >= colMax) {
+        } else if (matrixB[2] >= colMax) {
             point3.style = "fill:" + cerulean;
             c1.style.color = cerulean;
             c2.style.color = cerulean;
@@ -7420,16 +7468,16 @@ function updateDiagram(game) {
         c2.style.fontWeight = "";
     }
 
-    if (game.row_matrix[3] - game.row_matrix[1] >= -error && game.col_matrix[3] - game.col_matrix[2] >= -error) {
-        if (game.row_matrix[3] >= rowMax && game.col_matrix[3] >= colMax) {
+    if (matrixA[3] - matrixA[1] >= -error && matrixB[3] - matrixB[2] >= -error) {
+        if (matrixA[3] >= rowMax && matrixB[3] >= colMax) {
             point4.style = "fill:" + lightGreen;
             d1.style.color = lightGreen;
             d2.style.color = lightGreen;
-        } else if (game.row_matrix[3] >= rowMax) {
+        } else if (matrixA[3] >= rowMax) {
             point4.style = "fill:" + gold;
             d1.style.color = gold;
             d2.style.color = gold;
-        } else if (game.col_matrix[3] >= colMax) {
+        } else if (matrixB[3] >= colMax) {
             point4.style = "fill:" + cerulean;
             d1.style.color = cerulean;
             d2.style.color = cerulean;
@@ -7449,9 +7497,10 @@ function updateDiagram(game) {
         d2.style.fontWeight = "";
     }
 
+    // console.log(mixedRow);
     if (game.row_mixed_return != null) {
-        const mixedRow = game.row_mixed_return;
-        const mixedCol = game.col_mixed_return;
+        const mixedRow = game.row_mixed_return/rows_multiplier;
+        const mixedCol = game.col_mixed_return/cols_multiplier;
         point5.style = "fill:" + mixedColor;
         point5.style.r = eqRadii*width;
         point5.cx.baseVal.value = mixedRow*width/6+padding;
@@ -9160,7 +9209,7 @@ function change_mode_b(mode, p1) {
 
 function reset_exchange() {
     const slider = document.getElementById("exchange-slider");
-    slider.value = 0;
+    slider.value = 6;
 }
 
 // function apply_operations(new_game, games, operations) {
@@ -9204,7 +9253,9 @@ function reset_exchange() {
 // change conventions to break equilibrium quads and put hotspots on the diagonal
 
 // todo
-// add fifth parameter (exchange factor)
+// add advance option to change fourth diagram
+// add drop shadow on numbers
+// clicking on squares
 // update game info
 // update thermostat more often
 
