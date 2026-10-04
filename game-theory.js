@@ -59,6 +59,8 @@ let noncooperative_col_2 = null;
 let exchange_factor = 1;
 let rows_multiplier = 1;
 let cols_multiplier = 1;
+let dragging_exchange = false;
+let set_exchange = false;
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.04;
@@ -94,7 +96,7 @@ class Game {
     #quadrant; #x1; #b1; #x2; #b2;
     #quad_temp; #y1; #y2; #t1; #t2;
     #mode; #zone_row; #zone_col;
-    #backstop; #threat_point; #threat_point_2; #pareto;
+    #backstop; #threat_point; #threat_point_2; #variable_threat_point; #variable_threat_point_2; #pareto;
     #rhombic_x1; #rhombic_y1; #rhombic_x2; #rhombic_y2;
     #row_equilibrium_return; #col_equilibrium_return;
     #row_equilibrium_return_2; #col_equilibrium_return_2;
@@ -143,7 +145,7 @@ class Game {
         // this.#x1 = undefined; this.#x2 = undefined; this.#b1 = undefined; this.#b2 = undefined; this.#quadrant = undefined;
         // this.#y1 = undefined; this.#y2 = undefined; this.#t1 = undefined; this.#t2 = undefined; this.#quad_temp = undefined;
         // this.#zone_row = undefined; this.#zone_col = undefined;
-        this.#backstop = undefined; this.#threat_point = undefined; this.#threat_point_2 = undefined; this.#pareto = undefined;
+        this.#backstop = undefined; this.#threat_point = undefined; this.#threat_point_2 = undefined; this.#variable_threat_point = undefined; this.#variable_threat_point_2 = undefined; this.#pareto = undefined;
         this.#rhombic_x1 = undefined; this.#rhombic_y1 = undefined; this.#rhombic_x2 = undefined; this.#rhombic_y2 = undefined;
         this.#row_equilibrium_return = undefined; this.#col_equilibrium_return = undefined;
         this.#row_equilibrium_return_2 = undefined; this.#col_equilibrium_return_2 = undefined;
@@ -897,76 +899,236 @@ class Game {
         return this.#backstop;
     }
 
+    #get_threat_point(slope) { // where the pareto frontier is on alpha*u_1+beta*u_2=c
+        const result = [];
+        // create zero-sum game given by A=R-C and B=C-R
+        const A = [this.row_matrix[0]*slope-this.col_matrix[0], this.row_matrix[1]*slope-this.col_matrix[1],
+                this.row_matrix[2]*slope-this.col_matrix[2], this.row_matrix[3]*slope-this.col_matrix[3]];
+        const B = [-A[0],-A[1],-A[2],-A[3]];
+
+        // compute the equilibrium of the zero-sum game
+        let equilibrium = [0,0]; // A 1 implies we're in the first row/column. A zero implies we're in the second.
+        let mixed = false;
+        if (B[0] >= B[1] && B[2] >= B[3]) {
+            if (A[0] >= A[2]) {
+                equilibrium[0] = 1;
+            }
+            else equilibrium[0] = 0;
+            equilibrium[1] = 1;
+        } else if (B[1] >= B[0] && B[3] >= B[2]) {
+            if (A[1] >= A[3]) {
+                equilibrium[0] = 1;
+            }
+            else equilibrium[0] = 0;
+            equilibrium[1] = 0;
+        } else if (A[0] >= A[2] && A[1] >= A[3]) {
+            if (B[0] >= B[1]) {
+                equilibrium[1] = 1;
+            } else equilibrium[1] = 0;
+            equilibrium[0] = 1;
+        } else if (A[2] >= A[0] && A[3] >= A[1]) {
+            if (B[2] >= B[3]) {
+                equilibrium[1] = 1;
+            } else equilibrium[1] = 0;
+            equilibrium[0] = 0;
+        } else {
+            equilibrium[0] = (B[3] - B[2])/(B[0] - B[1] - B[2] + B[3]);
+            equilibrium[1] = (A[3] - A[1])/(A[0] - A[1] - A[2] + A[3]);
+            mixed = true;
+        }
+
+        // if (A[3] >= A[1] && A[2] >= A[0]) {
+        //     if (B[3] >= B[2]) equilibrium[1] = 0;
+        //     else equilibrium[1] = 1;
+        // } else if (A[1] >= A[3] && A[0] >= A[2]) {
+        //     if (B[1] >= B[0]) equilibrium[1] = 0;
+        //     else equilibrium[1] = 1;
+        // } else if (B[3] >= B[2] && B[1] >= B[0]) {
+        //     equilibrium[1] = 0;
+        // } else if (B[2] >= B[3] && B[0] >= B[1]) {
+        //     equilibrium[1] = 1;
+        // } else {
+        //     equilibrium[1] = (A[3] - A[1])/(A[0] - A[1] - A[2] + A[3]);
+        //     mixed = true;
+        // }
+
+        // apply that equilibrium to the original matrices
+        const rowDisagree = equilibrium[0]*equilibrium[1]*this.row_matrix[0] + equilibrium[0]*(1-equilibrium[1])*this.row_matrix[1]
+                        + (1-equilibrium[0])*equilibrium[1]*this.row_matrix[2] + (1-equilibrium[0])*(1-equilibrium[1])*this.row_matrix[3];
+        const colDisagree = equilibrium[0]*equilibrium[1]*this.col_matrix[0] + equilibrium[0]*(1-equilibrium[1])*this.col_matrix[1]
+                        + (1-equilibrium[0])*equilibrium[1]*this.col_matrix[2] + (1-equilibrium[0])*(1-equilibrium[1])*this.col_matrix[3];
+        // const rowDisagree = equilibrium[0]*equilibrium[1]*A[0] + equilibrium[0]*(1-equilibrium[1])*A[1]
+        //                 + (1-equilibrium[0])*equilibrium[1]*A[2] + (1-equilibrium[0])*(1-equilibrium[1])*A[3];
+        // const colDisagree = equilibrium[0]*equilibrium[1]*B[0] + equilibrium[0]*(1-equilibrium[1])*B[1]
+        //                 + (1-equilibrium[0])*equilibrium[1]*B[2] + (1-equilibrium[0])*(1-equilibrium[1])*B[3];
+        result.push([rowDisagree,colDisagree]);
+
+        // if there are two equally valid threat points, compute the second one
+        if (!mixed && (A[3] <= A[1] || A[2] <= A[0]) && (A[1] <= A[3] || A[0] <= A[2]) && (B[3] <= B[2] || B[1] <= B[0]) && (B[2] <= B[3] || B[0] <= B[1])) {
+            let equilibrium2 = [(B[3] - B[2])/(B[0] - B[1] - B[2] + B[3]), (A[3] - A[1])/(A[0] - A[1] - A[2] + A[3])];
+            const rowDisagree2 = equilibrium2[0]*equilibrium2[1]*this.row_matrix[0] + equilibrium2[0]*(1-equilibrium2[1])*this.row_matrix[1]
+                            + (1-equilibrium2[0])*equilibrium2[1]*this.row_matrix[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*this.row_matrix[3];
+            const colDisagree2 = equilibrium2[0]*equilibrium2[1]*this.col_matrix[0] + equilibrium2[0]*(1-equilibrium2[1])*this.col_matrix[1]
+                            + (1-equilibrium2[0])*equilibrium2[1]*this.col_matrix[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*this.col_matrix[3];
+            // const rowDisagree2 = equilibrium2[0]*equilibrium2[1]*A[0] + equilibrium2[0]*(1-equilibrium2[1])*A[1]
+            //                 + (1-equilibrium2[0])*equilibrium2[1]*A[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*A[3];
+            // const colDisagree2 = equilibrium2[0]*equilibrium2[1]*B[0] + equilibrium2[0]*(1-equilibrium2[1])*B[1]
+            //                 + (1-equilibrium2[0])*equilibrium2[1]*B[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*B[3];
+            if (Math.abs(result[0][0]-rowDisagree2) > 0.001 && Math.abs(result[0][1]-colDisagree2) > 0.001)
+                result.push([rowDisagree2,colDisagree2]);
+        }
+        return result;
+    }
+
     get threat_point() {
         if (this.#threat_point === undefined) {
-            // create zero-sum game given by A=R-C and B=C-R
-            const A = [this.row_matrix[0]-exchange_factor*this.col_matrix[0], this.row_matrix[1]-exchange_factor*this.col_matrix[1],
-                    this.row_matrix[2]-exchange_factor*this.col_matrix[2], this.row_matrix[3]-exchange_factor*this.col_matrix[3]];
-            const B = [-A[0],-A[1],-A[2],-A[3]];
+            // // create zero-sum game given by A=R-C and B=C-R
+            // const A = [this.row_matrix[0]-exchange_factor*this.col_matrix[0], this.row_matrix[1]-exchange_factor*this.col_matrix[1],
+            //         this.row_matrix[2]-exchange_factor*this.col_matrix[2], this.row_matrix[3]-exchange_factor*this.col_matrix[3]];
+            // const B = [-A[0],-A[1],-A[2],-A[3]];
 
-            // compute the equilibrium of the zero-sum game
-            let equilibrium = [0,0];
-            let mixed = false;
-            if (B[0] >= B[1] && B[2] >= B[3]) {
-                if (A[0] >= A[2]) {
-                    equilibrium[0] = 1;
-                }
-                else equilibrium[0] = 0;
-            } else if (B[1] >= B[0] && B[3] >= B[2]) {
-                if (A[1] >= A[3]) {
-                    equilibrium[0] = 1;
-                }
-                else equilibrium[0] = 0;
-            } else if (A[0] >= A[2] && A[1] >= A[3]) {
-                equilibrium[0] = 1;
-            } else if (A[2] >= A[0] && A[3] >= A[1]) {
-                equilibrium[0] = 0;
-            } else {
-                equilibrium[0] = (B[3] - B[2])/(B[0] - B[1] - B[2] + B[3]);
-            }
+            // // compute the equilibrium of the zero-sum game
+            // let equilibrium = [0,0];
+            // let mixed = false;
+            // if (B[0] >= B[1] && B[2] >= B[3]) {
+            //     if (A[0] >= A[2]) {
+            //         equilibrium[0] = 1;
+            //     }
+            //     else equilibrium[0] = 0;
+            // } else if (B[1] >= B[0] && B[3] >= B[2]) {
+            //     if (A[1] >= A[3]) {
+            //         equilibrium[0] = 1;
+            //     }
+            //     else equilibrium[0] = 0;
+            // } else if (A[0] >= A[2] && A[1] >= A[3]) {
+            //     equilibrium[0] = 1;
+            // } else if (A[2] >= A[0] && A[3] >= A[1]) {
+            //     equilibrium[0] = 0;
+            // } else {
+            //     equilibrium[0] = (B[3] - B[2])/(B[0] - B[1] - B[2] + B[3]);
+            // }
 
-            if (A[3] >= A[1] && A[2] >= A[0]) {
-                if (B[3] >= B[2]) equilibrium[1] = 0;
-                else equilibrium[1] = 1;
-            } else if (A[1] >= A[3] && A[0] >= A[2]) {
-                if (B[1] >= B[0]) equilibrium[1] = 0;
-                else equilibrium[1] = 1;
-            } else if (B[3] >= B[2] && B[1] >= B[0]) {
-                equilibrium[1] = 0;
-            } else if (B[2] >= B[3] && B[0] >= B[1]) {
-                equilibrium[1] = 1;
-            } else {
-                equilibrium[1] = (A[3] - A[1])/(A[0] - A[1] - A[2] + A[3]);
-                mixed = true;
-            }
+            // if (A[3] >= A[1] && A[2] >= A[0]) {
+            //     if (B[3] >= B[2]) equilibrium[1] = 0;
+            //     else equilibrium[1] = 1;
+            // } else if (A[1] >= A[3] && A[0] >= A[2]) {
+            //     if (B[1] >= B[0]) equilibrium[1] = 0;
+            //     else equilibrium[1] = 1;
+            // } else if (B[3] >= B[2] && B[1] >= B[0]) {
+            //     equilibrium[1] = 0;
+            // } else if (B[2] >= B[3] && B[0] >= B[1]) {
+            //     equilibrium[1] = 1;
+            // } else {
+            //     equilibrium[1] = (A[3] - A[1])/(A[0] - A[1] - A[2] + A[3]);
+            //     mixed = true;
+            // }
 
-            // apply that equilibrium to the original matrices
-            const rowDisagree = equilibrium[0]*equilibrium[1]*this.row_matrix[0] + equilibrium[0]*(1-equilibrium[1])*this.row_matrix[1]
-                            + (1-equilibrium[0])*equilibrium[1]*this.row_matrix[2] + (1-equilibrium[0])*(1-equilibrium[1])*this.row_matrix[3];
-            const colDisagree = equilibrium[0]*equilibrium[1]*this.col_matrix[0] + equilibrium[0]*(1-equilibrium[1])*this.col_matrix[1]
-                            + (1-equilibrium[0])*equilibrium[1]*this.col_matrix[2] + (1-equilibrium[0])*(1-equilibrium[1])*this.col_matrix[3];
-            // const rowDisagree = equilibrium[0]*equilibrium[1]*A[0] + equilibrium[0]*(1-equilibrium[1])*A[1]
-            //                 + (1-equilibrium[0])*equilibrium[1]*A[2] + (1-equilibrium[0])*(1-equilibrium[1])*A[3];
-            // const colDisagree = equilibrium[0]*equilibrium[1]*B[0] + equilibrium[0]*(1-equilibrium[1])*B[1]
-            //                 + (1-equilibrium[0])*equilibrium[1]*B[2] + (1-equilibrium[0])*(1-equilibrium[1])*B[3];
-            this.#threat_point = [rowDisagree,colDisagree*exchange_factor];
+            // // apply that equilibrium to the original matrices
+            // const rowDisagree = equilibrium[0]*equilibrium[1]*this.row_matrix[0] + equilibrium[0]*(1-equilibrium[1])*this.row_matrix[1]
+            //                 + (1-equilibrium[0])*equilibrium[1]*this.row_matrix[2] + (1-equilibrium[0])*(1-equilibrium[1])*this.row_matrix[3];
+            // const colDisagree = equilibrium[0]*equilibrium[1]*this.col_matrix[0] + equilibrium[0]*(1-equilibrium[1])*this.col_matrix[1]
+            //                 + (1-equilibrium[0])*equilibrium[1]*this.col_matrix[2] + (1-equilibrium[0])*(1-equilibrium[1])*this.col_matrix[3];
+            // // const rowDisagree = equilibrium[0]*equilibrium[1]*A[0] + equilibrium[0]*(1-equilibrium[1])*A[1]
+            // //                 + (1-equilibrium[0])*equilibrium[1]*A[2] + (1-equilibrium[0])*(1-equilibrium[1])*A[3];
+            // // const colDisagree = equilibrium[0]*equilibrium[1]*B[0] + equilibrium[0]*(1-equilibrium[1])*B[1]
+            // //                 + (1-equilibrium[0])*equilibrium[1]*B[2] + (1-equilibrium[0])*(1-equilibrium[1])*B[3];
+            // this.#threat_point = [rowDisagree,colDisagree];
 
-            // if there are two equally valid threat points, compute the second one
-            if (!mixed && (A[3] <= A[1] || A[2] <= A[0]) && (A[1] <= A[3] || A[0] <= A[2]) && (B[3] <= B[2] || B[1] <= B[0]) && (B[2] <= B[3] || B[0] <= B[1])) {
-                let equilibrium2 = [(B[3] - B[2])/(B[0] - B[1] - B[2] + B[3]), (A[3] - A[1])/(A[0] - A[1] - A[2] + A[3])];
-                const rowDisagree2 = equilibrium2[0]*equilibrium2[1]*this.row_matrix[0] + equilibrium2[0]*(1-equilibrium2[1])*this.row_matrix[1]
-                                + (1-equilibrium2[0])*equilibrium2[1]*this.row_matrix[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*this.row_matrix[3];
-                const colDisagree2 = equilibrium2[0]*equilibrium2[1]*this.col_matrix[0] + equilibrium2[0]*(1-equilibrium2[1])*this.col_matrix[1]
-                                + (1-equilibrium2[0])*equilibrium2[1]*this.col_matrix[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*this.col_matrix[3];
-                // const rowDisagree2 = equilibrium2[0]*equilibrium2[1]*A[0] + equilibrium2[0]*(1-equilibrium2[1])*A[1]
-                //                 + (1-equilibrium2[0])*equilibrium2[1]*A[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*A[3];
-                // const colDisagree2 = equilibrium2[0]*equilibrium2[1]*B[0] + equilibrium2[0]*(1-equilibrium2[1])*B[1]
-                //                 + (1-equilibrium2[0])*equilibrium2[1]*B[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*B[3];
-                if (Math.abs(this.#threat_point[0]-rowDisagree2) > 0.001 && Math.abs(this.#threat_point[1]-colDisagree2) > 0.001)
-                    this.#threat_point_2 = [rowDisagree2,colDisagree2*exchange_factor];
-            }
+            // // if there are two equally valid threat points, compute the second one
+            // if (!mixed && (A[3] <= A[1] || A[2] <= A[0]) && (A[1] <= A[3] || A[0] <= A[2]) && (B[3] <= B[2] || B[1] <= B[0]) && (B[2] <= B[3] || B[0] <= B[1])) {
+            //     let equilibrium2 = [(B[3] - B[2])/(B[0] - B[1] - B[2] + B[3]), (A[3] - A[1])/(A[0] - A[1] - A[2] + A[3])];
+            //     const rowDisagree2 = equilibrium2[0]*equilibrium2[1]*this.row_matrix[0] + equilibrium2[0]*(1-equilibrium2[1])*this.row_matrix[1]
+            //                     + (1-equilibrium2[0])*equilibrium2[1]*this.row_matrix[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*this.row_matrix[3];
+            //     const colDisagree2 = equilibrium2[0]*equilibrium2[1]*this.col_matrix[0] + equilibrium2[0]*(1-equilibrium2[1])*this.col_matrix[1]
+            //                     + (1-equilibrium2[0])*equilibrium2[1]*this.col_matrix[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*this.col_matrix[3];
+            //     // const rowDisagree2 = equilibrium2[0]*equilibrium2[1]*A[0] + equilibrium2[0]*(1-equilibrium2[1])*A[1]
+            //     //                 + (1-equilibrium2[0])*equilibrium2[1]*A[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*A[3];
+            //     // const colDisagree2 = equilibrium2[0]*equilibrium2[1]*B[0] + equilibrium2[0]*(1-equilibrium2[1])*B[1]
+            //     //                 + (1-equilibrium2[0])*equilibrium2[1]*B[2] + (1-equilibrium2[0])*(1-equilibrium2[1])*B[3];
+            //     if (Math.abs(this.#threat_point[0]-rowDisagree2) > 0.001 && Math.abs(this.#threat_point[1]-colDisagree2) > 0.001)
+            //         this.#threat_point_2 = [rowDisagree2,colDisagree2];
+            // }
+            this.#threat_point = this.#get_threat_point(1)[0];
+            this.#threat_point_2 = null;
         }
         return this.#threat_point;
+    }
+
+    get variable_threat_point() {
+        if (this.#variable_threat_point === undefined) {
+            let marks = [0,0,0,0];
+            let threat_point = null;
+            const pareto = this.pareto;
+            let return1 = this.row_matrix[pareto[0]];
+            let return2 = this.col_matrix[pareto[0]];
+            let max = -10000;
+            // let slope = null;
+            for (let n = 0; n < pareto.length; n++) {
+                for (let m = n + 1; m < pareto.length; m++) {
+                    const i = pareto[n];
+                    const j = pareto[m];
+                    const slope = this.row_matrix[i]-this.row_matrix[j] != 0 ? (this.col_matrix[j]-this.col_matrix[i])/(this.row_matrix[i]-this.row_matrix[j]) : 1000000;
+                    const tp = this.#get_threat_point(slope)[0];
+                    const x1 = this.row_matrix[i] - tp[0];
+                    const x2 = this.row_matrix[j] - tp[0];
+                    const y1 = this.col_matrix[i] - tp[1];
+                    const y2 = this.col_matrix[j] - tp[1];
+                    // maximizing   (x1*t+x2*(1-t))*(y1*t+y2*(1-t))
+                    // derivative   (x1*t+x2*(1-t))*(y1-y2)+(y1*t+y2*(1-t))*(x1-x2) = 0
+                    // solve        t*(x1-x2)*(y1-y2)*2+x2*(y1-y2)+y2*(x1-x2) = 0
+                    //              t = (x2*(y1-y2)+y2*(x1-x2))/((x1-x2)*(y1-y2)*2)
+                    const t = (y1 == y2 || x1 == x2) ? -1 : -(x2*(y1-y2)+y2*(x1-x2))/((x1-x2)*(y1-y2)*2);
+                    const value1 = x1*y1;
+                    const value2 = x2*y2;
+                    const value3 = (t < 1 && t > 0 && (x1*t+x2*(1-t))>0 && (y1*t+y2*(1-t))>0) ? (x1*t+x2*(1-t))*(y1*t+y2*(1-t)) : -1;
+                    if (value1 >= value2) { // value1 >= max && value1 >= value3 &&
+                        // max = value1;
+                        // return1 = this.row_matrix[i];
+                        // return2 = this.col_matrix[i];
+                        // threat_point = tp;
+                        if (this.#paretoQ(this.row_matrix[i]*0.99+this.row_matrix[j]*0.01,this.col_matrix[i]*0.99+this.col_matrix[j]*0.01)) {
+                            marks[i]++;
+                            marks[j]--;
+                        }
+                    } else { // value2 >= max && value2 >= value3 && 
+                        // max = value2;
+                        // return1 = this.row_matrix[j];
+                        // return2 = this.col_matrix[j];
+                        // threat_point = tp;
+                        if (this.#paretoQ(this.row_matrix[i]*0.01+this.row_matrix[j]*0.99,this.col_matrix[i]*0.01+this.col_matrix[j]*0.99)) {
+                            marks[j]++;
+                            marks[i]--;
+                        }
+                    }
+                    if (value3 != -1 && value3 >= max && this.#paretoQ(this.row_matrix[i]*t + this.row_matrix[j]*(1-t), this.col_matrix[i]*t + this.col_matrix[j]*(1-t))) {
+                        max = value3;
+                        return1 = this.row_matrix[i]*t + this.row_matrix[j]*(1-t);
+                        return2 = this.col_matrix[i]*t + this.col_matrix[j]*(1-t);
+                        threat_point = tp;
+                    }
+                }
+            }
+            if (max == -10000) {
+                let done = false;
+                for (let i = 0; i < 4; i++) {
+                    if (marks[i] > 0) {
+                        if (!done) {
+                            done = true;
+                            return1 = this.row_matrix[i];
+                            return2 = this.col_matrix[i];
+                        } else {
+                            return1 = this.compare_strategies(2,2,true);
+                            return2 = this.compare_strategies(2,2,false);
+                        }
+                    }
+                }
+            }
+
+            this.#row_ntu_tp_return = return1;
+            this.#col_ntu_tp_return = return2;
+            this.#variable_threat_point = threat_point;
+        }
+        return this.#variable_threat_point;
     }
 
     get threat_point_2() {
@@ -989,11 +1151,37 @@ class Game {
                         break;
                     }
                 }
-                if (pareto) result.push(i);
+                if (pareto && this.#paretoQ(this.row_matrix[i],this.col_matrix[i])) result.push(i);
+                // if (this.#paretoQ(this.row_matrix[i],this.col_matrix[i])) result.push(i);
             }
             this.#pareto = result;
         }
         return this.#pareto;
+    }
+
+    #paretoQ(return1,return2) {
+        if (return1 == 0 && return2 == 0) return false;
+        for (let i = 0; i < 4; i++) {
+            for (let j = i+1; j < 4; j++) {
+                // find the points where these lines intersect
+                // line 1: x = return1
+                // line 2: y = return2
+                // line 3: y = (col[i]-col[j])/(row[i]-row[j])*(x-row[i])+col[i]
+                // solve: (x1,y1) = (return1,m*(return1-row[i])+col[i])
+                //        (x2,y2) = ((return2-col[i])/m+row[i],return2)
+                let a_x = this.row_matrix[i]; let a_y = this.col_matrix[i]; let b_x = this.row_matrix[j]; let b_y = this.col_matrix[j];
+                let m = a_x-b_x != 0 ? (a_y-b_y)/(a_x-b_x) : -10000000;
+                if (m == 0) m = -0.0000001;
+                let x1 = return1;
+                let y2 = return2;
+                let y1 = m*(x1-this.row_matrix[i])+this.col_matrix[i];
+                let x2 = (y2-this.col_matrix[i])/m+this.row_matrix[i];
+                if (y1 - 0.000001 > y2 && y1 - Math.max(a_y,b_y) < 0 && y1 - Math.min(a_y,b_y) > 0 || x2 - 0.000001 > x1 && x2 - Math.max(a_x,b_x) < 0 && x2 - Math.min(a_x,b_x) > 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     #bargaining(tp) {
@@ -1007,8 +1195,8 @@ class Game {
                 const j = pareto[m];
                 const x1 = this.row_matrix[i] - tp[0];
                 const x2 = this.row_matrix[j] - tp[0];
-                const y1 = this.col_matrix[i]*exchange_factor - tp[1];
-                const y2 = this.col_matrix[j]*exchange_factor - tp[1];
+                const y1 = this.col_matrix[i] - tp[1];
+                const y2 = this.col_matrix[j] - tp[1];
                 // maximizing   (x1*t+x2*(1-t))*(y1*t+y2*(1-t))
                 // derivative   (x1*t+x2*(1-t))*(y1-y2)+(y1*t+y2*(1-t))*(x1-x2) = 0
                 // solve        t*(x1-x2)*(y1-y2)*2+x2*(y1-y2)+y2*(x1-x2) = 0
@@ -1032,7 +1220,7 @@ class Game {
                 }
             }
         }
-        return [return1,return2*exchange_factor];
+        return [return1,return2];
     }
 
     #bargaining_trans(tp) {
@@ -1056,36 +1244,40 @@ class Game {
 
     get row_ntu_tp_return() {
         if (this.#row_ntu_tp_return === undefined) {
-            [this.#row_ntu_tp_return,this.#col_ntu_tp_return] = this.#bargaining(this.threat_point);
-            if (this.threat_point_2 != null) {
-                [this.#row_ntu_tp_return_2,this.#col_ntu_tp_return_2] = this.#bargaining(this.threat_point_2);
-            }
+            // [this.#row_ntu_tp_return,this.#col_ntu_tp_return] = this.#bargaining(this.threat_point);
+            // if (this.threat_point_2 != null) {
+            //     [this.#row_ntu_tp_return_2,this.#col_ntu_tp_return_2] = this.#bargaining(this.threat_point_2);
+            // }
+            this.variable_threat_point;
         }
         return this.#row_ntu_tp_return;
     }
 
     get row_ntu_tp_return_2() {
-        this.row_ntu_tp_return;
-        if (this.#row_ntu_tp_return_2 !== undefined)
-            return this.#row_ntu_tp_return_2;
-        else return null;
+        // this.row_ntu_tp_return;
+        // if (this.#row_ntu_tp_return_2 !== undefined)
+        //     return this.#row_ntu_tp_return_2;
+        // else
+            return null;
     }
 
     get col_ntu_tp_return() {
         if (this.#col_ntu_tp_return === undefined) {
-            [this.#row_ntu_tp_return,this.#col_ntu_tp_return] = this.#bargaining(this.threat_point);
-            if (this.threat_point_2 != null) {
-                [this.#row_ntu_tp_return_2,this.#col_ntu_tp_return_2] = this.#bargaining(this.threat_point_2);
-            }
+            // [this.#row_ntu_tp_return,this.#col_ntu_tp_return] = this.#bargaining(this.threat_point);
+            // if (this.threat_point_2 != null) {
+            //     [this.#row_ntu_tp_return_2,this.#col_ntu_tp_return_2] = this.#bargaining(this.threat_point_2);
+            // }
+            this.variable_threat_point;
         }
         return this.#col_ntu_tp_return;
     }
 
     get col_ntu_tp_return_2() {
-        this.col_ntu_tp_return;
-        if (this.#col_ntu_tp_return_2 !== undefined)
-            return this.#col_ntu_tp_return_2;
-        else return null;
+        // this.col_ntu_tp_return;
+        // if (this.#col_ntu_tp_return_2 !== undefined)
+        //     return this.#col_ntu_tp_return_2;
+        // else 
+            return null;
     }
 
     get row_tu_bs_return() {
@@ -2324,13 +2516,15 @@ function init() {
 
     document.addEventListener('mousedown', (e) => { changeCoords(e); isMouseDown = true; });
     document.addEventListener('mouseup', () => {
+        if (draggingB1 || draggingB2 || dragging_temp || dragging_exchange || set_exchange) backgroundOutOfDate = true;
         draggingB1 = false;
         draggingB2 = false;
         draggingRhombus1 = false;
         draggingRhombus2 = false;
         isMouseDown = false;
-        backgroundOutOfDate = true;
         dragging_temp = false;
+        dragging_exchange = false;
+        set_exchange = false;
         update_temp_pic();
     });
     document.addEventListener('mousemove', (e) => {
@@ -3231,10 +3425,10 @@ function update() {
     d2.innerHTML = game.col_matrix[3].toFixed(2);
 
     // update returns data
-    const rowX = document.getElementById("x-row");
-    const rowB = document.getElementById("b-row");
-    const colX = document.getElementById("x-col");
-    const colB = document.getElementById("b-col");
+    // const rowX = document.getElementById("x-row");
+    // const rowB = document.getElementById("b-row");
+    // const colX = document.getElementById("x-col");
+    // const colB = document.getElementById("b-col");
     const rowY = document.getElementById("y-row");
     const rowT = document.getElementById("t-row");
     const colY = document.getElementById("y-col");
@@ -3252,11 +3446,11 @@ function update() {
     const rowReturnsBargaining2 = document.getElementById("row-return-bargaining-2");
     const colReturnsBargaining2 = document.getElementById("col-return-bargaining-2");
 
-    rowX.innerHTML = game.x1.toFixed(1);
-    colX.innerHTML = game.x2.toFixed(1);
+    // rowX.innerHTML = game.x1.toFixed(1);
+    // colX.innerHTML = game.x2.toFixed(1);
     
-    rowB.innerHTML = game.b1.toFixed(1);
-    colB.innerHTML = game.b2.toFixed(1);
+    // rowB.innerHTML = game.b1.toFixed(1);
+    // colB.innerHTML = game.b2.toFixed(1);
 
     rowY.innerHTML = game.y1.toFixed(1);
     colY.innerHTML = game.y2.toFixed(1);
@@ -3341,7 +3535,7 @@ function update() {
 
     // current return value
     const cur_returns = document.getElementById("current-returns");
-    if (viewMode != 0 && viewMode != 11 && viewMode != 12) {
+    if (viewMode != 0 && viewMode != 11 && viewMode != 12 && returns(game,viewMode,true) !== null) {
         if (viewModeB !== null) {
             cur_returns.innerHTML = " (" + returns(game,viewMode,viewModeP1,viewModeB,viewModeBP1).toFixed(2) + ")";
         } else if (viewModeP1) {
@@ -3505,6 +3699,8 @@ function update() {
     number4.setAttribute('y',(1-game.col_matrix[3]/return_space_max)*widthBig+paddingBig1);
 
     if (viewMode == 2 || viewMode == 3 || viewMode == 4 || viewMode == 5) {
+        disagreementPoint.style.fillOpacity = 1;
+        bargainingLine.style.strokeOpacity = 1;
         if (viewMode == 2) {
             bargainingLine.x2.baseVal.value = game.row_ntu_bs_return*widthBig/return_space_max+paddingBig2;
             bargainingLine.y2.baseVal.value = (return_space_max-game.col_ntu_bs_return)*widthBig/return_space_max+paddingBig1;
@@ -3530,14 +3726,22 @@ function update() {
             disagreementPoint.cy.baseVal.value = (return_space_max-game.backstop[1])*widthBig/return_space_max+paddingBig1;
             bargainingLine.x1.baseVal.value = game.backstop[0]*widthBig/return_space_max+paddingBig2;
             bargainingLine.y1.baseVal.value = (return_space_max-game.backstop[1])*widthBig/return_space_max+paddingBig1;            
-        } else {
+        } else if (viewMode == 4) {
             disagreementPoint.cx.baseVal.value = game.threat_point[0]*widthBig/return_space_max+paddingBig2;
             disagreementPoint.cy.baseVal.value = (return_space_max-game.threat_point[1])*widthBig/return_space_max+paddingBig1;
             bargainingLine.x1.baseVal.value = game.threat_point[0]*widthBig/return_space_max+paddingBig2;
             bargainingLine.y1.baseVal.value = (return_space_max-game.threat_point[1])*widthBig/return_space_max+paddingBig1;
+        } else {
+            if (game.variable_threat_point !== null) {
+                disagreementPoint.cx.baseVal.value = game.variable_threat_point[0]*widthBig/return_space_max+paddingBig2;
+                disagreementPoint.cy.baseVal.value = (return_space_max-game.variable_threat_point[1])*widthBig/return_space_max+paddingBig1;
+                bargainingLine.x1.baseVal.value = game.variable_threat_point[0]*widthBig/return_space_max+paddingBig2;
+                bargainingLine.y1.baseVal.value = (return_space_max-game.variable_threat_point[1])*widthBig/return_space_max+paddingBig1;
+            } else {
+                disagreementPoint.style.fillOpacity = 0;
+                bargainingLine.style.strokeOpacity = 0;
+            }
         }
-        disagreementPoint.style.fillOpacity = 1;
-        bargainingLine.style.strokeOpacity = 1;
     } else {
         disagreementPoint.style.fillOpacity = 0;
         bargainingLine.style.strokeOpacity = 0;
@@ -5183,7 +5387,7 @@ function update() {
     let cellRow = ((Math.floor(game.coord_2*game.conventions[1])-game.conventions[0]) + 14) % 6 + 1;
     cellName.innerHTML = game.class + cellCol.toString() + cellRow.toString() + (game.zone_row ? "&plus;" : "&minus;") + (game.zone_col ? "&plus;" : "&minus;");
     const coordinatesObj = document.getElementById("coordinates");
-    coordinatesObj.innerHTML = "y<sub>1</sub>: " + game.y1.toFixed(2) + ", y<sub>2</sub>: " + game.y2.toFixed(2) + ", t<sub>1</sub>: " + game.t1.toFixed(2) + ", t<sub>2</sub>: " + game.t2.toFixed(2);
+    coordinatesObj.innerHTML = "x<sub>1</sub>: " + game.y1.toFixed(2) + ", x<sub>2</sub>: " + game.y2.toFixed(2) + ", t<sub>1</sub>: " + game.t1.toFixed(2) + ", t<sub>2</sub>: " + game.t2.toFixed(2);
 
     // update zone label
     const zone_label = document.getElementById("zone");
@@ -5226,8 +5430,11 @@ function update() {
         rows_multiplier = Math.max(rows_max/6,0.0001);
         cols_multiplier = Math.max((12 - rows_max)/6,0.0001);
         document.getElementById("exchange-factor").innerHTML = Number(rows_max).toFixed(2);
-        updateCanvas(true);
-        update_temp_pic(true);
+        if (!set_exchange) {
+            updateCanvas(true);
+            update_temp_pic(true);
+            dragging_exchange = true;
+        }
     }
 
     time++;
@@ -6585,6 +6792,7 @@ function payoffCustom(game) {
 // }
 
 function colorFunction(value,vMode) {
+    if (value === null) return [255,255,255];
     let colors = [];
     let cutoffs = [];
     let divisor = 1;
@@ -6932,23 +7140,40 @@ function updateBigPicCanvas(lowRes = false) {
             }
             let quadrantWidth = Math.floor(canvasBigPic.width*0.84/grid_size);
             quadrantWidth = quadrantWidth - quadrantWidth % 6;
+            const pixel_size = quadrantWidth/12;
+            let pixel_i = 0;
+            let pixel_j = -1;
+            let pixel_colors = [];
             for (let j = 0; j < quadrantWidth; j++) {
+                if (lowRes && Math.floor(j/pixel_size) > pixel_j) {
+                    pixel_colors.length = 0;
+                    pixel_i = 0;
+                    pixel_j++;
+                }
                 for (let i = 0; i < quadrantWidth; i++) {
                     let color = [];
-                    if (viewMode == 12) {
-                        color = [255,255,255];
-                    } else {
-                        let new_game = game.use_conventions((i+0.5)*6/quadrantWidth,(1-(j+0.5)/quadrantWidth)*6,
-                                                            col < 2 ? b1 : 6 - b1, row < 2 ? b2 : 6 - b2,quadrant,zone);
-                        if (viewMode == 0) color = new_game.equilibrium_color;
-                        else if (viewMode == 11) color = new_game.quadrant_color;
-                        else color = colorFunction(returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1),viewModeB === null ? viewMode : 8);
-                    }
                     let x = i + Math.round(canvasBigPic.width*((0.08+col)/grid_size));
                     let y = j + Math.round(canvasBigPic.height*((0.08+row)/grid_size));
                     if (grid_size == 4) {
                         x += Math.round(canvasBigPic.width*0.02) * (col < 2 ? -1 : 1);
                         y += Math.round(canvasBigPic.height*0.02) * (row < 2 ? -1 : 1);
+                    }
+                    if (!lowRes || Math.floor(i/pixel_size) == pixel_i && Math.floor(j/pixel_size) == pixel_j) {
+                        if (viewMode == 12) {
+                            color = [255,255,255];
+                        } else {
+                            let new_game = game.use_conventions((i+0.5)*6/quadrantWidth + (!lowRes ? 0 : 1/4),(1-(j+0.5)/quadrantWidth)*6 - (!lowRes ? 0 : 1/4),
+                                                                col < 2 ? b1 : 6 - b1, row < 2 ? b2 : 6 - b2,quadrant,zone);
+                            if (viewMode == 0) color = new_game.equilibrium_color;
+                            else if (viewMode == 11) color = new_game.quadrant_color;
+                            else color = colorFunction(returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1),viewModeB === null ? viewMode : 8);
+                        }
+                        if (lowRes) {
+                            pixel_colors.push(color);
+                            pixel_i++;
+                        }                
+                    } else {
+                        color = pixel_colors[Math.floor(i/pixel_size)];
                     }
                     data[(x+y*canvasBigPic.width)*4] = color[0];
                     data[(x+y*canvasBigPic.width)*4+1] = color[1];
@@ -7497,7 +7722,6 @@ function updateDiagram(game) {
         d2.style.fontWeight = "";
     }
 
-    // console.log(mixedRow);
     if (game.row_mixed_return != null) {
         const mixedRow = game.row_mixed_return/rows_multiplier;
         const mixedCol = game.col_mixed_return/cols_multiplier;
@@ -7906,8 +8130,8 @@ function fixCoords() {
 // }
 
 function altImage(alt) {
-    const button1 = document.getElementById("alt-image-button-1");
-    const button2 = document.getElementById("alt-image-button-2");
+    // const button1 = document.getElementById("alt-image-button-1");
+    // const button2 = document.getElementById("alt-image-button-2");
 
     const pic = document.getElementById("birhombic-pic");
     const rowPlayer = document.getElementById("br-row-player");
@@ -7930,8 +8154,8 @@ function altImage(alt) {
         // game = Game.xb(game.coord_1,game.coord_2,2,2,game.quad);
         game.mode = 0;
         useAltSchema = false;
-        button2.classList.remove("selected");
-        button1.classList.add("selected");
+        // button2.classList.remove("selected");
+        // button1.classList.add("selected");
         const coords1 = [game.coord_1,game.coord_3];
         const coords2 = [game.coord_2,game.coord_4];
         coords = [coords1[0],coords2[0],coords1[1],coords2[1]];
@@ -7946,8 +8170,8 @@ function altImage(alt) {
         // game = Game.temp(game.coord_1,game.coord_2,3,3,game.quad,game.zone);
         game.mode = 1;
         useAltSchema = true;
-        button1.classList.remove("selected");
-        button2.classList.add("selected");
+        // button1.classList.remove("selected");
+        // button2.classList.add("selected");
         // game.coord_3 = take(game.row_matrix,1);
         // game.coord_4 = take(game.col_matrix,1);
         // [game.coord_1,game.coord_2] = standardToAltCoords(game.coord_1,game.coord_2);
@@ -8428,30 +8652,38 @@ function returns(game, mode, row_player, mode_b, row_player_b) {
             break;
         case 10: // threat points
             if (row_player) {
-                if (game.threat_point_2 == null)
-                    return_1 = game.threat_point[0];
-                else {
-                    const checker_size = 0.25;
-                    const diagonal1 = (game.coord_1+game.coord_2) % checker_size < checker_size/2;
-                    const diagonal2 = (game.coord_1-game.coord_2+6) % checker_size < checker_size/2;
-                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
-                        return_1 = game.threat_point[0];
-                    else
-                        return_1 = game.threat_point_2[0];
-                }
+                // if (game.threat_point_2 == null)
+                //     return_1 = game.threat_point[0];
+                // else {
+                //     const checker_size = 0.25;
+                //     const diagonal1 = (game.coord_1+game.coord_2) % checker_size < checker_size/2;
+                //     const diagonal2 = (game.coord_1-game.coord_2+6) % checker_size < checker_size/2;
+                //     if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
+                //         return_1 = game.threat_point[0];
+                //     else
+                //         return_1 = game.threat_point_2[0];
+                // }
+                if (game.variable_threat_point === null)
+                    return_1 = null;
+                else
+                    return_1 = game.variable_threat_point[0];
             }
             else {
-                if (game.threat_point_2 == null)
-                    return_1 = game.threat_point[1];
-                else {
-                    const checker_size = 0.25;
-                    const diagonal1 = (game.coord_1+game.coord_2) % checker_size < checker_size/2;
-                    const diagonal2 = (game.coord_1-game.coord_2+6) % checker_size < checker_size/2;
-                    if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
-                        return_1 = game.threat_point[1];
-                    else
-                        return_1 = game.threat_point_2[1];
-                }
+                // if (game.threat_point_2 == null)
+                //     return_1 = game.threat_point[1];
+                // else {
+                //     const checker_size = 0.25;
+                //     const diagonal1 = (game.coord_1+game.coord_2) % checker_size < checker_size/2;
+                //     const diagonal2 = (game.coord_1-game.coord_2+6) % checker_size < checker_size/2;
+                //     if (diagonal1 && diagonal2 || !diagonal1 && !diagonal2)
+                //         return_1 = game.threat_point[1];
+                //     else
+                //         return_1 = game.threat_point_2[1];
+                // }
+                if (game.variable_threat_point === null)
+                    return_1 = null;
+                else
+                    return_1 = game.variable_threat_point[1];
             }
             break;
         case 13:
@@ -8791,17 +9023,25 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2,low_res) {
     switchMode = false;
     backgroundOutOfDate = false;
 
-    const pixel_size = [Math.ceil(canvas.width/30), Math.ceil(canvas.height/30)];
-    if (pixel_size[0] == 0 || pixel_size[1] == 0) return;
+    const pixel_size = [canvas.width/30, canvas.height/30];
+    let pixel_i = 0;
+    let pixel_j = -1;
+    let pixel_colors = [];
+    if (pixel_size[0] < 1 || pixel_size[1] < 1) return;
     const ctx = canvas.getContext("2d");
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-    let color;
     for (let j = 0; j < canvas.height; j++) {
+        if (!high_res && Math.floor(j/pixel_size[1]) > pixel_j) { // j % pixel_size[1] == 0
+            pixel_colors.length = 0;
+            pixel_i = 0;
+            pixel_j++;
+        }
         for (let i = 0; i < canvas.width; i++) {
-            if (high_res || i % pixel_size[0] == 0) {
-                const x1 = (i+0.5)/canvas.width*6;
-                const x2 = (canvas.height-j-0.5)/canvas.height*6;
+            let color;
+            if (high_res || Math.floor(i/pixel_size[0]) == pixel_i && Math.floor(j/pixel_size[1]) == pixel_j) {
+                const x1 = (i+0.5)/canvas.width*6 + (high_res ? 0 : 1/10);
+                const x2 = (canvas.height-j-0.5)/canvas.height*6 - (high_res ? 0 : 1/10);
                 if (viewMode == 11 || windows && Math.abs((6-x1-x2+2*(game.offset-2)*game.flip+15)%12-3) < 0.5*Math.abs(Math.sin((x1-x2+2)*PI/4))
                                 //   || windows && Math.abs(6-x1-x2-2*game.offset-2) < 0.5*Math.abs(Math.sin((x1-x2)*PI/4))
                                   || windows && Math.abs((6-x1-x2+2*(game.offset-2)*game.flip+9)%12-3) < 0.5*Math.abs(Math.sin((x1-x2)*PI/4))) {
@@ -8827,6 +9067,12 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2,low_res) {
                     // }
                     color = colorFunction(value, viewModeB === null ? viewMode : 8);
                 }
+                if (!high_res) {
+                    pixel_colors.push(color);
+                    pixel_i++;
+                }
+            } else {
+                color = pixel_colors[Math.floor(i/pixel_size[0])];
             }
             data[(j*canvas.width+i)*4]   = color[0];
             data[(j*canvas.width+i)*4+1] = color[1];
@@ -8862,8 +9108,9 @@ function change_big_pic(all_zones) {
 
 function update_temp_pic(low_res) {
     const high_res = low_res === undefined ? 
-                     (dimensions()[0] != 1 && dimensions()[1] != 1 || !isMouseDown && !x1up && !x1down && !x2up && !x2down) && !dragging_temp && 
-                     !draggingB1 && !draggingB2 && !b1up && !b1down && !b2up && !b2down && b1V == 0 && b2V == 0 : !low_res;
+                     (!isMouseDown && !x1up && !x1down && !x2up && !x2down && x1V == 0 && x2V == 0) //&& !dragging_temp && // dimensions()[0] != 1 && dimensions()[1] != 1 || 
+                     //!draggingB1 && !draggingB2 && !b1up && !b1down && !b2up && !b2down && b1V == 0 && b2V == 0
+                     : !low_res;
     const foreign_object = document.getElementById("foreign-object-temp-pic");
     const temp_pic_canvas = document.getElementById("temp-pic-canvas");
     const temp_pic = document.getElementById("temp-pic");
@@ -8872,20 +9119,26 @@ function update_temp_pic(low_res) {
     foreign_object.width.baseVal.value = temp_pic.width.baseVal.value;
     foreign_object.height.baseVal.value = temp_pic.height.baseVal.value;
     const pixel_size = Math.ceil(temp_pic_canvas.width/20);
-    if (pixel_size == 0) return;
+    let pixel_i = -1;
+    let pixel_j = 0;
+    let pixel_colors = [];
+    if (pixel_size[0] < 1 || pixel_size[1] < 1) return;
 
     const ctx = temp_pic_canvas.getContext("2d");
     const imageData = ctx.getImageData(0, 0, temp_pic_canvas.width, temp_pic_canvas.height);
     const data = imageData.data;
     let color;
     for (let i = 0; i < temp_pic_canvas.width; i++) {
+        if (!high_res && Math.floor(i/pixel_size) > pixel_i) {
+            pixel_colors.length = 0;
+            pixel_j = 0;
+            pixel_i++;
+        }
         for (let j = 0; j < temp_pic_canvas.height; j++) {
-            if (high_res || j % pixel_size == 0) {
-                const t1 = (i+0.5) / temp_pic_canvas.width * 6;
-                const t2 = (1 - (j+0.5) / temp_pic_canvas.height) * 6;
-                if (Math.abs(t1 - 3) < 0.05 || Math.abs(t2 - 3) < 0.05) {
-                    color = [0,0,0];
-                } else if (viewMode == 12) {
+            if (high_res || Math.floor(i/pixel_size) == pixel_i && Math.floor(j/pixel_size) == pixel_j) {
+                const t1 = (i+0.5) / temp_pic_canvas.width * 6 + (high_res ? 0 : 6/40);
+                const t2 = (1 - (j+0.5) / temp_pic_canvas.height) * 6 - (high_res ? 0 : 6/40);
+                if (viewMode == 12) {
                     color = [255,255,255];
                 } else {
                     const new_game = game.copy();
@@ -8897,8 +9150,16 @@ function update_temp_pic(low_res) {
                     else if (viewMode == 11) color = new_game.quadrant_color;
                     else color = colorFunction(returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1),viewModeB === null ? viewMode : 8);
                 }
+                if (!high_res) {
+                    pixel_colors.push(color);
+                    pixel_j++;
+                }
+            } else {
+                color = pixel_colors[Math.floor(j/pixel_size)];
             }
-            // color = colorFunction(new_game.quad_temp,viewMode);
+            if (Math.abs(i - temp_pic_canvas.width/2) < 2 || Math.abs(j - temp_pic_canvas.height/2) < 2) {
+                color = [0,0,0];
+            }
             data[(i+j*temp_pic_canvas.width)*4] = color[0];
             data[(i+j*temp_pic_canvas.width)*4+1] = color[1];
             data[(i+j*temp_pic_canvas.width)*4+2] = color[2];
@@ -8906,12 +9167,6 @@ function update_temp_pic(low_res) {
         }
     }
     ctx.putImageData(imageData,0,0);
-    
-    // const temp_pic_canvas = document.getElementById("temp-pic-canvas");
-    // const ctx = temp_pic_canvas.getContext("2d");
-    // const circle = document.getElementById("temp-pic-point");
-    // circle.cx.baseVal.value = game.t1/6*temp_pic_canvas.width;
-    // circle.cy.baseVal.value = (1-game.t2/6)*temp_pic_canvas.height;
 }
 
 function add_orbit(op) {
@@ -9210,24 +9465,10 @@ function change_mode_b(mode, p1) {
 function reset_exchange() {
     const slider = document.getElementById("exchange-slider");
     slider.value = 6;
+    set_exchange = true;
 }
 
-// function apply_operations(new_game, games, operations) {
-//     games.push(new_game);
-//     for (let op of operations) {
-//         const game_image = op(new_game);
-//         for (let game of games) {
-//             Game.equal(game, game_image);
-//         }
-//         games = apply_operations(game_image, games, operations);
-//     }
-// }
-
-// allow for right clicking to show differences
-// mixing competitive strategies
-// show orbits (include squares in the temp pic)
 // fix big diagram movement
-// make global picture the default?
 
 // bugs
 // sometimes switching from blue to temp changes the game
@@ -9262,3 +9503,14 @@ function reset_exchange() {
 // class A,R,C,D
 // quadrant a,r,c,d
 // zone ++,+-,-+,--
+
+// decided, undecided
+// helpless, anxious, confident
+// not a manifold: it has six singular points
+
+// add arrows
+// put temp pic in the top right corner of the big diagram
+// combine matrices
+// show the other line in the big diagram
+
+// bring up duplicates on the equatorial slice
