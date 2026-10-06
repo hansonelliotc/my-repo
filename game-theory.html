@@ -14,25 +14,33 @@
 		<h2 id="cell-name"></h2>
 		<p id="coordinates"></p>
 		<table id="matrices">
-			<tr>
+			<!-- <tr>
 				<td style="text-align:center">
-					<!-- <div style="display:flex;align-items:center;"> -->
-					<!-- <div style="display:inline-block; margin-left:2vw">R =</div> -->
 					<table style="border:2px solid;margin:10px;display:inline-block">
 						<tr><td id="a1"></td><td id="b1"></td></tr>
 						<tr><td id="c1"></td><td id="d1"></td></tr>
 					</table>
-					<!-- </div> -->
 				</td>
 				<td style="text-align:center">
-					<!-- <div style="display:flex;align-items:center"> -->
-					<!-- <div style="display:inline-block; margin-left:2vw">C =</div> -->
 					<table style="border:2px solid;margin:10px;display:inline-block">
 						<tr><td id="a2"></td><td id="b2"></td></tr>
 						<tr><td id="c2"></td><td id="d2"></td></tr>
 					</table>
-					<!-- </div> -->
 				</td>
+			</tr> -->
+			<tr>
+				<td style="text-align:center">
+					<table style="border:2px solid;margin:10px;display:inline-block">
+						<tr style="border-bottom:2px solid"><td id="a1"></td><td id="a2" style="border-right:2px solid"></td><td id="b1"><td id="b2"></td></tr>
+						<tr><td id="c1"></td><td id="c2" style="border-right:2px solid"></td><td id="d1"></td><td id="d2"></td></tr>
+					</table>
+				</td>
+				<!-- <td style="text-align:center">
+					<table style="border:2px solid;margin:10px;display:inline-block">
+						<tr><td id="a2"></td><td id="b2"></td></tr>
+						<tr><td id="c2"></td><td id="d2"></td></tr>
+					</table>
+				</td> -->
 			</tr>
 			<tr height="5vh" />
 		</table>
@@ -45,39 +53,48 @@
 				<tr><td><span id="y-row"></span>, <span id="t-row"></span></td><td><span id="y-col"></span>, <span id="t-col"></span></td></tr>
 				<tr><td class="info-header" colspan="2">Equilibrium returns</td></tr>
 				<tr>
-					<td><b><span id="row-return"></span></b></td>
+					<td><b><span class="returns" id="row-return"></span></b></td>
 						<!-- <span id="row-return-mixed"></span></td> -->
-					<td><b><span id="col-return"></span></b></td>
+					<td><b><span class="returns" id="col-return"></span></b></td>
 						<!-- <span id="col-return-mixed"></span></td> -->
 				</tr>
 				<tr><td class="info-header" colspan="2">Bargaining returns<br>(backstop & threat point)</td></tr>
 				<tr><td>bs, tp</td> <td>bs, tp</td> </tr>
 				<tr>
-					<td><span class="row-header">NTU</span><b><span id="row-return-bargaining-1"></span></b>, <b><span id="row-return-bargaining-2"></span></b></td>
-					<td><span class="row-header">NTU</span><b><span id="col-return-bargaining-1"></span></b>, <b><span id="col-return-bargaining-2"></span></b></td>
+					<td><span class="row-header">NTU</span><b><span class="returns" id="row-return-bargaining-1"></span></b>, <b><span class="returns" id="row-return-bargaining-2"></span></b></td>
+					<td><span class="row-header">NTU</span><b><span class="returns" id="col-return-bargaining-1"></span></b>, <b><span class="returns" id="col-return-bargaining-2"></span></b></td>
 				</tr>
 				<tr>
-					<td><span class="row-header">TU</span><b><span id="row-return-transferable"></span></b>, <b><span id="row-return-coco"></span></b></td>
-					<td><span class="row-header">TU</span><b><span id="col-return-transferable"></span></b>, <b><span id="col-return-coco"></span></b></td>
+					<td><span class="row-header">TU</span><b><span class="returns" id="row-return-transferable"></span></b>, <b><span class="returns" id="row-return-coco"></span></b></td>
+					<td><span class="row-header">TU</span><b><span class="returns" id="col-return-transferable"></span></b>, <b><span class="returns" id="col-return-coco"></span></b></td>
 				</tr>
 			</table>
 			<table id="navigation">
+				<tr><td colspan="2"><h2>Exchange Factor</h2></td></tr>
+				<tr><td colspan="2">
+					<!-- <div style="display:flex"> -->
+						<input id="exchange-slider" type="range" class="slider" min="0" max="12" step="0.01">
+						<!-- <span id="exchange-factor" style="padding:2px 5px">6.00</span>
+						<button style="width:50px;height:25px" onmousedown="reset_exchange()">Reset</button> -->
+					<!-- </div> -->
+				</td></tr>
+				<tr><td>Row's max = <span id="exchange-factor" style="padding:2px 5px">6.00</span></td><td><button onmousedown="reset_exchange()">Reset</button></td></tr>
 				<tr><td colspan="2"><h2>Discontinuous Operations</h2></td></tr>
 				<tr>
-					<td><button id="cross-blue-1" class="operation-button" onmousedown="crossBlue(true)" title="Flip the row player's biggest entries">Cross Row's blue (B<sub>r</sub>)</button></td>
-					<td><button id="cross-blue-2" class="operation-button" onmousedown="crossBlue(false)" title="Flip the column player's biggest entries">Cross Column's blue (B<sub>c</sub>)</button></td>
+					<td><button id="cross-blue-1" class="operation-button" onclick="crossBlue(true)" title="Flip the row player's biggest entries">Cross Row's blue (B<sub>r</sub>)</button></td>
+					<td><button id="cross-blue-2" class="operation-button" onclick="crossBlue(false)" title="Flip the column player's biggest entries">Cross Column's blue (B<sub>c</sub>)</button></td>
 				</tr>
 				<tr>
-					<td><button id="cross-green-1" class="operation-button" onmousedown="crossGreen(true)" title="Flip the row player's middle entries">Cross Row's green (G<sub>r</sub>)</button></td>
-					<td><button id="cross-green-2" class="operation-button" onmousedown="crossGreen(false)" title="Flip the column player's middle entries">Cross Column's green (G<sub>c</sub>)</button></td>
+					<td><button id="cross-green-1" class="operation-button" onclick="crossGreen(true)" title="Flip the row player's middle entries">Cross Row's green (G<sub>r</sub>)</button></td>
+					<td><button id="cross-green-2" class="operation-button" onclick="crossGreen(false)" title="Flip the column player's middle entries">Cross Column's green (G<sub>c</sub>)</button></td>
 				</tr>
 				<tr>
-					<td><button id="cross-red-1" class="operation-button" onmousedown="crossRed(true)" title="Flip the row player's smallest entries">Cross Row's red (R<sub>r</sub>)</button></td>
-					<td><button id="cross-red-2" class="operation-button" onmousedown="crossRed(false)" title="Flip the column player's smallest entries">Cross Column's red (R<sub>c</sub>)</button></td>
+					<td><button id="cross-red-1" class="operation-button" onclick="crossRed(true)" title="Flip the row player's smallest entries">Cross Row's red (R<sub>r</sub>)</button></td>
+					<td><button id="cross-red-2" class="operation-button" onclick="crossRed(false)" title="Flip the column player's smallest entries">Cross Column's red (R<sub>c</sub>)</button></td>
 				</tr>
 				<tr>
-					<td><button id="cross-tan-1" class="operation-button" onmousedown="crossTan(true)">Cross Row's tan (T<sub>r</sub>)</button></td>
-					<td><button id="cross-tan-2" class="operation-button" onmousedown="crossTan(false)">Cross Column's tan (T<sub>c</sub>)</button></td>
+					<td><button id="cross-tan-1" class="operation-button" onclick="crossTan(true)">Cross Row's tan (T<sub>r</sub>)</button></td>
+					<td><button id="cross-tan-2" class="operation-button" onclick="crossTan(false)">Cross Column's tan (T<sub>c</sub>)</button></td>
 				</tr>
 				<!-- <tr>
 					<td colspan="2"><button id="switch-players" onmousedown="wiggle(true)" title="Exchanges each player's matrix with the transpose of the other player's matrix">Switch the players</button></td>
@@ -88,20 +105,20 @@
 				</tr> -->
 				<tr><td colspan="2"><h2>D<sub>4</sub> Operations</h2></td></tr>
 				<tr>
-					<td><button id="negate-1" class="operation-button" onmousedown="negate(true)" title="Each entry in the row player's matrix is subtracted from 6.">Negate Row's matrix (N<sub>r</sub>)</button></td>
-					<td><button id="negate-2" class="operation-button" onmousedown="negate(false)" title="Each entry in the column player's matrix is subtracted from 6.">Negate Column's matrix (N<sub>c</sub>)</button></td>
+					<td><button id="negate-1" class="operation-button" onclick="negate(true)" title="Each entry in the row player's matrix is subtracted from 6.">Negate Row's matrix (N<sub>r</sub>)</button></td>
+					<td><button id="negate-2" class="operation-button" onclick="negate(false)" title="Each entry in the column player's matrix is subtracted from 6.">Negate Column's matrix (N<sub>c</sub>)</button></td>
 				</tr>
 				<tr>
-					<td><button id="switch-matrices" class="operation-button" onmousedown="switchMatrices()" title="Exchange the players' matrices">Exchange matrices (E)</button></td>
+					<td><button id="switch-matrices" class="operation-button" onclick="switchMatrices()" title="Exchange the players' matrices">Exchange matrices (E)</button></td>
 				</tr>
 				<tr><td colspan="2"><h2>S<sub>4</sub> Operations</h2></td></tr>
 				<tr>
-					<td><button id="switch-rows" class="operation-button" onmousedown="switchRows()" title="The rows in the row player's matrix are switched.">Switch Row's rows (S<sub>r</sub>)</button></td>
-					<td><button id="switch-cols" class="operation-button" onmousedown="switchColumns(false)" title="The columns in the column player's matrix are switched.">Switch Column's columns (S<sub>c</sub>)</button></td>
+					<td><button id="switch-rows" class="operation-button" onclick="switchRows()" title="The rows in the row player's matrix are switched.">Switch Row's rows (S<sub>r</sub>)</button></td>
+					<td><button id="switch-cols" class="operation-button" onclick="switchColumns(false)" title="The columns in the column player's matrix are switched.">Switch Column's columns (S<sub>c</sub>)</button></td>
 				</tr>
 				<tr>
-					<td><button id="flip-matrices" class="operation-button" onmousedown="flipMatrices()" title="Each player's matrix is flipped">Flip both matrices (F)</button></td>
-					<td><button id="rotate" class="operation-button" onmousedown="rotate()" title="Rotates each matrix's first, third, and fourth entries.">Cycle both matrices (C)</button></td>
+					<td><button id="flip-matrices" class="operation-button" onclick="flipMatrices()" title="Each player's matrix is flipped">Flip both matrices (F)</button></td>
+					<td><button id="rotate" class="operation-button" onclick="rotate()" title="Rotates each matrix's first, third, and fourth entries.">Cycle both matrices (C)</button></td>
 				</tr>
 				<!-- <tr height="10vh" />
 				<tr>
@@ -110,43 +127,43 @@
 				</tr> -->
 			</table>
 			<div id="view-modes">
-				<button class="mode-button" id="none-mode" onmousedown="changeViewMode(12)">None</button>
-				<button class="mode-button" id="quadrant-mode" onmousedown="changeViewMode(11)">Quadrant</button>
-				<button class="mode-button selected" id="regular-mode" onmousedown="changeViewMode(0)">Equilibria</button>
-				<button class="mode-button" id="coordination-mode" onmousedown="changeViewMode(7)">Correlation</button>
+				<button class="mode-button" id="none-mode" onclick="changeViewMode(12)">None</button>
+				<button class="mode-button" id="quadrant-mode" onclick="changeViewMode(11)">Quadrant</button>
+				<button class="mode-button selected" id="regular-mode" onclick="changeViewMode(0)">Equilibria</button>
+				<button class="mode-button" id="coordination-mode" onclick="changeViewMode(7)">Correlation</button>
 				<!-- <div style="padding:1vh"></div> -->
 				<h2>Returns to Row Player</h2>
-				<span><button class="mode-button" id="mode-button-1-row" onmousedown="changeViewMode(18,true)" oncontextmenu="change_mode_b(1,true);return false;">Non-Cooperative</button></span>
-				<span><button class="mode-button" id="mode-button-2-row" style="display:none; color:#080" onmousedown="changeViewMode(19,true)" oncontextmenu="change_mode_b(2,true);return false;">Non-Cooperative 2</button></span>
-				<!-- <span><button class="quarter-mode-button" id="return-mode-2r" onmousedown="changeViewMode(18,true,2,true)">R</button></span><span><button class="mode-button half-mode-button" id="return-mode-2" onmousedown="changeViewMode(1)">Equilibrium</button></span><span><button class="quarter-mode-button" id="return-mode-2c" onmousedown="changeViewMode(18,true,2,false)">C</button></span><br>
-				<span><button class="quarter-mode-button" id="return-mode-13r" onmousedown="changeViewMode(18,true,13,true)">R</button></span><span><button class="mode-button half-mode-button" id="return-mode-1" onmousedown="changeViewMode(13)">Equilibrium (mixed)</button></span><span><button class="quarter-mode-button" id="return-mode-13c" onmousedown="changeViewMode(18,true,13,false)">C</button></span><br>
-				<span><button class="quarter-mode-button" id="return-mode-16r" onmousedown="changeViewMode(18,true,16,true)">R</button></span><span><button class="mode-button half-mode-button" id="random-mode" onmousedown="changeViewMode(16)">Random</button></span><span><button class="quarter-mode-button" id="return-mode-16a" onmousedown="changeViewMode(18,true,16,false)">C</button></span><br>
-				<span><button class="quarter-mode-button" id="return-mode-17r" onmousedown="changeViewMode(18,true,17,true)">R</button></span><span><button class="mode-button half-mode-button" id="max-mean-mode" onmousedown="changeViewMode(17)">Max Mean</button></span><span><button class="quarter-mode-button" id="return-mode-17a" onmousedown="changeViewMode(18,true,17,false)">C</button></span> -->
-				<span><button class="mode-button half-mode-button" id="mode-button-3-row" onmousedown="changeViewMode(14)" oncontextmenu="change_mode_b(3,true);return false;">Row first</button></span><span><button class="mode-button half-mode-button" id="mode-button-4-row" onmousedown="changeViewMode(15)" oncontextmenu="change_mode_b(4,true);return false;">Column first</button></span>
-				<span><button class="mode-button half-mode-button" id="mode-button-5-row" onmousedown="changeViewMode(9)" oncontextmenu="change_mode_b(5,true);return false;">Backstop</button></span><span><button class="mode-button half-mode-button" id="mode-button-6-row" onmousedown="changeViewMode(10)" oncontextmenu="change_mode_b(6,true);return false;">Var. threat point</button></span>
-				<!-- <span><button class="mode-button half-mode-button" id="mode-button-6-row" onmousedown="changeViewMode(10)" oncontextmenu="change_mode_b(6,true);return false;">Threat point</button></span> -->
-				<span><button class="mode-button half-mode-button" id="mode-button-7-row" onmousedown="changeViewMode(2)" oncontextmenu="change_mode_b(7,true);return false;">Backstop NTU</button></span><span><button class="mode-button half-mode-button" id="mode-button-8-row" onmousedown="changeViewMode(3)" oncontextmenu="change_mode_b(8,true);return false;">Threat point NTU</button></span>
-				<span><button class="mode-button half-mode-button" id="mode-button-9-row" onmousedown="changeViewMode(4)" oncontextmenu="change_mode_b(9,true);return false;">Backstop TU</button></span><span><button class="mode-button half-mode-button" id="mode-button-10-row" onmousedown="changeViewMode(5)" oncontextmenu="change_mode_b(10,true);return false;">Threat point TU</button></span>
+				<span><button class="mode-button" id="mode-button-1-row" onclick="changeViewMode(18,true)" oncontextmenu="change_mode_b(1,true);return false;">Non-Cooperative</button></span>
+				<span><button class="mode-button" id="mode-button-2-row" style="display:none; color:#080" onclick="changeViewMode(19,true)" oncontextmenu="change_mode_b(2,true);return false;">Non-Cooperative 2</button></span>
+				<!-- <span><button class="quarter-mode-button" id="return-mode-2r" onclick="changeViewMode(18,true,2,true)">R</button></span><span><button class="mode-button half-mode-button" id="return-mode-2" onclick="changeViewMode(1)">Equilibrium</button></span><span><button class="quarter-mode-button" id="return-mode-2c" onclick="changeViewMode(18,true,2,false)">C</button></span><br>
+				<span><button class="quarter-mode-button" id="return-mode-13r" onclick="changeViewMode(18,true,13,true)">R</button></span><span><button class="mode-button half-mode-button" id="return-mode-1" onclick="changeViewMode(13)">Equilibrium (mixed)</button></span><span><button class="quarter-mode-button" id="return-mode-13c" onclick="changeViewMode(18,true,13,false)">C</button></span><br>
+				<span><button class="quarter-mode-button" id="return-mode-16r" onclick="changeViewMode(18,true,16,true)">R</button></span><span><button class="mode-button half-mode-button" id="random-mode" onclick="changeViewMode(16)">Random</button></span><span><button class="quarter-mode-button" id="return-mode-16a" onclick="changeViewMode(18,true,16,false)">C</button></span><br>
+				<span><button class="quarter-mode-button" id="return-mode-17r" onclick="changeViewMode(18,true,17,true)">R</button></span><span><button class="mode-button half-mode-button" id="max-mean-mode" onclick="changeViewMode(17)">Max Mean</button></span><span><button class="quarter-mode-button" id="return-mode-17a" onclick="changeViewMode(18,true,17,false)">C</button></span> -->
+				<span><button class="mode-button half-mode-button" id="mode-button-3-row" onclick="changeViewMode(14)" oncontextmenu="change_mode_b(3,true);return false;">Row first</button></span><span><button class="mode-button half-mode-button" id="mode-button-4-row" onclick="changeViewMode(15)" oncontextmenu="change_mode_b(4,true);return false;">Column first</button></span>
+				<span><button class="mode-button half-mode-button" id="mode-button-5-row" onclick="changeViewMode(9)" oncontextmenu="change_mode_b(5,true);return false;">Backstop</button></span><span><button class="mode-button half-mode-button" id="mode-button-6-row" onclick="changeViewMode(10)" oncontextmenu="change_mode_b(6,true);return false;">Var. threat point</button></span>
+				<!-- <span><button class="mode-button half-mode-button" id="mode-button-6-row" onclick="changeViewMode(10)" oncontextmenu="change_mode_b(6,true);return false;">Threat point</button></span> -->
+				<span><button class="mode-button half-mode-button" id="mode-button-7-row" onclick="changeViewMode(2)" oncontextmenu="change_mode_b(7,true);return false;">Backstop NTU</button></span><span><button class="mode-button half-mode-button" id="mode-button-8-row" onclick="changeViewMode(3)" oncontextmenu="change_mode_b(8,true);return false;">Threat point NTU</button></span>
+				<span><button class="mode-button half-mode-button" id="mode-button-9-row" onclick="changeViewMode(4)" oncontextmenu="change_mode_b(9,true);return false;">Backstop TU</button></span><span><button class="mode-button half-mode-button" id="mode-button-10-row" onclick="changeViewMode(5)" oncontextmenu="change_mode_b(10,true);return false;">Threat point TU</button></span>
 				<!-- <div style="padding:1vh"></div> -->
 				<h2>Returns to Column Player</h2>
-				<button class="mode-button" id="mode-button-1-col" onmousedown="changeViewMode(18,false)" oncontextmenu="change_mode_b(1,false);return false;">Non-Cooperative</button>
-				<button class="mode-button" id="mode-button-2-col" style="display:none; color:#080" onmousedown="changeViewMode(19,false)" oncontextmenu="change_mode_b(2,false);return false;">Non-Cooperative 2</button>
-				<!-- <span><button class="mode-button half-mode-button" id="return-mode-2-col" onmousedown="changeViewMode(1,false)">Equilibrium</button></span><span><button class="mode-button half-mode-button" id="return-mode-1-col" onmousedown="changeViewMode(13,false)">Equilibrium (mixed)</button></span> -->
-				<span><button class="mode-button half-mode-button" id="mode-button-3-col" onmousedown="changeViewMode(14,false)" oncontextmenu="change_mode_b(3,false);return false;">Row first</button></span><span><button class="mode-button half-mode-button" id="mode-button-4-col" onmousedown="changeViewMode(15,false)" oncontextmenu="change_mode_b(4,false);return false;">Column first</button></span>
-				<!-- <span><button class="mode-button half-mode-button" id="random-mode-col" onmousedown="changeViewMode(16,false)">Random</button></span><span><button class="mode-button half-mode-button" id="max-mean-mode-col" onmousedown="changeViewMode(17,false)">Max mean</button></span> -->
-				<span><button class="mode-button half-mode-button" id="mode-button-5-col" onmousedown="changeViewMode(9,false)" oncontextmenu="change_mode_b(5,false);return false;">Backstop</button></span><span><button class="mode-button half-mode-button" id="mode-button-6-col" onmousedown="changeViewMode(10,false)" oncontextmenu="change_mode_b(6,false);return false;">Var. threat point</button></span>
-				<span><button class="mode-button half-mode-button" id="mode-button-7-col" onmousedown="changeViewMode(2,false)" oncontextmenu="change_mode_b(7,false);return false;">Backstop NTU</button></span><span><button class="mode-button half-mode-button" id="mode-button-8-col" onmousedown="changeViewMode(3,false)" oncontextmenu="change_mode_b(8,false);return false;">Threat point NTU</button></span>
-				<span><button class="mode-button half-mode-button" id="mode-button-9-col" onmousedown="changeViewMode(4,false)" oncontextmenu="change_mode_b(9,false);return false;">Backstop TU</button></span><span><button class="mode-button half-mode-button" id="mode-button-10-col" onmousedown="changeViewMode(5,false)" oncontextmenu="change_mode_b(10,false);return false;">Threat point TU</button></span>
+				<button class="mode-button" id="mode-button-1-col" onclick="changeViewMode(18,false)" oncontextmenu="change_mode_b(1,false);return false;">Non-Cooperative</button>
+				<button class="mode-button" id="mode-button-2-col" style="display:none; color:#080" onclick="changeViewMode(19,false)" oncontextmenu="change_mode_b(2,false);return false;">Non-Cooperative 2</button>
+				<!-- <span><button class="mode-button half-mode-button" id="return-mode-2-col" onclick="changeViewMode(1,false)">Equilibrium</button></span><span><button class="mode-button half-mode-button" id="return-mode-1-col" onclick="changeViewMode(13,false)">Equilibrium (mixed)</button></span> -->
+				<span><button class="mode-button half-mode-button" id="mode-button-3-col" onclick="changeViewMode(14,false)" oncontextmenu="change_mode_b(3,false);return false;">Row first</button></span><span><button class="mode-button half-mode-button" id="mode-button-4-col" onclick="changeViewMode(15,false)" oncontextmenu="change_mode_b(4,false);return false;">Column first</button></span>
+				<!-- <span><button class="mode-button half-mode-button" id="random-mode-col" onclick="changeViewMode(16,false)">Random</button></span><span><button class="mode-button half-mode-button" id="max-mean-mode-col" onclick="changeViewMode(17,false)">Max mean</button></span> -->
+				<span><button class="mode-button half-mode-button" id="mode-button-5-col" onclick="changeViewMode(9,false)" oncontextmenu="change_mode_b(5,false);return false;">Backstop</button></span><span><button class="mode-button half-mode-button" id="mode-button-6-col" onclick="changeViewMode(10,false)" oncontextmenu="change_mode_b(6,false);return false;">Var. threat point</button></span>
+				<span><button class="mode-button half-mode-button" id="mode-button-7-col" onclick="changeViewMode(2,false)" oncontextmenu="change_mode_b(7,false);return false;">Backstop NTU</button></span><span><button class="mode-button half-mode-button" id="mode-button-8-col" onclick="changeViewMode(3,false)" oncontextmenu="change_mode_b(8,false);return false;">Threat point NTU</button></span>
+				<span><button class="mode-button half-mode-button" id="mode-button-9-col" onclick="changeViewMode(4,false)" oncontextmenu="change_mode_b(9,false);return false;">Backstop TU</button></span><span><button class="mode-button half-mode-button" id="mode-button-10-col" onclick="changeViewMode(5,false)" oncontextmenu="change_mode_b(10,false);return false;">Threat point TU</button></span>
 				<div style="padding:1vh"></div>
-				<button class="mode-button" id="transferable-mode" onmousedown="changeViewMode(6)" oncontextmenu="change_mode_b(11,true);return false;">Max total</button>
+				<button class="mode-button" id="transferable-mode" onclick="changeViewMode(6)" oncontextmenu="change_mode_b(11,true);return false;">Max total</button>
 				<div style="padding:1vh"></div>
 				<h2>Non-Cooperative Strategies</h2>
 				<div><span style="display:inline-block;width:10vw;">Row</span><span style="display:inline-block;width:10vw;">Column</span></div>
-				<span><button class="quarter-mode-button non-cooperative-button-row selected" id="non-cooperative-strat-1-row" onmousedown="change_strategy_row_1(1)">Eq</button></span><span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-2-row" onmousedown="change_strategy_row_1(2)">Eq (m)</button></span><span><button class="quarter-mode-button non-cooperative-button-col selected" id="non-cooperative-strat-1-col" onmousedown="change_strategy_col_1(1)">Eq</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-2-col" onmousedown="change_strategy_col_1(2)">Eq (m)</button></span><br>
-				<span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-3-row" onmousedown="change_strategy_row_1(3)">Eq (+)</button></span><span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-4-row" onmousedown="change_strategy_row_1(4)">Eq (-)</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-3-col" onmousedown="change_strategy_col_1(3)">Eq (+)</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-4-col" onmousedown="change_strategy_col_1(4)">Eq (-)</button></span><br>
-				<span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-5-row" onmousedown="change_strategy_row_1(5)">Random</button></span><span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-6-row" onmousedown="change_strategy_row_1(6)">Max mean</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-5-col" onmousedown="change_strategy_col_1(5)">Random</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-6-col" onmousedown="change_strategy_col_1(6)">Max mean</button></span><br>
-				<span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-7-row" onmousedown="change_strategy_row_1(7)">Golden</button></span><span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-8-row" onmousedown="change_strategy_row_1(8)">Anti-gold</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-7-col" onmousedown="change_strategy_col_1(7)">Golden</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-8-col" onmousedown="change_strategy_col_1(8)">Anti-gold</button></span><br>
-				<!-- <button class="mode-button" id="custom-mode" onmousedown="changeViewMode(8)">Difference</button>
+				<span><button class="quarter-mode-button non-cooperative-button-row selected" id="non-cooperative-strat-1-row" onclick="change_strategy_row_1(1)">Eq</button></span><span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-2-row" onclick="change_strategy_row_1(2)">Eq (m)</button></span><span><button class="quarter-mode-button non-cooperative-button-col selected" id="non-cooperative-strat-1-col" onclick="change_strategy_col_1(1)">Eq</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-2-col" onclick="change_strategy_col_1(2)">Eq (m)</button></span><br>
+				<span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-3-row" onclick="change_strategy_row_1(3)">Eq (+)</button></span><span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-4-row" onclick="change_strategy_row_1(4)">Eq (-)</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-3-col" onclick="change_strategy_col_1(3)">Eq (+)</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-4-col" onclick="change_strategy_col_1(4)">Eq (-)</button></span><br>
+				<span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-5-row" onclick="change_strategy_row_1(5)">Random</button></span><span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-6-row" onclick="change_strategy_row_1(6)">Max mean</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-5-col" onclick="change_strategy_col_1(5)">Random</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-6-col" onclick="change_strategy_col_1(6)">Max mean</button></span><br>
+				<span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-7-row" onclick="change_strategy_row_1(7)">Golden</button></span><span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-8-row" onclick="change_strategy_row_1(8)">Anti-gold</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-7-col" onclick="change_strategy_col_1(7)">Golden</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-8-col" onclick="change_strategy_col_1(8)">Anti-gold</button></span><br>
+				<!-- <button class="mode-button" id="custom-mode" onclick="changeViewMode(8)">Difference</button>
 				<p id="custom-options">
 					<select name="Choice 1" id="view-custom-1">
 						<option value="returns">Row's equilibrium returns</option>
@@ -201,7 +218,7 @@
 				<p>
 					<strong>Using the keyboard</strong><br>
 					The arrow keys change x<sub>1</sub> and x<sub>2</sub>.<br>
-					The WASD keys change b<sub>1</sub> and b<sub>2</sub>.<br>
+					The WASD keys change t<sub>1</sub> and t<sub>2</sub>.<br>
 					Hold SHIFT while doing the above to apply velocity.<br>
 					Press SPACE to reset all velocities to zero.<br>
 					Press R to go to a random game.<br>
@@ -260,7 +277,7 @@
 						<td><button onmousedown="goTo(3,3,6,6,3)">Bad pole</button></td>
 						<td><button onmousedown="goTo(3,3,6,6,4)">Column pole</button></td>
 					</tr> -->
-					<tr><td colspan="2"><h2>Zero sum</h2></td></tr>
+					<!-- <tr><td colspan="2"><h2>Zero sum</h2></td></tr>
 					<tr>
 						<td><button onmousedown="goToZeroSum(3,1)">Bad (row advantage)</button></td>
 						<td><button onmousedown="goToZeroSum(3,2)">Bad (column advantage)</button></td>
@@ -272,7 +289,7 @@
 					<tr>
 						<td><button onmousedown="goToZeroSum(4,1)">Column (pure)</button></td>
 						<td><button onmousedown="goToZeroSum(4,2)">Column (mixed)</button></td>
-					</tr>
+					</tr> -->
 					<tr><td colspan="2"><h2>Alibi centroids</h2></td></tr>
 					<tr>
 						<td><button onmousedown="goTo(3.5,2.5,2,2,2)">Row 1</button></td>
@@ -361,7 +378,7 @@
 						<td id="degen-game-31d" class="degen-game" onmousedown="goTo(4,0,0,6,1)">31d</td>
 					</tr>
 				</table>
-				<p>
+				<!-- <p>
 					<em>Notable centroids</em> are the standard examples from a few of the most famous cells.
 				</p>
 				<p>
@@ -384,7 +401,7 @@
 				<p>
 					<em>Alibi centroids</em> are the standard examples from the six "alibi cells" of the prisoners' dilemma.
 					"Row 1" and "Column 1" are exceptionally similar to the prisoners' dilemma.
-				</p>
+				</p> -->
 			</div>
 			<table id="advanced-settings">
 				<tr><td colspan="2"><h2>Global Picture</h2></td></tr>
@@ -414,30 +431,29 @@
 				<tr>
 					<td><button class="lines-opt-button" id="lines-opt-button-2" onmousedown="hideLines(2)">Show windows</button></td>
 				</tr>
+				<tr><td colspan="2"><h2>Arrows</h2></td></tr>
+				<tr>
+					<td><button class="arrow-opt-button" id="arrow-opt-button-0" onmousedown="hideArrows(true)">Hide arrows</button></td>
+					<td><button class="arrow-opt-button selected" id="arrow-opt-button-1" onmousedown="hideArrows(false)">Show arrows</button></td>
+				</tr>
 				<tr><td colspan="2"><h2>Layout Convention</h2></td></tr>
 				<tr>
 					<td><button id="convention-2-inverted" class="convention-button selected" onmousedown="change_conventions(2,-1)">1 (green w/ symmetry)</button></td>
-					<td><button id="convention-2" class="convention-button" onmousedown="change_conventions(2,1)">+0 inverted</button></td>
-				</tr>
-				<tr>
+					<!-- <td><button id="convention-2" class="convention-button" onmousedown="change_conventions(2,1)">+0 inverted</button></td> -->
 					<td><button id="convention-1-inverted" class="convention-button" onmousedown="change_conventions(1,-1)">2 (red)</button></td>
-					<td><button id="convention-1" class="convention-button" onmousedown="change_conventions(1,1)">+5 inverted</button></td>
+					<!-- <td><button id="convention-1" class="convention-button" onmousedown="change_conventions(1,1)">+5 inverted</button></td> -->
 				</tr>
 				<tr>
 					<td><button id="convention-0-inverted" class="convention-button" onmousedown="change_conventions(0,-1)">3 (green w/ equilibria)</button></td>
-					<td><button id="convention-0" class="convention-button" onmousedown="change_conventions(0,1)">+4 inverted</button></td>
-				</tr>
-				<tr>
+					<!-- <td><button id="convention-0" class="convention-button" onmousedown="change_conventions(0,1)">+4 inverted</button></td> -->
 					<td><button id="convention-5-inverted" class="convention-button" onmousedown="change_conventions(5,-1)">4 (red w/ symmetry)</button></td>
-					<td><button id="convention-5" class="convention-button" onmousedown="change_conventions(5,1)">+3 inverted</button></td>
+					<!-- <td><button id="convention-5" class="convention-button" onmousedown="change_conventions(5,1)">+3 inverted</button></td> -->
 				</tr>
 				<tr>
 					<td><button id="convention-4-inverted" class="convention-button" onmousedown="change_conventions(4,-1)">5 (green)</button></td>
-					<td><button id="convention-4" class="convention-button" onmousedown="change_conventions(4,1)">+2 inverted</button></td>
-				</tr>
-				<tr>
+					<!-- <td><button id="convention-4" class="convention-button" onmousedown="change_conventions(4,1)">+2 inverted</button></td> -->
 					<td><button id="convention-3-inverted" class="convention-button" onmousedown="change_conventions(3,-1)">6 (red w/ equilibria)</button></td>
-					<td><button id="convention-3" class="convention-button" onmousedown="change_conventions(3,1)">+6 inverted</button></td>
+					<!-- <td><button id="convention-3" class="convention-button" onmousedown="change_conventions(3,1)">+6 inverted</button></td> -->
 				</tr>
 			</table>
 			<div style="height:10vh;width:inherit;"></div>
@@ -612,13 +628,18 @@
 		<line id="small-blue-line-1"/>
 		<line id="small-blue-line-2"/>
 		<circle id="small-corner"/>
+		<line id="exchange-boundary"/>
 		<line id="transferable-util-boundary"/>
 		<line id="line5-big"/>
 		<line id="line6-big"/>
 		<line id="line2-big"/>
+		<svg class="arrow" id="arrow3"><polygon id="arrow3-poly"/></svg>
 		<line id="line4-big"/>
+		<svg class="arrow" id="arrow4"><polygon id="arrow4-poly"/></svg>
 		<line id="line1-big"/>
+		<svg class="arrow" id="arrow1"><polygon id="arrow1-poly"/></svg>
 		<line id="line3-big"/>
+		<svg class="arrow" id="arrow2"><polygon id="arrow2-poly"/></svg>
 		<circle id="corner1-big"/>
 		<circle id="corner2-big"/>
 		<circle id="corner3-big"/>
@@ -722,6 +743,30 @@
 				<svg id="blue-semicircle" width="20" height="20" viewBox="0 0 20 20">
 					<path d="M 10,20 A 10,10 0 0,1 10,0 Z" />
 				</svg>
+				<line class="category-segment-a" id="segment-row-1a" />
+				<line class="category-segment-a" id="segment-row-2a" />
+				<line class="category-segment-a" id="segment-row-3a" />
+				<line class="category-segment-a" id="segment-row-4a" />
+				<line class="category-segment-a" id="segment-row-5a" />
+				<line class="category-segment-a" id="segment-row-6a" />
+				<line class="category-segment-b" id="segment-row-1b" />
+				<line class="category-segment-b" id="segment-row-2b" />
+				<line class="category-segment-b" id="segment-row-3b" />
+				<line class="category-segment-b" id="segment-row-4b" />
+				<line class="category-segment-b" id="segment-row-5b" />
+				<line class="category-segment-b" id="segment-row-6b" />
+				<line class="category-segment-a" id="segment-col-1a" />
+				<line class="category-segment-a" id="segment-col-2a" />
+				<line class="category-segment-a" id="segment-col-3a" />
+				<line class="category-segment-a" id="segment-col-4a" />
+				<line class="category-segment-a" id="segment-col-5a" />
+				<line class="category-segment-a" id="segment-col-6a" />
+				<line class="category-segment-b" id="segment-col-1b" />
+				<line class="category-segment-b" id="segment-col-2b" />
+				<line class="category-segment-b" id="segment-col-3b" />
+				<line class="category-segment-b" id="segment-col-4b" />
+				<line class="category-segment-b" id="segment-col-5b" />
+				<line class="category-segment-b" id="segment-col-6b" />
 			</svg>
 
 			<svg id="whole-figure">
@@ -859,11 +904,22 @@
 	<input id="b1coord" type="range" min="0" max="6" step="0.01" value="2"></div> -->
 	<div id="display-options">
 		<h2 style="padding:1vh 1vw">
-			<span id="zone"></span> - <span id="quadrant-label">Bad quadrant</span>
+			<!-- <span id="zone"></span> - <span id="quadrant-label">Bad quadrant</span> -->
 			<br>
-			<span id="view-mode-label">Equilibrium view</span><span id="current-returns"></span>
+			<span id="view-mode-label">Equilibrium view</span><span id="view-mode-label-2" style="color:#000096"></span><br>
+			<span id="current-returns"></span>
 		</h2>
-		<div style="display:flex"><input id="exchange-slider" type="range" class="slider" min="0" max="12" step="0.01"><span id="exchange-factor" style="padding:2px 5px">6.00</span><button style="width:50px;height:25px" onmousedown="reset_exchange()">Reset</button></div>
+		<table id="category-legend">
+			<tr>
+				<td><span style="display: inline-block; width: 12px; height: 12px; background-color: #0062A2;"></span> Helpless</td>
+				<td><span style="display: inline-block; width: 12px; height: 12px; background-color: #C3A730;"></span> Anxious</td>
+				<td><span style="display: inline-block; width: 12px; height: 12px; background-color: #C62229;"></span> Confident</td>
+			</tr>
+			<tr>
+				<td><span style="display: inline-block; width: 12px; height: 12px; background-color: black;"></span> Decided</td>
+				<td><span style="display: inline-block; width: 12px; height: 12px; background-color: #aaa;"></span> Undecided</td>
+			</tr>
+		</table>
 	</div>
 
 	<script src="game-theory.js"></script>

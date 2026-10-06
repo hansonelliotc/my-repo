@@ -61,6 +61,7 @@ let rows_multiplier = 1;
 let cols_multiplier = 1;
 let dragging_exchange = false;
 let set_exchange = false;
+let hidden_arrows = false;
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.04;
@@ -1596,6 +1597,7 @@ class Game {
             this.t1 = this.zone_row == 0 ? 2 : 4;
             this.t2 = this.zone_col == 0 ? 2 : 4;
         }
+        update_temp_pic();
     }
 
     get offset1() {
@@ -2233,6 +2235,14 @@ function init() {
     const corner2Big = document.getElementById("corner2-big");
     const corner3Big = document.getElementById("corner3-big");
     const corner4Big = document.getElementById("corner4-big");
+    const arrow1 = document.getElementById("arrow1");
+    const arrow2 = document.getElementById("arrow2");
+    const arrow3 = document.getElementById("arrow3");
+    const arrow4 = document.getElementById("arrow4");
+    const arrow1_poly = document.getElementById("arrow1-poly");
+    const arrow2_poly = document.getElementById("arrow2-poly");
+    const arrow3_poly = document.getElementById("arrow3-poly");
+    const arrow4_poly = document.getElementById("arrow4-poly");
     // const top1 = document.getElementById("top-1-big");
     // const top2 = document.getElementById("top-2-big");
     // const top3 = document.getElementById("top-3-big");
@@ -2268,6 +2278,7 @@ function init() {
     const greenBox = document.getElementById("green-box");
     const blueBox = document.getElementById("blue-box");
     const transUtilBoundary = document.getElementById("transferable-util-boundary");
+    const exchangeBoundary = document.getElementById("exchange-boundary");
 
     const bigDiagramWidth = bigDiagram.width.baseVal.value;
     const bigDiagramHeight = bigDiagram.height.baseVal.value;
@@ -2300,6 +2311,16 @@ function init() {
     corner3Big.r.baseVal.value = lineWidthBig*widthBig/2;
     corner4Big.style = "fill:" + cerulean;
     corner4Big.r.baseVal.value = lineWidthBig*widthBig/2;
+
+    // style arrows
+    const arrow_size = 2.5;
+    const arrows_poly = [arrow1_poly, arrow2_poly, arrow3_poly, arrow4_poly];
+    const arrow_str = "0," + lineWidthBig*widthBig*arrow_size*0.886 + " " + lineWidthBig*widthBig*arrow_size + "," + lineWidthBig*widthBig*arrow_size*0.886 + " " + lineWidthBig*widthBig*arrow_size/2 + "," + 0;
+    for (let i = 0; i < 4; i++) {
+        arrows_poly[i].setAttribute("points",arrow_str);
+        arrows_poly[i].setAttribute("fill", i < 2 ? cerulean : gold);
+    }
+
     // goldBar1.style.stroke = gold;
     // goldBar2.style.stroke = gold;
     // goldBar3.style.stroke = gold;
@@ -2411,8 +2432,16 @@ function init() {
     transUtilBoundary.style.stroke = brown;
     transUtilBoundary.style.strokeWidth = lineWidthBig*widthBig;
     transUtilBoundary.style.strokeOpacity = 0;
-    transUtilBoundary.x1.baseVal.value = 0;
-    transUtilBoundary.y2.baseVal.value = widthBig+paddingBig1+paddingBig2;
+    transUtilBoundary.x1.baseVal.value = paddingBig2;
+    transUtilBoundary.y2.baseVal.value = widthBig+paddingBig1;
+
+    exchangeBoundary.style.stroke = "black";
+    exchangeBoundary.style.strokeWidth = smallLineWidth;
+    exchangeBoundary.style.strokeOpacity = 0;
+    exchangeBoundary.x1.baseVal.value = paddingBig2;
+    exchangeBoundary.x2.baseVal.value = widthBig+paddingBig1;
+    exchangeBoundary.y1.baseVal.value = paddingBig2;
+    exchangeBoundary.y2.baseVal.value = widthBig+paddingBig1;
 
     redBox.style.fill = "red";
     redBox.style.opacity = 0.5;
@@ -3537,12 +3566,16 @@ function update() {
     const cur_returns = document.getElementById("current-returns");
     if (viewMode != 0 && viewMode != 11 && viewMode != 12 && returns(game,viewMode,true) !== null) {
         if (viewModeB !== null) {
-            cur_returns.innerHTML = " (" + returns(game,viewMode,viewModeP1,viewModeB,viewModeBP1).toFixed(2) + ")";
+            cur_returns.innerHTML = " (" + returns(game,viewMode,viewModeP1).toFixed(2) + "&minus;" + returns(game,viewModeB,viewModeBP1).toFixed(2) + "=" + returns(game,viewMode,viewModeP1,viewModeB,viewModeBP1).toFixed(2) + ")";
+        } else if (viewMode == 7) {
+            cur_returns.innerHTML = " (" + returns(game,viewMode,true).toFixed(2) + ")";
         } else if (viewModeP1) {
             cur_returns.innerHTML = " (<u>" + returns(game,viewMode,true).toFixed(2) + "</u>, " + returns(game,viewMode,false).toFixed(2) + ")";
         } else {
             cur_returns.innerHTML = " (" + returns(game,viewMode,true).toFixed(2) + ", <u>" + returns(game,viewMode,false).toFixed(2) + "</u>)";
         }
+    } else {
+        cur_returns.innerHTML = "";
     }
 
     const crossBlue1 = document.getElementById("cross-blue-1");
@@ -3641,6 +3674,10 @@ function update() {
     const redBox = document.getElementById("red-box");
     const greenBox = document.getElementById("green-box");
     const blueBox = document.getElementById("blue-box");
+    const arrow1 = document.getElementById("arrow1");
+    const arrow2 = document.getElementById("arrow2");
+    const arrow3 = document.getElementById("arrow3");
+    const arrow4 = document.getElementById("arrow4");
 
     const disagreementPoint = document.getElementById("disagreement-point");
     const bargainingPoint1 = document.getElementById("bargaining-returns-1");
@@ -3649,6 +3686,7 @@ function update() {
     const bargainingPoint4 = document.getElementById("bargaining-returns-4");
     const bargainingLine = document.getElementById("bargaining-line");
     const transUtilBoundary = document.getElementById("transferable-util-boundary");
+    const exchangeBoundary = document.getElementById("exchange-boundary");
 
     const bigDiagramWidth = bigDiagram.getBoundingClientRect().width;
     const paddingBig1 = 0.04*bigDiagramWidth;
@@ -3697,6 +3735,61 @@ function update() {
     point4Big.cy.baseVal.value = (1-game.col_matrix[3]/return_space_max)*widthBig+paddingBig1;
     number4.setAttribute('x',game.row_matrix[3]*widthBig/return_space_max+paddingBig2);
     number4.setAttribute('y',(1-game.col_matrix[3]/return_space_max)*widthBig+paddingBig1);
+
+    // style arrows
+    if (!hidden_arrows) {
+        const arrow_box = arrow1.getBBox();
+        const arrow_box_width = arrow_box.width;
+        const arrow_box_height = arrow_box.height;
+        arrow1.setAttribute("x", (game.row_matrix[0]+game.row_matrix[1])/2*widthBig/return_space_max+paddingBig2 - arrow_box_width/2);
+        arrow1.setAttribute("y", (1-(game.col_matrix[0]+game.col_matrix[1])/2/return_space_max)*widthBig+paddingBig1 - arrow_box_height);
+        arrow1.style.transformOrigin = (arrow1.x.baseVal.value + arrow_box_width/2) + "px " + (arrow1.y.baseVal.value + arrow_box_height) + "px";
+        if (game.col_matrix[0] - game.col_matrix[1] > 0.0001) {
+            arrow1.style.opacity = 1;
+            arrow1.style.rotate = Math.atan2(game.row_matrix[0]-game.row_matrix[1], game.col_matrix[0]-game.col_matrix[1]) + "rad";
+        } else if (game.col_matrix[1] - game.col_matrix[0] > 0.0001) {
+            arrow1.style.opacity = 1;
+            arrow1.style.rotate = Math.atan2(game.row_matrix[1]-game.row_matrix[0], game.col_matrix[1]-game.col_matrix[0]) + "rad";
+        } else {
+            arrow1.style.opacity = 0;
+        }
+        arrow2.setAttribute("x", (game.row_matrix[2]+game.row_matrix[3])/2*widthBig/return_space_max+paddingBig2 - arrow_box_width/2);
+        arrow2.setAttribute("y", (1-(game.col_matrix[2]+game.col_matrix[3])/2/return_space_max)*widthBig+paddingBig1 - arrow_box_height);
+        arrow2.style.transformOrigin = (arrow2.x.baseVal.value + arrow_box_width/2) + "px " + (arrow2.y.baseVal.value + arrow_box_height) + "px";
+        if (game.col_matrix[2] - game.col_matrix[3] > 0.0001) {
+            arrow2.style.opacity = 1;
+            arrow2.style.rotate = Math.atan2(game.row_matrix[2]-game.row_matrix[3], game.col_matrix[2]-game.col_matrix[3]) + "rad";
+        } else if (game.col_matrix[3] - game.col_matrix[2] > 0.0001) {
+            arrow2.style.opacity = 1;
+            arrow2.style.rotate = Math.atan2(game.row_matrix[3]-game.row_matrix[2], game.col_matrix[3]-game.col_matrix[2]) + "rad";
+        } else {
+            arrow2.style.opacity = 0;
+        }
+        arrow3.setAttribute("x", (game.row_matrix[0]+game.row_matrix[2])/2*widthBig/return_space_max+paddingBig2 - arrow_box_width/2);
+        arrow3.setAttribute("y", (1-(game.col_matrix[0]+game.col_matrix[2])/2/return_space_max)*widthBig+paddingBig1 - arrow_box_height);
+        arrow3.style.transformOrigin = (arrow3.x.baseVal.value + arrow_box_width/2) + "px " + (arrow3.y.baseVal.value + arrow_box_height) + "px";
+        if (game.row_matrix[0] - game.row_matrix[2] > 0.0001) {
+            arrow3.style.opacity = 1;
+            arrow3.style.rotate = Math.atan2(game.row_matrix[0]-game.row_matrix[2], game.col_matrix[0]-game.col_matrix[2]) + "rad";
+        } else if (game.row_matrix[2] - game.row_matrix[0] > 0.0001) {
+            arrow3.style.opacity = 1;
+            arrow3.style.rotate = Math.atan2(game.row_matrix[2]-game.row_matrix[0], game.col_matrix[2]-game.col_matrix[0]) + "rad";
+        } else {
+            arrow3.style.opacity = 0;
+        }
+        arrow4.setAttribute("x", (game.row_matrix[1]+game.row_matrix[3])/2*widthBig/return_space_max+paddingBig2 - arrow_box_width/2);
+        arrow4.setAttribute("y", (1-(game.col_matrix[1]+game.col_matrix[3])/2/return_space_max)*widthBig+paddingBig1 - arrow_box_height);
+        arrow4.style.transformOrigin = (arrow4.x.baseVal.value + arrow_box_width/2) + "px " + (arrow4.y.baseVal.value + arrow_box_height) + "px";
+        if (game.row_matrix[1] - game.row_matrix[3] > 0.0001) {
+            arrow4.style.opacity = 1;
+            arrow4.style.rotate = Math.atan2(game.row_matrix[1]-game.row_matrix[3], game.col_matrix[1]-game.col_matrix[3]) + "rad";
+        } else if (game.row_matrix[3] - game.row_matrix[1] > 0.0001) {
+            arrow4.style.opacity = 1;
+            arrow4.style.rotate = Math.atan2(game.row_matrix[3]-game.row_matrix[1], game.col_matrix[3]-game.col_matrix[1]) + "rad";
+        } else {
+            arrow4.style.opacity = 0;
+        }
+    }
 
     if (viewMode == 2 || viewMode == 3 || viewMode == 4 || viewMode == 5) {
         disagreementPoint.style.fillOpacity = 1;
@@ -3764,8 +3857,8 @@ function update() {
     }
     
     if (viewMode == 4 || viewMode == 5 || showAllReturns) {
-        transUtilBoundary.x2.baseVal.value = (game.row_tu_bs_return+game.col_tu_bs_return)/return_space_max*widthBig+paddingBig2*2;
-        transUtilBoundary.y1.baseVal.value = widthBig - (game.row_tu_bs_return+game.col_tu_bs_return)/return_space_max*widthBig + paddingBig1 - paddingBig2;
+        transUtilBoundary.x2.baseVal.value = (game.row_tu_bs_return+game.col_tu_bs_return)/return_space_max*widthBig+paddingBig2;
+        transUtilBoundary.y1.baseVal.value = widthBig - (game.row_tu_bs_return+game.col_tu_bs_return)/return_space_max*widthBig + paddingBig1;
         transUtilBoundary.style.strokeOpacity = 0.5;
     } else {
         transUtilBoundary.style.strokeOpacity = 0;
@@ -3908,6 +4001,12 @@ function update() {
     blueBox.y.baseVal.value = paddingBig1 + (1-take(game.col_matrix,3)/return_space_max)*widthBig;
     blueBox.width.baseVal.value = (take(game.row_matrix,3)-take(game.row_matrix,2))/return_space_max*widthBig;
     blueBox.height.baseVal.value = (take(game.col_matrix,3)-take(game.col_matrix,2))/return_space_max*widthBig;
+
+    if (rows_multiplier == 1) {
+        exchangeBoundary.style.strokeOpacity = 0;
+    } else {
+        exchangeBoundary.style.strokeOpacity = 1;
+    }
 
     // top1.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
     // top2.style.strokeWidth = lineWidthBig*widthBig*sideWidth(1);
@@ -5390,25 +5489,25 @@ function update() {
     coordinatesObj.innerHTML = "x<sub>1</sub>: " + game.y1.toFixed(2) + ", x<sub>2</sub>: " + game.y2.toFixed(2) + ", t<sub>1</sub>: " + game.t1.toFixed(2) + ", t<sub>2</sub>: " + game.t2.toFixed(2);
 
     // update zone label
-    const zone_label = document.getElementById("zone");
-    if (!useAltSchema) {
-        zone_label.innerHTML = "";
-    } else {
-        switch (game.zone) {
-            case 1:
-                zone_label.innerHTML = "cool-cool";
-                break;
-            case 2:
-                zone_label.innerHTML = "warm-cool";
-                break;
-            case 3:
-                zone_label.innerHTML = "warm-warm";
-                break;
-            case 4:
-                zone_label.innerHTML = "cool-warm";
-                break;
-        }
-    }
+    // const zone_label = document.getElementById("zone");
+    // if (!useAltSchema) {
+    //     zone_label.innerHTML = "";
+    // } else {
+    //     switch (game.zone) {
+    //         case 1:
+    //             zone_label.innerHTML = "cool-cool";
+    //             break;
+    //         case 2:
+    //             zone_label.innerHTML = "warm-cool";
+    //             break;
+    //         case 3:
+    //             zone_label.innerHTML = "warm-warm";
+    //             break;
+    //         case 4:
+    //             zone_label.innerHTML = "cool-warm";
+    //             break;
+    //     }
+    // }
 
     updateDegenerateGames();
 
@@ -5522,7 +5621,8 @@ function crossGreen(p1) {
 
 function crossTan(p1) {
     game.crossTan(p1);
-    updateBackground();
+    backgroundOutOfDate = true;
+    // updateBackground();
 }
 
 function switchMatrices() {
@@ -5530,7 +5630,8 @@ function switchMatrices() {
     // const temp = [...game.row_matrix];
     // game.row_matrix = [...game.col_matrix];
     // game.col_matrix = temp;
-    updateCoords();
+    backgroundOutOfDate = true;
+    // updateCoords();
 }
 
 function flipMatrices() {
@@ -5548,7 +5649,8 @@ function negate(player1) {
     //     game.zone_col = 1 - game.zone_col;
     //     game.col_matrix = [...game.col_matrix].map(x => 6 - x);
     // }
-    updateCoords();
+    backgroundOutOfDate = true;
+    // updateCoords();
 }
 
 function switchRows() {
@@ -5574,8 +5676,9 @@ function rotate() {
 function randomGame() {
     game.row_matrix = normalize([Math.random(),Math.random(),Math.random(),Math.random()]).map(x => x*rows_multiplier);
     game.col_matrix = normalize([Math.random(),Math.random(),Math.random(),Math.random()]).map(x => x*cols_multiplier);
-
-    updateCoords();
+    backgroundOutOfDate = true;
+    update_temp_pic();
+    // updateCoords();
 }
 
 function updateBackground() {
@@ -5619,7 +5722,7 @@ function updateBackground() {
     const hotspot1 = document.getElementById("hotspot-1");
     const hotspot2 = document.getElementById("hotspot-2");
     const hotspot3 = document.getElementById("hotspot-3");
-    const header = document.getElementById("quadrant-label")
+    // const header = document.getElementById("quadrant-label")
 
     switch (game.quad) {
         case 1:
@@ -5643,8 +5746,8 @@ function updateBackground() {
             //     region4.style.display = "none";
             // }
             // header.innerHTML = "Good Quadrant";
-            header.innerHTML = "Good quadrant";
-            header.style.color = lightGreen;
+            // header.innerHTML = "Good quadrant";
+            // header.style.color = lightGreen;
 
             boundaryLine1.style.stroke = bad;
             boundaryLine2.style.stroke = gold;
@@ -5698,8 +5801,8 @@ function updateBackground() {
             //     region4.style.display = "none";
             // }
             // header.innerHTML = "Row Quadrant";
-            header.innerHTML = "Row quadrant";
-            header.style.color = gold;
+            // header.innerHTML = "Row quadrant";
+            // header.style.color = gold;
             
             boundaryLine1.style.stroke = cerulean;
             boundaryLine2.style.stroke = lightGreen;
@@ -5753,8 +5856,8 @@ function updateBackground() {
             //     region4.style.display = "none";
             // }
             // header.innerHTML = "Bad Quadrant";
-            header.innerHTML = "Bad quadrant";
-            header.style.color = bad;
+            // header.innerHTML = "Bad quadrant";
+            // header.style.color = bad;
             
             boundaryLine1.style.stroke = lightGreen;
             boundaryLine2.style.stroke = cerulean;
@@ -5808,8 +5911,8 @@ function updateBackground() {
             //     region4.style.display = "none";
             // }
             // header.innerHTML = "Column Quadrant";
-            header.innerHTML = "Column quadrant";
-            header.style.color = cerulean;
+            // header.innerHTML = "Column quadrant";
+            // header.style.color = cerulean;
             
             boundaryLine1.style.stroke = gold;
             boundaryLine2.style.stroke = bad;
@@ -6801,13 +6904,13 @@ function colorFunction(value,vMode) {
     // const cutoffs = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.25,1.5,2];
     if (vMode == 8) {
         colors = [[0,0,100],[0,0,130],[111,118,172],[255,255,255],[184,114,116],[130,0,0],[100,0,0]];
-        cutoffs = [0,0.2,0.375,0.5,0.625,0.8,1];
+        cutoffs = [0-0.5,0.2-0.5,0.375-0.5,0.5-0.5,0.625-0.5,0.8-0.5,1-0.5];
     } else if (vMode == 7) {
         colors = [[0,0,100],[0,0,130],[111,118,172],[255,255,255],[184,114,116],[130,0,0],[100,0,0]];
         cutoffs = [0,0.1,0.3,0.5,0.7,0.9,1];
     } else {
         colors = [[0,7,105],[0,98,162],[48,175,149],[94,190,64],[195,167,48],[199,111,8],[198,34,41],[243,178,188],[255,222,226],[255,255,255]];
-        cutoffs = [0,0.11,0.22,0.33,0.44,0.55,0.67,0.85,1,2.67];
+        cutoffs = [0,0.11,0.22,0.33,0.44,0.56,0.67,0.85,1,2.67];
         divisor = 9;
     }
     value = value / divisor;
@@ -6850,11 +6953,13 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
     curButton.classList.remove("selected");
     curButton.classList.remove("selected-red");
 
+    document.getElementById("view-mode-label").innerHTML = header(mode,player1);
+
     if (player1) {
         switch (mode) {
             case 0:
                 document.getElementById("regular-mode").classList.add("selected");
-                document.getElementById("view-mode-label").innerHTML = "Equilibrium view";
+                // document.getElementById("view-mode-label").innerHTML = "Equilibrium view";
                 // document.getElementById("q1a").style.display = "";
                 // document.getElementById("q2a").style.display = "";
                 // document.getElementById("q2b").style.display = "";
@@ -6869,62 +6974,62 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
                 document.getElementById("transferable-mode").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("transferable-mode").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Max total";
+                // document.getElementById("view-mode-label").innerHTML = "Max total";
                 break;
             case 1:
                 document.getElementById("return-mode-2").classList.add("selected");
-                document.getElementById("view-mode-label").innerHTML = "Row's equilibrium returns";
+                // document.getElementById("view-mode-label").innerHTML = "Row's equilibrium returns";
                 break;
             case 5:
                 document.getElementById("mode-button-10-row").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-10-row").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Row's threat point TU";
+                // document.getElementById("view-mode-label").innerHTML = "Row's threat point TU";
                 break;
             case 2:
                 document.getElementById("mode-button-7-row").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-7-row").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Row's backstop NTU";
+                // document.getElementById("view-mode-label").innerHTML = "Row's backstop NTU";
                 break;
             case 3:
                 document.getElementById("mode-button-8-row").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-8-row").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Row's threat point NTU";
+                // document.getElementById("view-mode-label").innerHTML = "Row's threat point NTU";
                 break;
-            case 8:
-                document.getElementById("custom-mode").classList.add("selected");
-                const select1 = document.getElementById("view-custom-1");
-                const select2 = document.getElementById("view-custom-2");
-                document.getElementById("view-mode-label").innerHTML = "<span style=\"color:rgb(150,0,0)\">" + select1.getElementsByTagName("option")[select1.selectedIndex].innerHTML
-                                                       + "</span> minus <span style=\"color:rgb(0,0,150)\">" + select2.getElementsByTagName("option")[select2.selectedIndex].innerHTML + "</span>";
-                break;
+            // case 8:
+            //     document.getElementById("custom-mode").classList.add("selected");
+            //     const select1 = document.getElementById("view-custom-1");
+            //     const select2 = document.getElementById("view-custom-2");
+            //     document.getElementById("view-mode-label").innerHTML = "<span style=\"color:rgb(150,0,0)\">" + select1.getElementsByTagName("option")[select1.selectedIndex].innerHTML
+            //                                            + "</span> minus <span style=\"color:rgb(0,0,150)\">" + select2.getElementsByTagName("option")[select2.selectedIndex].innerHTML + "</span>";
+            //     break;
             case 7:
                 document.getElementById("coordination-mode").classList.add("selected");
-                document.getElementById("view-mode-label").innerHTML = "Correlation";
+                // document.getElementById("view-mode-label").innerHTML = "Correlation";
                 break;
             case 4:
                 document.getElementById("mode-button-9-row").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-9-row").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Row's backstop TU";
+                // document.getElementById("view-mode-label").innerHTML = "Row's backstop TU";
                 break;
             case 9:
                 document.getElementById("mode-button-5-row").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-5-row").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Row's backstop";
+                // document.getElementById("view-mode-label").innerHTML = "Row's backstop";
                 break;
             case 10:
                 document.getElementById("mode-button-6-row").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-6-row").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Row's threat point";
+                // document.getElementById("view-mode-label").innerHTML = "Row's threat point";
                 break;
             case 11:
                 document.getElementById("quadrant-mode").classList.add("selected");
-                document.getElementById("view-mode-label").innerHTML = "Quadrant";
+                // document.getElementById("view-mode-label").innerHTML = "Quadrant";
                 // document.getElementById("q1a").style.display = "none";
                 // document.getElementById("q2a").style.display = "none";
                 // document.getElementById("q2b").style.display = "none";
@@ -6937,128 +7042,229 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
                 break;
             case 12:
                 document.getElementById("none-mode").classList.add("selected");
-                document.getElementById("view-mode-label").innerHTML = "No background";
+                // document.getElementById("view-mode-label").innerHTML = "No background";
                 break;
             case 13:
                 document.getElementById("return-mode-1").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("return-mode-1").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Row's equilibrium returns (using mixed)";
+                // document.getElementById("view-mode-label").innerHTML = "Row's equilibrium returns (using mixed)";
                 break;
             case 14:
                 document.getElementById("mode-button-3-row").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-3-row").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Row's return when row plays first";
+                // document.getElementById("view-mode-label").innerHTML = "Row's return when row plays first";
                 break;
             case 15:
                 document.getElementById("mode-button-4-row").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-4-row").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Row's return when column plays first";
+                // document.getElementById("view-mode-label").innerHTML = "Row's return when column plays first";
                 break;
             case 16:
                 document.getElementById("random-mode").classList.add("selected");
-                document.getElementById("view-mode-label").innerHTML = "Row's return when play is random";
+                // document.getElementById("view-mode-label").innerHTML = "Row's return when play is random";
                 break;
             case 17:
                 document.getElementById("max-mean-mode").classList.add("selected");
-                document.getElementById("view-mode-label").innerHTML = "Row's return when players opt for greatest mean";
+                // document.getElementById("view-mode-label").innerHTML = "Row's return when players opt for greatest mean";
                 break;
             case 18:
                 document.getElementById("mode-button-1-row").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-1-row").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Competitive strategies";
+                // document.getElementById("view-mode-label").innerHTML = "Competitive strategies";
                 break;
             case 19:
                 document.getElementById("mode-button-2-row").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-2-row").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Competitive strategies 2";
+                // document.getElementById("view-mode-label").innerHTML = "Competitive strategies 2";
                 break;
         }
     } else {
         switch (mode) {
             case 1:
                 document.getElementById("return-mode-2-col").classList.add("selected");
-                document.getElementById("view-mode-label").innerHTML = "Column's equilibrium returns";
+                // document.getElementById("view-mode-label").innerHTML = "Column's equilibrium returns";
                 break;
             case 5:
                 document.getElementById("mode-button-10-col").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-10-col").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Column's threat point TU";
+                // document.getElementById("view-mode-label").innerHTML = "Column's threat point TU";
                 break;
             case 2:
                 document.getElementById("mode-button-7-col").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-7-col").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Column's backstop NTU";
+                // document.getElementById("view-mode-label").innerHTML = "Column's backstop NTU";
                 break;
             case 3:
                 document.getElementById("mode-button-8-col").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-8-col").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Column's threat point NTU";
+                // document.getElementById("view-mode-label").innerHTML = "Column's threat point NTU";
                 break;
             case 4:
                 document.getElementById("mode-button-9-col").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-9-col").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Column's backstop TU";
+                // document.getElementById("view-mode-label").innerHTML = "Column's backstop TU";
                 break;
             case 9:
                 document.getElementById("mode-button-5-col").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-5-col").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Column's backstop";
+                // document.getElementById("view-mode-label").innerHTML = "Column's backstop";
                 break;
             case 10:
                 document.getElementById("mode-button-6-col").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-6-col").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Column's threat point";
+                // document.getElementById("view-mode-label").innerHTML = "Column's threat point";
                 break;
             case 13:
                 document.getElementById("return-mode-1-col").classList.add("selected");
-                document.getElementById("view-mode-label").innerHTML = "Column's equilibrium returns (using mixed)";
+                // document.getElementById("view-mode-label").innerHTML = "Column's equilibrium returns (using mixed)";
                 break;
             case 14:
                 document.getElementById("mode-button-3-col").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-3-col").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Column's return when row plays first";
+                // document.getElementById("view-mode-label").innerHTML = "Column's return when row plays first";
                 break;
             case 15:
                 document.getElementById("mode-button-4-col").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-4-col").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Column's return when column plays first";
+                // document.getElementById("view-mode-label").innerHTML = "Column's return when column plays first";
                 break;
             case 16:
                 document.getElementById("random-mode-col").classList.add("selected");
-                document.getElementById("view-mode-label").innerHTML = "Column's return when play is random";
+                // document.getElementById("view-mode-label").innerHTML = "Column's return when play is random";
                 break;
             case 17:
                 document.getElementById("max-mean-mode-col").classList.add("selected");
-                document.getElementById("view-mode-label").innerHTML = "Column's return when players opt for greatest mean";
+                // document.getElementById("view-mode-label").innerHTML = "Column's return when players opt for greatest mean";
                 break;
             case 18:
                 document.getElementById("mode-button-1-col").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-1-col").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Competitive strategies";
+                // document.getElementById("view-mode-label").innerHTML = "Competitive strategies";
                 break;
             case 19:
                 document.getElementById("mode-button-2-col").classList.add("selected");
                 if (viewModeB !== null)
                     document.getElementById("mode-button-2-col").classList.add("selected-red");
-                document.getElementById("view-mode-label").innerHTML = "Competitive strategies 2";
+                // document.getElementById("view-mode-label").innerHTML = "Competitive strategies 2";
                 break;
         }
     }
     update_temp_pic();
+}
+
+function header(mode, player1=true) {
+    if (player1) {
+        switch (mode) {
+            case 0:
+                return "Equilibrium view";
+            case 6:
+                return "Max total";
+            case 1:
+                return "Row's equilibrium returns";
+            case 5:
+                return "Row's threat point TU";
+            case 2:
+                return "Row's backstop NTU";
+            case 3:
+                return "Row's threat point NTU";
+            case 7:
+                return "Correlation";
+            case 4:
+                return "Row's backstop TU";
+            case 9:
+                return "Row's backstop";
+            case 10:
+                return "Row's threat point";
+            case 11:
+                return "Quadrant";
+            case 12:
+                return "No background";
+            case 13:
+                return "Row's equilibrium returns (using mixed)";
+            case 14:
+                return "Row's return when row plays first";
+            case 15:
+                return "Row's return when column plays first";
+            case 18:
+                if (noncooperative_row_1 == noncooperative_col_1)
+                    return "Row's " + header_non_comp(noncooperative_row_1) + " return";
+                else
+                    return "Row's " + header_non_comp(noncooperative_row_1) + "/" + header_non_comp(noncooperative_col_1) + " return";
+            case 19:
+                if (noncooperative_row_2 == noncooperative_col_2)
+                    return "Row's " + header_non_comp(noncooperative_row_2) + " return";
+                else
+                    return "Row's " + header_non_comp(noncooperative_row_2) + "/" + header_non_comp(noncooperative_col_2) + " return";
+        }
+    } else {
+        switch (mode) {
+            case 1:
+                return "Column's equilibrium returns";
+            case 5:
+                return "Column's threat point TU";
+            case 2:
+                return "Column's backstop NTU";
+            case 3:
+                return "Column's threat point NTU";
+            case 4:
+                return "Column's backstop TU";
+            case 9:
+                return "Column's backstop";
+            case 10:
+                return "Column's threat point";
+            case 13:
+                return "Column's equilibrium returns (using mixed)";
+            case 14:
+                return "Column's return when row plays first";
+            case 15:
+                return "Column's return when column plays first";
+            case 18:
+                if (noncooperative_row_1 == noncooperative_col_1)
+                    return "Column's " + header_non_comp(noncooperative_row_1) + " return";
+                else
+                    return "Column's " + header_non_comp(noncooperative_row_1) + "/" + header_non_comp(noncooperative_col_1) + " return";
+            case 19:
+                if (noncooperative_row_2 == noncooperative_col_2)
+                    return "Column's " + header_non_comp(noncooperative_row_2) + " return";
+                else
+                    return "Column's " + header_non_comp(noncooperative_row_2) + "/" + header_non_comp(noncooperative_col_2) + " return";
+        }
+    }
+}
+
+function header_non_comp(val) {
+    switch (val) {
+        case 1:
+            return "equilibrium";
+        case 2:
+            return "equilibrium (m)";
+        case 3:
+            return "equilibrium (+)";
+        case 4:
+            return "equilibrium (-)";
+        case 5:
+            return "random";
+        case 6:
+            return "max mean";
+        case 7:
+            return "golden";
+        case 8:
+            return "anti-golden";
+    }
 }
 
 // function compare_strategies(game, strat_1, strat_2) {
@@ -7957,6 +8163,107 @@ function updateBlueLines() {
         // blueLine2.style.cursor = "ns-resize";
         blueCorner1.style.cursor = "all-scroll";
     }
+
+    // update category segments
+    const cat_segment_padding = 15;
+    const RGBstring = (color => `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
+    for (let i = 1; i <= 6; i++) {
+        const row_segment_a = document.getElementById("segment-row-" + i + "a");
+        const row_segment_b = document.getElementById("segment-row-" + i + "b");
+        if (dimensions()[0] > 0.1) {
+            row_segment_a.setAttribute("x1",picWidth*(i-1)/6 + picPadding1);
+            row_segment_a.setAttribute("x2",picWidth*i/6 + picPadding1 + (i == 6 ? 0 : 1));
+            if (game.zone_col == 1) {
+                row_segment_a.setAttribute("y1",picHeight + picPadding2 + blueLinePadding + cat_segment_padding);
+                row_segment_a.setAttribute("y2",picHeight + picPadding2 + blueLinePadding + cat_segment_padding);
+            } else {
+                row_segment_a.setAttribute("y1",picPadding2 - blueLinePadding - cat_segment_padding);
+                row_segment_a.setAttribute("y2",picPadding2 - blueLinePadding - cat_segment_padding);
+            }
+            switch (Math.floor((i+game.offset+3)%6/2)) {
+                case 0:
+                    row_segment_a.setAttribute("stroke",RGBstring(colorFunction(1)));
+                    break;
+                case 1:
+                    row_segment_a.setAttribute("stroke",RGBstring(colorFunction(4)));
+                    break;
+                case 2:
+                    row_segment_a.setAttribute("stroke",RGBstring(colorFunction(6)));
+                    break;
+            }
+            
+            row_segment_b.setAttribute("x1",picWidth*(i-1)/6 + picPadding1);
+            row_segment_b.setAttribute("x2",picWidth*i/6 + picPadding1 + (i == 6 ? 0 : 1));
+            if (game.zone_col == 1) {
+                row_segment_b.setAttribute("y1",picHeight + picPadding2 + blueLinePadding + cat_segment_padding + 5);
+                row_segment_b.setAttribute("y2",picHeight + picPadding2 + blueLinePadding + cat_segment_padding + 5);
+            } else {
+                row_segment_b.setAttribute("y1",picPadding2 - blueLinePadding - cat_segment_padding - 5);
+                row_segment_b.setAttribute("y2",picPadding2 - blueLinePadding - cat_segment_padding - 5);
+            }
+            switch (Math.floor((i+game.offset+5)%6/3)) {
+                case 0:
+                    row_segment_b.setAttribute("stroke","black");
+                    break;
+                case 1:
+                    row_segment_b.setAttribute("stroke","#aaa");
+                    break;
+            }
+            row_segment_a.style.display = "";
+            row_segment_b.style.display = "";
+        } else {
+            row_segment_a.style.display = "none";
+            row_segment_b.style.display = "none";
+        }
+        
+        const col_segment_a = document.getElementById("segment-col-" + i + "a");
+        const col_segment_b = document.getElementById("segment-col-" + i + "b");
+        if (dimensions()[1] > 0.1) {
+            col_segment_a.setAttribute("y1",picHeight*(i-1)/6 + picPadding2);
+            col_segment_a.setAttribute("y2",picHeight*i/6 + picPadding2 + (i == 6 ? 0 : 1));
+            if (game.zone_row == 0) {
+                col_segment_a.setAttribute("x1",picWidth + picPadding1 + blueLinePadding + cat_segment_padding);
+                col_segment_a.setAttribute("x2",picWidth + picPadding1 + blueLinePadding + cat_segment_padding);
+            } else {
+                col_segment_a.setAttribute("x1",picPadding1 - blueLinePadding - cat_segment_padding);
+                col_segment_a.setAttribute("x2",picPadding1 - blueLinePadding - cat_segment_padding);
+            }
+            switch (Math.floor((i-game.offset+7)%6/2)) {
+                case 0:
+                    col_segment_a.setAttribute("stroke",RGBstring(colorFunction(6)));
+                    break;
+                case 1:
+                    col_segment_a.setAttribute("stroke",RGBstring(colorFunction(4)));
+                    break;
+                case 2:
+                    col_segment_a.setAttribute("stroke",RGBstring(colorFunction(1)));
+                    break;
+            }
+            
+            col_segment_b.setAttribute("y1",picHeight*(i-1)/6 + picPadding2);
+            col_segment_b.setAttribute("y2",picHeight*i/6 + picPadding2 + (i == 6 ? 0 : 1));
+            if (game.zone_row == 0) {
+                col_segment_b.setAttribute("x1",picWidth + picPadding1 + blueLinePadding + cat_segment_padding + 5);
+                col_segment_b.setAttribute("x2",picWidth + picPadding1 + blueLinePadding + cat_segment_padding + 5);
+            } else {
+                col_segment_b.setAttribute("x1",picPadding1 - blueLinePadding - cat_segment_padding - 5);
+                col_segment_b.setAttribute("x2",picPadding1 - blueLinePadding - cat_segment_padding - 5);
+            }
+            switch (Math.floor((i-game.offset+8)%6/3)) {
+                case 0:
+                    col_segment_b.setAttribute("stroke","black");
+                    break;
+                case 1:
+                    col_segment_b.setAttribute("stroke","#aaa");
+                    break;
+            }
+            col_segment_a.style.display = "";
+            col_segment_b.style.display = "";
+        } else {
+            col_segment_a.style.display = "none";
+            col_segment_b.style.display = "none";
+        }
+    }
 }
 
 function fixCoords() {
@@ -8735,7 +9042,7 @@ function returns(game, mode, row_player, mode_b, row_player_b) {
             break;
     }
     if (return_2 == null) return return_1;
-    else return (return_1 - return_2)/12+1/2;
+    else return (return_1 - return_2)/12;
 }
 
 function change_conventions(offset, inversion) {
@@ -8746,6 +9053,7 @@ function change_conventions(offset, inversion) {
     const selected_button = document.getElementById("convention-" + offset.toString() + (inversion == -1 ? "-inverted" : ""));
     selected_button.classList.add("selected");
 
+    backgroundOutOfDate = true;
     update_rgb_lines();
 }
 
@@ -9361,6 +9669,7 @@ function change_strategy_row_1(val) {
         document.getElementById("non-cooperative-strat-"+val+"-row").classList.add("selected-olive");
     }
     noncooperative_row_1 = val;
+    changeViewMode(viewMode, viewModeP1);
 }
 function change_strategy_row_2(val) {
     if (noncooperative_row_2 === null && noncooperative_col_2 !== null) {
@@ -9388,6 +9697,7 @@ function change_strategy_row_2(val) {
         document.getElementById("non-cooperative-strat-"+val+"-row").classList.add("selected-olive");
     }
     noncooperative_row_2 = val;
+    changeViewMode(viewMode, viewModeP1);
 }
 function change_strategy_col_1(val) {
     const buttons = document.getElementsByClassName("non-cooperative-button-col");
@@ -9407,6 +9717,7 @@ function change_strategy_col_1(val) {
         document.getElementById("non-cooperative-strat-"+val+"-col").classList.add("selected-olive");
     }
     noncooperative_col_1 = val;
+    changeViewMode(viewMode, viewModeP1);
 }
 function change_strategy_col_2(val) {
     if (noncooperative_row_2 !== null && noncooperative_col_2 === null) {
@@ -9434,6 +9745,7 @@ function change_strategy_col_2(val) {
         document.getElementById("non-cooperative-strat-"+val+"-col").classList.add("selected-olive");
     }
     noncooperative_col_2 = val;
+    changeViewMode(viewMode, viewModeP1);
 }
 
 function change_mode_b(mode, p1) {
@@ -9459,6 +9771,11 @@ function change_mode_b(mode, p1) {
             document.getElementById("mode-button-" + mode + (p1 ? "-row" : "-col")).classList.add("selected-blue");
         else
             document.getElementById("transferable-mode").classList.add("selected-blue");
+        document.getElementById("view-mode-label").style.color = "#960000";
+        document.getElementById("view-mode-label-2").innerHTML = "<br>" + header(viewModeB,viewModeBP1);
+    } else {
+        document.getElementById("view-mode-label").style.color = "black";
+        document.getElementById("view-mode-label-2").innerHTML = "";
     }
 }
 
@@ -9466,6 +9783,29 @@ function reset_exchange() {
     const slider = document.getElementById("exchange-slider");
     slider.value = 6;
     set_exchange = true;
+}
+
+function hideArrows(val) {
+    hidden_arrows = val;
+    const arrow1 = document.getElementById("arrow1");
+    const arrow2 = document.getElementById("arrow2");
+    const arrow3 = document.getElementById("arrow3");
+    const arrow4 = document.getElementById("arrow4");
+    if (val) {
+        arrow1.style.opacity = 0;
+        arrow2.style.opacity = 0;
+        arrow3.style.opacity = 0;
+        arrow4.style.opacity = 0;
+        document.getElementById("arrow-opt-button-0").classList.add("selected");
+        document.getElementById("arrow-opt-button-1").classList.remove("selected");
+    } else {
+        arrow1.style.opacity = 1;
+        arrow2.style.opacity = 1;
+        arrow3.style.opacity = 1;
+        arrow4.style.opacity = 1;
+        document.getElementById("arrow-opt-button-0").classList.remove("selected");
+        document.getElementById("arrow-opt-button-1").classList.add("selected");
+    }
 }
 
 // fix big diagram movement
@@ -9509,8 +9849,7 @@ function reset_exchange() {
 // not a manifold: it has six singular points
 
 // add arrows
-// put temp pic in the top right corner of the big diagram
+// put temp pic in the top right corner of the big diagram ?
 // combine matrices
-// show the other line in the big diagram
 
 // bring up duplicates on the equatorial slice

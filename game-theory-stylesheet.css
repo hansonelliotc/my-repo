@@ -68,8 +68,13 @@ button {
     width: 12vw;
 }
 
-#game-info tr td, #matrices tr td {
+#game-info tr td {
     width: 13vw;
+}
+
+#matrices tr td {
+    width: 26vw;
+    /* width: 13vw; */
 }
 
 #game-info tr td {
@@ -80,7 +85,9 @@ button {
     padding: 2vh 0 1vh 0;
 }
 #matrices tr td table {
-    width: 80px;
+    /* width: 80px; */
+    width: 160px;
+    border-collapse: collapse;
 }
 
 .mode-button {
@@ -286,24 +293,48 @@ h2 {
 }
 
 .slider {
-  appearance: none;
-  width: 20vw;
-  height: 25px;
-  background: #d3d3d3;
-  outline: none;
-  margin: 0;
-  /* opacity: 0.7; */
-  /* -webkit-transition: .2s; */
-  /* transition: opacity .2s; */
+    appearance: none;
+    width: 25vw;
+    height: 25px;
+    background: #eee;
+    outline: none;
+    margin: 0;
+    /* opacity: 0.7; */
+    /* -webkit-transition: .2s; */
+    /* transition: opacity .2s; */
 }
 
 .slider::-webkit-slider-thumb {
-  /* -webkit-appearance: none; */
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  background: black;
-  cursor: pointer;
+    /* -webkit-appearance: none; */
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: black;
+    cursor: pointer;
+}
+
+.category-segment-a {
+    stroke-width: 6px;
+}
+
+.category-segment-b {
+    stroke-width: 5px;
+}
+
+#category-legend {
+    margin: 1vh 2vw;
+}
+
+#category-legend tr td {
+    padding: 0 6px;
+}
+
+.returns {
+    text-shadow: 0 0 1px #111;
+}
+
+.arrow {
+    stroke-width: 0;
 }
 
 /* .slider::-moz-range-thumb {
