@@ -3744,10 +3744,10 @@ function update() {
         arrow1.setAttribute("x", (game.row_matrix[0]+game.row_matrix[1])/2*widthBig/return_space_max+paddingBig2 - arrow_box_width/2);
         arrow1.setAttribute("y", (1-(game.col_matrix[0]+game.col_matrix[1])/2/return_space_max)*widthBig+paddingBig1 - arrow_box_height);
         arrow1.style.transformOrigin = (arrow1.x.baseVal.value + arrow_box_width/2) + "px " + (arrow1.y.baseVal.value + arrow_box_height) + "px";
-        if (game.col_matrix[0] - game.col_matrix[1] > 0.0001) {
+        if (game.col_matrix[0] - game.col_matrix[1] > 0.001) {
             arrow1.style.opacity = 1;
             arrow1.style.rotate = Math.atan2(game.row_matrix[0]-game.row_matrix[1], game.col_matrix[0]-game.col_matrix[1]) + "rad";
-        } else if (game.col_matrix[1] - game.col_matrix[0] > 0.0001) {
+        } else if (game.col_matrix[1] - game.col_matrix[0] > 0.001) {
             arrow1.style.opacity = 1;
             arrow1.style.rotate = Math.atan2(game.row_matrix[1]-game.row_matrix[0], game.col_matrix[1]-game.col_matrix[0]) + "rad";
         } else {
@@ -3756,10 +3756,10 @@ function update() {
         arrow2.setAttribute("x", (game.row_matrix[2]+game.row_matrix[3])/2*widthBig/return_space_max+paddingBig2 - arrow_box_width/2);
         arrow2.setAttribute("y", (1-(game.col_matrix[2]+game.col_matrix[3])/2/return_space_max)*widthBig+paddingBig1 - arrow_box_height);
         arrow2.style.transformOrigin = (arrow2.x.baseVal.value + arrow_box_width/2) + "px " + (arrow2.y.baseVal.value + arrow_box_height) + "px";
-        if (game.col_matrix[2] - game.col_matrix[3] > 0.0001) {
+        if (game.col_matrix[2] - game.col_matrix[3] > 0.001) {
             arrow2.style.opacity = 1;
             arrow2.style.rotate = Math.atan2(game.row_matrix[2]-game.row_matrix[3], game.col_matrix[2]-game.col_matrix[3]) + "rad";
-        } else if (game.col_matrix[3] - game.col_matrix[2] > 0.0001) {
+        } else if (game.col_matrix[3] - game.col_matrix[2] > 0.001) {
             arrow2.style.opacity = 1;
             arrow2.style.rotate = Math.atan2(game.row_matrix[3]-game.row_matrix[2], game.col_matrix[3]-game.col_matrix[2]) + "rad";
         } else {
@@ -3768,10 +3768,10 @@ function update() {
         arrow3.setAttribute("x", (game.row_matrix[0]+game.row_matrix[2])/2*widthBig/return_space_max+paddingBig2 - arrow_box_width/2);
         arrow3.setAttribute("y", (1-(game.col_matrix[0]+game.col_matrix[2])/2/return_space_max)*widthBig+paddingBig1 - arrow_box_height);
         arrow3.style.transformOrigin = (arrow3.x.baseVal.value + arrow_box_width/2) + "px " + (arrow3.y.baseVal.value + arrow_box_height) + "px";
-        if (game.row_matrix[0] - game.row_matrix[2] > 0.0001) {
+        if (game.row_matrix[0] - game.row_matrix[2] > 0.001) {
             arrow3.style.opacity = 1;
             arrow3.style.rotate = Math.atan2(game.row_matrix[0]-game.row_matrix[2], game.col_matrix[0]-game.col_matrix[2]) + "rad";
-        } else if (game.row_matrix[2] - game.row_matrix[0] > 0.0001) {
+        } else if (game.row_matrix[2] - game.row_matrix[0] > 0.001) {
             arrow3.style.opacity = 1;
             arrow3.style.rotate = Math.atan2(game.row_matrix[2]-game.row_matrix[0], game.col_matrix[2]-game.col_matrix[0]) + "rad";
         } else {
@@ -3780,10 +3780,10 @@ function update() {
         arrow4.setAttribute("x", (game.row_matrix[1]+game.row_matrix[3])/2*widthBig/return_space_max+paddingBig2 - arrow_box_width/2);
         arrow4.setAttribute("y", (1-(game.col_matrix[1]+game.col_matrix[3])/2/return_space_max)*widthBig+paddingBig1 - arrow_box_height);
         arrow4.style.transformOrigin = (arrow4.x.baseVal.value + arrow_box_width/2) + "px " + (arrow4.y.baseVal.value + arrow_box_height) + "px";
-        if (game.row_matrix[1] - game.row_matrix[3] > 0.0001) {
+        if (game.row_matrix[1] - game.row_matrix[3] > 0.001) {
             arrow4.style.opacity = 1;
             arrow4.style.rotate = Math.atan2(game.row_matrix[1]-game.row_matrix[3], game.col_matrix[1]-game.col_matrix[3]) + "rad";
-        } else if (game.row_matrix[3] - game.row_matrix[1] > 0.0001) {
+        } else if (game.row_matrix[3] - game.row_matrix[1] > 0.001) {
             arrow4.style.opacity = 1;
             arrow4.style.rotate = Math.atan2(game.row_matrix[3]-game.row_matrix[1], game.col_matrix[3]-game.col_matrix[1]) + "rad";
         } else {
@@ -7827,116 +7827,116 @@ function updateDiagram(game) {
     if (matrixA[0] - matrixA[2] >= -error && matrixB[0] - matrixB[1] >= -error) {
         if (matrixA[0] >= rowMax && matrixB[0] >= colMax) {
             point1.style = "fill:" + lightGreen;
-            a1.style.color = lightGreen;
-            a2.style.color = lightGreen;
+            // a1.style.color = lightGreen;
+            // a2.style.color = lightGreen;
         } else if (matrixA[0] >= rowMax) {
             point1.style = "fill:" + gold;
-            a1.style.color = gold;
-            a2.style.color = gold;
+            // a1.style.color = gold;
+            // a2.style.color = gold;
         } else if (matrixB[0] >= colMax) {
             point1.style = "fill:" + cerulean;
-            a1.style.color = cerulean;
-            a2.style.color = cerulean;
+            // a1.style.color = cerulean;
+            // a2.style.color = cerulean;
         } else {
             point1.style = "fill:" + bad;
-            a1.style.color = bad;
-            a2.style.color = bad;
+            // a1.style.color = bad;
+            // a2.style.color = bad;
         }
         a1.style.fontWeight = "bold";
         a2.style.fontWeight = "bold";
         point1.style.r = eqRadii*width;
     } else {
         point1.style.opacity = 0;
-        a1.style.color = "black";
+        // a1.style.color = "black";
         a1.style.fontWeight = "";
-        a2.style.color = "black";
+        // a2.style.color = "black";
         a2.style.fontWeight = "";
     }
     
     if (matrixA[1] - matrixA[3] >= -error && matrixB[1] - matrixB[0] >= -error) {
         if (matrixA[1] >= rowMax && matrixB[1] >= colMax) {
             point2.style = "fill:" + lightGreen;
-            b1.style.color = lightGreen;
-            b2.style.color = lightGreen;
+            // b1.style.color = lightGreen;
+            // b2.style.color = lightGreen;
         } else if (matrixA[1] >= rowMax) {
             point2.style = "fill:" + gold;
-            b1.style.color = gold;
-            b2.style.color = gold;
+            // b1.style.color = gold;
+            // b2.style.color = gold;
         } else if (matrixB[1] >= colMax) {
             point2.style = "fill:" + cerulean;
-            b1.style.color = cerulean;
-            b2.style.color = cerulean;
+            // b1.style.color = cerulean;
+            // b2.style.color = cerulean;
         } else {
             point2.style = "fill:" + bad;
-            b1.style.color = bad;
-            b2.style.color = bad;
+            // b1.style.color = bad;
+            // b2.style.color = bad;
         }
         b1.style.fontWeight = "bold";
         b2.style.fontWeight = "bold";
         point2.style.r = eqRadii*width;
     } else {
         point2.style.opacity = 0;
-        b1.style.color = "black";
+        // b1.style.color = "black";
         b1.style.fontWeight = "";
-        b2.style.color = "black";
+        // b2.style.color = "black";
         b2.style.fontWeight = "";
     }
 
     if (matrixA[2] - matrixA[0] >= -error && matrixB[2] - matrixB[3] >= -error) {
         if (matrixA[2] >= rowMax && matrixB[2] >= colMax) {
             point3.style = "fill:" + lightGreen;
-            c1.style.color = lightGreen;
-            c2.style.color = lightGreen;
+            // c1.style.color = lightGreen;
+            // c2.style.color = lightGreen;
         } else if (matrixA[2] >= rowMax) {
             point3.style = "fill:" + gold;
-            c1.style.color = gold;
-            c2.style.color = gold;
+            // c1.style.color = gold;
+            // c2.style.color = gold;
         } else if (matrixB[2] >= colMax) {
             point3.style = "fill:" + cerulean;
-            c1.style.color = cerulean;
-            c2.style.color = cerulean;
+            // c1.style.color = cerulean;
+            // c2.style.color = cerulean;
         } else {
             point3.style = "fill:" + bad;
-            c1.style.color = bad;
-            c2.style.color = bad;
+            // c1.style.color = bad;
+            // c2.style.color = bad;
         }
         c1.style.fontWeight = "bold";
         c2.style.fontWeight = "bold";
         point3.style.r = eqRadii*width;
     } else {
         point3.style.opacity = 0;
-        c1.style.color = "black";
+        // c1.style.color = "black";
         c1.style.fontWeight = "";
-        c2.style.color = "black";
+        // c2.style.color = "black";
         c2.style.fontWeight = "";
     }
 
     if (matrixA[3] - matrixA[1] >= -error && matrixB[3] - matrixB[2] >= -error) {
         if (matrixA[3] >= rowMax && matrixB[3] >= colMax) {
             point4.style = "fill:" + lightGreen;
-            d1.style.color = lightGreen;
-            d2.style.color = lightGreen;
+            // d1.style.color = lightGreen;
+            // d2.style.color = lightGreen;
         } else if (matrixA[3] >= rowMax) {
             point4.style = "fill:" + gold;
-            d1.style.color = gold;
-            d2.style.color = gold;
+            // d1.style.color = gold;
+            // d2.style.color = gold;
         } else if (matrixB[3] >= colMax) {
             point4.style = "fill:" + cerulean;
-            d1.style.color = cerulean;
-            d2.style.color = cerulean;
+            // d1.style.color = cerulean;
+            // d2.style.color = cerulean;
         } else {
             point4.style = "fill:" + bad;
-            d1.style.color = bad;
-            d2.style.color = bad;
+            // d1.style.color = bad;
+            // d2.style.color = bad;
         }
         d1.style.fontWeight = "bold";
         d2.style.fontWeight = "bold";
         point4.style.r = eqRadii*width;
     } else {
         point4.style.opacity = 0;
-        d1.style.color = "black";
+        // d1.style.color = "black";
         d1.style.fontWeight = "";
-        d2.style.color = "black";
+        // d2.style.color = "black";
         d2.style.fontWeight = "";
     }
 
@@ -9864,3 +9864,8 @@ function hideArrows(val) {
 // combine matrices
 
 // bring up duplicates on the equatorial slice
+
+// fix bug when displaying differences
+// fix transferable return boundary
+// change how corelation works with an exchange factor
+// fix bug displaying corelation
