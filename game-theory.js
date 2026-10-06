@@ -6288,28 +6288,40 @@ function changeCoords(e) {
 
         if (show_all_zones) {
             if (relativeX < 0.49) {
-                if (game.t1 > 3) game.t1 = 6 - game.t1;
+                if (game.t1 > 3) {
+                    game.t1 = 6 - game.t1;
+                    backgroundOutOfDate = true;
+                }
                 game.zone_row = 0;
                 relativeX = (relativeX+0.02)*2;
             } else if (relativeX > 0.51) {
-                if (game.t1 < 3) game.t1 = 6 - game.t1;
+                if (game.t1 < 3) {
+                    game.t1 = 6 - game.t1;
+                    backgroundOutOfDate = true;
+                }
                 game.zone_row = 1;
                 relativeX = (relativeX-0.5-0.02)*2;
             }
             if (relativeY > 0.51) {
-                if (game.t2 > 3) game.t2 = 6 - game.t2;
+                if (game.t2 > 3) {
+                    game.t2 = 6 - game.t2;
+                    backgroundOutOfDate = true;
+                }
                 game.zone_col = 0;
                 relativeY = (relativeY-0.5-0.02)*2;
             } else if (relativeY < 0.49) {
-                if (game.t2 < 3) game.t2 = 6 - game.t2;
+                if (game.t2 < 3) {
+                    game.t2 = 6 - game.t2;
+                    backgroundOutOfDate = true;
+                }
                 game.zone_col = 1;
                 relativeY = (relativeY+0.02)*2;
             }
         }
 
         if (0.02 <= relativeX && relativeX <= 0.48 && 0.02 <= relativeY && relativeY <= 0.48) {
-            if (game.quad != 2) { game.quad = 2; updateBackground(); }
-            else game.quad = 2;
+            if (game.quad != 2) { backgroundOutOfDate = true; }
+            game.quad = 2;
             const newX1 = 6 * (relativeX - 0.04) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.04) / 0.42;
             game.coord_1 = newX1;
@@ -6317,8 +6329,8 @@ function changeCoords(e) {
             enRoute = false;
             update_temp_pic();
         } else if (0.52 <= relativeX && relativeX <= 0.98 && 0.02 <= relativeY && relativeY <= 0.48) {
-            if (game.quad != 1) { game.quad = 1; updateBackground(); }
-            else game.quad = 1;
+            if (game.quad != 1) { backgroundOutOfDate = true; }
+            game.quad = 1;
             const newX1 = 6 * (relativeX - 0.54) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.04) / 0.42;
             game.coord_1 = newX1;
@@ -6326,8 +6338,8 @@ function changeCoords(e) {
             enRoute = false;
             update_temp_pic();
         } else if (0.02 <= relativeX && relativeX <= 0.48 && 0.52 <= relativeY && relativeY <= 0.98) {
-            if (game.quad != 3) { game.quad = 3; updateBackground(); }
-            else game.quad = 3;
+            if (game.quad != 3) { backgroundOutOfDate = true; }
+            game.quad = 3;
             const newX1 = 6 * (relativeX - 0.04) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.54) / 0.42;
             game.coord_1 = newX1;
@@ -6335,8 +6347,8 @@ function changeCoords(e) {
             enRoute = false;
             update_temp_pic();
         } else if (0.52 <= relativeX && relativeX <= 0.98 && 0.52 <= relativeY && relativeY <= 0.98) {
-            if (game.quad != 4) { game.quad = 4; updateBackground(); }
-            else game.quad = 4;
+            if (game.quad != 4) { backgroundOutOfDate = true; }
+            game.quad = 4;
             const newX1 = 6 * (relativeX - 0.54) / 0.42;
             const newX2 = 6 - 6 * (relativeY - 0.54) / 0.42;
             game.coord_1 = newX1;
@@ -9848,7 +9860,6 @@ function hideArrows(val) {
 // helpless, anxious, confident
 // not a manifold: it has six singular points
 
-// add arrows
 // put temp pic in the top right corner of the big diagram ?
 // combine matrices
 
