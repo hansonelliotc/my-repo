@@ -2289,12 +2289,12 @@ function init() {
 
     line1Big.style.stroke = cerulean;
     line1Big.style.strokeWidth = lineWidthBig*widthBig;
-    line1Big.style.strokeDasharray = dashedStroke;
+    // line1Big.style.strokeDasharray = dashedStroke;
     line2Big.style.stroke = gold;
     line2Big.style.strokeWidth = lineWidthBig*widthBig;
     line3Big.style.stroke = cerulean;
     line3Big.style.strokeWidth = lineWidthBig*widthBig;
-    line3Big.style.strokeDasharray = dashedStroke;
+    // line3Big.style.strokeDasharray = dashedStroke;
     line4Big.style.stroke = gold;
     line4Big.style.strokeWidth = lineWidthBig*widthBig;
     line5Big.style.stroke = noLine;
@@ -2647,7 +2647,7 @@ function init() {
                     backgroundOutOfDate = true;
                     break;
                 case "e":
-                    exportPNG();
+                    exportSVG();
                     break;
             }
         } else {
@@ -8664,6 +8664,27 @@ function exportPNG() {
     downloadLink.click();
 }
 
+function exportSVG() {
+    const svgElement = document.getElementById("big-diagram");
+    if (!svgElement.getAttribute("xmlns")) {
+        svgElement.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    }
+    const serializer = new XMLSerializer();
+    let svgString = serializer.serializeToString(svgElement);
+    // if (!svgString.startsWith('<?xml')) {
+    //     svgString = '<?xml version="1.0" standalone="no"?>\r\n' + svgString;
+    // }
+    const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+    const blobUrl = URL.createObjectURL(svgBlob);
+    const downloadLink = document.createElement("a");
+    downloadLink.href = blobUrl;
+    downloadLink.download = fileName;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(blobUrl);
+}
+
 function goTo(x1,x2,b1,b2,q) {
     game.x1 = ((x1 + game.conventions[0])*game.conventions[1] + 12) % 6;
     game.x2 = ((x2 + game.conventions[0])*game.conventions[1] + 12) % 6;
@@ -9862,6 +9883,7 @@ function hideArrows(val) {
 
 // put temp pic in the top right corner of the big diagram ?
 // combine matrices
+// change how categories are displayed in the legend
 
 // bring up duplicates on the equatorial slice
 
