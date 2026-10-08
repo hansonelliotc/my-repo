@@ -8678,7 +8678,7 @@ function exportSVG() {
     const blobUrl = URL.createObjectURL(svgBlob);
     const downloadLink = document.createElement("a");
     downloadLink.href = blobUrl;
-    downloadLink.download = fileName;
+    downloadLink.download = "game-diagram.svg";
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
