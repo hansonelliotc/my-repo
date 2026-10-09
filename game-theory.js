@@ -2647,7 +2647,7 @@ function init() {
                     backgroundOutOfDate = true;
                     break;
                 case "e":
-                    exportSVG();
+                    // exportSVG();
                     break;
             }
         } else {
