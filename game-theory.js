@@ -9888,6 +9888,5 @@ function hideArrows(val) {
 // bring up duplicates on the equatorial slice
 
 // fix bug when displaying differences
-// fix transferable return boundary
 // change how corelation works with an exchange factor
 // fix bug displaying corelation
