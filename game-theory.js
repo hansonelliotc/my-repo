@@ -2289,12 +2289,12 @@ function init() {
 
     line1Big.style.stroke = cerulean;
     line1Big.style.strokeWidth = lineWidthBig*widthBig;
-    // line1Big.style.strokeDasharray = dashedStroke;
+    line1Big.style.strokeDasharray = dashedStroke;
     line2Big.style.stroke = gold;
     line2Big.style.strokeWidth = lineWidthBig*widthBig;
     line3Big.style.stroke = cerulean;
     line3Big.style.strokeWidth = lineWidthBig*widthBig;
-    // line3Big.style.strokeDasharray = dashedStroke;
+    line3Big.style.strokeDasharray = dashedStroke;
     line4Big.style.stroke = gold;
     line4Big.style.strokeWidth = lineWidthBig*widthBig;
     line5Big.style.stroke = noLine;
