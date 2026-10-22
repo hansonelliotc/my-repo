@@ -169,6 +169,9 @@
 				<span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-3-row" onclick="change_strategy_row_1(3)">Eq (+)</button></span><span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-4-row" onclick="change_strategy_row_1(4)">Eq (-)</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-3-col" onclick="change_strategy_col_1(3)">Eq (+)</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-4-col" onclick="change_strategy_col_1(4)">Eq (-)</button></span><br>
 				<span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-5-row" onclick="change_strategy_row_1(5)">Random</button></span><span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-6-row" onclick="change_strategy_row_1(6)">Max mean</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-5-col" onclick="change_strategy_col_1(5)">Random</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-6-col" onclick="change_strategy_col_1(6)">Max mean</button></span><br>
 				<span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-7-row" onclick="change_strategy_row_1(7)">Golden</button></span><span><button class="quarter-mode-button non-cooperative-button-row" id="non-cooperative-strat-8-row" onclick="change_strategy_row_1(8)">Anti-gold</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-7-col" onclick="change_strategy_col_1(7)">Golden</button></span><span><button class="quarter-mode-button non-cooperative-button-col" id="non-cooperative-strat-8-col" onclick="change_strategy_col_1(8)">Anti-gold</button></span><br>
+				<div style="padding:1vh"></div>
+				<h2>Right-Click Function</h2>
+				<span><button class="mode-button half-mode-button selected" id="differences-button" onclick="average_returns(false)">Differences</button></span><span><button class="mode-button half-mode-button" id="averages-button" onclick="average_returns(true)">Averages</button></span>
 				<!-- <button class="mode-button" id="custom-mode" onclick="changeViewMode(8)">Difference</button>
 				<p id="custom-options">
 					<select name="Choice 1" id="view-custom-1">
@@ -876,7 +879,7 @@
 			<div id="b2-label">b<sub>2</sub></div>
 		</div> -->
 		<svg id="legend">
-			<foreignObject id="legend-container" y="20px" width="30px" height="40vh"><canvas id="legend-canvas"></canvas></foreignObject>
+			<foreignObject id="legend-container" y="20px" width="30px" height="60vh"><canvas id="legend-canvas"></canvas></foreignObject>
 			<text id="legend-label-1" dominant-baseline="middle">0</text>
 			<text id="legend-label-2" dominant-baseline="middle">2</text>
 			<text id="legend-label-3" dominant-baseline="middle">4</text>
@@ -889,7 +892,6 @@
 			<text id="legend-label-10" dominant-baseline="middle">4</text>
 			<text id="legend-label-11" dominant-baseline="middle">2</text>
 			<text id="legend-label-12" dominant-baseline="middle">-2</text>
-			<text id="legend-label-13" dominant-baseline="middle">-4</text>
 		</svg>
 	</div>
 	<div id="nav-bar">

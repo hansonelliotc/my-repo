@@ -62,6 +62,7 @@ let cols_multiplier = 1;
 let dragging_exchange = false;
 let set_exchange = false;
 let hidden_arrows = false;
+let show_differences = true;
 
 const lineWidth = 0.08;
 const lineWidthBig = 0.04;
@@ -1118,8 +1119,8 @@ class Game {
                             return1 = this.row_matrix[i];
                             return2 = this.col_matrix[i];
                         } else {
-                            return1 = this.compare_strategies(2,2,true);
-                            return2 = this.compare_strategies(2,2,false);
+                            return1 = this.compare_strategies(2,2,true)[0];
+                            return2 = this.compare_strategies(2,2,false)[0];
                         }
                     }
                 }
@@ -1569,10 +1570,12 @@ class Game {
 
     get correlation() {
         if (this.#correlation === undefined) {
-            const A = [this.row_matrix[0]+this.col_matrix[0], this.row_matrix[1]+this.col_matrix[1], this.row_matrix[2]+this.col_matrix[2], this.row_matrix[3]+this.col_matrix[3]];
-            const B = [this.col_matrix[0]-this.row_matrix[0], this.col_matrix[1]-this.row_matrix[1], this.col_matrix[2]-this.row_matrix[2], this.col_matrix[3]-this.row_matrix[3]];
-            const mean1 = (A[0]+A[1]+A[2]+A[3])/4; // max 9
-            const mean2 = (B[0]+B[1]+B[2]+B[3])/4; // max 6
+            const R = this.row_matrix.map(x => x / rows_multiplier);
+            const C = this.col_matrix.map(x => x / cols_multiplier);
+            const A = [R[0]+C[0], R[1]+C[1], R[2]+C[2], R[3]+C[3]];
+            const B = [C[0]-R[0], C[1]-R[1], C[2]-R[2], C[3]-R[3]];
+            const mean1 = (A[0]+A[1]+A[2]+A[3])/4;
+            const mean2 = (B[0]+B[1]+B[2]+B[3])/4;
             const sq = a => a*a;
             const norm1 = sq(A[0]-mean1) + sq(A[1]-mean1) + sq(A[2]-mean1) + sq(A[3]-mean1);
             const norm2 = sq(B[0]-mean2) + sq(B[1]-mean2) + sq(B[2]-mean2) + sq(B[3]-mean2);
@@ -1980,6 +1983,8 @@ class Game {
     compare_strategies(strat_1, strat_2, p1) {
         let rows_strategy = 0; // the probability that row chooses the second row
         let cols_strategy = 0; // the probability that column chooses the second column
+        let rows_strategy_2 = null;
+        let cols_strategy_2 = null;
         let equilibria = [];
         for (let i = 0; i < 2; i++) { // i is the row
             for (let j = 0; j < 2; j++) { // j is the column
@@ -2011,14 +2016,12 @@ class Game {
         let golden = [];
         if (strat_1 == 7 || strat_1 == 8 || strat_2 == 7 || strat_2 == 8) {
             let index = 0;
-            let max = -100;
+            let max = Math.max(this.row_matrix[0]+this.col_matrix[0],this.row_matrix[1]+this.col_matrix[1],this.row_matrix[2]+this.col_matrix[2],this.row_matrix[3]+this.col_matrix[3]);
             for (let i = 0; i < 4; i++) {
-                if (max < this.row_matrix[i]+exchange_factor*this.col_matrix[i]) {
-                    index = i;
-                    max = this.row_matrix[i]+exchange_factor*this.col_matrix[i];
+                if (this.row_matrix[i]+exchange_factor*this.col_matrix[i] - max > -0.0001) {
+                    golden.push([Math.floor(i/2), i % 2]);
                 }
             }
-            golden.push([Math.floor(index/2), index % 2]);
         }
         switch (strat_1) {
             case 1:
@@ -2026,6 +2029,9 @@ class Game {
                     rows_strategy = equilibria[0][0];
                 } else if (equilibria.length == 2) {
                     rows_strategy = safe[0][0];
+                    if (safe.length > 1) {
+                        rows_strategy_2 = safe[1][0];
+                    }
                 } else {
                     const B = this.col_matrix;
                     rows_strategy = (B[0] - B[1])/(B[0] - B[1] - B[2] + B[3]);
@@ -2043,7 +2049,10 @@ class Game {
                 if (equilibria.length == 1) {
                     rows_strategy = equilibria[0][0];
                 } else if (equilibria.length == 2) {
-                    if (this.row_matrix[equilibria[0][1] + equilibria[0][0]*2] > this.row_matrix[equilibria[1][1] + equilibria[1][0]*2]) {
+                    if (Math.abs(this.row_matrix[equilibria[0][1] + equilibria[0][0]*2] - this.row_matrix[equilibria[1][1] + equilibria[1][0]*2]) < 0.0001) {
+                        rows_strategy = equilibria[0][0];
+                        rows_strategy_2 = equilibria[1][0];
+                    } else if (this.row_matrix[equilibria[0][1] + equilibria[0][0]*2] > this.row_matrix[equilibria[1][1] + equilibria[1][0]*2]) {
                         rows_strategy = equilibria[0][0];
                     } else {
                         rows_strategy = equilibria[1][0];
@@ -2057,7 +2066,10 @@ class Game {
                 if (equilibria.length == 1) {
                     rows_strategy = equilibria[0][0];
                 } else if (equilibria.length == 2) {
-                    if (this.row_matrix[equilibria[0][1] + equilibria[0][0]*2] > this.row_matrix[equilibria[1][1] + equilibria[1][0]*2]) {
+                    if (Math.abs(this.row_matrix[equilibria[0][1] + equilibria[0][0]*2] - this.row_matrix[equilibria[1][1] + equilibria[1][0]*2]) < 0.0001) {
+                        rows_strategy = equilibria[1][0];
+                        rows_strategy_2 = equilibria[0][0];
+                    } else if (this.row_matrix[equilibria[0][1] + equilibria[0][0]*2] > this.row_matrix[equilibria[1][1] + equilibria[1][0]*2]) {
                         rows_strategy = equilibria[1][0];
                     } else {
                         rows_strategy = equilibria[0][0];
@@ -2075,12 +2087,21 @@ class Game {
                 break;
             case 7:
                 rows_strategy = golden[0][0];
+                if (golden.length > 1)
+                    rows_strategy_2 = golden[1][0];
                 break;
             case 8:
                 if (this.row_matrix[golden[0][1]] > this.row_matrix[golden[0][1] + 2]) {
                     rows_strategy = 0;
                 } else {
                     rows_strategy = 1;
+                }
+                if (golden.length > 1) {
+                    if (this.row_matrix[golden[1][1]] > this.row_matrix[golden[1][1] + 2]) {
+                        rows_strategy_2 = 0;
+                    } else {
+                        rows_strategy_2 = 1;
+                    }
                 }
                 break;
         }
@@ -2090,6 +2111,9 @@ class Game {
                     cols_strategy = equilibria[0][1];
                 } else if (equilibria.length == 2) {
                     cols_strategy = safe[0][1];
+                    if (safe.length > 1) {
+                        cols_strategy_2 = safe[1][1];
+                    }
                 } else {
                     const B = this.row_matrix;
                     cols_strategy = (B[0] - B[2])/(B[0] - B[1] - B[2] + B[3]);
@@ -2107,7 +2131,10 @@ class Game {
                 if (equilibria.length == 1) {
                     cols_strategy = equilibria[0][1];
                 } else if (equilibria.length == 2) {
-                    if (this.col_matrix[equilibria[0][1] + equilibria[0][0]*2] > this.col_matrix[equilibria[1][1] + equilibria[1][0]*2]) {
+                    if (Math.abs(this.col_matrix[equilibria[0][1] + equilibria[0][0]*2] - this.col_matrix[equilibria[1][1] + equilibria[1][0]*2]) < 0.0001) {
+                        cols_strategy = equilibria[0][1];
+                        cols_strategy_2 = equilibria[1][1];
+                    } else if (this.col_matrix[equilibria[0][1] + equilibria[0][0]*2] > this.col_matrix[equilibria[1][1] + equilibria[1][0]*2]) {
                         cols_strategy = equilibria[0][1];
                     } else {
                         cols_strategy = equilibria[1][1];
@@ -2121,7 +2148,10 @@ class Game {
                 if (equilibria.length == 1) {
                     cols_strategy = equilibria[0][1];
                 } else if (equilibria.length == 2) {
-                    if (this.col_matrix[equilibria[0][1] + equilibria[0][0]*2] > this.col_matrix[equilibria[1][1] + equilibria[1][0]*2]) {
+                    if (Math.abs(this.col_matrix[equilibria[0][1] + equilibria[0][0]*2] - this.col_matrix[equilibria[1][1] + equilibria[1][0]*2]) < 0.0001) {
+                        cols_strategy = equilibria[1][1];
+                        cols_strategy_2 = equilibria[0][1];
+                    } else if (this.col_matrix[equilibria[0][1] + equilibria[0][0]*2] > this.col_matrix[equilibria[1][1] + equilibria[1][0]*2]) {
                         cols_strategy = equilibria[1][1];
                     } else {
                         cols_strategy = equilibria[0][1];
@@ -2139,6 +2169,8 @@ class Game {
                 break;
             case 7:
                 cols_strategy = golden[0][1];
+                if (golden.length > 1)
+                    cols_strategy_2 = golden[1][1];
                 break;
             case 8:
                 if (this.col_matrix[golden[0][0]*2] > this.col_matrix[golden[0][0]*2+1]) {
@@ -2146,12 +2178,42 @@ class Game {
                 } else {
                     cols_strategy = 1;
                 }
+                if (golden.length > 1) {
+                    if (this.col_matrix[golden[1][0]*2] > this.col_matrix[golden[1][0]*2+1]) {
+                        cols_strategy_2 = 0;
+                    } else {
+                        cols_strategy_2 = 1;
+                    }
+                }
                 break;
         }
-        if (p1)
-            return this.row_matrix[0]*(1-rows_strategy)*(1-cols_strategy) + this.row_matrix[1]*(1-rows_strategy)*(cols_strategy) + this.row_matrix[2]*(rows_strategy)*(1-cols_strategy) + this.row_matrix[3]*(rows_strategy)*(cols_strategy);
-        else
-            return this.col_matrix[0]*(1-rows_strategy)*(1-cols_strategy) + this.col_matrix[1]*(1-rows_strategy)*(cols_strategy) + this.col_matrix[2]*(rows_strategy)*(1-cols_strategy) + this.col_matrix[3]*(rows_strategy)*(cols_strategy);
+        let return_1;
+        let return_2 = null;
+        if (p1) {
+            return_1 = this.row_matrix[0]*(1-rows_strategy)*(1-cols_strategy) + this.row_matrix[1]*(1-rows_strategy)*(cols_strategy) + this.row_matrix[2]*(rows_strategy)*(1-cols_strategy) + this.row_matrix[3]*(rows_strategy)*(cols_strategy);
+        } else {
+            return_1 = this.col_matrix[0]*(1-rows_strategy)*(1-cols_strategy) + this.col_matrix[1]*(1-rows_strategy)*(cols_strategy) + this.col_matrix[2]*(rows_strategy)*(1-cols_strategy) + this.col_matrix[3]*(rows_strategy)*(cols_strategy);
+        }
+        if (rows_strategy_2 != null && cols_strategy_2 != null) {
+            if (p1) {
+                return_2 = this.row_matrix[0]*(1-rows_strategy_2)*(1-cols_strategy_2) + this.row_matrix[1]*(1-rows_strategy_2)*(cols_strategy_2) + this.row_matrix[2]*(rows_strategy_2)*(1-cols_strategy_2) + this.row_matrix[3]*(rows_strategy_2)*(cols_strategy_2);
+            } else {
+                return_2 = this.col_matrix[0]*(1-rows_strategy_2)*(1-cols_strategy_2) + this.col_matrix[1]*(1-rows_strategy_2)*(cols_strategy_2) + this.col_matrix[2]*(rows_strategy_2)*(1-cols_strategy_2) + this.col_matrix[3]*(rows_strategy_2)*(cols_strategy_2);
+            }
+        } else if (rows_strategy_2 != null) {
+            if (p1) {
+                return_2 = this.row_matrix[0]*(1-rows_strategy_2)*(1-cols_strategy) + this.row_matrix[1]*(1-rows_strategy_2)*(cols_strategy) + this.row_matrix[2]*(rows_strategy_2)*(1-cols_strategy) + this.row_matrix[3]*(rows_strategy_2)*(cols_strategy);
+            } else {
+                return_2 = this.col_matrix[0]*(1-rows_strategy_2)*(1-cols_strategy) + this.col_matrix[1]*(1-rows_strategy_2)*(cols_strategy) + this.col_matrix[2]*(rows_strategy_2)*(1-cols_strategy) + this.col_matrix[3]*(rows_strategy_2)*(cols_strategy);
+            }
+        } else if (cols_strategy_2 != null) {
+            if (p1) {
+                return_2 = this.row_matrix[0]*(1-rows_strategy)*(1-cols_strategy_2) + this.row_matrix[1]*(1-rows_strategy)*(cols_strategy_2) + this.row_matrix[2]*(rows_strategy)*(1-cols_strategy_2) + this.row_matrix[3]*(rows_strategy)*(cols_strategy_2);
+            } else {
+                return_2 = this.col_matrix[0]*(1-rows_strategy)*(1-cols_strategy_2) + this.col_matrix[1]*(1-rows_strategy)*(cols_strategy_2) + this.col_matrix[2]*(rows_strategy)*(1-cols_strategy_2) + this.col_matrix[3]*(rows_strategy)*(cols_strategy_2);
+            }
+        }
+        return [return_1, return_2];
     }
 }
 
@@ -3144,37 +3206,36 @@ function init() {
     const legendLabel10 = document.getElementById("legend-label-10");
     const legendLabel11 = document.getElementById("legend-label-11");
     const legendLabel12 = document.getElementById("legend-label-12");
-    const legendLabel13 = document.getElementById("legend-label-13");
+    // const legendLabel13 = document.getElementById("legend-label-13");
     legend.getContext("2d", { willReadFrequently: true});
     legend.width = legendContainer.width.baseVal.value;
     legend.height = legendContainer.height.baseVal.value;
     legendLabel1.setAttribute("x",legend.width+10);
-    legendLabel1.setAttribute("y",legend.height+20);
+    legendLabel1.setAttribute("y",20);
     legendLabel2.setAttribute("x",legend.width+10);
-    legendLabel2.setAttribute("y",legend.height*0.78+20);
+    legendLabel2.setAttribute("y",legend.height*0.17+20);
     legendLabel3.setAttribute("x",legend.width+10);
-    legendLabel3.setAttribute("y",legend.height*0.56+20);
+    legendLabel3.setAttribute("y",legend.height*0.25+20);
     legendLabel4.setAttribute("x",legend.width+10);
     legendLabel4.setAttribute("y",legend.height*0.33+20);
     legendLabel5.setAttribute("x",legend.width+10);
-    legendLabel5.setAttribute("y",20);
+    legendLabel5.setAttribute("y",legend.height*0.42+20);
     legendLabel6.setAttribute("x",legend.width+10);
     legendLabel6.setAttribute("y",legend.height*0.5+20);
-    legendLabel6.style.display = "none";
     legendLabel7.setAttribute("x",legend.width+10);
-    legendLabel7.setAttribute("y",legend.height*0.89+20);
+    legendLabel7.setAttribute("y",legend.height*0.58+20);
     legendLabel8.setAttribute("x",legend.width+10);
     legendLabel8.setAttribute("y",legend.height*0.67+20);
     legendLabel9.setAttribute("x",legend.width+10);
-    legendLabel9.setAttribute("y",legend.height*0.44+20);
+    legendLabel9.setAttribute("y",legend.height*0.75+20);
     legendLabel10.setAttribute("x",legend.width+10);
-    legendLabel10.setAttribute("y",legend.height*0.17+20);
+    legendLabel10.setAttribute("y",legend.height*0.83+20);
     legendLabel11.setAttribute("x",legend.width+10);
-    legendLabel11.setAttribute("y",legend.height*0.33+20);
+    legendLabel11.setAttribute("y",legend.height*0.92+20);
     legendLabel12.setAttribute("x",legend.width+10);
-    legendLabel12.setAttribute("y",legend.height*0.67+20);
-    legendLabel13.setAttribute("x",legend.width+10);
-    legendLabel13.setAttribute("y",legend.height*0.83+20);
+    legendLabel12.setAttribute("y",legend.height+20);
+    // legendLabel13.setAttribute("x",legend.width+10);
+    // legendLabel13.setAttribute("y",legend.height*0.83+20);
     updateLegend();
 
     // initialize hotspots and boundaries
@@ -3482,7 +3543,7 @@ function update() {
     // colB.innerHTML = game.b2.toFixed(1);
 
     rowY.innerHTML = game.y1.toFixed(1);
-    colY.innerHTML = game.y2.toFixed(1);
+    colY.innerHTML = (6-game.y2).toFixed(1);
     
     rowT.innerHTML = game.t1.toFixed(1);
     colT.innerHTML = game.t2.toFixed(1);
@@ -3566,9 +3627,9 @@ function update() {
     const cur_returns = document.getElementById("current-returns");
     if (viewMode != 0 && viewMode != 11 && viewMode != 12 && returns(game,viewMode,true) !== null) {
         if (viewModeB !== null) {
-            cur_returns.innerHTML = " (" + returns(game,viewMode,viewModeP1).toFixed(2) + "&minus;" + returns(game,viewModeB,viewModeBP1).toFixed(2) + "=" + returns(game,viewMode,viewModeP1,viewModeB,viewModeBP1).toFixed(2) + ")";
+            cur_returns.innerHTML = " (" + returns(game,viewMode,viewModeP1).toFixed(2) + "&minus;" + returns(game,viewModeB,viewModeBP1).toFixed(2) + "=" + (returns(game,viewMode,viewModeP1)-returns(game,viewModeB,viewModeBP1)).toFixed(2) + ")";
         } else if (viewMode == 7) {
-            cur_returns.innerHTML = " (" + returns(game,viewMode,true).toFixed(2) + ")";
+            cur_returns.innerHTML = " (" + (returns(game,viewMode,true)*2-1).toFixed(2) + ")";
         } else if (viewModeP1) {
             cur_returns.innerHTML = " (<u>" + returns(game,viewMode,true).toFixed(2) + "</u>, " + returns(game,viewMode,false).toFixed(2) + ")";
         } else {
@@ -5473,6 +5534,12 @@ function update() {
     //     }
     //     ctx.putImageData(imageData,0,0);
     // }
+
+    if (backgroundOutOfDate) {
+        updateLegend();
+        console.log("check");
+    }
+
     if (backgroundOutOfDate && (dimensions()[0] > 0 && dimensions()[1] > 0 || fixImageSize)) { //  && viewMode != 0
         render_background(picWidth,picHeight,picPadding1,picPadding2);
     }
@@ -5486,7 +5553,7 @@ function update() {
     let cellRow = ((Math.floor(game.coord_2*game.conventions[1])-game.conventions[0]) + 14) % 6 + 1;
     cellName.innerHTML = game.class + cellCol.toString() + cellRow.toString() + (game.zone_row ? "&plus;" : "&minus;") + (game.zone_col ? "&plus;" : "&minus;");
     const coordinatesObj = document.getElementById("coordinates");
-    coordinatesObj.innerHTML = "x<sub>1</sub>: " + game.y1.toFixed(2) + ", x<sub>2</sub>: " + game.y2.toFixed(2) + ", t<sub>1</sub>: " + game.t1.toFixed(2) + ", t<sub>2</sub>: " + game.t2.toFixed(2);
+    coordinatesObj.innerHTML = "x<sub>1</sub>: " + game.y1.toFixed(2) + ", x<sub>2</sub>: " + (6-game.y2).toFixed(2) + ", t<sub>1</sub>: " + game.t1.toFixed(2) + ", t<sub>2</sub>: " + game.t2.toFixed(2);
 
     // update zone label
     // const zone_label = document.getElementById("zone");
@@ -7188,39 +7255,37 @@ function header(mode, player1=true) {
             case 1:
                 return "Row's equilibrium returns";
             case 5:
-                return "Row's threat point TU";
+                return "Row's threat point bargaining returns w/ TU";
             case 2:
-                return "Row's backstop NTU";
+                return "Row's backstop bargaining returns w/o TU";
             case 3:
-                return "Row's threat point NTU";
+                return "Row's threat point bargaining returns w/o TU";
             case 7:
                 return "Correlation";
             case 4:
-                return "Row's backstop TU";
+                return "Row's backstop bargaining returns w/ TU";
             case 9:
                 return "Row's backstop";
             case 10:
-                return "Row's threat point";
+                return "Row's variable threat point";
             case 11:
                 return "Quadrant";
             case 12:
                 return "No background";
-            case 13:
-                return "Row's equilibrium returns (using mixed)";
             case 14:
-                return "Row's return when row plays first";
+                return "Row's returns when row plays first";
             case 15:
-                return "Row's return when column plays first";
+                return "Row's returns when column plays first";
             case 18:
                 if (noncooperative_row_1 == noncooperative_col_1)
-                    return "Row's " + header_non_comp(noncooperative_row_1) + " return";
+                    return "Row's returns when both players play " + header_non_comp(noncooperative_row_1);
                 else
-                    return "Row's " + header_non_comp(noncooperative_row_1) + "/" + header_non_comp(noncooperative_col_1) + " return";
+                    return "Row's returns when row plays " + header_non_comp(noncooperative_row_1) + " and column plays " + header_non_comp(noncooperative_col_1);
             case 19:
                 if (noncooperative_row_2 == noncooperative_col_2)
-                    return "Row's " + header_non_comp(noncooperative_row_2) + " return";
+                    return "Row's returns when both players play" + header_non_comp(noncooperative_row_2);
                 else
-                    return "Row's " + header_non_comp(noncooperative_row_2) + "/" + header_non_comp(noncooperative_col_2) + " return";
+                    return "Row's returns when row plays " + header_non_comp(noncooperative_row_2) + " and column plays " + header_non_comp(noncooperative_col_2);
         }
     } else {
         switch (mode) {
@@ -7237,7 +7302,7 @@ function header(mode, player1=true) {
             case 9:
                 return "Column's backstop";
             case 10:
-                return "Column's threat point";
+                return "Column's variable threat point";
             case 13:
                 return "Column's equilibrium returns (using mixed)";
             case 14:
@@ -7261,17 +7326,17 @@ function header(mode, player1=true) {
 function header_non_comp(val) {
     switch (val) {
         case 1:
-            return "equilibrium";
+            return "at equilibrium prefering safety";
         case 2:
-            return "equilibrium (m)";
+            return "at equilibrium prefering mixed";
         case 3:
-            return "equilibrium (+)";
+            return "at equilibrium prefering big";
         case 4:
-            return "equilibrium (-)";
+            return "at equilibrium prefering small";
         case 5:
-            return "random";
+            return "randomly";
         case 6:
-            return "max mean";
+            return "the strategy with the largest average";
         case 7:
             return "golden";
         case 8:
@@ -7316,6 +7381,12 @@ function header_non_comp(val) {
 //     }
 //     return game.row_matrix[0]*(1-rows_strategy)*(1-cols_strategy) + game.row_matrix[1]*(1-rows_strategy)*(cols_strategy) + game.row_matrix[2]*(rows_strategy)*(1-cols_strategy) + game.row_matrix[3]*(rows_strategy)*(cols_strategy);
 // }
+
+function checker(i,j,pixels) {
+    const condition_1 = (i+j)%pixels<pixels/2;
+    const condition_2 = (i-j+pixels*1000)%pixels<pixels/2;
+    return (condition_1 && condition_2) || !condition_1 && !condition_2;
+}
 
 function updateBigPicCanvas(lowRes = false) {
     // update big pic canvas
@@ -7384,7 +7455,7 @@ function updateBigPicCanvas(lowRes = false) {
                                                                 col < 2 ? b1 : 6 - b1, row < 2 ? b2 : 6 - b2,quadrant,zone);
                             if (viewMode == 0) color = new_game.equilibrium_color;
                             else if (viewMode == 11) color = new_game.quadrant_color;
-                            else color = colorFunction(returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1),viewModeB === null ? viewMode : 8);
+                            else color = colorFunction(returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1,checker(i,j,15)),viewModeB === null || !show_differences ? viewMode : 8);
                         }
                         if (lowRes) {
                             pixel_colors.push(color);
@@ -8581,73 +8652,99 @@ function updateLegend() {
     const legendLabel10 = document.getElementById("legend-label-10");
     const legendLabel11 = document.getElementById("legend-label-11");
     const legendLabel12 = document.getElementById("legend-label-12");
-    const legendLabel13 = document.getElementById("legend-label-13");
+    // const legendLabel13 = document.getElementById("legend-label-13");
 
     const ctx = legendCanvas.getContext("2d");
     const imageData = ctx.getImageData(0, 0, legendCanvas.width, legendCanvas.height);
     const data = imageData.data;
     for (let j = 0; j < legendCanvas.height; j++) {
-        const mult = viewMode == 7 || viewMode == 8 || viewModeB !== null ? 1 : 9;
-        const color = colorFunction((1-j/legendCanvas.height)*mult, viewModeB === null ? viewMode : 8);
-        for (let i = 0; i < legendCanvas.height; i++) {
-            data[(j*legendCanvas.width+i)*4]   = color[0];
-            data[(j*legendCanvas.width+i)*4+1] = color[1];
-            data[(j*legendCanvas.width+i)*4+2] = color[2];
-            data[(j*legendCanvas.width+i)*4+3] = 255;
+        let mult = 12;
+        if (viewMode == 7 || viewMode == 8) mult = 1;
+        else if (viewModeB !== null && show_differences) mult = 2;
+        const color = colorFunction((1-j/legendCanvas.height)*mult - (viewModeB !== null && show_differences ? 1 : 0), viewModeB === null && show_differences ? viewMode : 8);
+        for (let i = 0; i < legendCanvas.width; i++) {
+            if (viewMode != 7 && viewMode != 8 && (viewModeB === null || !show_differences) && (
+                // i < legendCanvas.width/2 && Math.abs(12-j/legendCanvas.height*12-rows_multiplier*6) < 0.1 ||
+                // i >= legendCanvas.width/2 && Math.abs(12-j/legendCanvas.height*12-cols_multiplier*6) < 0.1 || 
+                returns(game,viewMode,true) != null && i < legendCanvas.width/2 && Math.abs(12-j/legendCanvas.height*12-returns(game,viewMode,true)) < 0.1 || 
+                returns(game,viewMode,false) != null && i >= legendCanvas.width/2 && Math.abs(12-j/legendCanvas.height*12-returns(game,viewMode,false)) < 0.1 || 
+                returns(game,viewMode,true) != null && j/legendCanvas.height*12 < 12-returns(game,viewMode,true) && j/legendCanvas.height*12 > 12-rows_multiplier*6 && Math.abs(0.25 - i/legendCanvas.width) < 0.1 || 
+                returns(game,viewMode,false) != null && j/legendCanvas.height*12 < 12-returns(game,viewMode,false) && j/legendCanvas.height*12 > 12-cols_multiplier*6 && Math.abs(0.75 - i/legendCanvas.width) < 0.1)) {
+                data[(j*legendCanvas.width+i)*4]   = 0;
+                data[(j*legendCanvas.width+i)*4+1] = 0;
+                data[(j*legendCanvas.width+i)*4+2] = 0;
+                data[(j*legendCanvas.width+i)*4+3] = 255;
+            } else {
+                data[(j*legendCanvas.width+i)*4]   = color[0];
+                data[(j*legendCanvas.width+i)*4+1] = color[1];
+                data[(j*legendCanvas.width+i)*4+2] = color[2];
+                data[(j*legendCanvas.width+i)*4+3] = 255;
+            }
         }
     }
     ctx.putImageData(imageData,0,0);
 
-    if (viewMode == 8 || viewModeB !== null) {
-        legendLabel2.style.display = "none";
-        legendLabel3.style.display = "none";
-        legendLabel4.style.display = "none";
-        legendLabel6.style.display = "";
-        legendLabel7.style.display = "none";
-        legendLabel8.style.display = "none";
-        legendLabel9.style.display = "none";
-        legendLabel10.style.display = "";
-        legendLabel11.style.display = "";
-        legendLabel12.style.display = "";
-        legendLabel13.style.display = "";
-        legendLabel1.innerHTML = "-6";
-        legendLabel5.innerHTML = "6";
-        legendLabel10.innerHTML = "4";
-        legendLabel11.innerHTML = "2";
-        legendLabel12.innerHTML = "-2";
-        legendLabel13.innerHTML = "-4";
-    } else if (viewMode == 7) {
-        legendLabel2.style.display = "none";
-        legendLabel3.style.display = "none";
-        legendLabel4.style.display = "none";
-        legendLabel6.style.display = "";
-        legendLabel7.style.display = "none";
-        legendLabel8.style.display = "none";
-        legendLabel9.style.display = "none";
-        legendLabel10.style.display = "";
-        legendLabel11.style.display = "";
-        legendLabel12.style.display = "";
-        legendLabel13.style.display = "";
-        legendLabel1.innerHTML = "-1";
-        legendLabel5.innerHTML = "1";
-        legendLabel10.innerHTML = "2/3";
-        legendLabel11.innerHTML = "1/3";
-        legendLabel12.innerHTML = "-1/3";
-        legendLabel13.innerHTML = "-2/3";
-    } else {
+    if (viewMode == 8 || viewModeB !== null && show_differences) {
         legendLabel2.style.display = "";
-        legendLabel3.style.display = "";
+        legendLabel3.style.display = "none";
         legendLabel4.style.display = "";
-        legendLabel6.style.display = "none";
-        legendLabel7.style.display = "";
-        legendLabel8.style.display = "";
-        legendLabel9.style.display = "";
-        legendLabel10.style.display = "none";
+        legendLabel5.style.display = "none";
+        // legendLabel6.style.display = "";
+        legendLabel7.style.display = "none";
+        // legendLabel8.style.display = "";
+        legendLabel9.style.display = "none";
+        // legendLabel10.style.display = "";
         legendLabel11.style.display = "none";
-        legendLabel12.style.display = "none";
-        legendLabel13.style.display = "none";
-        legendLabel1.innerHTML = "0";
-        legendLabel5.innerHTML = "9";
+        // legendLabel12.style.display = "";
+        // legendLabel13.style.display = "";
+        legendLabel1.innerHTML = "6";
+        legendLabel2.innerHTML = "4";
+        legendLabel4.innerHTML = "2";
+        legendLabel6.innerHTML = "0";
+        legendLabel8.innerHTML = "-2";
+        legendLabel10.innerHTML = "-4";
+        legendLabel12.innerHTML = "-6";
+    } else if (viewMode == 7) {
+        legendLabel2.style.display = "";
+        legendLabel3.style.display = "none";
+        legendLabel4.style.display = "";
+        // legendLabel6.style.display = "";
+        legendLabel7.style.display = "none";
+        // legendLabel8.style.display = "";
+        legendLabel9.style.display = "none";
+        // legendLabel10.style.display = "";
+        legendLabel11.style.display = "none";
+        legendLabel12.style.display = "";
+        // legendLabel13.style.display = "";
+        legendLabel1.innerHTML = "1";
+        legendLabel2.innerHTML = "2/3";
+        legendLabel4.innerHTML = "1/3";
+        legendLabel6.innerHTML = "0";
+        legendLabel8.innerHTML = "-1/3";
+        legendLabel10.innerHTML = "-2/3";
+        legendLabel12.innerHTML = "-1";
+    } else {
+        legendLabel2.style.display = "none";
+        legendLabel3.style.display = "";
+        legendLabel4.style.display = "none";
+        legendLabel5.style.display = "none";
+        // legendLabel6.style.display = "none";
+        legendLabel7.style.display = "";
+        // legendLabel8.style.display = "";
+        legendLabel9.style.display = "";
+        // legendLabel10.style.display = "";
+        legendLabel11.style.display = "";
+        // legendLabel12.style.display = "none";
+        // legendLabel13.style.display = "none";
+        legendLabel1.innerHTML = "12";
+        legendLabel3.innerHTML = "9";
+        legendLabel6.innerHTML = "6";
+        legendLabel7.innerHTML = "5";
+        legendLabel8.innerHTML = "4";
+        legendLabel9.innerHTML = "3";
+        legendLabel10.innerHTML = "2";
+        legendLabel11.innerHTML = "1";
+        legendLabel12.innerHTML = "0";
     }
 }
 
@@ -8902,7 +8999,7 @@ function hideLines(hide) {
     }
 }
 
-function returns(game, mode, row_player, mode_b, row_player_b) {
+function returns(game, mode, row_player, mode_b, row_player_b, take_second = false) {
     let return_1 = null;
     let return_2 = null;
     if (mode_b != null) { return_2 = returns(game,mode_b,row_player_b); }
@@ -9068,14 +9165,23 @@ function returns(game, mode, row_player, mode_b, row_player_b) {
             }
             break;
         case 18:
-            return_1 = game.compare_strategies(noncooperative_row_1,noncooperative_col_1,row_player);
+            let noncompetitive_returns_1 = game.compare_strategies(noncooperative_row_1,noncooperative_col_1,row_player);
+            if (noncompetitive_returns_1.length > 1 && noncompetitive_returns_1[1] != null && take_second)
+                return_1 = noncompetitive_returns_1[1];
+            else
+                return_1 = noncompetitive_returns_1[0];
             break;
         case 19:
-            return_1 = game.compare_strategies(noncooperative_row_2,noncooperative_col_2,row_player);
+            let noncompetitive_returns_2 = game.compare_strategies(noncooperative_row_2,noncooperative_col_2,row_player);
+            if (noncompetitive_returns_2.length > 1 && noncompetitive_returns_2[1] != null && take_second)
+                return_1 = noncompetitive_returns_2[1];
+            else
+                return_1 = noncompetitive_returns_2[0];
             break;
     }
     if (return_2 == null) return return_1;
-    else return (return_1 - return_2)/12;
+    else if (show_differences) return (return_1 - return_2)/12;
+    else return (return_1 + return_2)/2;
 }
 
 function change_conventions(offset, inversion) {
@@ -9397,7 +9503,7 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2,low_res) {
                     let value = 0;
                     // if (high_res) {
                     let new_game = game.use_conventions(x1, x2, game.coord_3, game.coord_4, game.quad);
-                    value = returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1);
+                    value = returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1,checker(i,j,30));
                     // } else {
                     //     const weight1 = i/canvas.width*valuesX % 1;
                     //     const weight2 = j/canvas.height*valuesY % 1;
@@ -9406,7 +9512,7 @@ function render_background(picWidth,picHeight,picPadding1,picPadding2,low_res) {
                     //             values[Math.ceil(j/canvas.height*valuesY)%valuesY][Math.floor(i/canvas.width*valuesX)%valuesX] * (1-weight1) * weight2 +
                     //             values[Math.ceil(j/canvas.height*valuesY)%valuesY][Math.ceil(i/canvas.width*valuesX)%valuesX] * weight1 * weight2;
                     // }
-                    color = colorFunction(value, viewModeB === null ? viewMode : 8);
+                    color = colorFunction(value, viewModeB === null || !show_differences ? viewMode : 8);
                 }
                 if (!high_res) {
                     pixel_colors.push(color);
@@ -9489,7 +9595,7 @@ function update_temp_pic(low_res) {
                     new_game.t2 = t2;
                     if (viewMode == 0) color = new_game.equilibrium_color;
                     else if (viewMode == 11) color = new_game.quadrant_color;
-                    else color = colorFunction(returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1),viewModeB === null ? viewMode : 8);
+                    else color = colorFunction(returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1,checker(i,j,20)),viewModeB === null || !show_differences ? viewMode : 8);
                 }
                 if (!high_res) {
                     pixel_colors.push(color);
@@ -9508,6 +9614,8 @@ function update_temp_pic(low_res) {
         }
     }
     ctx.putImageData(imageData,0,0);
+    
+    updateLegend();
 }
 
 function add_orbit(op) {
@@ -9685,6 +9793,7 @@ function subgroup(fcns, new_elt = game, elts = [], iter = 0) {
 }
 
 function change_strategy_row_1(val) {
+    if (viewModeB === null) changeViewMode(18,viewModeP1);
     const buttons = document.getElementsByClassName("non-cooperative-button-row");
     const purple_button = document.querySelector(".selected-olive.non-cooperative-button-row");
     if (purple_button) {
@@ -9705,6 +9814,7 @@ function change_strategy_row_1(val) {
     changeViewMode(viewMode, viewModeP1);
 }
 function change_strategy_row_2(val) {
+    if (viewModeB === null) changeViewMode(18,viewModeP1);
     if (noncooperative_row_2 === null && noncooperative_col_2 !== null) {
         document.getElementById("mode-button-2-row").style.display = "";
         document.getElementById("mode-button-2-col").style.display = "";
@@ -9733,6 +9843,7 @@ function change_strategy_row_2(val) {
     changeViewMode(viewMode, viewModeP1);
 }
 function change_strategy_col_1(val) {
+    if (viewModeB === null) changeViewMode(18,viewModeP1);
     const buttons = document.getElementsByClassName("non-cooperative-button-col");
     const purple_button = document.querySelector(".selected-olive.non-cooperative-button-col");
     if (purple_button) {
@@ -9753,6 +9864,7 @@ function change_strategy_col_1(val) {
     changeViewMode(viewMode, viewModeP1);
 }
 function change_strategy_col_2(val) {
+    if (viewModeB === null) changeViewMode(18,viewModeP1);
     if (noncooperative_row_2 !== null && noncooperative_col_2 === null) {
         document.getElementById("mode-button-2-row").style.display = "";
         document.getElementById("mode-button-2-col").style.display = "";
@@ -9841,6 +9953,18 @@ function hideArrows(val) {
     }
 }
 
+function average_returns(val) {
+    show_differences = !val;
+    if (val) {
+        document.getElementById("averages-button").classList.add("selected");
+        document.getElementById("differences-button").classList.remove("selected");
+    } else {
+        document.getElementById("averages-button").classList.remove("selected");
+        document.getElementById("differences-button").classList.add("selected");
+    }
+    backgroundOutOfDate = true;
+}
+
 // fix big diagram movement
 
 // bugs
@@ -9887,6 +10011,30 @@ function hideArrows(val) {
 
 // bring up duplicates on the equatorial slice
 
-// fix bug when displaying differences
-// change how corelation works with an exchange factor
-// fix bug displaying corelation
+// DONE fix bug when displaying differences
+// DONE change how corelation works with an exchange factor
+// DONE fix bug displaying corelation
+
+
+// add labels for the pictures
+// DONE negate x_2
+// DONE more elaborative plot labels
+// add checkerboarding
+// DONE changing non-cooperative strategy should change view mode to non-cooperative
+// DONE show matrix maxes and player's returns in the legend
+// scale picture with relative scale
+
+// what images support discussion? (10+ images)
+
+// quadrant
+// equilibria
+// equilibrium equatorial
+// equilibrium vs TP NTU
+// TP NTU vs TP TU
+// max total
+// correlation
+// some orbit picture
+// 144 diagrams
+// Gold vs gold
+// gold vs antigold
+// average returns of the players?
