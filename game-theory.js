@@ -2709,7 +2709,8 @@ function init() {
                     backgroundOutOfDate = true;
                     break;
                 case "e":
-                    // exportSVG();
+                    // export_large_PNG(500);
+                    export_large_PNG(1000,game.t1,game.t2);
                     break;
             }
         } else {
@@ -5537,7 +5538,6 @@ function update() {
 
     if (backgroundOutOfDate) {
         updateLegend();
-        console.log("check");
     }
 
     if (backgroundOutOfDate && (dimensions()[0] > 0 && dimensions()[1] > 0 || fixImageSize)) { //  && viewMode != 0
@@ -7283,7 +7283,7 @@ function header(mode, player1=true) {
                     return "Row's returns when row plays " + header_non_comp(noncooperative_row_1) + " and column plays " + header_non_comp(noncooperative_col_1);
             case 19:
                 if (noncooperative_row_2 == noncooperative_col_2)
-                    return "Row's returns when both players play" + header_non_comp(noncooperative_row_2);
+                    return "Row's returns when both players play " + header_non_comp(noncooperative_row_2);
                 else
                     return "Row's returns when row plays " + header_non_comp(noncooperative_row_2) + " and column plays " + header_non_comp(noncooperative_col_2);
         }
@@ -8782,6 +8782,99 @@ function exportSVG() {
     URL.revokeObjectURL(blobUrl);
 }
 
+function average_return(x1,x2,quadrant,zone) {
+    // average over temperature
+    const num_samples = 10;
+    const delta = 6/num_samples;
+    let integral = 0;
+    for (let t1 = delta/2; t1 < 3; t1 += delta) {
+        for (let t2 = delta/2; t2 < 3; t2 += delta) {
+            let weight = (1 - Math.abs(t1 - 3) / 3) * (1 - Math.abs(t1 - 3) / 3);
+            let new_game = game.use_conventions(x1,x2, (zone == 1 || zone == 4) ? t1 : 6 - t1, (zone == 1 || zone == 2) ? t2 : 6 - t2,quadrant,zone);
+            // let new_game = game.copy();
+            // if (game.zone_row == 0 && t1 > 3 || game.zone_row == 1 && t1 < 3) new_game.crossTan(true);
+            // if (game.zone_col == 0 && t2 > 3 || game.zone_col == 1 && t2 < 3) new_game.crossTan(false);
+            // new_game.t1 = t1;
+            // new_game.t2 = t2;
+
+            if (viewMode == 18 || viewMode == 19 || viewModeB == 18 || viewModeB == 19) {
+                integral += returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1,true)*delta*delta/2*weight;
+                integral += returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1,false)*delta*delta/2*weight;
+            } else {
+                integral += returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1,true)*delta*delta*weight;
+            }
+        }
+    }
+    return integral/3;
+}
+
+function export_large_PNG(res,t1=null,t2=null) {
+    const canvas = document.createElement('canvas');
+    canvas.width = res;
+    canvas.height = res;
+
+    const ctx = canvas.getContext("2d");
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+
+    const error = 0.00001;
+    if (t1 != null && t2 != null) {
+        t1 = t1 != 0 ? t1 : error;
+        t2 = t2 != 0 ? t2 : error;
+        if (t1 > 3 && show_all_zones) t1 = 6 - t1;
+        if (t2 < 3 && show_all_zones) t2 = 6 - t2;
+    }
+    for (let row = 0; row < 4; row++) {
+        for (let col = 0; col < 4; col++) {
+            let quadrant;
+            if (row % 2 == 0 && col % 2 == 0) quadrant = 2;
+            else if (row % 2 == 0 && col % 2 == 1) quadrant = 1;
+            else if (row % 2 == 1 && col % 2 == 0) quadrant = 3;
+            else if (row % 2 == 1 && col % 2 == 1) quadrant = 4;
+            let zone;
+            if (row < 2 && col < 2) zone = 4;
+            else if (col < 2) zone = 1;
+            else if (row < 2) zone = 3;
+            else zone = 2;
+            let quadrantWidth = Math.floor(canvas.width*0.84/4);
+            quadrantWidth = quadrantWidth - quadrantWidth % 2;
+            for (let j = 0; j < quadrantWidth; j++) {
+                for (let i = 0; i < quadrantWidth; i++) {
+                    let color = [];
+                    let x = i + Math.round(canvas.width*((0.08+col)/4));
+                    let y = j + Math.round(canvas.height*((0.08+row)/4));
+                    x += Math.round(canvas.width*0.02) * (col < 2 ? -1 : 1);
+                    y += Math.round(canvas.height*0.02) * (row < 2 ? -1 : 1);
+                    if (viewMode == 12) {
+                        color = [255,255,255];
+                    } else {
+                        let new_game = game.use_conventions((i+0.5)*6/quadrantWidth,(1-(j+0.5)/quadrantWidth)*6,
+                                                            col < 2 ? t1 : 6 - t1, row < 2 ? t2 : 6 - t2,quadrant,zone);
+                        if (t1 == null && t2 == null) {
+                            color = colorFunction(average_return((i+0.5)*6/quadrantWidth,(1-(j+0.5)/quadrantWidth)*6,quadrant,zone),viewModeB === null || !show_differences ? viewMode : 8);
+                        } else {
+                            if (viewMode == 0) color = new_game.equilibrium_color;
+                            else if (viewMode == 11) color = new_game.quadrant_color;
+                            else color = colorFunction(returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1,checker(i,j,15)),viewModeB === null || !show_differences ? viewMode : 8);
+                        }
+                    }
+                    data[(x+y*canvas.width)*4] = color[0];
+                    data[(x+y*canvas.width)*4+1] = color[1];
+                    data[(x+y*canvas.width)*4+2] = color[2];
+                    data[(x+y*canvas.width)*4+3] = 255;
+                }
+            }
+        }
+    }
+    ctx.putImageData(imageData,0,0);
+
+    const dataURL = canvas.toDataURL('image/png');
+    const downloadLink = document.createElement('a');
+    downloadLink.href = dataURL;
+    downloadLink.download = 'image.png';
+    downloadLink.click();
+}
+
 function goTo(x1,x2,b1,b2,q) {
     game.x1 = ((x1 + game.conventions[0])*game.conventions[1] + 12) % 6;
     game.x2 = ((x2 + game.conventions[0])*game.conventions[1] + 12) % 6;
@@ -10019,10 +10112,14 @@ function average_returns(val) {
 // add labels for the pictures
 // DONE negate x_2
 // DONE more elaborative plot labels
-// add checkerboarding
+// DONE add checkerboarding
 // DONE changing non-cooperative strategy should change view mode to non-cooperative
 // DONE show matrix maxes and player's returns in the legend
 // scale picture with relative scale
+
+// show picture with temperature averages
+
+// toggle viewModeP1
 
 // what images support discussion? (10+ images)
 
@@ -10038,3 +10135,4 @@ function average_returns(val) {
 // Gold vs gold
 // gold vs antigold
 // average returns of the players?
+// shapley value
