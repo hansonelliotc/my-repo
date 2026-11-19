@@ -723,10 +723,10 @@ class Game {
 
     get row_mixed_return() {
         if (this.#row_mixed_return === undefined) {
-            if ((this.row_matrix[0] >= this.row_matrix[2] || this.row_matrix[1] >= this.row_matrix[3]) &&
-                (this.row_matrix[0] <= this.row_matrix[2] || this.row_matrix[1] <= this.row_matrix[3]) &&
-                (this.col_matrix[0] >= this.col_matrix[1] || this.col_matrix[2] >= this.col_matrix[3]) &&
-                (this.col_matrix[0] <= this.col_matrix[1] || this.col_matrix[2] <= this.col_matrix[3])
+            if ((this.row_matrix[0] > this.row_matrix[2] || this.row_matrix[1] > this.row_matrix[3]) &&
+                (this.row_matrix[0] < this.row_matrix[2] || this.row_matrix[1] < this.row_matrix[3]) &&
+                (this.col_matrix[0] > this.col_matrix[1] || this.col_matrix[2] > this.col_matrix[3]) &&
+                (this.col_matrix[0] < this.col_matrix[1] || this.col_matrix[2] < this.col_matrix[3])
             ) {
                 let denom = this.row_matrix[0] - this.row_matrix[1] - this.row_matrix[2] + this.row_matrix[3];
                 if (denom != 0)
@@ -2709,8 +2709,10 @@ function init() {
                     backgroundOutOfDate = true;
                     break;
                 case "e":
-                    // export_large_PNG(500);
-                    export_large_PNG(1000,game.t1,game.t2);
+                    // export_small_PNG(500);
+                    // export_large_PNG(1000);
+                    // export_large_PNG(1000,2,2,true); // average is red, centroid is blue
+                    export_large_PNG(5000,game.t1,game.t2);
                     break;
             }
         } else {
@@ -3343,6 +3345,40 @@ function init() {
         circle.setAttribute("fill", i == 1 ? "black" : "#888");
         big_picture.appendChild(circle);
     }
+
+    // initialize the ticks
+    const tick1 = document.getElementById("tick-1");
+    const tick2 = document.getElementById("tick-2");
+    const tick3 = document.getElementById("tick-3");
+    const tick4 = document.getElementById("tick-4");
+    const tick5 = document.getElementById("tick-5");
+    const tick6 = document.getElementById("tick-6");
+    const tick7 = document.getElementById("tick-7");
+    const tick8 = document.getElementById("tick-8");
+    const tick9 = document.getElementById("tick-9");
+    const tick10 = document.getElementById("tick-10");
+    const tick11 = document.getElementById("tick-11");
+    const tick12 = document.getElementById("tick-12");
+    const tick13 = document.getElementById("tick-13");
+    const tick14 = document.getElementById("tick-14");
+    const tick15 = document.getElementById("tick-15");
+    const tick16 = document.getElementById("tick-16");
+    tick1.setAttribute("stroke",gold);
+    tick2.setAttribute("stroke",cerulean);
+    tick3.setAttribute("stroke",gold);
+    tick4.setAttribute("stroke",cerulean);
+    tick5.setAttribute("stroke",gold);
+    tick6.setAttribute("stroke",cerulean);
+    tick7.setAttribute("stroke",gold);
+    tick8.setAttribute("stroke",cerulean);
+    tick9.setAttribute("stroke",gold);
+    tick10.setAttribute("stroke",cerulean);
+    tick11.setAttribute("stroke",gold);
+    tick12.setAttribute("stroke",cerulean);
+    tick13.setAttribute("stroke",gold);
+    tick14.setAttribute("stroke",cerulean);
+    tick15.setAttribute("stroke",gold);
+    tick16.setAttribute("stroke",cerulean);
 
     altImage(true);
     change_big_pic(true);
@@ -4602,11 +4638,11 @@ function update() {
             point1Big.style = "fill:" + cerulean;
         else
             point1Big.style = "fill:" + bad;
-        point1Big.style.r = eqRadiiBig*widthBig/2;
+        point1Big.style.r = eqRadiiBig*widthBig/2; //*1.33;
     } else {
         point1Big.style.opacity = 0;
     }
-    
+
     if (game.row_matrix[1] - game.row_matrix[3] >= -error && game.col_matrix[1] - game.col_matrix[0] >= -error) {
         if (game.row_matrix[1] >= rowMax && game.col_matrix[1] >= colMax)
             point2Big.style = "fill:" + lightGreen;
@@ -4616,7 +4652,7 @@ function update() {
             point2Big.style = "fill:" + cerulean;
         else
             point2Big.style = "fill:" + bad;
-        point2Big.style.r = eqRadiiBig*widthBig/2;
+        point2Big.style.r = eqRadiiBig*widthBig/2; //*1.33;
     } else {
         point2Big.style.opacity = 0;
     }
@@ -4630,7 +4666,7 @@ function update() {
             point3Big.style = "fill:" + cerulean;
         else
             point3Big.style = "fill:" + bad;
-        point3Big.style.r = eqRadiiBig*widthBig/2;
+        point3Big.style.r = eqRadiiBig*widthBig/2; //*1.33;
     } else {
         point3Big.style.opacity = 0;
     }
@@ -4644,7 +4680,7 @@ function update() {
             point4Big.style = "fill:" + cerulean;
         else
             point4Big.style = "fill:" + bad;
-        point4Big.style.r = eqRadiiBig*widthBig/2;
+        point4Big.style.r = eqRadiiBig*widthBig/2; //*1.33;
     } else {
         point4Big.style.opacity = 0;
     }
@@ -4652,7 +4688,7 @@ function update() {
         const mixedRow = game.row_mixed_return;
         const mixedCol = game.col_mixed_return;
         point5Big.style = "fill:" + mixedColor;
-        point5Big.style.r = eqRadiiBig*widthBig/2;
+        point5Big.style.r = eqRadiiBig*widthBig/2; //*1.33;
         point5Big.cx.baseVal.value = mixedRow*widthBig/return_space_max+paddingBig2;
         point5Big.cy.baseVal.value = (1-mixedCol/return_space_max)*widthBig+paddingBig1;
         if (mixedRow == null) point5Big.style.opacity = 0;
@@ -8212,6 +8248,90 @@ function updateBlueLines() {
         redSemicircle.y.baseVal.value = picPadding2 - blueLinePadding - 10;
         blueSemicircle.x.baseVal.value = picWidth + picPadding1 + blueLinePadding - 10;
         blueSemicircle.y.baseVal.value = blueLineHeight + picPadding2 + blueLinePadding - 10;
+
+        
+        // update the ticks
+        const tick_length = 10;
+        const tick1 = document.getElementById("tick-1");
+        const tick2 = document.getElementById("tick-2");
+        const tick3 = document.getElementById("tick-3");
+        const tick4 = document.getElementById("tick-4");
+        const tick5 = document.getElementById("tick-5");
+        const tick6 = document.getElementById("tick-6");
+        const tick7 = document.getElementById("tick-7");
+        const tick8 = document.getElementById("tick-8");
+        const tick9 = document.getElementById("tick-9");
+        const tick10 = document.getElementById("tick-10");
+        const tick11 = document.getElementById("tick-11");
+        const tick12 = document.getElementById("tick-12");
+        const tick13 = document.getElementById("tick-13");
+        const tick14 = document.getElementById("tick-14");
+        const tick15 = document.getElementById("tick-15");
+        const tick16 = document.getElementById("tick-16");
+        tick1.setAttribute("x1",picPadding1+picWidth/6);
+        tick1.setAttribute("x2",picPadding1+picWidth/6);
+        tick1.setAttribute("y1",picPadding2+picHeight);
+        tick1.setAttribute("y2",picPadding2+picHeight + tick_length);
+        tick2.setAttribute("x1",picPadding1+picWidth/3);
+        tick2.setAttribute("x2",picPadding1+picWidth/3);
+        tick2.setAttribute("y1",picPadding2+picHeight);
+        tick2.setAttribute("y2",picPadding2+picHeight + tick_length);
+        tick3.setAttribute("x1",picPadding1+picWidth*2/3);
+        tick3.setAttribute("x2",picPadding1+picWidth*2/3);
+        tick3.setAttribute("y1",picPadding2+picHeight);
+        tick3.setAttribute("y2",picPadding2+picHeight + tick_length);
+        tick4.setAttribute("x1",picPadding1+picWidth*5/6);
+        tick4.setAttribute("x2",picPadding1+picWidth*5/6);
+        tick4.setAttribute("y1",picPadding2+picHeight);
+        tick4.setAttribute("y2",picPadding2+picHeight + tick_length);
+        tick5.setAttribute("x1",picPadding1+picWidth/6);
+        tick5.setAttribute("x2",picPadding1+picWidth/6);
+        tick5.setAttribute("y1",picPadding2);
+        tick5.setAttribute("y2",picPadding2 - tick_length);
+        tick6.setAttribute("x1",picPadding1+picWidth/3);
+        tick6.setAttribute("x2",picPadding1+picWidth/3);
+        tick6.setAttribute("y1",picPadding2);
+        tick6.setAttribute("y2",picPadding2 - tick_length);
+        tick7.setAttribute("x1",picPadding1+picWidth*2/3);
+        tick7.setAttribute("x2",picPadding1+picWidth*2/3);
+        tick7.setAttribute("y1",picPadding2);
+        tick7.setAttribute("y2",picPadding2 - tick_length);
+        tick8.setAttribute("x1",picPadding1+picWidth*5/6);
+        tick8.setAttribute("x2",picPadding1+picWidth*5/6);
+        tick8.setAttribute("y1",picPadding2);
+        tick8.setAttribute("y2",picPadding2 - tick_length);
+        tick9.setAttribute("x1",picPadding1);
+        tick9.setAttribute("x2",picPadding1 - tick_length);
+        tick9.setAttribute("y1",picPadding2+picHeight/6);
+        tick9.setAttribute("y2",picPadding2+picHeight/6);
+        tick10.setAttribute("x1",picPadding1);
+        tick10.setAttribute("x2",picPadding1 - tick_length);
+        tick10.setAttribute("y1",picPadding2+picHeight/3);
+        tick10.setAttribute("y2",picPadding2+picHeight/3);
+        tick11.setAttribute("x1",picPadding1);
+        tick11.setAttribute("x2",picPadding1 - tick_length);
+        tick11.setAttribute("y1",picPadding2+picHeight*2/3);
+        tick11.setAttribute("y2",picPadding2+picHeight*2/3);
+        tick12.setAttribute("x1",picPadding1);
+        tick12.setAttribute("x2",picPadding1 - tick_length);
+        tick12.setAttribute("y1",picPadding2+picHeight*5/6);
+        tick12.setAttribute("y2",picPadding2+picHeight*5/6);
+        tick13.setAttribute("x1",picPadding1+picWidth);
+        tick13.setAttribute("x2",picPadding1+picWidth + tick_length);
+        tick13.setAttribute("y1",picPadding2 + picHeight/6);
+        tick13.setAttribute("y2",picPadding2 + picHeight/6);
+        tick14.setAttribute("x1",picPadding1+picWidth);
+        tick14.setAttribute("x2",picPadding1+picWidth + tick_length);
+        tick14.setAttribute("y1",picPadding2 + picHeight/3);
+        tick14.setAttribute("y2",picPadding2 + picHeight/3);
+        tick15.setAttribute("x1",picPadding1+picWidth);
+        tick15.setAttribute("x2",picPadding1+picWidth + tick_length);
+        tick15.setAttribute("y1",picPadding2 + picHeight*2/3);
+        tick15.setAttribute("y2",picPadding2 + picHeight*2/3);
+        tick16.setAttribute("x1",picPadding1+picWidth);
+        tick16.setAttribute("x2",picPadding1+picWidth + tick_length);
+        tick16.setAttribute("y1",picPadding2 + picHeight*5/6);
+        tick16.setAttribute("y2",picPadding2 + picHeight*5/6);
     }
     // blueCorner3.cx.baseVal.value = picWidth + picPadding1 + blueLinePadding;
     // blueCorner3.cy.baseVal.value = blueLineHeight + blueLinePadding2 + blueLinePadding;
@@ -8789,7 +8909,7 @@ function average_return(x1,x2,quadrant,zone) {
     let integral = 0;
     for (let t1 = delta/2; t1 < 3; t1 += delta) {
         for (let t2 = delta/2; t2 < 3; t2 += delta) {
-            let weight = (1 - Math.abs(t1 - 3) / 3) * (1 - Math.abs(t1 - 3) / 3);
+            let weight = (1 - (3 - t1) / 3) * (1 - (3 - t2) / 3);
             let new_game = game.use_conventions(x1,x2, (zone == 1 || zone == 4) ? t1 : 6 - t1, (zone == 1 || zone == 2) ? t2 : 6 - t2,quadrant,zone);
             // let new_game = game.copy();
             // if (game.zone_row == 0 && t1 > 3 || game.zone_row == 1 && t1 < 3) new_game.crossTan(true);
@@ -8805,10 +8925,44 @@ function average_return(x1,x2,quadrant,zone) {
             }
         }
     }
-    return integral/3;
+    // let integral2 = 0;
+    // for (let t1 = delta/2; t1 < 3; t1 += delta) {
+    //     for (let t2 = delta/2; t2 < 3; t2 += delta) {
+    //         let weight = (1 - (3 - t1) / 3) * (1 - (3 - t2) / 3);
+    //         integral2 += delta*delta*weight;
+    //     }
+    // }
+    // console.log(integral2);
+    return integral/2.25;
 }
 
-function export_large_PNG(res,t1=null,t2=null) {
+function average_return_large(x1,x2,quadrant) {
+    let avg = average_return(x1, x2, quadrant, 1);
+    let quad_prime;
+    if (x1 >= 1 && x1 < 3) {
+        avg += average_return(x1, x2, 5-quadrant, 2);
+        quad_prime = 5-quadrant;
+    } else if (x1 >= 3 && x1 < 5) {
+        avg += average_return(x1, x2, quadrant - (quadrant+1) % 2 + quadrant % 2, 2);
+        quad_prime = quadrant - (quadrant+1) % 2 + quadrant % 2;
+    } else {
+        avg += average_return(x1, x2, 5 - quadrant + (quadrant+1) % 2 - quadrant % 2, 2);
+        quad_prime = 5 - quadrant + (quadrant+1) % 2 - quadrant % 2;
+    }
+    if (x2 >= 1 && x2 < 3) {
+        avg += average_return(x1, x2, quadrant - (quadrant+1) % 2 + quadrant % 2, 4);
+        avg += average_return(x1, x2, quad_prime - (quad_prime+1) % 2 + quad_prime % 2, 3);
+    } else if (x2 >= 3 && x2 < 5) {
+        avg += average_return(x1, x2, 5-quadrant, 4);
+        avg += average_return(x1, x2, 5-quad_prime, 3);
+    } else {
+        avg += average_return(x1, x2, 5 - quadrant + (quadrant+1) % 2 - quadrant % 2, 4);
+        avg += average_return(x1, x2, 5 - quad_prime + (quad_prime+1) % 2 - quad_prime % 2, 3);
+    }
+    return avg/4;
+}
+
+function export_large_PNG(res,t1=null,t2=null,both=false) {
     const canvas = document.createElement('canvas');
     canvas.width = res;
     canvas.height = res;
@@ -8850,7 +9004,11 @@ function export_large_PNG(res,t1=null,t2=null) {
                     } else {
                         let new_game = game.use_conventions((i+0.5)*6/quadrantWidth,(1-(j+0.5)/quadrantWidth)*6,
                                                             col < 2 ? t1 : 6 - t1, row < 2 ? t2 : 6 - t2,quadrant,zone);
-                        if (t1 == null && t2 == null) {
+                        if (both) {
+                            avg_return = average_return((i+0.5)*6/quadrantWidth,(1-(j+0.5)/quadrantWidth)*6,quadrant,zone);
+                            cent_return = returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1,false);
+                            color = colorFunction((avg_return - cent_return) / 12, 8);
+                        } else if (t1 == null && t2 == null) {
                             color = colorFunction(average_return((i+0.5)*6/quadrantWidth,(1-(j+0.5)/quadrantWidth)*6,quadrant,zone),viewModeB === null || !show_differences ? viewMode : 8);
                         } else {
                             if (viewMode == 0) color = new_game.equilibrium_color;
@@ -8871,7 +9029,86 @@ function export_large_PNG(res,t1=null,t2=null) {
     const dataURL = canvas.toDataURL('image/png');
     const downloadLink = document.createElement('a');
     downloadLink.href = dataURL;
-    downloadLink.download = 'image.png';
+    if (both) {
+        downloadLink.download = 'average-minus-centroid.png';
+    } else if (t1 == null && t2 == null) {
+        downloadLink.download = 'small-cell-averages.png';
+    } else {
+        downloadLink.download = 'four-zone-slice.png';
+    }
+    downloadLink.click();
+}
+
+function export_small_PNG(res,t1=null,t2=null,both=false) {
+    const canvas = document.createElement('canvas');
+    canvas.width = res;
+    canvas.height = res;
+
+    const ctx = canvas.getContext("2d");
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+
+    const error = 0.00001;
+    if (t1 != null && t2 != null) {
+        t1 = t1 != 0 ? t1 : error;
+        t2 = t2 != 0 ? t2 : error;
+        if (t1 > 3 && show_all_zones) t1 = 6 - t1;
+        if (t2 < 3 && show_all_zones) t2 = 6 - t2;
+    }
+    for (let row = 0; row < 2; row++) {
+        for (let col = 0; col < 2; col++) {
+            let quadrant;
+            if (row % 2 == 0 && col % 2 == 0) quadrant = 2;
+            else if (row % 2 == 0 && col % 2 == 1) quadrant = 1;
+            else if (row % 2 == 1 && col % 2 == 0) quadrant = 3;
+            else if (row % 2 == 1 && col % 2 == 1) quadrant = 4;
+            let quadrantWidth = Math.floor(canvas.width*0.84/2);
+            quadrantWidth = quadrantWidth - quadrantWidth % 2;
+            for (let j = 0; j < quadrantWidth; j++) {
+                for (let i = 0; i < quadrantWidth; i++) {
+                    let color = [];
+                    let x = i + Math.round(canvas.width*((0.08+col)/2));
+                    let y = j + Math.round(canvas.height*((0.08+row)/2));
+                    // x += Math.round(canvas.width*0.02) * (col < 2 ? -1 : 1);
+                    // y += Math.round(canvas.height*0.02) * (row < 2 ? -1 : 1);
+                    if (viewMode == 12) {
+                        color = [255,255,255];
+                    } else {
+                        let new_game = game.use_conventions((i+0.5)*6/quadrantWidth,(1-(j+0.5)/quadrantWidth)*6,
+                                                            t1,t2,quadrant,1);
+                        if (both) {
+                            avg_return = average_return_large((i+0.5)*6/quadrantWidth,(1-(j+0.5)/quadrantWidth)*6,quadrant);
+                            cent_return = returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1,false);
+                            color = colorFunction((avg_return - cent_return) / 12, 8);
+                        } else if (t1 == null && t2 == null) {
+                            color = colorFunction(average_return_large((i+0.5)*6/quadrantWidth,(1-(j+0.5)/quadrantWidth)*6,quadrant),viewModeB === null || !show_differences ? viewMode : 8);
+                        } else {
+                            if (viewMode == 0) color = new_game.equilibrium_color;
+                            else if (viewMode == 11) color = new_game.quadrant_color;
+                            else color = colorFunction(returns(new_game,viewMode,viewModeP1,viewModeB,viewModeBP1,checker(i,j,15)),viewModeB === null || !show_differences ? viewMode : 8);
+                        }
+                    }
+                    data[(x+y*canvas.width)*4] = color[0];
+                    data[(x+y*canvas.width)*4+1] = color[1];
+                    data[(x+y*canvas.width)*4+2] = color[2];
+                    data[(x+y*canvas.width)*4+3] = 255;
+                }
+            }
+        }
+    }
+    ctx.putImageData(imageData,0,0);
+
+    const dataURL = canvas.toDataURL('image/png');
+    const downloadLink = document.createElement('a');
+    downloadLink.href = dataURL;
+    // if (both) {
+    //     downloadLink.download = 'average-minus-centroid.png';
+    // } else
+    if (t1 == null && t2 == null) {
+        downloadLink.download = 'small-cell-averages.png';
+    } else {
+        downloadLink.download = 'four-zone-slice.png';
+    }
     downloadLink.click();
 }
 
@@ -10058,6 +10295,131 @@ function average_returns(val) {
     backgroundOutOfDate = true;
 }
 
+function exportSvgToPng(svgElement, filename = 'exported-image.png') {
+    // 1. Serialize the SVG node to an XML string
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(svgElement);
+
+    // 2. Create a Blob from the SVG string
+    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    const URL = window.URL || window.webkitURL || window.self;
+    const blobUrl = URL.createObjectURL(svgBlob);
+
+    // 3. Get width and height from the SVG element
+    const bbox = svgElement.getBoundingClientRect();
+    const width = bbox.width || parseInt(svgElement.getAttribute('width')) || 300;
+    const height = bbox.height || parseInt(svgElement.getAttribute('height')) || 150;
+    // const width = 300;
+    // const height = 300;
+
+    // 4. Create an Image and draw it to a Canvas
+    const img = new Image();
+    img.onload = function () {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // 5. Clean up the blob URL
+        URL.revokeObjectURL(blobUrl);
+
+        // 6. Convert canvas to PNG data URL and trigger download
+        const pngUrl = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.href = pngUrl;
+        downloadLink.download = filename;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    };
+
+    img.onerror = function () {
+        console.error('Failed to load SVG for conversion.');
+        URL.revokeObjectURL(blobUrl);
+    };
+
+  img.src = blobUrl;
+}
+
+function strip_down() {
+    const big_diagram = document.getElementById("big-diagram");
+    const line_1 = document.getElementById("line1-big");
+    const line_2 = document.getElementById("line2-big");
+    const line_3 = document.getElementById("line3-big");
+    const line_4 = document.getElementById("line4-big");
+    const arrow1_poly = document.getElementById("arrow1-poly");
+    const arrow2_poly = document.getElementById("arrow2-poly");
+    const arrow3_poly = document.getElementById("arrow3-poly");
+    const arrow4_poly = document.getElementById("arrow4-poly");
+    const corner_1 = document.getElementById("corner1-big");
+    const corner_2 = document.getElementById("corner2-big");
+    const corner_3 = document.getElementById("corner3-big");
+    const corner_4 = document.getElementById("corner4-big");
+    
+    document.getElementById("red-box").style.opacity = 0;
+    document.getElementById("green-box").style.opacity = 0;
+    document.getElementById("blue-box").style.opacity = 0;
+    document.getElementById("small-line-1").style.opacity = 0;
+    document.getElementById("small-line-2").style.opacity = 0;
+    document.getElementById("small-line-3").style.opacity = 0;
+    document.getElementById("small-line-4").style.opacity = 0;
+    document.getElementById("small-line-5").style.opacity = 0;
+    document.getElementById("small-line-6").style.opacity = 0;
+    document.getElementById("small-line-7").style.opacity = 0;
+    document.getElementById("small-line-8").style.opacity = 0;
+    document.getElementById("small-red-line-1").style.opacity = 0;
+    document.getElementById("small-red-line-2").style.opacity = 0;
+    document.getElementById("small-green-line-1").style.opacity = 0;
+    document.getElementById("small-green-line-2").style.opacity = 0;
+    document.getElementById("small-blue-line-1").style.opacity = 0;
+    document.getElementById("small-blue-line-2").style.opacity = 0;
+    document.getElementById("small-corner").style.opacity = 0;
+    document.getElementById("line5-big").style.opacity = 0;
+    document.getElementById("line6-big").style.opacity = 0;
+    document.getElementById("arrow1-poly").style.opacity = 0;
+    document.getElementById("arrow2-poly").style.opacity = 0;
+    document.getElementById("arrow3-poly").style.opacity = 0;
+    document.getElementById("arrow4-poly").style.opacity = 0;
+    
+    const bigDiagramWidth = big_diagram.width.baseVal.value * 2;
+    const paddingBig1 = 0.32*bigDiagramWidth;
+    const paddingBig2 = 0.04*bigDiagramWidth;
+    const widthBig = (bigDiagramWidth - paddingBig1 - paddingBig2) * 1.333;
+
+    document.getElementById("big-diagram").setAttribute("width", bigDiagramWidth);
+    document.getElementById("big-diagram").setAttribute("height", bigDiagramWidth);
+    line_1.style.strokeWidth = lineWidthBig*widthBig;
+    line_2.style.strokeWidth = lineWidthBig*widthBig;
+    line_3.style.strokeWidth = lineWidthBig*widthBig;
+    line_4.style.strokeWidth = lineWidthBig*widthBig;
+    line_1.style.strokeDasharray = "20,20";
+    line_3.style.strokeDasharray = "20,20";
+    corner_1.r.baseVal.value = lineWidthBig*widthBig/2;
+    corner_2.r.baseVal.value = lineWidthBig*widthBig/2;
+    corner_3.r.baseVal.value = lineWidthBig*widthBig/2;
+    corner_4.r.baseVal.value = lineWidthBig*widthBig/2;
+
+    // style arrows
+    // const arrow_size = 2.5;
+    // const arrows_poly = [arrow1_poly, arrow2_poly, arrow3_poly, arrow4_poly];
+    // const arrow_str = "0," + lineWidthBig*widthBig*arrow_size*0.886 + " " + lineWidthBig*widthBig*arrow_size + "," + lineWidthBig*widthBig*arrow_size*0.886 + " " + lineWidthBig*widthBig*arrow_size/2 + "," + 0;
+    // for (let i = 0; i < 4; i++) {
+    //     arrows_poly[i].setAttribute("points",arrow_str);
+    //     arrows_poly[i].setAttribute("fill", i < 2 ? cerulean : gold);
+    // }
+
+    document.getElementById("vertex-number-1").setAttribute("font-size",20);
+    document.getElementById("vertex-number-2").setAttribute("font-size",20);
+    document.getElementById("vertex-number-3").setAttribute("font-size",20);
+    document.getElementById("vertex-number-4").setAttribute("font-size",20);
+
+    // exportSvgToPng(big_diagram);
+}
+
+// strip_down();
+
 // fix big diagram movement
 
 // bugs
@@ -10136,3 +10498,10 @@ function average_returns(val) {
 // gold vs antigold
 // average returns of the players?
 // shapley value
+
+
+
+// show 144 games on class picture (9*16)
+//   remove mixed for edge case
+//   add arrows
+//   dashed lines

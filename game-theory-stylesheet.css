@@ -12,7 +12,7 @@ html, body {
     stroke-width: 0.6%;
 }
 
-.boundary-line, .blue-line {
+.boundary-line, .blue-line, .tick {
     stroke-width: 0.8%;
 }
 
