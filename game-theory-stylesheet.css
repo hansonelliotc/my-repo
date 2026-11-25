@@ -9,7 +9,7 @@ html, body {
 }
 
 .red-line-hor, .red-line-ver, .green-line-hor, .green-line-ver, .edge-line {
-    stroke-width: 0.6%;
+    stroke-width: 0.5%;
 }
 
 .boundary-line, .blue-line, .tick {

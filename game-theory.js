@@ -1880,13 +1880,15 @@ class Game {
     }
 
     switch_rows() {
-        const temp = [...this.row_matrix];
-        this.row_matrix = [temp[2],temp[3],temp[0],temp[1]];
+        // const temp = [...this.row_matrix];
+        // this.row_matrix = [temp[2],temp[3],temp[0],temp[1]];
+        this.quad_temp = this.quad_temp % 2 + Math.floor((this.quad_temp - 1)/2)*2 + 1;
     }
 
     switch_columns() {
-        const temp = [...this.col_matrix];
-        this.col_matrix = [temp[1],temp[0],temp[3],temp[2]];
+        // const temp = [...this.col_matrix];
+        // this.col_matrix = [temp[1],temp[0],temp[3],temp[2]];
+        this.quad_temp = 5 - this.quad_temp;
     }
 
     flip_matrices() {
@@ -3327,6 +3329,7 @@ function init() {
     for (let i = 1; i <= 576*3; i++) {
         const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         rect.setAttribute("id", `big-pic-square-${i}`);
+        rect.setAttribute("class", "big-pic-square");
         rect.setAttribute("width", "4%");
         rect.setAttribute("height", "4%");
         rect.setAttribute("x", "25%");
@@ -3339,6 +3342,7 @@ function init() {
     for (let i = 576; i >= 1; i--) {
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circle.setAttribute("id", `big-pic-point-${i}`);
+        circle.setAttribute("class", "big-pic-point");
         circle.setAttribute("r", "2%");
         circle.setAttribute("cx", "25%");
         circle.setAttribute("cy", "25%");
@@ -5256,6 +5260,13 @@ function update() {
     //     new_game_3.crossTan(false);
     //     games.push(new_game_3);
     // }
+    // if (!orbit_operations.includes(11) && !orbit_operations.includes(12))
+    //     games = subgroup([...orbit_operations,11,12]);
+    // else if (!orbit_operations.includes(11) && orbit_operations.includes(12))
+    //     games = subgroup([...orbit_operations,11]);
+    // else if (orbit_operations.includes(11) && !orbit_operations.includes(12))
+    //     games = subgroup([...orbit_operations,12]);
+    // else
     games = subgroup(orbit_operations);
     // for (let f of orbit_operations) { // this does not work
     //     const new_games = [];
@@ -5350,42 +5361,143 @@ function update() {
             pointObjects[i].style.display = "none";
         }
     }
-    const squareObjects = [];
-    for (let i = 1; i <= 576*3; i++) {
-        squareObjects.push(document.getElementById("big-pic-square-"+i));
+
+    for (let obj of [...document.getElementsByClassName("big-pic-square")]) {
+        obj.remove();
     }
-    for (let i = 0; i < 576; i++) {
-        if (i < games.length) {
-            if (game.t1 == 3) {
-                squareObjects[i].style.display = "";
-                const new_game = games[i].copy();
-                new_game.crossTan(true);
-                placePoint(squareObjects[i], new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
-            } else {
-                squareObjects[i].style.display = "none";
-            }
-            if (game.t2 == 3) {
-                squareObjects[576+i].style.display = "";
-                const new_game = games[i].copy();
-                new_game.crossTan(false);
-                placePoint(squareObjects[576+i], new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
-            } else {
-                squareObjects[576+i].style.display = "none";
-            }
-            if (game.t1 == 3 && game.t2 == 3) {
-                squareObjects[576*2+i].style.display = "";
-                const new_game = games[i].copy();
-                new_game.crossTan(true);
-                new_game.crossTan(false);
-                placePoint(squareObjects[576*2+i], new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
-            } else {
-                squareObjects[576*2+i].style.display = "none";
-            }
-        } else {
-            squareObjects[i].style.display = "none";
-            squareObjects[576+i].style.display = "none";
-            squareObjects[576*2+i].style.display = "none";
+    // for (let i = 1; i <= 576*3; i++) {
+    //     squareObjects.push(document.getElementById("big-pic-square-"+i));
+    // }
+    function create_square() {
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("class", "big-pic-square");
+        rect.setAttribute("width", "4%");
+        rect.setAttribute("height", "4%");
+        rect.setAttribute("x", "25%");
+        rect.setAttribute("y", "25%");
+        rect.setAttribute("fill", "#888");
+        rect.setAttribute("style", "transform:translate(-2%, -2%);");
+        document.getElementById("big-picture").appendChild(rect);
+        return rect;
+    }
+
+    const operations = [];
+    if (game.t1 == 3) {
+        operations.push(6);
+        if (game.y1 == 1) {
+            operations.push(11);
+        } else if (game.y1 == 3) {
+            operations.push(15);
+        } else if (game.y1 == 5) {
+            operations.push(12);
         }
+    }
+    if (game.t2 == 3) {
+        operations.push(7);
+        if (game.y2 == 5) {
+            operations.push(11);
+        } else if (game.y2 == 3) {
+            operations.push(15);
+        } else if (game.y2 == 1) {
+            operations.push(12);
+        }
+    }
+
+    for (let i = 0; i < games.length; i++) {
+        for (let g of [...subgroup(operations, games[i])]) {
+            if (!Game.equal(game,g))
+                placePoint(create_square(), g.quad, g.coord_1, g.coord_2, g.zone, true);
+        }
+        // if (game.t1 == 3) {
+        //     const new_game = games[i].copy();
+        //     new_game.crossTan(true);
+        //     placePoint(create_square(), new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
+        //     if (game.y1 == 1) {
+        //         new_game.switch_rows();
+        //         placePoint(create_square(), new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
+        //         const new_game_2 = games[i].copy();
+        //         new_game_2.switch_rows();
+        //         placePoint(create_square(), new_game_2.quad, new_game_2.coord_1, new_game_2.coord_2, new_game_2.zone, true);
+        //     } else if (game.y1 == 3) {
+        //         new_game.switch_rows();
+        //         new_game.switch_columns();
+        //         placePoint(create_square(), new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
+        //         const new_game_2 = games[i].copy();
+        //         new_game_2.switch_rows();
+        //         new_game_2.switch_columns();
+        //         placePoint(create_square(), new_game_2.quad, new_game_2.coord_1, new_game_2.coord_2, new_game_2.zone, true);
+        //     } else if (game.y1 == 5) {
+        //         new_game.switch_columns();
+        //         placePoint(create_square(), new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
+        //         const new_game_2 = games[i].copy();
+        //         new_game_2.switch_columns();
+        //         placePoint(create_square(), new_game_2.quad, new_game_2.coord_1, new_game_2.coord_2, new_game_2.zone, true);
+        //     }
+        // }
+        // if (game.t2 == 3) {
+        //     const new_game = games[i].copy();
+        //     new_game.crossTan(false);
+        //     placePoint(create_square(), new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
+        //     if (game.y2 == 5) {
+        //         new_game.switch_rows();
+        //         placePoint(create_square(), new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
+        //         const new_game_2 = games[i].copy();
+        //         new_game_2.switch_rows();
+        //         placePoint(create_square(), new_game_2.quad, new_game_2.coord_1, new_game_2.coord_2, new_game_2.zone, true);
+        //     } else if (game.y2 == 3) {
+        //         new_game.switch_rows();
+        //         new_game.switch_columns();
+        //         placePoint(create_square(), new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
+        //         const new_game_2 = games[i].copy();
+        //         new_game_2.switch_rows();
+        //         new_game_2.switch_columns();
+        //         placePoint(create_square(), new_game_2.quad, new_game_2.coord_1, new_game_2.coord_2, new_game_2.zone, true);
+        //     } else if (game.y2 == 1) {
+        //         new_game.switch_columns();
+        //         placePoint(create_square(), new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
+        //         const new_game_2 = games[i].copy();
+        //         new_game_2.switch_columns();
+        //         placePoint(create_square(), new_game_2.quad, new_game_2.coord_1, new_game_2.coord_2, new_game_2.zone, true);
+        //     }
+        // }
+        // if (game.t1 == 3 && game.t2 == 3) {
+        //     const square = create_square();
+        //     const new_game = games[i].copy();
+        //     new_game.crossTan(true);
+        //     new_game.crossTan(false);
+        //     placePoint(square, new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
+        //     const new_game_2 = games[i].copy();
+        //     if (game.y1 == 1) {
+        //         new_game.switch_rows();
+        //         new_game_2.switch_rows();
+        //     } else if (game.y1 == 3) {
+        //         new_game.switch_rows();
+        //         new_game.switch_columns();
+        //         new_game_2.switch_rows();
+        //         new_game_2.switch_columns();
+        //     } else if (game.y1 == 5) {
+        //         new_game.switch_columns();
+        //         new_game_2.switch_columns();
+        //     }
+        //     if (game.y1 % 2 == 1 && game.y2 == 5) {
+        //         new_game.switch_rows();
+        //         placePoint(create_square(), new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
+        //         new_game_2.switch_rows();
+        //         placePoint(create_square(), new_game_2.quad, new_game_2.coord_1, new_game_2.coord_2, new_game_2.zone, true);
+        //     } else if (game.y1 % 2 == 1 && game.y2 == 3) {
+        //         new_game.switch_rows();
+        //         new_game.switch_columns();
+        //         placePoint(create_square(), new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
+        //         new_game_2.switch_rows();
+        //         new_game_2.switch_columns();
+        //         placePoint(create_square(), new_game_2.quad, new_game_2.coord_1, new_game_2.coord_2, new_game_2.zone, true);
+        //     } else if (game.y1 % 2 == 1 && game.y2 == 1) {
+        //         new_game.switch_columns();
+        //         placePoint(create_square(), new_game.quad, new_game.coord_1, new_game.coord_2, new_game.zone, true);
+        //         new_game_2.switch_columns();
+        //         placePoint(create_square(), new_game_2.quad, new_game_2.coord_1, new_game_2.coord_2, new_game_2.zone, true);
+        //     }
+        // }
     }
 
     // update birhombic picture
@@ -5757,14 +5869,16 @@ function negate(player1) {
 }
 
 function switchRows() {
-    const temp = [...game.row_matrix];
-    game.row_matrix = [temp[2],temp[3],temp[0],temp[1]];
+    // const temp = [...game.row_matrix];
+    // game.row_matrix = [temp[2],temp[3],temp[0],temp[1]];
+    game.switch_rows();
     updateCoords();
 }
 
 function switchColumns() {
-    const temp = [...game.col_matrix];
-    game.col_matrix = [temp[1],temp[0],temp[3],temp[2]];
+    // const temp = [...game.col_matrix];
+    // game.col_matrix = [temp[1],temp[0],temp[3],temp[2]];
+    game.switch_columns();
     updateCoords();
 }
 
@@ -7047,7 +7161,14 @@ function changeViewMode(mode, player1=true) { // strategy and player are only us
     } else {
         viewMode = mode;
     }
-    if (viewModeB !== null && (viewMode == 12 || viewMode == 11 || viewMode == 0 || viewMode == 7)) change_mode_b(viewModeB,viewModeBP1);
+    if (viewModeB !== null && (viewMode == 12 || viewMode == 11 || viewMode == 0 || viewMode == 7))
+        change_mode_b(viewModeB,viewModeBP1);
+
+    if (viewModeB === null && !(viewMode == 12 || viewMode == 11 || viewMode == 0 || viewMode == 7)) {
+        document.getElementById("toggle-player-button").style.display = "";
+    } else {
+        document.getElementById("toggle-player-button").style.display = "none";
+    }
     // const canvas = document.getElementById("canvas");
     // const canvasBig = document.getElementById("big-pic-canvas");
     // if (mode == 0) {
@@ -8251,7 +8372,8 @@ function updateBlueLines() {
 
         
         // update the ticks
-        const tick_length = 10;
+        const tick_length = 12;
+        const tick_offset = 5;
         const tick1 = document.getElementById("tick-1");
         const tick2 = document.getElementById("tick-2");
         const tick3 = document.getElementById("tick-3");
@@ -8270,66 +8392,66 @@ function updateBlueLines() {
         const tick16 = document.getElementById("tick-16");
         tick1.setAttribute("x1",picPadding1+picWidth/6);
         tick1.setAttribute("x2",picPadding1+picWidth/6);
-        tick1.setAttribute("y1",picPadding2+picHeight);
-        tick1.setAttribute("y2",picPadding2+picHeight + tick_length);
+        tick1.setAttribute("y1",picPadding2+picHeight + tick_offset);
+        tick1.setAttribute("y2",picPadding2+picHeight + tick_length + tick_offset);
         tick2.setAttribute("x1",picPadding1+picWidth/3);
         tick2.setAttribute("x2",picPadding1+picWidth/3);
-        tick2.setAttribute("y1",picPadding2+picHeight);
-        tick2.setAttribute("y2",picPadding2+picHeight + tick_length);
+        tick2.setAttribute("y1",picPadding2+picHeight + tick_offset);
+        tick2.setAttribute("y2",picPadding2+picHeight + tick_length + tick_offset);
         tick3.setAttribute("x1",picPadding1+picWidth*2/3);
         tick3.setAttribute("x2",picPadding1+picWidth*2/3);
-        tick3.setAttribute("y1",picPadding2+picHeight);
-        tick3.setAttribute("y2",picPadding2+picHeight + tick_length);
+        tick3.setAttribute("y1",picPadding2+picHeight + tick_offset);
+        tick3.setAttribute("y2",picPadding2+picHeight + tick_length + tick_offset);
         tick4.setAttribute("x1",picPadding1+picWidth*5/6);
         tick4.setAttribute("x2",picPadding1+picWidth*5/6);
-        tick4.setAttribute("y1",picPadding2+picHeight);
-        tick4.setAttribute("y2",picPadding2+picHeight + tick_length);
+        tick4.setAttribute("y1",picPadding2+picHeight + tick_offset);
+        tick4.setAttribute("y2",picPadding2+picHeight + tick_length + tick_offset);
         tick5.setAttribute("x1",picPadding1+picWidth/6);
         tick5.setAttribute("x2",picPadding1+picWidth/6);
-        tick5.setAttribute("y1",picPadding2);
-        tick5.setAttribute("y2",picPadding2 - tick_length);
+        tick5.setAttribute("y1",picPadding2 - tick_offset);
+        tick5.setAttribute("y2",picPadding2 - tick_length - tick_offset);
         tick6.setAttribute("x1",picPadding1+picWidth/3);
         tick6.setAttribute("x2",picPadding1+picWidth/3);
-        tick6.setAttribute("y1",picPadding2);
-        tick6.setAttribute("y2",picPadding2 - tick_length);
+        tick6.setAttribute("y1",picPadding2 - tick_offset);
+        tick6.setAttribute("y2",picPadding2 - tick_length - tick_offset);
         tick7.setAttribute("x1",picPadding1+picWidth*2/3);
         tick7.setAttribute("x2",picPadding1+picWidth*2/3);
-        tick7.setAttribute("y1",picPadding2);
-        tick7.setAttribute("y2",picPadding2 - tick_length);
+        tick7.setAttribute("y1",picPadding2 - tick_offset);
+        tick7.setAttribute("y2",picPadding2 - tick_length - tick_offset);
         tick8.setAttribute("x1",picPadding1+picWidth*5/6);
         tick8.setAttribute("x2",picPadding1+picWidth*5/6);
-        tick8.setAttribute("y1",picPadding2);
-        tick8.setAttribute("y2",picPadding2 - tick_length);
-        tick9.setAttribute("x1",picPadding1);
-        tick9.setAttribute("x2",picPadding1 - tick_length);
+        tick8.setAttribute("y1",picPadding2 - tick_offset);
+        tick8.setAttribute("y2",picPadding2 - tick_length - tick_offset);
+        tick9.setAttribute("x1",picPadding1 - tick_offset);
+        tick9.setAttribute("x2",picPadding1 - tick_length - tick_offset);
         tick9.setAttribute("y1",picPadding2+picHeight/6);
         tick9.setAttribute("y2",picPadding2+picHeight/6);
-        tick10.setAttribute("x1",picPadding1);
-        tick10.setAttribute("x2",picPadding1 - tick_length);
+        tick10.setAttribute("x1",picPadding1 - tick_offset);
+        tick10.setAttribute("x2",picPadding1 - tick_length - tick_offset);
         tick10.setAttribute("y1",picPadding2+picHeight/3);
         tick10.setAttribute("y2",picPadding2+picHeight/3);
-        tick11.setAttribute("x1",picPadding1);
-        tick11.setAttribute("x2",picPadding1 - tick_length);
+        tick11.setAttribute("x1",picPadding1 - tick_offset);
+        tick11.setAttribute("x2",picPadding1 - tick_length - tick_offset);
         tick11.setAttribute("y1",picPadding2+picHeight*2/3);
         tick11.setAttribute("y2",picPadding2+picHeight*2/3);
-        tick12.setAttribute("x1",picPadding1);
-        tick12.setAttribute("x2",picPadding1 - tick_length);
+        tick12.setAttribute("x1",picPadding1 - tick_offset);
+        tick12.setAttribute("x2",picPadding1 - tick_length - tick_offset);
         tick12.setAttribute("y1",picPadding2+picHeight*5/6);
         tick12.setAttribute("y2",picPadding2+picHeight*5/6);
-        tick13.setAttribute("x1",picPadding1+picWidth);
-        tick13.setAttribute("x2",picPadding1+picWidth + tick_length);
+        tick13.setAttribute("x1",picPadding1+picWidth + tick_offset);
+        tick13.setAttribute("x2",picPadding1+picWidth + tick_length + tick_offset);
         tick13.setAttribute("y1",picPadding2 + picHeight/6);
         tick13.setAttribute("y2",picPadding2 + picHeight/6);
-        tick14.setAttribute("x1",picPadding1+picWidth);
-        tick14.setAttribute("x2",picPadding1+picWidth + tick_length);
+        tick14.setAttribute("x1",picPadding1+picWidth + tick_offset);
+        tick14.setAttribute("x2",picPadding1+picWidth + tick_length + tick_offset);
         tick14.setAttribute("y1",picPadding2 + picHeight/3);
         tick14.setAttribute("y2",picPadding2 + picHeight/3);
-        tick15.setAttribute("x1",picPadding1+picWidth);
-        tick15.setAttribute("x2",picPadding1+picWidth + tick_length);
+        tick15.setAttribute("x1",picPadding1+picWidth + tick_offset);
+        tick15.setAttribute("x2",picPadding1+picWidth + tick_length + tick_offset);
         tick15.setAttribute("y1",picPadding2 + picHeight*2/3);
         tick15.setAttribute("y2",picPadding2 + picHeight*2/3);
-        tick16.setAttribute("x1",picPadding1+picWidth);
-        tick16.setAttribute("x2",picPadding1+picWidth + tick_length);
+        tick16.setAttribute("x1",picPadding1+picWidth + tick_offset);
+        tick16.setAttribute("x2",picPadding1+picWidth + tick_length + tick_offset);
         tick16.setAttribute("y1",picPadding2 + picHeight*5/6);
         tick16.setAttribute("y2",picPadding2 + picHeight*5/6);
     }
@@ -8932,7 +9054,6 @@ function average_return(x1,x2,quadrant,zone) {
     //         integral2 += delta*delta*weight;
     //     }
     // }
-    // console.log(integral2);
     return integral/2.25;
 }
 
@@ -10106,6 +10227,10 @@ function orbit_operation(game0,op) {
         case 14:
             new_game.cycle_matrices();
             break;
+        case 15:
+            new_game.switch_rows();
+            new_game.switch_columns();
+            break;
     }
     return new_game;
 }
@@ -10248,9 +10373,11 @@ function change_mode_b(mode, p1) {
             document.getElementById("transferable-mode").classList.add("selected-blue");
         document.getElementById("view-mode-label").style.color = "#960000";
         document.getElementById("view-mode-label-2").innerHTML = "<br>" + header(viewModeB,viewModeBP1);
+        document.getElementById("toggle-player-button").style.display = "none";
     } else {
         document.getElementById("view-mode-label").style.color = "black";
         document.getElementById("view-mode-label-2").innerHTML = "";
+        document.getElementById("toggle-player-button").style.display = "";
     }
 }
 
@@ -10418,39 +10545,11 @@ function strip_down() {
     // exportSvgToPng(big_diagram);
 }
 
-// strip_down();
+function toggle_player() {
+    viewModeP1 = !viewModeP1;
+    backgroundOutOfDate = true;
+}
 
-// fix big diagram movement
-
-// bugs
-// sometimes switching from blue to temp changes the game
-// fix cross tan at the boundary case
-// dragging in 36-game temp slices
-// add more backgrounds
-
-// add parameter for transferable utility
-// add means
-
-// going through corners
-// show discontinuities?
-// formatting
-// update growbox() (bugged) (including for balanced games)
-// dragging lines in balanced games
-
-// update balanced games
-// when asdw released, update render
-// remove constant rendering
-// change the condition for rendering mixed equilibria
-
-
-// change conventions to break equilibrium quads and put hotspots on the diagonal
-
-// todo
-// add advance option to change fourth diagram
-// add drop shadow on numbers
-// clicking on squares
-// update game info
-// update thermostat more often
 
 // class A,R,C,D
 // quadrant a,r,c,d
@@ -10458,30 +10557,6 @@ function strip_down() {
 
 // decided, undecided
 // helpless, anxious, confident
-// not a manifold: it has six singular points
-
-// put temp pic in the top right corner of the big diagram ?
-// combine matrices
-// change how categories are displayed in the legend
-
-// bring up duplicates on the equatorial slice
-
-// DONE fix bug when displaying differences
-// DONE change how corelation works with an exchange factor
-// DONE fix bug displaying corelation
-
-
-// add labels for the pictures
-// DONE negate x_2
-// DONE more elaborative plot labels
-// DONE add checkerboarding
-// DONE changing non-cooperative strategy should change view mode to non-cooperative
-// DONE show matrix maxes and player's returns in the legend
-// scale picture with relative scale
-
-// show picture with temperature averages
-
-// toggle viewModeP1
 
 // what images support discussion? (10+ images)
 
@@ -10501,7 +10576,10 @@ function strip_down() {
 
 
 
-// show 144 games on class picture (9*16)
-//   remove mixed for edge case
-//   add arrows
-//   dashed lines
+// todo
+// dragging in 36-game temp slices
+// update growbox() (bugged) (including for balanced games)
+// dragging lines in balanced games
+// change how categories are displayed in the legend
+// add labels for the pictures
+// scale picture with relative scale
